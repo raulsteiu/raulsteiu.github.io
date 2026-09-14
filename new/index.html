@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Client Story — Prophix Creator</title>
+<style>
+:root{--red:#EF363D;--dark:#1A1A2E;--light:#F7F7FB;--border:#E0DFF0;--muted:#666;--font:Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh}
+.header{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 100%);padding:32px 40px;color:#fff;display:flex;align-items:center;gap:16px}
+.logo-pill{background:#fff;border-radius:8px;padding:8px 14px;display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:900;color:var(--red)}
+.logo-sq{width:22px;height:22px;background:var(--red);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900}
+.header h1{font-size:20px;font-weight:900;color:#fff}
+.header p{font-size:13px;color:rgba(255,255,255,.6);margin-top:2px}
+
+/* Auth screen */
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:60vh;padding:40px}
+#auth-box{background:#fff;border-radius:12px;padding:40px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,0.1)}
+#auth-box h2{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:6px}
+#auth-box p{font-size:13px;color:var(--muted);margin-bottom:24px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dark);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:var(--font);outline:none;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--red)}
+.field textarea{resize:vertical;min-height:80px}
+#auth-error{font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px}
+.btn-primary{background:var(--red);color:#fff;border:none;border-radius:6px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);width:100%}
+.btn-primary:hover{background:#c0272d}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.btn-secondary:hover{color:var(--dark);border-color:#aaa}
+
+/* Creator form */
+#creator-screen{display:none;padding:40px;max-width:860px;margin:0 auto}
+.form-section{background:#fff;border-radius:10px;padding:28px;margin-bottom:24px;border:1px solid var(--border)}
+.form-section h2{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--dark);margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--red)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.field-row{grid-template-columns:1fr}}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stat-pair{display:flex;gap:8px}
+.stat-pair .field{flex:1}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
+.checkbox-group label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dark);cursor:pointer}
+.lang-group{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.lang-group label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dark);cursor:pointer}
+.dynamic-list{margin-bottom:12px}
+.dynamic-item{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}
+.dynamic-item input,.dynamic-item textarea{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none}
+.dynamic-item input:focus,.dynamic-item textarea:focus{border-color:var(--red)}
+.remove-item-btn{background:transparent;border:1px solid var(--border);border-radius:6px;padding:8px 10px;cursor:pointer;color:var(--muted);font-size:13px;flex-shrink:0}
+.remove-item-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.add-item-btn{background:transparent;border:2px dashed var(--border);border-radius:6px;padding:8px 16px;font-size:12px;cursor:pointer;color:var(--muted);font-family:var(--font);width:100%;text-align:center}
+.add-item-btn:hover{border-color:var(--red);color:var(--red)}
+.form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
+#status-msg{text-align:center;padding:16px;font-size:14px;font-weight:700;border-radius:8px;margin-top:16px;display:none}
+#status-msg.success{background:#e8f5e9;color:#2e7d32}
+#status-msg.error{background:#ffeaea;color:#c0272d}
+#status-msg.loading{background:#fff3e0;color:#e65100}
+.success-box{background:#fff;border-radius:12px;padding:40px;text-align:center;border:2px solid #e8f5e9;display:none}
+.success-box h2{color:#2e7d32;margin-bottom:12px}
+.success-box .live-url{font-size:18px;font-weight:700;color:var(--red);margin:16px 0;word-break:break-all}
+.success-box p{color:var(--muted);font-size:13px;margin-bottom:20px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
+  <div>
+    <h1>Client Story Creator</h1>
+    <p>Build and publish a new customer story page in minutes</p>
+  </div>
+</div>
+
+<!-- Auth Screen -->
+<div id="auth-screen">
+  <div id="auth-box">
+    <h2>Sign In</h2>
+    <p>Enter your credentials to access the story creator</p>
+    <div class="field"><label>Password</label><input type="password" id="auth-pw" placeholder="Enter password"/></div>
+    <div class="field"><label>GitHub Token</label><input type="password" id="auth-token" placeholder="Paste your GitHub token"/></div>
+    <div id="auth-error"></div>
+    <button class="btn-primary" id="auth-btn">Access Creator</button>
+  </div>
+</div>
+
+<!-- Creator Form -->
+<div id="creator-screen">
+
+  <!-- Client Basics -->
+  <div class="form-section">
+    <h2>Client Basics</h2>
+    <div class="field-row">
+      <div class="field"><label>Client Name *</label><input type="text" id="f-client-name" placeholder="e.g. Eaglestone Services SA"/></div>
+      <div class="field"><label>URL Slug *</label><input type="text" id="f-slug" placeholder="e.g. eaglestone (no spaces)"/></div>
+    </div>
+    <div class="field"><label>Page Subtitle</label><input type="text" id="f-subtitle" placeholder="e.g. Customer Story — Podcast Format"/></div>
+    <div class="field"><label>Hero Description</label><textarea id="f-hero-desc" placeholder="Brief intro shown under the title in the hero..."></textarea></div>
+    <div class="field"><label>Who is this client? (Sidebar)</label><textarea id="f-client-desc" placeholder="Short description of the client company..."></textarea></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="form-section">
+    <h2>Stats (4 Tiles)</h2>
+    <div class="stat-grid">
+      <div class="stat-pair"><div class="field"><label>Value 1</label><input type="text" id="s1v" placeholder="~1 wk"/></div><div class="field"><label>Label 1</label><input type="text" id="s1l" placeholder="Closing cycle saved"/></div></div>
+      <div class="stat-pair"><div class="field"><label>Value 2</label><input type="text" id="s2v" placeholder="9/10"/></div><div class="field"><label>Label 2</label><input type="text" id="s2l" placeholder="NPS Score"/></div></div>
+      <div class="stat-pair"><div class="field"><label>Value 3</label><input type="text" id="s3v" placeholder="3"/></div><div class="field"><label>Label 3</label><input type="text" id="s3l" placeholder="Markets consolidated"/></div></div>
+      <div class="stat-pair"><div class="field"><label>Value 4</label><input type="text" id="s4v" placeholder="2×"/></div><div class="field"><label>Label 4</label><input type="text" id="s4l" placeholder="Reporting frameworks"/></div></div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="form-section">
+    <h2>Prophix Products Deployed</h2>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="product" value="Financial Consolidation"> Financial Consolidation</label>
+      <label><input type="checkbox" name="product" value="FPA+"> FPA+</label>
+      <label><input type="checkbox" name="product" value="Account Reconciliation"> Account Reconciliation</label>
+      <label><input type="checkbox" name="product" value="Cashflow Management"> Cashflow Management</label>
+    </div>
+  </div>
+
+  <!-- Sections -->
+  <div class="form-section">
+    <h2>Story Sections</h2>
+    <div class="dynamic-list" id="sections-list">
+      <div class="dynamic-item" style="flex-direction:column;gap:8px">
+        <div style="display:flex;gap:8px">
+          <input type="text" placeholder="Section label (e.g. Business Challenges)" style="flex:1"/>
+          <button class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        <input type="text" placeholder="Section heading"/>
+        <textarea placeholder="Section body text..." style="min-height:80px"></textarea>
+      </div>
+    </div>
+    <button class="add-item-btn" onclick="addSection()">+ Add Section</button>
+  </div>
+
+  <!-- Audio Clips -->
+  <div class="form-section">
+    <h2>Audio Clips</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Define clip structure now. Upload MP3 files after the page is created using the page's Edit mode.</p>
+    <div class="dynamic-list" id="clips-list">
+      <div class="dynamic-item" style="flex-direction:column;gap:8px">
+        <div style="display:flex;gap:8px">
+          <input type="text" placeholder="Clip label + timestamp (e.g. Clip 1 — Transparency (09:02))" style="flex:1"/>
+          <button class="remove-item-btn" onclick="removeItem(this)">✕</button>
+        </div>
+        <input type="text" placeholder='MP3 filename (e.g. clip1_transparency.mp3)'/>
+        <textarea placeholder='"Quote from the interview..."' style="min-height:60px"></textarea>
+      </div>
+    </div>
+    <button class="add-item-btn" onclick="addClip()">+ Add Clip</button>
+  </div>
+
+  <!-- Key Results -->
+  <div class="form-section">
+    <h2>Key Results (Sidebar)</h2>
+    <div class="dynamic-list" id="results-list">
+      <div class="dynamic-item">
+        <input type="text" placeholder="Key result bullet point"/>
+        <button class="remove-item-btn" onclick="removeItem(this)">✕</button>
+      </div>
+    </div>
+    <button class="add-item-btn" onclick="addResult()">+ Add Result</button>
+  </div>
+
+  <!-- Participants -->
+  <div class="form-section">
+    <h2>Interview Participants</h2>
+    <div class="dynamic-list" id="participants-list">
+      <div class="dynamic-item">
+        <input type="text" placeholder="Full name"/>
+        <input type="text" placeholder="Title, Company"/>
+        <button class="remove-item-btn" onclick="removeItem(this)">✕</button>
+      </div>
+    </div>
+    <button class="add-item-btn" onclick="addParticipant()">+ Add Participant</button>
+  </div>
+
+  <!-- Languages -->
+  <div class="form-section">
+    <h2>Languages</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">EN is always included. Select additional languages to add empty placeholder sections (content filled via Edit mode after creation).</p>
+    <div class="lang-group">
+      <label><input type="checkbox" name="lang" value="fr"> French (FR)</label>
+      <label><input type="checkbox" name="lang" value="nl"> Dutch (NL)</label>
+      <label><input type="checkbox" name="lang" value="de"> German (DE)</label>
+      <label><input type="checkbox" name="lang" value="it"> Italian (IT)</label>
+      <label><input type="checkbox" name="lang" value="es"> Spanish (ES)</label>
+      <label><input type="checkbox" name="lang" value="pt"> Portuguese (PT)</label>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-secondary" onclick="resetForm()">Clear Form</button>
+    <button class="btn-primary" id="create-btn" onclick="createStory()">🚀 Create & Publish Story</button>
+  </div>
+
+  <div id="status-msg"></div>
+  <div class="success-box" id="success-box">
+    <div style="font-size:40px;margin-bottom:12px">🎉</div>
+    <h2>Story Published!</h2>
+    <p>Your client story is live at:</p>
+    <div class="live-url" id="live-url"></div>
+    <p>GitHub Pages takes ~1 minute to go live after first publish.</p>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:20px">
+      <button class="btn-primary" onclick="window.open(document.getElementById('live-url').textContent)">Open Page</button>
+      <button class="btn-secondary" onclick="resetForm()">Create Another</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var GH_REPO = 'raulsteiu/raulsteiu.github.io';
+var EDIT_PASSWORD = 'prophix2026';
+var sessionToken = '';
+
+var LANG_NAMES = {en:'EN',fr:'FR',nl:'NL',de:'DE',it:'IT',es:'ES',pt:'PT'};
+var LANG_LABELS = {
+  en:'Customer Story — Podcast Format',
+  fr:'Témoignage Client — Format Podcast',
+  nl:'Klantverhaal — Podcast Formaat',
+  de:'Kundenbericht — Podcast Format',
+  it:'Storia del Cliente — Formato Podcast',
+  es:'Historia del Cliente — Formato Podcast',
+  pt:'História do Cliente — Formato Podcast'
+};
+
+// Auth
+document.getElementById('auth-btn').addEventListener('click', function() {
+  var pw = document.getElementById('auth-pw').value;
+  var token = document.getElementById('auth-token').value.trim();
+  document.getElementById('auth-error').textContent = '';
+  if (pw !== EDIT_PASSWORD) { document.getElementById('auth-error').textContent = 'Incorrect password.'; return; }
+  if (!token) { document.getElementById('auth-error').textContent = 'Please paste your GitHub token.'; return; }
+  sessionToken = token;
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('creator-screen').style.display = 'block';
+});
+['auth-pw','auth-token'].forEach(function(id) {
+  document.getElementById(id).addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('auth-btn').click();
+  });
+});
+
+// Auto-generate slug from client name
+document.getElementById('f-client-name').addEventListener('input', function() {
+  var slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  document.getElementById('f-slug').value = slug;
+});
+
+// Dynamic list helpers
+function removeItem(btn) { btn.closest('.dynamic-item').remove(); }
+
+function addSection() {
+  var div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.style.cssText = 'flex-direction:column;gap:8px';
+  div.innerHTML = '<div style="display:flex;gap:8px"><input type="text" placeholder="Section label (e.g. Key Results)" style="flex:1"/><button class="remove-item-btn" onclick="removeItem(this)">✕</button></div><input type="text" placeholder="Section heading"/><textarea placeholder="Section body text..." style="min-height:80px"></textarea>';
+  document.getElementById('sections-list').appendChild(div);
+}
+
+function addClip() {
+  var div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.style.cssText = 'flex-direction:column;gap:8px';
+  div.innerHTML = '<div style="display:flex;gap:8px"><input type="text" placeholder="Clip label + timestamp" style="flex:1"/><button class="remove-item-btn" onclick="removeItem(this)">✕</button></div><input type="text" placeholder="MP3 filename (e.g. clip1.mp3)"/><textarea placeholder=\'\"Quote...\"\' style="min-height:60px"></textarea>';
+  document.getElementById('clips-list').appendChild(div);
+}
+
+function addResult() {
+  var div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.innerHTML = '<input type="text" placeholder="Key result bullet point"/><button class="remove-item-btn" onclick="removeItem(this)">✕</button>';
+  document.getElementById('results-list').appendChild(div);
+}
+
+function addParticipant() {
+  var div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.innerHTML = '<input type="text" placeholder="Full name"/><input type="text" placeholder="Title, Company"/><button class="remove-item-btn" onclick="removeItem(this)">✕</button>';
+  document.getElementById('participants-list').appendChild(div);
+}
+
+function resetForm() {
+  document.getElementById('success-box').style.display = 'none';
+  document.getElementById('status-msg').style.display = 'none';
+  document.querySelectorAll('#creator-screen input[type=text], #creator-screen textarea').forEach(function(el){ el.value=''; });
+  document.querySelectorAll('#creator-screen input[type=checkbox]').forEach(function(el){ el.checked=false; });
+}
+
+// Build HTML from template
+function buildHTML(data) {
+  var langs = ['en'].concat(data.langs);
+
+  var langBtns = langs.map(function(l) {
+    return '<button class="lang-btn' + (l==='en'?' active':'') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>';
+  }).join('\n    ');
+
+  var heroTags = langs.map(function(l) {
+    return '<div class="hero-tag lang-' + l + '" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' + (LANG_LABELS[l]||LANG_LABELS.en) + '</div>';
+  }).join('\n  ');
+
+  var heroTitles = langs.map(function(l) {
+    return '<h1 class="lang-' + l + '" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' + (l==='en' ? esc(data.heroTitle) : '[' + LANG_NAMES[l] + '] ' + esc(data.heroTitle)) + '</h1>';
+  }).join('\n  ');
+
+  var heroDescs = langs.map(function(l) {
+    return '<p class="hero-desc lang-' + l + '" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' + (l==='en' ? esc(data.heroDesc) : '[' + LANG_NAMES[l] + '] ' + esc(data.heroDesc)) + '</p>';
+  }).join('\n  ');
+
+  var sectionsHTML = data.sections.map(function(sec) {
+    return langs.map(function(l) {
+      return '<div class="story-sec" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' +
+        '<div class="sec-label">' + (l==='en'?esc(sec.label):'['+LANG_NAMES[l]+'] '+esc(sec.label)) + '</div>' +
+        '<h2>' + (l==='en'?esc(sec.heading):'['+LANG_NAMES[l]+'] '+esc(sec.heading)) + '</h2>' +
+        '<p>' + (l==='en'?esc(sec.body):'['+LANG_NAMES[l]+'] '+esc(sec.body)) + '</p>' +
+        '</div>';
+    }).join('\n');
+  }).join('\n');
+
+  var clipsHTML = data.clips.map(function(clip) {
+    return '<div class="clip-card">' +
+      '<div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>' +
+      langs.map(function(l){ return '<span class="lang-' + l + '" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' + (l==='en'?esc(clip.label):'['+LANG_NAMES[l]+'] '+esc(clip.label)) + '</span>'; }).join('') +
+      '</div>' +
+      langs.map(function(l){ return '<div class="clip-quote lang-' + l + '" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' + (l==='en'?esc(clip.quote):'['+LANG_NAMES[l]+'] '+esc(clip.quote)) + '</div>'; }).join('') +
+      '<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="' + esc(clip.file) + '" type="audio/mpeg"></audio></div>' +
+      '</div>';
+  }).join('\n');
+
+  var appsHTML = data.products.map(function(p) {
+    return '<div class="app-tag"><span class="app-dot"></span>' + esc(p) + '</div>';
+  }).join('');
+
+  var resultsHTML = data.results.map(function(r) {
+    return langs.map(function(l){
+      return '<div class="result-item lang-' + l + '" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' + (l==='en'?esc(r):'['+LANG_NAMES[l]+'] '+esc(r)) + '</div>';
+    }).join('');
+  }).join('');
+
+  var participantsHTML = data.participants.map(function(p) {
+    return '<p style="margin-top:10px"><strong>' + esc(p.name) + '</strong><br><span style="font-size:13px;color:#666">' + esc(p.title) + '</span></p>';
+  }).join('');
+
+  var sidebarWho = langs.map(function(l){
+    return '<p class="lang-' + l + '" data-lang="' + l + '"' + (l!=='en'?' style="display:none"':'') + '>' + (l==='en'?esc(data.clientDesc):'['+LANG_NAMES[l]+'] '+esc(data.clientDesc)) + '</p>';
+  }).join('');
+
+  // Build lang options for add-select (exclude already active)
+  var allLangs = [{v:'fr',t:'French (FR)'},{v:'nl',t:'Dutch (NL)'},{v:'de',t:'German (DE)'},{v:'it',t:'Italian (IT)'},{v:'es',t:'Spanish (ES)'},{v:'pt',t:'Portuguese (PT)'}];
+  var remainingOpts = allLangs.filter(function(o){ return langs.indexOf(o.v)===-1; }).map(function(o){
+    return '<option value="' + o.v + '">' + o.t + '</option>';
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(data.clientName)} — Customer Story | Prophix</title>
+<style>
+:root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F7F7FB;--border:#E0DFF0;--muted:#666;--font:Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--light);color:#222}
+.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:56px 40px 48px}
+.logo-pill{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--red);margin-bottom:22px}
+.logo-sq{width:24px;height:24px;background:var(--red);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900}
+.hero-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px}
+.hero h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px}
+.hero-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:26px}
+.lang-toggle{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;align-items:center}
+.lang-btn{padding:7px 20px;border-radius:20px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s}
+.lang-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+.lang-btn:hover:not(.active){border-color:rgba(255,255,255,.7);color:#fff}
+.lang-btn.remove-lang{padding:4px 10px;font-size:11px;border-color:rgba(255,100,100,.5);color:rgba(255,100,100,.8);margin-left:-6px}
+.lang-btn.remove-lang:hover{background:rgba(255,50,50,.2);border-color:red;color:#fff}
+.stats{background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:center;flex-wrap:wrap}
+.stat{padding:22px 36px;text-align:center;border-right:1px solid var(--border);flex:1;min-width:150px}
+.stat:last-child{border-right:none}
+.stat-n{font-size:28px;font-weight:900;color:var(--red);line-height:1;margin-bottom:5px}
+.stat-l{font-size:12px;color:var(--muted);line-height:1.4;max-width:130px;margin:0 auto}
+.main{max-width:1100px;margin:0 auto;padding:44px 24px;display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start}
+@media(max-width:860px){.main{grid-template-columns:1fr}}
+.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:7px}
+.story-sec{margin-bottom:40px}
+.story-sec h2{font-size:21px;font-weight:900;color:var(--dark);margin-bottom:14px;line-height:1.2}
+.story-sec p{font-size:15px;line-height:1.72;color:#333;margin-bottom:13px}
+.story-sec ul{padding-left:0;list-style:none;margin-bottom:13px}
+.story-sec ul li{font-size:15px;line-height:1.65;color:#333;padding-left:19px;margin-bottom:9px;position:relative}
+.story-sec ul li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin:24px 0}
+.clip-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;margin-bottom:14px;font-weight:500}
+.clip-player{margin-top:4px}
+.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:20px}
+.sidebar-card h3{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--dark);margin-bottom:13px;padding-bottom:9px;border-bottom:2px solid var(--red)}
+.sidebar-card p{font-size:14px;line-height:1.65;color:#444;margin-bottom:9px}
+.app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px;margin-right:4px}
+.app-dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.result-item{font-size:13.5px;line-height:1.55;color:#333;margin-bottom:8px;padding-left:16px;position:relative}
+.result-item::before{content:"✔";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}
+.page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:22px 20px;font-size:12px;line-height:1.7}
+.page-footer strong{color:rgba(255,255,255,.8)}
+#edit-fab{position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,0.25);transition:all .2s}
+#edit-fab:hover{background:var(--red)}
+#edit-fab.hidden{display:none!important}
+#edit-toolbar{display:none;position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);border-radius:50px;padding:10px 18px;gap:10px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.25)}
+#edit-toolbar.visible{display:flex}
+#save-btn{background:var(--red);color:#fff;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
+#save-btn:hover{background:#c0272d}
+#save-btn:disabled{opacity:0.5;cursor:not-allowed}
+#cancel-btn{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
+#cancel-btn:hover{color:#fff;border-color:#fff}
+#save-status{font-size:12px;color:rgba(255,255,255,0.7);min-width:80px;text-align:center}
+body.edit-mode [contenteditable="true"]{outline:2px dashed rgba(239,54,61,0.5);border-radius:3px;padding:2px 4px;cursor:text;min-height:1em}
+body.edit-mode [contenteditable="true"]:focus{outline:2px solid var(--red);background:rgba(239,54,61,0.04)}
+#lang-add-wrap{display:none;align-items:center;gap:6px}
+body.edit-mode #lang-add-wrap{display:flex}
+#lang-add-select{padding:5px 10px;border-radius:20px;border:2px dashed rgba(255,255,255,.4);background:transparent;color:rgba(255,255,255,.8);font-size:12px;font-family:var(--font);cursor:pointer}
+#lang-add-select option{color:#222;background:#fff}
+.upload-audio-btn{display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px dashed var(--red);background:transparent;color:var(--red);cursor:pointer;font-family:var(--font);margin-top:6px}
+body.edit-mode .upload-audio-btn{display:inline-block}
+.clip-remove-btn{display:none;position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:14px;cursor:pointer;line-height:22px;text-align:center;padding:0}
+body.edit-mode .clip-remove-btn{display:block}
+.clip-card{position:relative}
+.add-clip-btn{display:none;width:100%;padding:10px;border:2px dashed var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font);margin:16px 0;text-align:center}
+body.edit-mode .add-clip-btn{display:block}
+.add-clip-btn:hover{border-color:var(--red);color:var(--red)}
+#pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}
+#pw-modal.visible{display:flex}
+#pw-box{background:#fff;border-radius:12px;padding:32px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+#pw-box h3{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}
+.pw-field{margin-bottom:14px}
+.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.pw-field input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:var(--font);outline:none}
+.pw-field input:focus{border-color:var(--red)}
+#pw-error{font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px}
+#pw-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:4px}
+#pw-submit:hover{background:#c0272d}
+#pw-cancel{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:8px}
+#pw-cancel:hover{color:var(--dark);border-color:#aaa}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
+  ${heroTags}
+  <h1 class="lang-en" data-lang="en">${esc(data.heroTitle)}</h1>
+  ${langs.filter(function(l){return l!=='en';}).map(function(l){ return '<h1 class="lang-' + l + '" data-lang="' + l + '" style="display:none">[' + LANG_NAMES[l] + '] ' + esc(data.heroTitle) + '</h1>'; }).join('\n  ')}
+  <p class="hero-desc lang-en" data-lang="en">${esc(data.heroDesc)}</p>
+  ${langs.filter(function(l){return l!=='en';}).map(function(l){ return '<p class="hero-desc lang-' + l + '" data-lang="' + l + '" style="display:none">[' + LANG_NAMES[l] + '] ' + esc(data.heroDesc) + '</p>'; }).join('\n  ')}
+  <div class="lang-toggle" id="lang-toggle">
+    ${langBtns}
+    <div id="lang-add-wrap">
+      <select id="lang-add-select">
+        <option value="">+ Add language</option>
+        ${remainingOpts}
+      </select>
+    </div>
+  </div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-n">${esc(data.stats[0].v)}</div><div class="stat-l">${esc(data.stats[0].l)}</div></div>
+  <div class="stat"><div class="stat-n">${esc(data.stats[1].v)}</div><div class="stat-l">${esc(data.stats[1].l)}</div></div>
+  <div class="stat"><div class="stat-n">${esc(data.stats[2].v)}</div><div class="stat-l">${esc(data.stats[2].l)}</div></div>
+  <div class="stat"><div class="stat-n">${esc(data.stats[3].v)}</div><div class="stat-l">${esc(data.stats[3].l)}</div></div>
+</div>
+<div class="main">
+<div class="story-body" id="story-body">
+${sectionsHTML}
+${clipsHTML}
+<button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
+</div>
+<div class="sidebar">
+  <div class="sidebar-card">
+    <h3 class="lang-en" data-lang="en">Who is ${esc(data.clientName)}?</h3>
+    ${langs.filter(function(l){return l!=='en';}).map(function(l){ return '<h3 class="lang-' + l + '" data-lang="' + l + '" style="display:none">Qui est ' + esc(data.clientName) + '?</h3>'; }).join('\n    ')}
+    ${sidebarWho}
+  </div>
+  <div class="sidebar-card">
+    <h3 class="lang-en" data-lang="en">Applications Deployed</h3>
+    <div id="apps-display">${appsHTML}</div>
+  </div>
+  <div class="sidebar-card">
+    <h3 class="lang-en" data-lang="en">Key Results Snapshot</h3>
+    <div id="results-list">${resultsHTML}</div>
+  </div>
+  <div class="sidebar-card">
+    <h3 class="lang-en" data-lang="en">Interview Participants</h3>
+    <div id="participants-list">${participantsHTML}</div>
+  </div>
+</div>
+</div>
+<div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright &copy; 2026. May only be reproduced with Prophix's prior consent.</div>
+<button id="edit-fab">✏️ Edit</button>
+<div id="edit-toolbar">
+  <span id="save-status"></span>
+  <button id="cancel-btn">Cancel</button>
+  <button id="save-btn">💾 Save Live</button>
+</div>
+<div id="pw-modal">
+  <div id="pw-box">
+    <h3>Editor Access</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p>
+    <div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div>
+    <div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div>
+    <div id="pw-error"></div>
+    <button id="pw-submit">Unlock Editor</button>
+    <button id="pw-cancel">Cancel</button>
+  </div>
+</div>
+<script>
+var GH_REPO='raulsteiu/raulsteiu.github.io';
+var GH_FILE='clients/${data.slug}/index.html';
+var EDIT_PASSWORD='prophix2026';
+var sessionToken='';var cachedSha='';
+var activeLangs=${JSON.stringify(langs)};
+var currentLang='en';
+var LANG_NAMES=${JSON.stringify(LANG_NAMES)};
+var LANG_LABELS=${JSON.stringify(LANG_LABELS)};
+var EDITABLE_SELECTORS=['.story-sec .sec-label','.story-sec h2','.story-sec p','.story-sec ul li','.clip-quote','.clip-label span','.sidebar-card p','.result-item','.stat-n','.stat-l','.hero h1','.hero-desc','.hero-tag','.page-footer','#participants-list strong','#participants-list span'];
+function setLang(l){currentLang=l;document.querySelectorAll('[data-lang]').forEach(function(el){el.style.display=el.getAttribute('data-lang')===l?'':'none';});document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===l);});}
+function refreshRemoveBtns(){document.querySelectorAll('.remove-lang').forEach(function(b){b.style.display=document.body.classList.contains('edit-mode')?'':' none';});}
+function addLanguage(code){if(!code||activeLangs.indexOf(code)>-1)return;activeLangs.push(code);var toggle=document.getElementById('lang-toggle');var addWrap=document.getElementById('lang-add-wrap');var btn=document.createElement('button');btn.className='lang-btn';btn.setAttribute('data-lang',code);btn.textContent=LANG_NAMES[code];btn.addEventListener('click',function(){setLang(code);});toggle.insertBefore(btn,addWrap);var rb=document.createElement('button');rb.className='lang-btn remove-lang';rb.setAttribute('data-remove-lang',code);rb.textContent='✕';rb.title='Remove '+LANG_NAMES[code];rb.style.display='';rb.addEventListener('click',function(){removeLanguage(code);});toggle.insertBefore(rb,addWrap);var ht=document.createElement('div');ht.className='hero-tag lang-'+code;ht.setAttribute('data-lang',code);ht.textContent=LANG_LABELS[code]||'Customer Story';ht.style.display='none';document.querySelector('.hero').insertBefore(ht,document.querySelector('.lang-toggle'));document.querySelectorAll('.story-sec[data-lang="en"]').forEach(function(sec){var cl=sec.cloneNode(true);cl.setAttribute('data-lang',code);cl.style.display='none';cl.querySelectorAll('[contenteditable]').forEach(function(el){el.textContent='['+LANG_NAMES[code]+'] '+el.textContent;});sec.parentNode.insertBefore(cl,sec.nextSibling);});var opt=document.querySelector('#lang-add-select option[value="'+code+'"]');if(opt)opt.remove();}
+function removeLanguage(code){if(!confirm('Remove '+LANG_NAMES[code]+'?'))return;activeLangs=activeLangs.filter(function(l){return l!==code;});document.querySelectorAll('[data-lang="'+code+'"], [data-remove-lang="'+code+'"]').forEach(function(el){el.remove();});var sel=document.getElementById('lang-add-select');var opt=document.createElement('option');opt.value=code;opt.textContent=code;sel.appendChild(opt);if(currentLang===code)setLang('en');}
+function addClipInline(btn){var card=document.createElement('div');card.className='clip-card';card.innerHTML='<button class="clip-remove-btn" onclick="this.closest(\'.clip-card\').remove()">✕</button><div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg><span contenteditable="true">Clip Title</span></div><div class="clip-quote" contenteditable="true">"Quote here."</div><div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="" type="audio/mpeg"></audio><button class="upload-audio-btn" onclick="uploadAudio(this)">⬆ Upload MP3</button></div>';btn.parentNode.insertBefore(card,btn);}
+function uploadAudio(btn){var input=document.createElement('input');input.type='file';input.accept='audio/mpeg,.mp3';input.onchange=function(){var file=input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){var b64=e.target.result.split(',')[1];btn.textContent='⏳ Uploading...';fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/${data.slug}/'+file.name,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Upload: '+file.name,content:b64})}).then(function(r){return r.json();}).then(function(d){if(d.content){btn.closest('.clip-player').querySelector('audio source').src=file.name;btn.closest('.clip-player').querySelector('audio').load();btn.textContent='✅ '+file.name;}else{btn.textContent='❌ Failed';}});};reader.readAsDataURL(file);};input.click();}
+function enableEditMode(){document.body.classList.add('edit-mode');EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable='true';});});document.getElementById('edit-fab').classList.add('hidden');document.getElementById('edit-toolbar').classList.add('visible');document.getElementById('save-btn').disabled=false;document.getElementById('save-status').textContent='✏️ Edit mode on';refreshRemoveBtns();}
+function disableEditMode(){document.body.classList.remove('edit-mode');EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute('contenteditable');});});document.getElementById('edit-fab').classList.remove('hidden');document.getElementById('edit-toolbar').classList.remove('visible');document.getElementById('save-status').textContent='';document.getElementById('save-btn').disabled=false;refreshRemoveBtns();}
+function closeModal(){document.getElementById('pw-modal').classList.remove('visible');document.getElementById('pw-input').value='';document.getElementById('token-input').value='';document.getElementById('pw-error').textContent='';}
+async function saveToGitHub(){var statusEl=document.getElementById('save-status');var saveBtn=document.getElementById('save-btn');statusEl.textContent='⏳ Saving...';saveBtn.disabled=true;try{var sha=cachedSha;if(!sha){var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE,{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});if(!r.ok)throw new Error('Auth failed');sha=(await r.json()).sha;}EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute('contenteditable');});});document.body.classList.remove('edit-mode');document.getElementById('edit-fab').classList.remove('hidden');document.getElementById('edit-toolbar').classList.remove('visible');document.querySelectorAll('.remove-lang').forEach(function(el){el.style.display='none';});var html='<!DOCTYPE html>\\n'+document.documentElement.outerHTML;document.body.classList.add('edit-mode');document.getElementById('edit-fab').classList.add('hidden');document.getElementById('edit-toolbar').classList.add('visible');EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable='true';});});refreshRemoveBtns();var enc=btoa(unescape(encodeURIComponent(html)));var pr=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Live edit',content:enc,sha:sha})});if(pr.ok){var pd=await pr.json();cachedSha=pd.content.sha;statusEl.textContent='✅ Saved!';setTimeout(function(){disableEditMode();},1500);}else{var err=await pr.json();statusEl.textContent='❌ '+(err.message||'Failed');saveBtn.disabled=false;}}catch(e){statusEl.textContent='❌ '+e.message;saveBtn.disabled=false;}}
+document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn){btn.addEventListener('click',function(){setLang(btn.getAttribute('data-lang'));});});setLang('en');document.getElementById('lang-add-select').addEventListener('change',function(){if(this.value){addLanguage(this.value);this.value='';}});document.getElementById('edit-fab').addEventListener('click',function(){document.getElementById('pw-modal').classList.add('visible');setTimeout(function(){document.getElementById('pw-input').focus();},50);});document.getElementById('pw-submit').addEventListener('click',function(){var pw=document.getElementById('pw-input').value;var token=document.getElementById('token-input').value.trim();document.getElementById('pw-error').textContent='';if(pw!==EDIT_PASSWORD){document.getElementById('pw-error').textContent='Incorrect password.';return;}if(!token){document.getElementById('pw-error').textContent='Please paste your GitHub token.';return;}sessionToken=token;closeModal();enableEditMode();});document.getElementById('pw-cancel').addEventListener('click',closeModal);document.getElementById('save-btn').addEventListener('click',saveToGitHub);document.getElementById('cancel-btn').addEventListener('click',disableEditMode);});
+<\/script>
+</body>
+</html>`;
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Collect form data
+function collectData() {
+  var name = document.getElementById('f-client-name').value.trim();
+  var slug = document.getElementById('f-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');
+  if (!name || !slug) return null;
+
+  var sections = [];
+  document.querySelectorAll('#sections-list .dynamic-item').forEach(function(item) {
+    var inputs = item.querySelectorAll('input');
+    var ta = item.querySelector('textarea');
+    if (inputs[0] && inputs[0].value.trim()) {
+      sections.push({label: inputs[0].value.trim(), heading: inputs[1]?inputs[1].value.trim():'', body: ta?ta.value.trim():''});
+    }
+  });
+
+  var clips = [];
+  document.querySelectorAll('#clips-list .dynamic-item').forEach(function(item) {
+    var inputs = item.querySelectorAll('input');
+    var ta = item.querySelector('textarea');
+    if (inputs[0] && inputs[0].value.trim()) {
+      clips.push({label: inputs[0].value.trim(), file: inputs[1]?inputs[1].value.trim():'', quote: ta?ta.value.trim():''});
+    }
+  });
+
+  var results = [];
+  document.querySelectorAll('#results-list .dynamic-item input').forEach(function(inp) {
+    if (inp.value.trim()) results.push(inp.value.trim());
+  });
+
+  var participants = [];
+  document.querySelectorAll('#participants-list .dynamic-item').forEach(function(item) {
+    var inputs = item.querySelectorAll('input');
+    if (inputs[0] && inputs[0].value.trim()) participants.push({name: inputs[0].value.trim(), title: inputs[1]?inputs[1].value.trim():''});
+  });
+
+  var products = [];
+  document.querySelectorAll('input[name="product"]:checked').forEach(function(cb){ products.push(cb.value); });
+
+  var langs = [];
+  document.querySelectorAll('input[name="lang"]:checked').forEach(function(cb){ langs.push(cb.value); });
+
+  return {
+    clientName: name,
+    slug: slug,
+    heroTitle: 'How ' + name + ' transformed financial performance with Prophix',
+    heroDesc: document.getElementById('f-hero-desc').value.trim() || 'A customer story.',
+    clientDesc: document.getElementById('f-client-desc').value.trim() || '',
+    stats: [
+      {v: document.getElementById('s1v').value||'—', l: document.getElementById('s1l').value||''},
+      {v: document.getElementById('s2v').value||'—', l: document.getElementById('s2l').value||''},
+      {v: document.getElementById('s3v').value||'—', l: document.getElementById('s3l').value||''},
+      {v: document.getElementById('s4v').value||'—', l: document.getElementById('s4l').value||''}
+    ],
+    products: products,
+    sections: sections,
+    clips: clips,
+    results: results,
+    participants: participants,
+    langs: langs
+  };
+}
+
+async function createStory() {
+  var data = collectData();
+  if (!data) { alert('Please fill in at least Client Name and URL Slug.'); return; }
+
+  var btn = document.getElementById('create-btn');
+  var statusEl = document.getElementById('status-msg');
+  btn.disabled = true;
+  statusEl.style.display = 'block';
+  statusEl.className = 'loading';
+  statusEl.textContent = '⏳ Creating your story page...';
+
+  try {
+    var html = buildHTML(data);
+    var path = 'clients/' + data.slug + '/index.html';
+    var encoded = btoa(unescape(encodeURIComponent(html)));
+
+    // Check if file exists (get SHA if so)
+    var existingRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+      headers: {'Authorization':'Bearer ' + sessionToken,'Accept':'application/vnd.github+json'}
+    });
+    var body = {message: 'Create client story: ' + data.clientName, content: encoded};
+    if (existingRes.ok) {
+      var existing = await existingRes.json();
+      body.sha = existing.sha;
+      statusEl.textContent = '⏳ Updating existing story...';
+    }
+
+    var pushRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+      method: 'PUT',
+      headers: {'Authorization':'Bearer ' + sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+
+    if (pushRes.ok) {
+      // Update clients directory
+      await updateDirectory(data);
+      var liveUrl = 'https://raulsteiu.github.io/clients/' + data.slug + '/';
+      statusEl.style.display = 'none';
+      document.getElementById('live-url').textContent = liveUrl;
+      document.getElementById('success-box').style.display = 'block';
+    } else {
+      var err = await pushRes.json();
+      statusEl.className = 'error';
+      statusEl.textContent = '❌ ' + (err.message || 'Failed to create story');
+    }
+  } catch(e) {
+    statusEl.className = 'error';
+    statusEl.textContent = '❌ ' + e.message;
+  }
+  btn.disabled = false;
+}
+
+async function updateDirectory(newStory) {
+  try {
+    var path = 'clients/index.html';
+    var existingRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+      headers: {'Authorization':'Bearer ' + sessionToken,'Accept':'application/vnd.github+json'}
+    });
+
+    var existingHtml = '';
+    var existingSha = '';
+    if (existingRes.ok) {
+      var existing = await existingRes.json();
+      existingSha = existing.sha;
+      existingHtml = decodeURIComponent(escape(atob(existing.content.replace(/\n/g,''))));
+    }
+
+    // Parse existing stories from directory or start fresh
+    var stories = [];
+    if (existingHtml) {
+      var matches = existingHtml.match(/data-story="([^"]+)"/g);
+      if (matches) {
+        matches.forEach(function(m) {
+          var slug = m.replace('data-story="','').replace('"','');
+          var titleMatch = existingHtml.match(new RegExp('data-story="' + slug + '"[^>]*>([^<]+)'));
+          stories.push({slug: slug, name: titleMatch ? titleMatch[1] : slug});
+        });
+      }
+    }
+
+    // Add new story if not already there
+    var exists = stories.some(function(s){ return s.slug === newStory.slug; });
+    if (!exists) stories.push({slug: newStory.slug, name: newStory.clientName});
+
+    var dirHtml = buildDirectoryHTML(stories);
+    var encoded = btoa(unescape(encodeURIComponent(dirHtml)));
+    var body = {message: 'Update client directory', content: encoded};
+    if (existingSha) body.sha = existingSha;
+
+    await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+      method: 'PUT',
+      headers: {'Authorization':'Bearer ' + sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+  } catch(e) { console.warn('Directory update failed:', e); }
+}
+
+function buildDirectoryHTML(stories) {
+  var cards = stories.map(function(s) {
+    return '<a href="/clients/' + s.slug + '/" class="story-card" data-story="' + s.slug + '">' +
+      '<div class="story-icon">📄</div>' +
+      '<div class="story-name">' + esc(s.name) + '</div>' +
+      '<div class="story-url">raulsteiu.github.io/clients/' + s.slug + '</div>' +
+      '</a>';
+  }).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Stories — Prophix</title>
+<style>
+:root{--red:#EF363D;--dark:#1A1A2E;--light:#F7F7FB;--border:#E0DFF0;--font:Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh}
+.header{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 100%);padding:40px;color:#fff}
+.logo-pill{background:#fff;border-radius:8px;padding:8px 14px;display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:900;color:var(--red);margin-bottom:16px}
+.logo-sq{width:22px;height:22px;background:var(--red);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900}
+.header h1{font-size:28px;font-weight:900;color:#fff;margin-bottom:6px}
+.header p{font-size:14px;color:rgba(255,255,255,.6)}
+.content{max-width:900px;margin:0 auto;padding:40px 24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.story-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;text-decoration:none;color:#222;transition:all .2s;display:block}
+.story-card:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(239,54,61,0.1);transform:translateY(-2px)}
+.story-icon{font-size:32px;margin-bottom:12px}
+.story-name{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}
+.story-url{font-size:12px;color:#999}
+.empty{text-align:center;padding:60px;color:#999}
+.new-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;text-decoration:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;font-family:var(--font);margin-top:24px}
+.new-btn:hover{background:#c0272d}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
+  <h1>Client Stories</h1>
+  <p>${stories.length} published stor${stories.length === 1 ? 'y' : 'ies'}</p>
+</div>
+<div class="content">
+  ${stories.length === 0 ? '<div class="empty">No stories published yet. <a href="/new/">Create the first one →</a></div>' : '<div class="grid">' + cards + '</div>'}
+  <a href="/new/" class="new-btn">+ Create New Story</a>
+</div>
+</body>
+</html>`;
+}
+</script>
+</body>
+</html>
