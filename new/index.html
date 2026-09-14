@@ -325,8 +325,10 @@ function buildHTML(data) {
   var langs = ['en'].concat(data.langs);
   var allLangs = ['fr','nl','de','it','es','pt'];
   var remaining = allLangs.filter(function(l){ return langs.indexOf(l) === -1; });
+  var langFullNames = {fr:'French (FR)',nl:'Dutch (NL)',de:'German (DE)',it:'Italian (IT)',es:'Spanish (ES)',pt:'Portuguese (PT)'};
   var p = [];
 
+  // ── CSS ──────────────────────────────────────────────────────────────────
   p.push('<!DOCTYPE html>');
   p.push('<html lang="en">');
   p.push('<head>');
@@ -338,14 +340,12 @@ function buildHTML(data) {
   p.push('*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font);background:var(--light);color:#222}');
   p.push('.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:56px 40px 48px}');
   p.push('.logo-pill{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;gap:8px;margin-bottom:22px}');
-  p.push('.hero-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px}');
-  p.push('.hero h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff}');
-  p.push('.hero-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:26px}');
   p.push('.lang-toggle{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;align-items:center}');
   p.push('.lang-btn{padding:7px 20px;border-radius:20px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s}');
   p.push('.lang-btn.active{background:var(--red);border-color:var(--red);color:#fff}');
   p.push('.lang-btn:hover:not(.active){border-color:rgba(255,255,255,.7);color:#fff}');
-  p.push('.lang-btn.remove-lang{padding:4px 10px;font-size:11px;border-color:rgba(255,100,100,.5);color:rgba(255,100,100,.8);margin-left:-6px;display:none}');
+  p.push('.lang-btn.remove-lang{padding:4px 10px;font-size:11px;border-color:rgba(255,100,100,.5);color:rgba(255,100,100,.8);margin-left:-4px;display:none}');
+  p.push('.lang-block{display:none}.lang-block.active{display:block}');
   p.push('.stats{background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:center;flex-wrap:wrap}');
   p.push('.stat{padding:22px 36px;text-align:center;border-right:1px solid var(--border);flex:1;min-width:150px}.stat:last-child{border-right:none}');
   p.push('.stat-n{font-size:28px;font-weight:900;color:var(--red);line-height:1;margin-bottom:5px}');
@@ -365,17 +365,16 @@ function buildHTML(data) {
   p.push('.app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px;margin-right:4px}');
   p.push('.app-dot{width:7px;height:7px;border-radius:50%;background:var(--red)}');
   p.push('.result-item{font-size:13.5px;line-height:1.55;color:#333;margin-bottom:8px;padding-left:16px;position:relative}');
-  p.push('.result-item::before{content:"\\2714";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}');
+  p.push('.result-item::before{content:"\u2714";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}');
   p.push('.page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:22px 20px;font-size:12px;line-height:1.7}');
   p.push('.page-footer strong{color:rgba(255,255,255,.8)}');
   p.push('#edit-fab{position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,0.25)}');
   p.push('#edit-fab:hover{background:var(--red)}#edit-fab.hidden{display:none!important}');
   p.push('#edit-toolbar{display:none;position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);border-radius:50px;padding:10px 18px;gap:10px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.25)}');
   p.push('#edit-toolbar.visible{display:flex}');
-  p.push('#save-btn{background:var(--red);color:#fff;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}');
-  p.push('#save-btn:disabled{opacity:0.5;cursor:not-allowed}');
+  p.push('#save-btn{background:var(--red);color:#fff;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}#save-btn:disabled{opacity:0.5;cursor:not-allowed}');
   p.push('#cancel-btn{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}');
-  p.push('#save-status{font-size:12px;color:rgba(255,255,255,0.7);min-width:80px;text-align:center}');
+  p.push('#save-status{font-size:12px;color:rgba(255,255,255,0.7);min-width:100px;text-align:center}');
   p.push('body.edit-mode [contenteditable="true"]{outline:2px dashed rgba(239,54,61,0.5);border-radius:3px;padding:2px 4px;cursor:text;min-height:1em}');
   p.push('body.edit-mode [contenteditable="true"]:focus{outline:2px solid var(--red);background:rgba(239,54,61,0.04)}');
   p.push('#lang-add-wrap{display:none;align-items:center;gap:6px}body.edit-mode #lang-add-wrap{display:flex}');
@@ -387,8 +386,7 @@ function buildHTML(data) {
   p.push('body.edit-mode .clip-remove-btn{display:block}');
   p.push('.add-clip-btn{display:none;width:100%;padding:10px;border:2px dashed var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font);margin:16px 0;text-align:center}');
   p.push('body.edit-mode .add-clip-btn{display:block}.add-clip-btn:hover{border-color:var(--red);color:var(--red)}');
-  p.push('#pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}');
-  p.push('#pw-modal.visible{display:flex}');
+  p.push('#pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}#pw-modal.visible{display:flex}');
   p.push('#pw-box{background:#fff;border-radius:12px;padding:32px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}');
   p.push('#pw-box h3{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}');
   p.push('.pw-field{margin-bottom:14px}.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}');
@@ -398,95 +396,95 @@ function buildHTML(data) {
   p.push('#pw-cancel{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:8px}');
   p.push('</style></head><body>');
 
-  // Hero
+  // ── Hero (shared across languages) ────────────────────────────────────────
   p.push('<div class="hero">');
   p.push('<div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>');
-  langs.forEach(function(l) {
-    var tag = l === 'en' ? esc(data.subtitle) : (LANG_LABELS[l] || esc(data.subtitle));
-    p.push('<div class="hero-tag" data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>' + tag + '</div>');
-  });
-  langs.forEach(function(l) {
-    var title = l === 'en' ? esc(data.heroTitle) : '[' + LANG_NAMES[l] + '] ' + esc(data.heroTitle);
-    p.push('<h1 data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>' + title + '</h1>');
-  });
-  langs.forEach(function(l) {
-    var desc = l === 'en' ? esc(data.heroDesc) : '[' + LANG_NAMES[l] + '] ' + esc(data.heroDesc);
-    p.push('<p class="hero-desc" data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>' + desc + '</p>');
-  });
   p.push('<div class="lang-toggle" id="lang-toggle">');
   langs.forEach(function(l) {
-    p.push('<button class="lang-btn' + (l === 'en' ? ' active' : '') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>');
+    p.push('<button class="lang-btn' + (l==='en'?' active':'') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>');
     if (l !== 'en') p.push('<button class="lang-btn remove-lang" data-remove-lang="' + l + '">&times;</button>');
   });
   p.push('<div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>');
-  remaining.forEach(function(l) { p.push('<option value="' + l + '">' + LANG_FULL[l] + '</option>'); });
-  p.push('</select></div></div></div>');
+  remaining.forEach(function(l) { p.push('<option value="' + l + '">' + langFullNames[l] + '</option>'); });
+  p.push('</select></div>');
+  p.push('</div></div>'); // close lang-toggle and hero
 
-  // Stats
-  p.push('<div class="stats">');
+  // ── Stats (shared, always visible) ───────────────────────────────────────
+  p.push('<div class="stats" id="stats-bar">');
   data.stats.forEach(function(s) {
     p.push('<div class="stat"><div class="stat-n">' + esc(s.v) + '</div><div class="stat-l">' + esc(s.l) + '</div></div>');
   });
   p.push('</div>');
 
-  // Main
-  p.push('<div class="main"><div class="story-body" id="story-body">');
-  data.sections.forEach(function(sec) {
-    langs.forEach(function(l) {
-      p.push('<div class="story-sec" data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>');
-      p.push('<div class="sec-label">' + (l === 'en' ? esc(sec.label) : '[' + LANG_NAMES[l] + '] ' + esc(sec.label)) + '</div>');
-      p.push('<h2>' + (l === 'en' ? esc(sec.heading) : '[' + LANG_NAMES[l] + '] ' + esc(sec.heading)) + '</h2>');
-      p.push('<p>' + (l === 'en' ? esc(sec.body) : '[' + LANG_NAMES[l] + '] ' + esc(sec.body)) + '</p>');
+  // ── Language blocks ───────────────────────────────────────────────────────
+  // Each language gets ONE self-contained block with ALL its content
+  p.push('<div id="lang-blocks">');
+
+  langs.forEach(function(l) {
+    var isEn = l === 'en';
+    var prefix = isEn ? '' : '[' + LANG_NAMES[l] + '] ';
+    var subtitle = isEn ? esc(data.subtitle) : (LANG_LABELS[l] || esc(data.subtitle));
+
+    p.push('<div class="lang-block' + (isEn ? ' active' : '') + '" id="block-' + l + '">');
+
+    // Hero content for this language
+    p.push('<div class="hero-lang" style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:8px 40px 32px;margin-top:-1px">');
+    p.push('<div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">' + subtitle + '</div>');
+    p.push('<h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">' + esc(prefix + data.heroTitle) + '</h1>');
+    p.push('<p style="font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:8px">' + esc(prefix + data.heroDesc) + '</p>');
+    p.push('</div>');
+
+    // Main content
+    p.push('<div class="main">');
+    p.push('<div class="story-body">');
+
+    data.sections.forEach(function(sec) {
+      p.push('<div class="story-sec">');
+      p.push('<div class="sec-label">' + esc(prefix + sec.label) + '</div>');
+      p.push('<h2>' + esc(prefix + sec.heading) + '</h2>');
+      p.push('<p>' + esc(prefix + sec.body) + '</p>');
       p.push('</div>');
     });
-  });
-  data.clips.forEach(function(clip) {
-    var svgIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>';
-    p.push('<div class="clip-card">');
-    p.push('<div class="clip-label">' + svgIcon);
-    langs.forEach(function(l) {
-      p.push('<span data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>' + (l === 'en' ? esc(clip.label) : '[' + LANG_NAMES[l] + '] ' + esc(clip.label)) + '</span>');
-    });
-    p.push('</div>');
-    langs.forEach(function(l) {
-      p.push('<div class="clip-quote" data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>' + (l === 'en' ? esc(clip.quote) : '[' + LANG_NAMES[l] + '] ' + esc(clip.quote)) + '</div>');
-    });
-    p.push('<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="' + esc(clip.file) + '" type="audio/mpeg"></audio>');
-    p.push('<button class="upload-audio-btn" onclick="uploadAudio(this)">Upload MP3</button></div></div>');
-  });
-  p.push('<button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>');
-  p.push('</div>');
 
-  // Sidebar
-  p.push('<div class="sidebar">');
-  p.push('<div class="sidebar-card">');
-  langs.forEach(function(l) {
-    p.push('<h3 data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>Who is ' + esc(data.clientName) + '?</h3>');
-    p.push('<p data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>' + (l === 'en' ? esc(data.clientDesc) : '[' + LANG_NAMES[l] + '] ' + esc(data.clientDesc)) + '</p>');
-  });
-  p.push('</div>');
-  p.push('<div class="sidebar-card"><h3 data-lang="en">Applications Deployed</h3><div id="apps-display">');
-  data.products.forEach(function(prod) { p.push('<div class="app-tag"><span class="app-dot"></span>' + esc(prod) + '</div>'); });
-  p.push('</div></div>');
-  p.push('<div class="sidebar-card"><h3 data-lang="en">Key Results Snapshot</h3><div id="results-list">');
-  data.results.forEach(function(r) {
-    langs.forEach(function(l) {
-      p.push('<div class="result-item" data-lang="' + l + '"' + (l !== 'en' ? ' style="display:none"' : '') + '>' + (l === 'en' ? esc(r) : '[' + LANG_NAMES[l] + '] ' + esc(r)) + '</div>');
+    data.clips.forEach(function(clip) {
+      var svgIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>';
+      p.push('<div class="clip-card">');
+      p.push('<div class="clip-label">' + svgIcon + esc(prefix + clip.label) + '</div>');
+      p.push('<div class="clip-quote">' + esc(prefix + clip.quote) + '</div>');
+      p.push('<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="' + esc(clip.file) + '" type="audio/mpeg"></audio>');
+      p.push('<button class="upload-audio-btn" onclick="uploadAudio(this)">Upload MP3</button></div>');
+      p.push('</div>');
     });
+
+    p.push('<button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>');
+    p.push('</div>'); // story-body
+
+    // Sidebar for this language
+    p.push('<div class="sidebar">');
+    p.push('<div class="sidebar-card"><h3>Who is ' + esc(data.clientName) + '?</h3><p>' + esc(prefix + data.clientDesc) + '</p></div>');
+    p.push('<div class="sidebar-card"><h3>Applications Deployed</h3><div>');
+    data.products.forEach(function(prod) { p.push('<div class="app-tag"><span class="app-dot"></span>' + esc(prod) + '</div>'); });
+    p.push('</div></div>');
+    p.push('<div class="sidebar-card"><h3>Key Results</h3>');
+    data.results.forEach(function(r) { p.push('<div class="result-item">' + esc(prefix + r) + '</div>'); });
+    p.push('</div>');
+    p.push('<div class="sidebar-card"><h3>Interview Participants</h3>');
+    data.participants.forEach(function(pt) {
+      p.push('<p><strong>' + esc(pt.name) + '</strong><br><span style="font-size:13px;color:#666">' + esc(pt.title) + '</span></p>');
+    });
+    p.push('</div></div>'); // sidebar
+    p.push('</div>'); // main
+    p.push('</div>'); // lang-block
   });
-  p.push('</div></div>');
-  p.push('<div class="sidebar-card"><h3 data-lang="en">Interview Participants</h3><div id="participants-list">');
-  data.participants.forEach(function(pt) {
-    p.push('<p><strong>' + esc(pt.name) + '</strong><br><span style="font-size:13px;color:#666">' + esc(pt.title) + '</span></p>');
-  });
-  p.push('</div></div></div></div>');
+
+  p.push('</div>'); // lang-blocks
 
   p.push('<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix&#x27;s prior consent.</div>');
   p.push('<button id="edit-fab">&#x270F;&#xFE0F; Edit</button>');
   p.push('<div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>');
   p.push('<div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>');
 
-  // Inline config — loaded BEFORE story.js
+  // Inline config vars
   p.push('<script>');
   p.push('var GH_REPO = "raulsteiu/raulsteiu.github.io";');
   p.push('var GH_FILE = "clients/' + data.slug + '/index.html";');
@@ -495,6 +493,7 @@ function buildHTML(data) {
   p.push('var activeLangs = ' + JSON.stringify(langs) + ';');
   p.push('var LANG_NAMES = ' + JSON.stringify(LANG_NAMES) + ';');
   p.push('var LANG_LABELS = ' + JSON.stringify(LANG_LABELS) + ';');
+  p.push('var LANG_FULL_NAMES = ' + JSON.stringify(langFullNames) + ';');
   p.push('<\/script>');
   p.push('<script src="/clients/story.js"><\/script>');
   p.push('</body></html>');
@@ -502,7 +501,6 @@ function buildHTML(data) {
   return p.join('\n');
 }
 
-// ── Data collection ───────────────────────────────────────────────────────────
 function collectData() {
   var name = document.getElementById('f-name').value.trim();
   var slug = document.getElementById('f-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');
