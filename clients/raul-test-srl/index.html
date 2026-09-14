@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Raul Test SRL — Customer Story | Prophix</title>
@@ -85,23 +84,23 @@ body.edit-mode .add-clip-btn{display:block}
 #pw-cancel:hover{color:var(--dark);border-color:#aaa}
 </style>
 </head>
-<body>
+<body class="">
 <div class="hero">
   <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
-  <div class="hero-tag" data-lang="en">Customer Story — Podcast Format</div>
+  <div class="hero-tag" data-lang="en" style="display: none;">Customer Story — Podcast Format</div>
   <div class="hero-tag" data-lang="fr" style="display:none">Témoignage Client — Format Podcast</div>
   <div class="hero-tag" data-lang="de" style="display:none">Kundenbericht — Podcast Format</div>
-  <h1 data-lang="en">How Raul Test SRL transformed financial performance with Prophix</h1>
+  <h1 data-lang="en" style="display: none;">How Raul Test SRL transformed financial performance with Prophix</h1>
   <h1 data-lang="fr" style="display:none">[FR] How Raul Test SRL transformed financial performance with Prophix</h1>
   <h1 data-lang="de" style="display:none">[DE] How Raul Test SRL transformed financial performance with Prophix</h1>
-  <p class="hero-desc" data-lang="en">Hello World!</p>
+  <p class="hero-desc" data-lang="en" style="display: none;">Hello World!</p>
   <p class="hero-desc" data-lang="fr" style="display:none">[FR] Hello World!</p>
   <p class="hero-desc" data-lang="de" style="display:none">[DE] Hello World!</p>
-  <div class="lang-toggle" id="lang-toggle">
-    <button class="lang-btn active" data-lang="en">EN</button>
-    <button class="lang-btn" data-lang="fr">FR</button>
-    <button class="lang-btn" data-lang="de">DE</button>
-    <div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option><option value="nl">Dutch (NL)</option><option value="it">Italian (IT)</option><option value="es">Spanish (ES)</option><option value="pt">Portuguese (PT)</option></select></div>
+  <div class="hero-tag" data-lang="nl" style="">Klantverhaal — Podcast Formaat</div><div class="lang-toggle" id="lang-toggle">
+    <button class="lang-btn" data-lang="en" style="display: none;">EN</button>
+    <button class="lang-btn" data-lang="fr" style="display: none;">FR</button>
+    <button class="lang-btn" data-lang="de" style="display: none;">DE</button>
+    <button class="lang-btn active" data-lang="nl">NL</button><button class="lang-btn remove-lang" data-remove-lang="nl" style="display: none;">✕</button><div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option><option value="it">Italian (IT)</option><option value="es">Spanish (ES)</option><option value="pt">Portuguese (PT)</option></select></div>
   </div>
 </div>
 <div class="stats">
@@ -112,20 +111,20 @@ body.edit-mode .add-clip-btn{display:block}
 <div class="main">
 <div class="story-body" id="story-body">
 
-<div class="clip-card"><div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg><span data-lang="en">Deadline covered?</span><span data-lang="fr" style="display:none">[FR] Deadline covered?</span><span data-lang="de" style="display:none">[DE] Deadline covered?</span></div><div class="clip-quote" data-lang="en">how can i cover a deadline?</div><div class="clip-quote" data-lang="fr" style="display:none">[FR] how can i cover a deadline?</div><div class="clip-quote" data-lang="de" style="display:none">[DE] how can i cover a deadline?</div><div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip2_deadlines.mp3" type="audio/mpeg"></audio><button class="upload-audio-btn" onclick="uploadAudio(this)">&#x2B06; Upload MP3</button></div></div>
+<div class="clip-card"><div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span data-lang="en" style="display: none;">Deadline covered?</span><span data-lang="fr" style="display:none">[FR] Deadline covered?</span><span data-lang="de" style="display:none">[DE] Deadline covered?</span></div><div class="clip-quote" data-lang="en" style="display: none;">how can i cover a deadline? dadsadsadasd</div><div class="clip-quote" data-lang="fr" style="display:none">[FR] how can i cover a deadline?</div><div class="clip-quote" data-lang="de" style="display:none">[DE] how can i cover a deadline?</div><div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip2_deadlines.mp3" type="audio/mpeg"></audio><button class="upload-audio-btn" onclick="uploadAudio(this)">⬆ Upload MP3</button></div></div>
 <button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
 </div>
 <div class="sidebar">
-  <div class="sidebar-card"><h3 data-lang="en">Who is Raul Test SRL?</h3><p data-lang="en">Something cool for real deal</p><p data-lang="fr" style="display:none">[FR] Something cool for real deal</p><p data-lang="de" style="display:none">[DE] Something cool for real deal</p></div>
-  <div class="sidebar-card"><h3 data-lang="en">Applications Deployed</h3><div id="apps-display"><div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div><div class="app-tag"><span class="app-dot"></span>FPA+</div></div></div>
-  <div class="sidebar-card"><h3 data-lang="en">Key Results Snapshot</h3><div id="results-list"></div></div>
-  <div class="sidebar-card"><h3 data-lang="en">Interview Participants</h3><div id="participants-list"><p style="margin-top:10px"><strong>Raul</strong><br><span style="font-size:13px;color:#666">Cooleanu</span></p></div></div>
+  <div class="sidebar-card"><h3 data-lang="en" style="display: none;">Who is Raul Test SRL?</h3><p data-lang="en" style="display: none;">Something cool for real deal</p><p data-lang="fr" style="display:none">[FR] Something cool for real deal</p><p data-lang="de" style="display:none">[DE] Something cool for real deal</p></div>
+  <div class="sidebar-card"><h3 data-lang="en" style="display: none;">Applications Deployed</h3><div id="apps-display"><div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div><div class="app-tag"><span class="app-dot"></span>FPA+</div></div></div>
+  <div class="sidebar-card"><h3 data-lang="en" style="display: none;">Key Results Snapshot</h3><div id="results-list"></div></div>
+  <div class="sidebar-card"><h3 data-lang="en" style="display: none;">Interview Participants</h3><div id="participants-list"><p style="margin-top:10px"><strong>Raul</strong><br><span style="font-size:13px;color:#666">Cooleanu&nbsp;</span><div><span style="font-size:13px;color:#666">change&gt;&gt;</span></div></p></div></div>
 </div>
 </div>
-<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix's prior consent.</div>
-<button id="edit-fab">&#x270F;&#xFE0F; Edit</button>
-<div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>
-<div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
+<div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright © 2026. May only be reproduced with Prophix's prior consent.</div>
+<button id="edit-fab" class="">✏️ Edit</button>
+<div id="edit-toolbar" class=""><span id="save-status">⏳ Saving...</span><button id="cancel-btn">Cancel</button><button id="save-btn" disabled="">💾 Save Live</button></div>
+<div id="pw-modal" class=""><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
 <script>
 var GH_REPO="raulsteiu/raulsteiu.github.io";
 var GH_FILE="clients/raul-test-srl/index.html";
@@ -148,5 +147,5 @@ function closeModal(){document.getElementById("pw-modal").classList.remove("visi
 async function saveToGitHub(){var statusEl=document.getElementById("save-status");var saveBtn=document.getElementById("save-btn");statusEl.textContent="⏳ Saving...";saveBtn.disabled=true;try{var sha=cachedSha;if(!sha){var r=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json"}});if(!r.ok)throw new Error("Auth failed");sha=(await r.json()).sha;}EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});document.body.classList.remove("edit-mode");document.getElementById("edit-fab").classList.remove("hidden");document.getElementById("edit-toolbar").classList.remove("visible");document.querySelectorAll(".remove-lang").forEach(function(el){el.style.display="none";});var html="<!DOCTYPE html>\n"+document.documentElement.outerHTML;document.body.classList.add("edit-mode");document.getElementById("edit-fab").classList.add("hidden");document.getElementById("edit-toolbar").classList.add("visible");EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});refreshRemoveBtns();var enc=btoa(unescape(encodeURIComponent(html)));var pr=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Live edit",content:enc,sha:sha})});if(pr.ok){var pd=await pr.json();cachedSha=pd.content.sha;statusEl.textContent="✅ Saved!";setTimeout(function(){disableEditMode();},1500);}else{var err=await pr.json();statusEl.textContent="❌ "+(err.message||"Failed");saveBtn.disabled=false;}}catch(e){statusEl.textContent="❌ "+e.message;saveBtn.disabled=false;}}
 document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(btn){btn.addEventListener("click",function(){setLang(btn.getAttribute("data-lang"));});});setLang("en");document.getElementById("lang-add-select").addEventListener("change",function(){if(this.value){addLanguage(this.value);this.value="";}});document.getElementById("edit-fab").addEventListener("click",function(){document.getElementById("pw-modal").classList.add("visible");setTimeout(function(){document.getElementById("pw-input").focus();},50);});document.getElementById("pw-submit").addEventListener("click",function(){var pw=document.getElementById("pw-input").value;var token=document.getElementById("token-input").value.trim();document.getElementById("pw-error").textContent="";if(pw!==EDIT_PASSWORD){document.getElementById("pw-error").textContent="Incorrect password.";return;}if(!token){document.getElementById("pw-error").textContent="Please paste your GitHub token.";return;}sessionToken=token;closeModal();enableEditMode();});document.getElementById("pw-cancel").addEventListener("click",closeModal);document.getElementById("save-btn").addEventListener("click",saveToGitHub);document.getElementById("cancel-btn").addEventListener("click",disableEditMode);});
 </script>
-</body>
-</html>
+
+</body></html>
