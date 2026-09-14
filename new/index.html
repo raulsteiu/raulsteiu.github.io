@@ -410,12 +410,6 @@ function buildHTML(data) {
   p.push('</div></div>'); // close lang-toggle and hero
 
   // ── Stats (shared, always visible) ───────────────────────────────────────
-  p.push('<div class="stats" id="stats-bar">');
-  data.stats.forEach(function(s) {
-    p.push('<div class="stat"><div class="stat-n">' + esc(s.v) + '</div><div class="stat-l">' + esc(s.l) + '</div></div>');
-  });
-  p.push('</div>');
-
   // ── Language blocks ───────────────────────────────────────────────────────
   // Each language gets ONE self-contained block with ALL its content
   p.push('<div id="lang-blocks">');
@@ -432,6 +426,13 @@ function buildHTML(data) {
     p.push('<div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">' + subtitle + '</div>');
     p.push('<h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">' + esc(prefix + data.heroTitle) + '</h1>');
     p.push('<p style="font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:8px">' + esc(prefix + data.heroDesc) + '</p>');
+    p.push('</div>'); // end hero-lang
+
+    // Stats bar
+    p.push('<div class="stats">');
+    data.stats.forEach(function(s) {
+      p.push('<div class="stat"><div class="stat-n">' + esc(s.v) + '</div><div class="stat-l">' + esc(s.l) + '</div></div>');
+    });
     p.push('</div>');
 
     // Main content
@@ -479,7 +480,7 @@ function buildHTML(data) {
 
   p.push('</div>'); // lang-blocks
 
-  p.push('<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix&#x27;s prior consent.</div>');
+  p.push('<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix&#x27;s prior consent.<br><span id="footer-interview-note">Audio extracts from the original customer interview. Used with permission.</span></div>');
   p.push('<button id="edit-fab">&#x270F;&#xFE0F; Edit</button>');
   p.push('<div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>');
   p.push('<div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>');
