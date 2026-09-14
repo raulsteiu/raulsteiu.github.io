@@ -5,34 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Raul Test SRL — Customer Story | Prophix</title>
 <style>
-:root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F7F7FB;--border:#E0DFF0;--muted:#666;--font:Arial,sans-serif}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--light);color:#222}
+:root{--red:#EF363D;--dark:#1A1A2E;--light:#F7F7FB;--border:#E0DFF0;--muted:#666;--font:Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font);background:var(--light);color:#222}
 .hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:56px 40px 48px}
 .logo-pill{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;gap:8px;margin-bottom:22px}
 .hero-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px}
-.hero h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px}
+.hero h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff}
 .hero-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:26px}
 .lang-toggle{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;align-items:center}
 .lang-btn{padding:7px 20px;border-radius:20px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s}
 .lang-btn.active{background:var(--red);border-color:var(--red);color:#fff}
 .lang-btn:hover:not(.active){border-color:rgba(255,255,255,.7);color:#fff}
-.lang-btn.remove-lang{padding:4px 10px;font-size:11px;border-color:rgba(255,100,100,.5);color:rgba(255,100,100,.8);margin-left:-6px}
-.lang-btn.remove-lang:hover{background:rgba(255,50,50,.2);border-color:red;color:#fff}
+.lang-btn.remove-lang{padding:4px 10px;font-size:11px;border-color:rgba(255,100,100,.5);color:rgba(255,100,100,.8);margin-left:-6px;display:none}
 .stats{background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:center;flex-wrap:wrap}
-.stat{padding:22px 36px;text-align:center;border-right:1px solid var(--border);flex:1;min-width:150px}
-.stat:last-child{border-right:none}
+.stat{padding:22px 36px;text-align:center;border-right:1px solid var(--border);flex:1;min-width:150px}.stat:last-child{border-right:none}
 .stat-n{font-size:28px;font-weight:900;color:var(--red);line-height:1;margin-bottom:5px}
 .stat-l{font-size:12px;color:var(--muted);line-height:1.4;max-width:130px;margin:0 auto}
 .main{max-width:1100px;margin:0 auto;padding:44px 24px;display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start}
 @media(max-width:860px){.main{grid-template-columns:1fr}}
 .sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:7px}
-.story-sec{margin-bottom:40px}
-.story-sec h2{font-size:21px;font-weight:900;color:var(--dark);margin-bottom:14px;line-height:1.2}
+.story-sec{margin-bottom:40px}.story-sec h2{font-size:21px;font-weight:900;color:var(--dark);margin-bottom:14px;line-height:1.2}
 .story-sec p{font-size:15px;line-height:1.72;color:#333;margin-bottom:13px}
-.story-sec ul{padding-left:0;list-style:none;margin-bottom:13px}
-.story-sec ul li{font-size:15px;line-height:1.65;color:#333;padding-left:19px;margin-bottom:9px;position:relative}
-.story-sec ul li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--red)}
 .clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin:24px 0;position:relative}
 .clip-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:8px}
 .clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;margin-bottom:14px;font-weight:500}
@@ -43,24 +36,20 @@ body{font-family:var(--font);background:var(--light);color:#222}
 .app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px;margin-right:4px}
 .app-dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
 .result-item{font-size:13.5px;line-height:1.55;color:#333;margin-bottom:8px;padding-left:16px;position:relative}
-.result-item::before{content:"✔";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}
+.result-item::before{content:"\2714";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}
 .page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:22px 20px;font-size:12px;line-height:1.7}
 .page-footer strong{color:rgba(255,255,255,.8)}
-#edit-fab{position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,0.25);transition:all .2s}
-#edit-fab:hover{background:var(--red)}
-#edit-fab.hidden{display:none!important}
+#edit-fab{position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,0.25)}
+#edit-fab:hover{background:var(--red)}#edit-fab.hidden{display:none!important}
 #edit-toolbar{display:none;position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);border-radius:50px;padding:10px 18px;gap:10px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.25)}
 #edit-toolbar.visible{display:flex}
 #save-btn{background:var(--red);color:#fff;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
-#save-btn:hover{background:#c0272d}
 #save-btn:disabled{opacity:0.5;cursor:not-allowed}
 #cancel-btn{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
-#cancel-btn:hover{color:#fff;border-color:#fff}
 #save-status{font-size:12px;color:rgba(255,255,255,0.7);min-width:80px;text-align:center}
 body.edit-mode [contenteditable="true"]{outline:2px dashed rgba(239,54,61,0.5);border-radius:3px;padding:2px 4px;cursor:text;min-height:1em}
 body.edit-mode [contenteditable="true"]:focus{outline:2px solid var(--red);background:rgba(239,54,61,0.04)}
-#lang-add-wrap{display:none;align-items:center;gap:6px}
-body.edit-mode #lang-add-wrap{display:flex}
+#lang-add-wrap{display:none;align-items:center;gap:6px}body.edit-mode #lang-add-wrap{display:flex}
 #lang-add-select{padding:5px 10px;border-radius:20px;border:2px dashed rgba(255,255,255,.4);background:transparent;color:rgba(255,255,255,.8);font-size:12px;font-family:var(--font);cursor:pointer}
 #lang-add-select option{color:#222;background:#fff}
 .upload-audio-btn{display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px dashed var(--red);background:transparent;color:var(--red);cursor:pointer;font-family:var(--font);margin-top:6px}
@@ -68,191 +57,85 @@ body.edit-mode .upload-audio-btn{display:inline-block}
 .clip-remove-btn{display:none;position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:14px;cursor:pointer;line-height:22px;text-align:center;padding:0}
 body.edit-mode .clip-remove-btn{display:block}
 .add-clip-btn{display:none;width:100%;padding:10px;border:2px dashed var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font);margin:16px 0;text-align:center}
-body.edit-mode .add-clip-btn{display:block}
-.add-clip-btn:hover{border-color:var(--red);color:var(--red)}
+body.edit-mode .add-clip-btn{display:block}.add-clip-btn:hover{border-color:var(--red);color:var(--red)}
 #pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}
 #pw-modal.visible{display:flex}
 #pw-box{background:#fff;border-radius:12px;padding:32px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
 #pw-box h3{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}
-.pw-field{margin-bottom:14px}
-.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
-.pw-field input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:var(--font);outline:none}
-.pw-field input:focus{border-color:var(--red)}
+.pw-field{margin-bottom:14px}.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.pw-field input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:var(--font);outline:none}.pw-field input:focus{border-color:var(--red)}
 #pw-error{font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px}
 #pw-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:4px}
-#pw-submit:hover{background:#c0272d}
-#pw-cancel{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:8px}
-#pw-cancel:hover{color:var(--dark);border-color:#aaa}
-</style>
-</head>
-<body>
+#pw-cancel{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:8px}
+</style></head><body>
 <div class="hero">
-  <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
-<div class="hero-tag" data-lang="en">Raul the great</div>
-  <div class="hero-tag" data-lang="fr" style="display:none">Témoignage Client — Format Podcast</div>
-  <div class="hero-tag" data-lang="de" style="display:none">Kundenbericht — Podcast Format</div>
-<h1 data-lang="en">How Raul Test SRL transformed financial performance with Prophix</h1>
-  <h1 data-lang="fr" style="display:none">[FR] How Raul Test SRL transformed financial performance with Prophix</h1>
-  <h1 data-lang="de" style="display:none">[DE] How Raul Test SRL transformed financial performance with Prophix</h1>
-<p class="hero-desc" data-lang="en">He is a great guy!</p>
-  <p class="hero-desc" data-lang="fr" style="display:none">[FR] He is a great guy!</p>
-  <p class="hero-desc" data-lang="de" style="display:none">[DE] He is a great guy!</p>
-  <div class="lang-toggle" id="lang-toggle">
-    <button class="lang-btn active" data-lang="en">EN</button>
-    <button class="lang-btn" data-lang="fr">FR</button>
-    <button class="lang-btn" data-lang="de">DE</button>
-    <div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option><option value="nl">Dutch (NL)</option><option value="it">Italian (IT)</option><option value="es">Spanish (ES)</option><option value="pt">Portuguese (PT)</option></select></div>
-  </div>
-</div>
+<div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
+<div class="hero-tag" data-lang="en">Super Boy Raul</div>
+<div class="hero-tag" data-lang="de" style="display:none">Kundenbericht — Podcast Format</div>
+<h1 data-lang="en">Here to stay hero of the month</h1>
+<h1 data-lang="de" style="display:none">[DE] Here to stay hero of the month</h1>
+<p class="hero-desc" data-lang="en">Hello my friends!</p>
+<p class="hero-desc" data-lang="de" style="display:none">[DE] Hello my friends!</p>
+<div class="lang-toggle" id="lang-toggle">
+<button class="lang-btn active" data-lang="en">EN</button>
+<button class="lang-btn" data-lang="de">DE</button>
+<button class="lang-btn remove-lang" data-remove-lang="de">&times;</button>
+<div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>
+<option value="fr">French (FR)</option>
+<option value="nl">Dutch (NL)</option>
+<option value="it">Italian (IT)</option>
+<option value="es">Spanish (ES)</option>
+<option value="pt">Portuguese (PT)</option>
+</select></div></div></div>
 <div class="stats">
-<div class="stat"><div class="stat-n">10</div><div class="stat-l">Handsome</div></div>
-  <div class="stat"><div class="stat-n">9</div><div class="stat-l">Smart</div></div>
-  <div class="stat"><div class="stat-n">11</div><div class="stat-l">Rockstar</div></div>
+<div class="stat"><div class="stat-n">20</div><div class="stat-l">KG in plus</div></div>
+<div class="stat"><div class="stat-n">10/10</div><div class="stat-l">Gamestyle</div></div>
 </div>
-<div class="main">
-<div class="story-body" id="story-body">
-<div class="story-sec" data-lang="en"><div class="sec-label">Something cool</div><h2>Aha</h2><p>Something cooleanu2</p></div>
-<div class="story-sec" data-lang="fr" style="display:none"><div class="sec-label">[FR] Something cool</div><h2>[FR] Aha</h2><p>[FR] Something cooleanu2</p></div>
-<div class="story-sec" data-lang="de" style="display:none"><div class="sec-label">[DE] Something cool</div><h2>[DE] Aha</h2><p>[DE] Something cooleanu2</p></div>
-
+<div class="main"><div class="story-body" id="story-body">
+<div class="story-sec" data-lang="en">
+<div class="sec-label">Hello World</div>
+<h2>Something cool</h2>
+<p>here it goes</p>
+</div>
+<div class="story-sec" data-lang="de" style="display:none">
+<div class="sec-label">[DE] Hello World</div>
+<h2>[DE] Something cool</h2>
+<p>[DE] here it goes</p>
+</div>
 <button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
 </div>
 <div class="sidebar">
-  <div class="sidebar-card"><h3 data-lang="en">Who is Raul Test SRL?</h3><p data-lang="en">I dont know</p><p data-lang="fr" style="display:none">[FR] I dont know</p><p data-lang="de" style="display:none">[DE] I dont know</p></div>
-  <div class="sidebar-card"><h3 data-lang="en">Applications Deployed</h3><div id="apps-display"><div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div><div class="app-tag"><span class="app-dot"></span>Account Reconciliation</div></div></div>
-  <div class="sidebar-card"><h3 data-lang="en">Key Results Snapshot</h3><div id="results-list"><div class="result-item" data-lang="en">Something the client did</div><div class="result-item" data-lang="fr" style="display:none">[FR] Something the client did</div><div class="result-item" data-lang="de" style="display:none">[DE] Something the client did</div><div class="result-item" data-lang="en">Yes he did</div><div class="result-item" data-lang="fr" style="display:none">[FR] Yes he did</div><div class="result-item" data-lang="de" style="display:none">[DE] Yes he did</div></div></div>
-  <div class="sidebar-card"><h3 data-lang="en">Interview Participants</h3><div id="participants-list"><p style="margin-top:10px"><strong>Raul</strong><br><span style="font-size:13px;color:#666">Greatest SRL</span></p></div></div>
+<div class="sidebar-card">
+<h3 data-lang="en">Who is Raul Test SRL?</h3>
+<p data-lang="en">Doesnt matter..the client is me anyway</p>
+<h3 data-lang="de" style="display:none">Who is Raul Test SRL?</h3>
+<p data-lang="de" style="display:none">[DE] Doesnt matter..the client is me anyway</p>
 </div>
-</div>
+<div class="sidebar-card"><h3 data-lang="en">Applications Deployed</h3><div id="apps-display">
+<div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div>
+<div class="app-tag"><span class="app-dot"></span>Cashflow Management</div>
+</div></div>
+<div class="sidebar-card"><h3 data-lang="en">Key Results Snapshot</h3><div id="results-list">
+<div class="result-item" data-lang="en">Bla bla</div>
+<div class="result-item" data-lang="de" style="display:none">[DE] Bla bla</div>
+<div class="result-item" data-lang="en">bla bla 1</div>
+<div class="result-item" data-lang="de" style="display:none">[DE] bla bla 1</div>
+</div></div>
+<div class="sidebar-card"><h3 data-lang="en">Interview Participants</h3><div id="participants-list">
+<p><strong>Petrea</strong><br><span style="font-size:13px;color:#666">Compania lui</span></p>
+</div></div></div></div>
 <div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix&#x27;s prior consent.</div>
 <button id="edit-fab">&#x270F;&#xFE0F; Edit</button>
 <div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>
 <div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
-<script>var GH_REPO="raulsteiu/raulsteiu.github.io";
-var GH_FILE="clients/raul-test-srl/index.html";
-var EDIT_PASSWORD="prophix2026";
-var sessionToken="",cachedSha="";
-var activeLangs=["en","fr","de"];
-var currentLang="en";
-var LANG_NAMES={"en":"EN","fr":"FR","nl":"NL","de":"DE","it":"IT","es":"ES","pt":"PT"};
-var LANG_LABELS={"en":"Customer Story — Podcast Format","fr":"Témoignage Client — Format Podcast","nl":"Klantverhaal — Podcast Formaat","de":"Kundenbericht — Podcast Format","it":"Storia del Cliente — Formato Podcast","es":"Historia del Cliente — Formato Podcast","pt":"História do Cliente — Formato Podcast"};
-var ES=[".story-sec .sec-label",".story-sec h2",".story-sec p",".clip-quote",".clip-label span",".sidebar-card p",".result-item",".stat-n",".stat-l",".hero h1",".hero-desc",".hero-tag",".page-footer","#participants-list strong","#participants-list span"];
-function setLang(l){currentLang=l;document.querySelectorAll("[data-lang]").forEach(function(e){e.style.display=e.getAttribute("data-lang")===l?"":"none";});document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-lang")===l);});}
-function refreshRemoveBtns(){document.querySelectorAll(".remove-lang").forEach(function(b){b.style.display=document.body.classList.contains("edit-mode")?"":"none";});}
-function addLanguage(code){
-  if(!code||activeLangs.indexOf(code)>-1)return;
-  activeLangs.push(code);
-  var toggle=document.getElementById("lang-toggle");
-  var addWrap=document.getElementById("lang-add-wrap");
-  var btn=document.createElement("button");
-  btn.className="lang-btn";btn.setAttribute("data-lang",code);
-  btn.textContent=LANG_NAMES[code];
-  btn.addEventListener("click",function(){setLang(code);});
-  toggle.insertBefore(btn,addWrap);
-  var rb=document.createElement("button");
-  rb.className="lang-btn remove-lang";rb.setAttribute("data-remove-lang",code);
-  rb.textContent="×";rb.style.display="";
-  rb.addEventListener("click",function(){removeLanguage(code);});
-  toggle.insertBefore(rb,addWrap);
-  var ht=document.createElement("div");
-  ht.className="hero-tag";ht.setAttribute("data-lang",code);
-  ht.textContent=LANG_LABELS[code]||"Customer Story";ht.style.display="none";
-  document.querySelector(".hero").insertBefore(ht,document.querySelector(".lang-toggle"));
-  document.querySelectorAll(".story-sec[data-lang="en"]").forEach(function(sec){
-    var cl=sec.cloneNode(true);cl.setAttribute("data-lang",code);cl.style.display="none";
-    cl.querySelectorAll("[contenteditable]").forEach(function(el){el.removeAttribute("contenteditable");el.textContent="["+LANG_NAMES[code]+"] "+el.textContent;});
-    sec.parentNode.insertBefore(cl,sec.nextSibling);
-  });
-  var opt=document.querySelector("#lang-add-select option[value=""+code+"""]");
-  if(opt)opt.remove();
-}
-function removeLanguage(code){
-  if(!confirm("Remove "+LANG_NAMES[code]+"?"))return;
-  activeLangs=activeLangs.filter(function(l){return l!==code;});
-  document.querySelectorAll("[data-lang=""+code+""]").forEach(function(el){el.remove();});
-  document.querySelectorAll("[data-remove-lang=""+code+""]").forEach(function(el){el.remove();});
-  var sel=document.getElementById("lang-add-select");
-  var opt=document.createElement("option");opt.value=code;opt.textContent=LANG_NAMES[code];sel.appendChild(opt);
-  if(currentLang===code)setLang("en");
-}
-function addClipInline(btn){
-  var card=document.createElement("div");
-  card.className="clip-card";
-  var rb=document.createElement("button");rb.className="clip-remove-btn";rb.innerHTML="&times;";rb.onclick=function(){rb.closest(".clip-card").remove();};
-  var lbl=document.createElement("div");lbl.className="clip-label";
-  lbl.innerHTML="<svg width='14' height='14' viewBox='0 0 24 24' fill='#EF363D'><path d='M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z'/></svg><span contenteditable='true'>Clip Title</span>";
-  var qt=document.createElement("div");qt.className="clip-quote";qt.contentEditable="true";qt.textContent="Quote here.";
-  var aud=document.createElement("audio");aud.controls=true;aud.preload="metadata";aud.style.cssText="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block";
-  var src=document.createElement("source");src.type="audio/mpeg";aud.appendChild(src);
-  var upBtn=document.createElement("button");upBtn.className="upload-audio-btn";upBtn.textContent="Upload MP3";upBtn.onclick=function(){uploadAudio(upBtn);};
-  var pl=document.createElement("div");pl.className="clip-player";pl.appendChild(aud);pl.appendChild(upBtn);
-  card.appendChild(rb);card.appendChild(lbl);card.appendChild(qt);card.appendChild(pl);
-  btn.parentNode.insertBefore(card,btn);
-}
-function uploadAudio(btn){
-  var input=document.createElement("input");input.type="file";input.accept="audio/mpeg,.mp3";
-  input.onchange=function(){
-    var file=input.files[0];if(!file)return;
-    var reader=new FileReader();
-    reader.onload=function(e){
-      var b64=e.target.result.split(",")[1];
-      btn.textContent="Uploading...";
-      fetch("https://api.github.com/repos/"+GH_REPO+"/contents/clients/raul-test-srl/"+file.name,{
-        method:"PUT",
-        headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},
-        body:JSON.stringify({message:"Audio: "+file.name,content:b64})
-      }).then(function(r){return r.json();}).then(function(d){
-        if(d.content){btn.closest(".clip-player").querySelector("audio source").src=file.name;btn.closest(".clip-player").querySelector("audio").load();btn.textContent="Done: "+file.name;}
-        else{btn.textContent="Failed";}
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-}
-function enableEditMode(){document.body.classList.add("edit-mode");ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});document.getElementById("edit-fab").classList.add("hidden");document.getElementById("edit-toolbar").classList.add("visible");document.getElementById("save-btn").disabled=false;document.getElementById("save-status").textContent="Edit mode on";refreshRemoveBtns();}
-function disableEditMode(){document.body.classList.remove("edit-mode");ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});document.getElementById("edit-fab").classList.remove("hidden");document.getElementById("edit-toolbar").classList.remove("visible");document.getElementById("save-status").textContent="";document.getElementById("save-btn").disabled=false;refreshRemoveBtns();}
-function closeModal(){document.getElementById("pw-modal").classList.remove("visible");document.getElementById("pw-input").value="";document.getElementById("token-input").value="";document.getElementById("pw-error").textContent="";}
-async function saveToGitHub(){
-  var statusEl=document.getElementById("save-status"),saveBtn=document.getElementById("save-btn");
-  statusEl.textContent="Saving...";saveBtn.disabled=true;
-  try{
-    var sha=cachedSha;
-    if(!sha){var r=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json"}});if(!r.ok)throw new Error("Auth failed");sha=(await r.json()).sha;}
-    ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});
-    document.body.classList.remove("edit-mode");
-    document.getElementById("edit-fab").classList.remove("hidden");
-    document.getElementById("edit-toolbar").classList.remove("visible");
-    document.querySelectorAll(".remove-lang").forEach(function(el){el.style.display="none";});
-    var html="<!DOCTYPE html>
-"+document.documentElement.outerHTML;
-    document.body.classList.add("edit-mode");
-    document.getElementById("edit-fab").classList.add("hidden");
-    document.getElementById("edit-toolbar").classList.add("visible");
-    ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});
-    refreshRemoveBtns();
-    var enc=btoa(unescape(encodeURIComponent(html)));
-    var pr=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Live edit",content:enc,sha:sha})});
-    if(pr.ok){var pd=await pr.json();cachedSha=pd.content.sha;statusEl.textContent="Saved!";setTimeout(function(){disableEditMode();},1500);}
-    else{var err=await pr.json();statusEl.textContent="Error: "+(err.message||"Failed");saveBtn.disabled=false;}
-  }catch(e){statusEl.textContent="Error: "+e.message;saveBtn.disabled=false;}
-}
-document.addEventListener("DOMContentLoaded",function(){
-  document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(btn){btn.addEventListener("click",function(){setLang(btn.getAttribute("data-lang"));});});
-  setLang("en");
-  document.getElementById("lang-add-select").addEventListener("change",function(){if(this.value){addLanguage(this.value);this.value="";}});
-  document.getElementById("edit-fab").addEventListener("click",function(){document.getElementById("pw-modal").classList.add("visible");setTimeout(function(){document.getElementById("pw-input").focus();},50);});
-  document.getElementById("pw-submit").addEventListener("click",function(){
-    var pw=document.getElementById("pw-input").value;
-    var token=document.getElementById("token-input").value.trim().replace(/[^ -~]/g,"");
-    document.getElementById("pw-error").textContent="";
-    if(pw!==EDIT_PASSWORD){document.getElementById("pw-error").textContent="Incorrect password.";return;}
-    if(!token){document.getElementById("pw-error").textContent="Please paste your GitHub token.";return;}
-    sessionToken=token;closeModal();enableEditMode();
-  });
-  document.getElementById("pw-cancel").addEventListener("click",closeModal);
-  document.getElementById("save-btn").addEventListener("click",saveToGitHub);
-  document.getElementById("cancel-btn").addEventListener("click",disableEditMode);
-});</script>
-</body>
-</html>
+<script>
+var GH_REPO = "raulsteiu/raulsteiu.github.io";
+var GH_FILE = "clients/raul-test-srl/index.html";
+var GH_CLIENT_FOLDER = "clients/raul-test-srl/";
+var EDIT_PASSWORD = "prophix2026";
+var activeLangs = ["en","de"];
+var LANG_NAMES = {"en":"EN","fr":"FR","nl":"NL","de":"DE","it":"IT","es":"ES","pt":"PT"};
+var LANG_LABELS = {"en":"Customer Story — Podcast Format","fr":"Témoignage Client — Format Podcast","nl":"Klantverhaal — Podcast Formaat","de":"Kundenbericht — Podcast Format","it":"Storia del Cliente — Formato Podcast","es":"Historia del Cliente — Formato Podcast","pt":"História do Cliente — Formato Podcast"};
+</script>
+<script src="/clients/story.js"></script>
+</body></html>
