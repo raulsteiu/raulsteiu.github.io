@@ -576,34 +576,142 @@ function buildHTML(data) {
   parts.push('  <div class="sidebar-card"><h3 data-lang="en">Interview Participants</h3><div id="participants-list">' + participantsHTML + '</div></div>');
   parts.push('</div>');
   parts.push('</div>');
-  parts.push('<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix's prior consent.</div>');
+  parts.push('<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix&#x27;s prior consent.</div>');
   parts.push('<button id="edit-fab">&#x270F;&#xFE0F; Edit</button>');
   parts.push('<div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>');
   parts.push('<div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>');
   // Build the client page script as a string using Array to avoid escaping issues
-  var scriptLines = [
-    'var GH_REPO="raulsteiu/raulsteiu.github.io";',
-    'var GH_FILE="' + ghFile + '";',
-    'var EDIT_PASSWORD="prophix2026";',
-    'var sessionToken="";var cachedSha="";',
-    'var activeLangs=' + langsJSON + ';',
-    'var currentLang="en";',
-    'var LANG_NAMES=' + langNamesJSON + ';',
-    'var LANG_LABELS=' + langLabelsJSON + ';',
-    'var EDITABLE_SELECTORS=[".story-sec .sec-label",".story-sec h2",".story-sec p",".clip-quote",".clip-label span",".sidebar-card p",".result-item",".stat-n",".stat-l",".hero h1",".hero-desc",".hero-tag",".page-footer","#participants-list strong","#participants-list span"];',
-    'function setLang(l){currentLang=l;document.querySelectorAll("[data-lang]").forEach(function(el){el.style.display=el.getAttribute("data-lang")===l?"":"none";});document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-lang")===l);});}',
-    'function refreshRemoveBtns(){document.querySelectorAll(".remove-lang").forEach(function(b){b.style.display=document.body.classList.contains("edit-mode")?"":"none";});}',
-    'function addLanguage(code){if(!code||activeLangs.indexOf(code)>-1)return;activeLangs.push(code);var toggle=document.getElementById("lang-toggle");var addWrap=document.getElementById("lang-add-wrap");var btn=document.createElement("button");btn.className="lang-btn";btn.setAttribute("data-lang",code);btn.textContent=LANG_NAMES[code];btn.addEventListener("click",function(){setLang(code);});toggle.insertBefore(btn,addWrap);var rb=document.createElement("button");rb.className="lang-btn remove-lang";rb.setAttribute("data-remove-lang",code);rb.textContent="\u2715";rb.style.display="";rb.addEventListener("click",function(){removeLanguage(code);});toggle.insertBefore(rb,addWrap);var ht=document.createElement("div");ht.className="hero-tag";ht.setAttribute("data-lang",code);ht.textContent=LANG_LABELS[code]||"Customer Story";ht.style.display="none";document.querySelector(".hero").insertBefore(ht,document.querySelector(".lang-toggle"));document.querySelectorAll('.story-sec[data-lang="en"]').forEach(function(sec){var cl=sec.cloneNode(true);cl.setAttribute("data-lang",code);cl.style.display="none";cl.querySelectorAll("[contenteditable]").forEach(function(el){el.removeAttribute("contenteditable");el.textContent="["+LANG_NAMES[code]+"] "+el.textContent;});sec.parentNode.insertBefore(cl,sec.nextSibling);});var opt=document.querySelector('#lang-add-select option[value="'+code+'"]');if(opt)opt.remove();}',
-    'function removeLanguage(code){if(!confirm("Remove "+LANG_NAMES[code]+"?"))return;activeLangs=activeLangs.filter(function(l){return l!==code;});document.querySelectorAll('[data-lang="'+code+'"], [data-remove-lang="'+code+'"]').forEach(function(el){el.remove();});var sel=document.getElementById("lang-add-select");var opt=document.createElement("option");opt.value=code;opt.textContent=LANG_NAMES[code];sel.appendChild(opt);if(currentLang===code)setLang("en");}',
-    'function addClipInline(btn){var card=document.createElement("div");card.className="clip-card";card.innerHTML='<button class="clip-remove-btn" onclick="this.closest(\\".clip-card\\").remove()">&times;</button><div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg><span contenteditable="true">Clip Title</span></div><div class="clip-quote" contenteditable="true">"Quote here."</div><div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="" type="audio/mpeg"></audio><button class="upload-audio-btn" onclick="uploadAudio(this)">&#x2B06; Upload MP3</button></div>';btn.parentNode.insertBefore(card,btn);}',
-    'function uploadAudio(btn){var input=document.createElement("input");input.type="file";input.accept="audio/mpeg,.mp3";input.onchange=function(){var file=input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){var b64=e.target.result.split(",")[1];btn.textContent="Uploading...";fetch("https://api.github.com/repos/"+GH_REPO+"/contents/' + clientFolder + '"+file.name,{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Audio: "+file.name,content:b64})}).then(function(r){return r.json();}).then(function(d){if(d.content){btn.closest(".clip-player").querySelector("audio source").src=file.name;btn.closest(".clip-player").querySelector("audio").load();btn.textContent="Done: "+file.name;}else{btn.textContent="Failed";}});};reader.readAsDataURL(file);};input.click();}',
-    'function enableEditMode(){document.body.classList.add("edit-mode");EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});document.getElementById("edit-fab").classList.add("hidden");document.getElementById("edit-toolbar").classList.add("visible");document.getElementById("save-btn").disabled=false;document.getElementById("save-status").textContent="Edit mode on";refreshRemoveBtns();}',
-    'function disableEditMode(){document.body.classList.remove("edit-mode");EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});document.getElementById("edit-fab").classList.remove("hidden");document.getElementById("edit-toolbar").classList.remove("visible");document.getElementById("save-status").textContent="";document.getElementById("save-btn").disabled=false;refreshRemoveBtns();}',
-    'function closeModal(){document.getElementById("pw-modal").classList.remove("visible");document.getElementById("pw-input").value="";document.getElementById("token-input").value="";document.getElementById("pw-error").textContent="";}',
-    'async function saveToGitHub(){var statusEl=document.getElementById("save-status");var saveBtn=document.getElementById("save-btn");statusEl.textContent="Saving...";saveBtn.disabled=true;try{var sha=cachedSha;if(!sha){var r=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json"}});if(!r.ok)throw new Error("Auth failed");sha=(await r.json()).sha;}EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});document.body.classList.remove("edit-mode");document.getElementById("edit-fab").classList.remove("hidden");document.getElementById("edit-toolbar").classList.remove("visible");document.querySelectorAll(".remove-lang").forEach(function(el){el.style.display="none";});var html="<!DOCTYPE html>\n"+document.documentElement.outerHTML;document.body.classList.add("edit-mode");document.getElementById("edit-fab").classList.add("hidden");document.getElementById("edit-toolbar").classList.add("visible");EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});refreshRemoveBtns();var enc=btoa(unescape(encodeURIComponent(html)));var pr=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Live edit",content:enc,sha:sha})});if(pr.ok){var pd=await pr.json();cachedSha=pd.content.sha;statusEl.textContent="Saved!";setTimeout(function(){disableEditMode();},1500);}else{var err=await pr.json();statusEl.textContent="Error: "+(err.message||"Failed");saveBtn.disabled=false;}}catch(e){statusEl.textContent="Error: "+e.message;saveBtn.disabled=false;}}',
-    'document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(btn){btn.addEventListener("click",function(){setLang(btn.getAttribute("data-lang"));});});setLang("en");document.getElementById("lang-add-select").addEventListener("change",function(){if(this.value){addLanguage(this.value);this.value="";}});document.getElementById("edit-fab").addEventListener("click",function(){document.getElementById("pw-modal").classList.add("visible");setTimeout(function(){document.getElementById("pw-input").focus();},50);});document.getElementById("pw-submit").addEventListener("click",function(){var pw=document.getElementById("pw-input").value;var token=document.getElementById("token-input").value.trim().replace(/[^\x20-\x7E]/g,"");document.getElementById("pw-error").textContent="";if(pw!==EDIT_PASSWORD){document.getElementById("pw-error").textContent="Incorrect password.";return;}if(!token){document.getElementById("pw-error").textContent="Please paste your GitHub token.";return;}sessionToken=token;closeModal();enableEditMode();});document.getElementById("pw-cancel").addEventListener("click",closeModal);document.getElementById("save-btn").addEventListener("click",saveToGitHub);document.getElementById("cancel-btn").addEventListener("click",disableEditMode);});'
-  ];
-  parts.push('<script>' + scriptLines.join('\n') + '<\/script>');
+  // Build client page script safely using concatenation
+  function buildClientScript(ghFile, clientFolder, langsJSON, langNamesJSON, langLabelsJSON) {
+    var s = [];
+    s.push('var GH_REPO="raulsteiu/raulsteiu.github.io";');
+    s.push('var GH_FILE="' + ghFile + '";');
+    s.push('var EDIT_PASSWORD="prophix2026";');
+    s.push('var sessionToken="",cachedSha="";');
+    s.push('var activeLangs=' + langsJSON + ';');
+    s.push('var currentLang="en";');
+    s.push('var LANG_NAMES=' + langNamesJSON + ';');
+    s.push('var LANG_LABELS=' + langLabelsJSON + ';');
+    s.push('var ES=[".story-sec .sec-label",".story-sec h2",".story-sec p",".clip-quote",".clip-label span",".sidebar-card p",".result-item",".stat-n",".stat-l",".hero h1",".hero-desc",".hero-tag",".page-footer","#participants-list strong","#participants-list span"];');
+    s.push('function setLang(l){currentLang=l;document.querySelectorAll("[data-lang]").forEach(function(e){e.style.display=e.getAttribute("data-lang")===l?"":"none";});document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-lang")===l);});}');
+    s.push('function refreshRemoveBtns(){document.querySelectorAll(".remove-lang").forEach(function(b){b.style.display=document.body.classList.contains("edit-mode")?"":"none";});}');
+    s.push('function addLanguage(code){');
+    s.push('  if(!code||activeLangs.indexOf(code)>-1)return;');
+    s.push('  activeLangs.push(code);');
+    s.push('  var toggle=document.getElementById("lang-toggle");');
+    s.push('  var addWrap=document.getElementById("lang-add-wrap");');
+    s.push('  var btn=document.createElement("button");');
+    s.push('  btn.className="lang-btn";btn.setAttribute("data-lang",code);');
+    s.push('  btn.textContent=LANG_NAMES[code];');
+    s.push('  btn.addEventListener("click",function(){setLang(code);});');
+    s.push('  toggle.insertBefore(btn,addWrap);');
+    s.push('  var rb=document.createElement("button");');
+    s.push('  rb.className="lang-btn remove-lang";rb.setAttribute("data-remove-lang",code);');
+    s.push('  rb.textContent="\u00d7";rb.style.display="";');
+    s.push('  rb.addEventListener("click",function(){removeLanguage(code);});');
+    s.push('  toggle.insertBefore(rb,addWrap);');
+    s.push('  var ht=document.createElement("div");');
+    s.push('  ht.className="hero-tag";ht.setAttribute("data-lang",code);');
+    s.push('  ht.textContent=LANG_LABELS[code]||"Customer Story";ht.style.display="none";');
+    s.push('  document.querySelector(".hero").insertBefore(ht,document.querySelector(".lang-toggle"));');
+    s.push('  document.querySelectorAll(".story-sec[data-lang=\"en\"]").forEach(function(sec){');
+    s.push('    var cl=sec.cloneNode(true);cl.setAttribute("data-lang",code);cl.style.display="none";');
+    s.push('    cl.querySelectorAll("[contenteditable]").forEach(function(el){el.removeAttribute("contenteditable");el.textContent="["+LANG_NAMES[code]+"] "+el.textContent;});');
+    s.push('    sec.parentNode.insertBefore(cl,sec.nextSibling);');
+    s.push('  });');
+    s.push('  var opt=document.querySelector("#lang-add-select option[value=\""+code+"\""]");');
+    s.push('  if(opt)opt.remove();');
+    s.push('}');
+    s.push('function removeLanguage(code){');
+    s.push('  if(!confirm("Remove "+LANG_NAMES[code]+"?"))return;');
+    s.push('  activeLangs=activeLangs.filter(function(l){return l!==code;});');
+    s.push('  document.querySelectorAll("[data-lang=\""+code+"\"]").forEach(function(el){el.remove();});');
+    s.push('  document.querySelectorAll("[data-remove-lang=\""+code+"\"]").forEach(function(el){el.remove();});');
+    s.push('  var sel=document.getElementById("lang-add-select");');
+    s.push('  var opt=document.createElement("option");opt.value=code;opt.textContent=LANG_NAMES[code];sel.appendChild(opt);');
+    s.push('  if(currentLang===code)setLang("en");');
+    s.push('}');
+    s.push('function addClipInline(btn){');
+    s.push('  var card=document.createElement("div");');
+    s.push('  card.className="clip-card";');
+    s.push('  var rb=document.createElement("button");rb.className="clip-remove-btn";rb.innerHTML="&times;";rb.onclick=function(){rb.closest(".clip-card").remove();};');
+    s.push('  var lbl=document.createElement("div");lbl.className="clip-label";');
+    s.push('  lbl.innerHTML="<svg width=\'14\' height=\'14\' viewBox=\'0 0 24 24\' fill=\'#EF363D\'><path d=\'M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z\'/></svg><span contenteditable=\'true\'>Clip Title</span>";');
+    s.push('  var qt=document.createElement("div");qt.className="clip-quote";qt.contentEditable="true";qt.textContent="Quote here.";');
+    s.push('  var aud=document.createElement("audio");aud.controls=true;aud.preload="metadata";aud.style.cssText="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block";');
+    s.push('  var src=document.createElement("source");src.type="audio/mpeg";aud.appendChild(src);');
+    s.push('  var upBtn=document.createElement("button");upBtn.className="upload-audio-btn";upBtn.textContent="Upload MP3";upBtn.onclick=function(){uploadAudio(upBtn);};');
+    s.push('  var pl=document.createElement("div");pl.className="clip-player";pl.appendChild(aud);pl.appendChild(upBtn);');
+    s.push('  card.appendChild(rb);card.appendChild(lbl);card.appendChild(qt);card.appendChild(pl);');
+    s.push('  btn.parentNode.insertBefore(card,btn);');
+    s.push('}');
+    s.push('function uploadAudio(btn){');
+    s.push('  var input=document.createElement("input");input.type="file";input.accept="audio/mpeg,.mp3";');
+    s.push('  input.onchange=function(){');
+    s.push('    var file=input.files[0];if(!file)return;');
+    s.push('    var reader=new FileReader();');
+    s.push('    reader.onload=function(e){');
+    s.push('      var b64=e.target.result.split(",")[1];');
+    s.push('      btn.textContent="Uploading...";');
+    s.push('      fetch("https://api.github.com/repos/"+GH_REPO+"/contents/' + clientFolder + '"+file.name,{');
+    s.push('        method:"PUT",');
+    s.push('        headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},');
+    s.push('        body:JSON.stringify({message:"Audio: "+file.name,content:b64})');
+    s.push('      }).then(function(r){return r.json();}).then(function(d){');
+    s.push('        if(d.content){btn.closest(".clip-player").querySelector("audio source").src=file.name;btn.closest(".clip-player").querySelector("audio").load();btn.textContent="Done: "+file.name;}');
+    s.push('        else{btn.textContent="Failed";}');
+    s.push('      });');
+    s.push('    };');
+    s.push('    reader.readAsDataURL(file);');
+    s.push('  };');
+    s.push('  input.click();');
+    s.push('}');
+    s.push('function enableEditMode(){document.body.classList.add("edit-mode");ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});document.getElementById("edit-fab").classList.add("hidden");document.getElementById("edit-toolbar").classList.add("visible");document.getElementById("save-btn").disabled=false;document.getElementById("save-status").textContent="Edit mode on";refreshRemoveBtns();}');
+    s.push('function disableEditMode(){document.body.classList.remove("edit-mode");ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});document.getElementById("edit-fab").classList.remove("hidden");document.getElementById("edit-toolbar").classList.remove("visible");document.getElementById("save-status").textContent="";document.getElementById("save-btn").disabled=false;refreshRemoveBtns();}');
+    s.push('function closeModal(){document.getElementById("pw-modal").classList.remove("visible");document.getElementById("pw-input").value="";document.getElementById("token-input").value="";document.getElementById("pw-error").textContent="";}');
+    s.push('async function saveToGitHub(){');
+    s.push('  var statusEl=document.getElementById("save-status"),saveBtn=document.getElementById("save-btn");');
+    s.push('  statusEl.textContent="Saving...";saveBtn.disabled=true;');
+    s.push('  try{');
+    s.push('    var sha=cachedSha;');
+    s.push('    if(!sha){var r=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json"}});if(!r.ok)throw new Error("Auth failed");sha=(await r.json()).sha;}');
+    s.push('    ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});');
+    s.push('    document.body.classList.remove("edit-mode");');
+    s.push('    document.getElementById("edit-fab").classList.remove("hidden");');
+    s.push('    document.getElementById("edit-toolbar").classList.remove("visible");');
+    s.push('    document.querySelectorAll(".remove-lang").forEach(function(el){el.style.display="none";});');
+    s.push('    var html="<!DOCTYPE html>\n"+document.documentElement.outerHTML;');
+    s.push('    document.body.classList.add("edit-mode");');
+    s.push('    document.getElementById("edit-fab").classList.add("hidden");');
+    s.push('    document.getElementById("edit-toolbar").classList.add("visible");');
+    s.push('    ES.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});');
+    s.push('    refreshRemoveBtns();');
+    s.push('    var enc=btoa(unescape(encodeURIComponent(html)));');
+    s.push('    var pr=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Live edit",content:enc,sha:sha})});');
+    s.push('    if(pr.ok){var pd=await pr.json();cachedSha=pd.content.sha;statusEl.textContent="Saved!";setTimeout(function(){disableEditMode();},1500);}');
+    s.push('    else{var err=await pr.json();statusEl.textContent="Error: "+(err.message||"Failed");saveBtn.disabled=false;}');
+    s.push('  }catch(e){statusEl.textContent="Error: "+e.message;saveBtn.disabled=false;}');
+    s.push('}');
+    s.push('document.addEventListener("DOMContentLoaded",function(){');
+    s.push('  document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(btn){btn.addEventListener("click",function(){setLang(btn.getAttribute("data-lang"));});});');
+    s.push('  setLang("en");');
+    s.push('  document.getElementById("lang-add-select").addEventListener("change",function(){if(this.value){addLanguage(this.value);this.value="";}});');
+    s.push('  document.getElementById("edit-fab").addEventListener("click",function(){document.getElementById("pw-modal").classList.add("visible");setTimeout(function(){document.getElementById("pw-input").focus();},50);});');
+    s.push('  document.getElementById("pw-submit").addEventListener("click",function(){');
+    s.push('    var pw=document.getElementById("pw-input").value;');
+    s.push('    var token=document.getElementById("token-input").value.trim().replace(/[^\x20-\x7E]/g,"");');
+    s.push('    document.getElementById("pw-error").textContent="";');
+    s.push('    if(pw!==EDIT_PASSWORD){document.getElementById("pw-error").textContent="Incorrect password.";return;}');
+    s.push('    if(!token){document.getElementById("pw-error").textContent="Please paste your GitHub token.";return;}');
+    s.push('    sessionToken=token;closeModal();enableEditMode();');
+    s.push('  });');
+    s.push('  document.getElementById("pw-cancel").addEventListener("click",closeModal);');
+    s.push('  document.getElementById("save-btn").addEventListener("click",saveToGitHub);');
+    s.push('  document.getElementById("cancel-btn").addEventListener("click",disableEditMode);');
+    s.push('});');
+    return s.join('\n');
+  }
+  parts.push('<script>' + buildClientScript(ghFile, clientFolder, langsJSON, langNamesJSON, langLabelsJSON) + '<\/script>');
   parts.push('</body>');
   parts.push('</html>');
   return parts.join('\n');
