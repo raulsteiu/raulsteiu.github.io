@@ -225,7 +225,8 @@ document.getElementById('auth-btn').addEventListener('click', function() {
   document.getElementById('auth-error').textContent = '';
   if (pw !== EDIT_PASSWORD) { document.getElementById('auth-error').textContent = 'Incorrect password.'; return; }
   if (!token) { document.getElementById('auth-error').textContent = 'Please paste your GitHub token.'; return; }
-  sessionToken = token;
+  // Strip any non-ASCII/invisible chars that could break headers
+  sessionToken = token.replace(/[^\x20-\x7E]/g, '').trim();
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('creator-screen').style.display = 'block';
 });
@@ -474,7 +475,7 @@ async function uploadPendingAudios(slug) {
     var existing = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
       headers: {'Authorization':'Bearer ' + sessionToken,'Accept':'application/vnd.github+json'}
     });
-    var body = {message: 'Upload audio: ' + filename, content: pendingAudioFiles[filename]};
+    var body = {message: 'Audio: ' + filename, content: pendingAudioFiles[filename]};
     if (existing.ok) body.sha = (await existing.json()).sha;
     await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
       method: 'PUT',
@@ -506,7 +507,7 @@ async function createStory() {
     var existingRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
       headers: {'Authorization':'Bearer ' + sessionToken,'Accept':'application/vnd.github+json'}
     });
-    var body = {message: 'Create client story: ' + data.clientName, content: encoded};
+    var body = {message: 'Story: ' + data.clientName, content: encoded};
     if (existingRes.ok) body.sha = (await existingRes.json()).sha;
 
     var pushRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
@@ -560,7 +561,7 @@ async function updateDirectory(newStory) {
     }
     var dirHtml = buildDirectoryHTML(stories);
     var encoded = btoa(unescape(encodeURIComponent(dirHtml)));
-    var body = {message: 'Update directory', content: encoded};
+    var body = {message: 'Update dir', content: encoded};
     if (existingSha) body.sha = existingSha;
     await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
       method: 'PUT',
