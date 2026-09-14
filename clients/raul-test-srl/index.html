@@ -66,22 +66,22 @@ body.edit-mode .add-clip-btn{display:block}.add-clip-btn:hover{border-color:var(
 <div class="hero">
 <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
 <div class="lang-toggle" id="lang-toggle">
-<button class="lang-btn active" data-lang="en">EN</button>
+<button class="lang-btn" data-lang="en">EN</button>
 <button class="lang-btn" data-lang="fr">FR</button>
 <button class="lang-btn remove-lang" data-remove-lang="fr" style="display: none;">×</button>
-<div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>
+<button class="lang-btn active" data-lang="de">DE</button><button class="lang-btn remove-lang" data-remove-lang="de" style="display: none;">×</button><div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>
 <option value="nl">Dutch (NL)</option>
-<option value="de">German (DE)</option>
+
 <option value="it">Italian (IT)</option>
 <option value="es">Spanish (ES)</option>
 <option value="pt">Portuguese (PT)</option>
 </select></div>
 </div></div>
 <div class="stats" id="stats-bar">
-<div class="stat"><div class="stat-n">20</div><div class="stat-l">rated rich</div></div>
+<div class="stat"><div class="stat-n">20 DEUTCH</div><div class="stat-l">rated rich</div></div>
 </div>
 <div id="lang-blocks">
-<div class="lang-block active" id="block-en">
+<div class="lang-block" id="block-en">
 <div class="hero-lang" style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:8px 40px 32px;margin-top:-1px">
 <div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">Raul the greatest</div>
 <h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">Hello Raul</h1>
@@ -135,7 +135,33 @@ body.edit-mode .add-clip-btn{display:block}.add-clip-btn:hover{border-color:var(
 </div></div>
 </div>
 </div>
+<div class="lang-block active" id="block-de">
+<div class="hero-lang" style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:8px 40px 32px;margin-top:-1px">
+<div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">Kundenbericht — Podcast Format</div>
+<h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">[DE] Hello Raul YA GENAU</h1>
+<p style="font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:8px">Hello sir</p>
 </div>
+<div class="main">
+<div class="story-body">
+<div class="story-sec">
+<div class="sec-label">[DE] hello world</div>
+<h2>[DE] test1234567878</h2>
+<p>[DE] test2 RAAAUL DE GENAU!!</p>
+</div>
+<button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
+</div>
+<div class="sidebar">
+<div class="sidebar-card"><h3>[DE] Who is Raul Test SRL?</h3><p>[DE] i am me GENAU FRA</p></div>
+<div class="sidebar-card"><h3>[DE] Applications Deployed</h3><div>
+<div class="app-tag"><span class="app-dot"></span>FPA+</div>
+</div></div>
+<div class="sidebar-card"><h3>[DE] Key Results</h3>
+</div>
+<div class="sidebar-card"><h3>[DE] Interview Participants</h3>
+<p>[DE] petreamerica GENAU FRA</p>
+</div></div>
+</div>
+</div></div>
 <div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright © 2026. May only be reproduced with Prophix's prior consent.</div>
 <button id="edit-fab" class="">✏️ Edit</button>
 <div id="edit-toolbar" class=""><span id="save-status">Saving...</span><button id="cancel-btn">Cancel</button><button id="save-btn" disabled="">💾 Save Live</button></div>
