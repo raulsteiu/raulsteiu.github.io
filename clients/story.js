@@ -1,6 +1,5 @@
-// Prophix Client Story — shared runtime v3
-// Loaded by all generated client pages via <script src="/clients/story.js">
-// Required globals (set inline before this script):
+// Prophix Client Story — shared runtime v4
+// Required globals set inline before this script loads:
 //   GH_REPO, GH_FILE, GH_CLIENT_FOLDER, EDIT_PASSWORD,
 //   activeLangs, LANG_NAMES, LANG_LABELS
 
@@ -8,8 +7,7 @@ var sessionToken = '';
 var cachedSha = '';
 var currentLang = 'en';
 
-// All selectors that become editable in edit mode
-var ES = [
+var EDITABLE = [
   '.story-sec .sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
   '.clip-quote', '.clip-label span',
   '.sidebar-card p', '.sidebar-card h3',
@@ -20,35 +18,28 @@ var ES = [
   '#participants-list strong', '#participants-list span'
 ];
 
+var LANG_FULL = {
+  fr:'French (FR)', nl:'Dutch (NL)', de:'German (DE)',
+  it:'Italian (IT)', es:'Spanish (ES)', pt:'Portuguese (PT)'
+};
+
 // ── Language toggle ───────────────────────────────────────────────────────────
 function setLang(l) {
   currentLang = l;
-  // Show/hide all data-lang elements
   document.querySelectorAll('[data-lang]').forEach(function(el) {
     el.style.display = el.getAttribute('data-lang') === l ? '' : 'none';
   });
-  // Update active button
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-lang') === l);
   });
-  // In edit mode, re-apply contenteditable to newly visible elements
-  if (document.body.classList.contains('edit-mode')) {
-    ES.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(el) {
-        el.contentEditable = 'true';
-      });
-    });
+  // Update status bar if in edit mode
+  var statusEl = document.getElementById('save-status');
+  if (statusEl && document.body.classList.contains('edit-mode')) {
+    statusEl.textContent = 'Editing: ' + l.toUpperCase();
   }
 }
 
-function refreshRemoveBtns() {
-  var inEdit = document.body.classList.contains('edit-mode');
-  document.querySelectorAll('.remove-lang').forEach(function(b) {
-    b.style.display = inEdit ? '' : 'none';
-  });
-}
-
-// ── Add language ──────────────────────────────────────────────────────────────
+// ── Add / Remove language ─────────────────────────────────────────────────────
 function addLanguage(code) {
   if (!code || activeLangs.indexOf(code) > -1) return;
   activeLangs.push(code);
@@ -56,7 +47,7 @@ function addLanguage(code) {
   var toggle = document.getElementById('lang-toggle');
   var addWrap = document.getElementById('lang-add-wrap');
 
-  // Add toggle button
+  // 1. Add toggle button
   var btn = document.createElement('button');
   btn.className = 'lang-btn';
   btn.setAttribute('data-lang', code);
@@ -64,130 +55,139 @@ function addLanguage(code) {
   btn.addEventListener('click', function() { setLang(code); });
   toggle.insertBefore(btn, addWrap);
 
-  // Add remove button (only visible in edit mode)
+  // 2. Add remove button (hidden unless in edit mode)
   var rb = document.createElement('button');
   rb.className = 'lang-btn remove-lang';
   rb.setAttribute('data-remove-lang', code);
   rb.innerHTML = '&times;';
-  rb.style.display = '';
+  rb.style.display = document.body.classList.contains('edit-mode') ? '' : 'none';
   rb.addEventListener('click', function() { removeLanguage(code); });
   toggle.insertBefore(rb, addWrap);
 
-  // Add hero tag
-  var ht = document.createElement('div');
-  ht.className = 'hero-tag';
-  ht.setAttribute('data-lang', code);
-  ht.textContent = LANG_LABELS[code] || 'Customer Story';
-  ht.style.display = 'none';
-  var hero = document.querySelector('.hero');
-  hero.insertBefore(ht, document.querySelector('.lang-toggle'));
-
-  // Clone hero h1 and hero-desc from EN
-  var enH1 = document.querySelector('h1[data-lang="en"]');
-  if (enH1) {
-    var newH1 = enH1.cloneNode(true);
-    newH1.setAttribute('data-lang', code);
-    newH1.style.display = 'none';
-    newH1.removeAttribute('contenteditable');
-    enH1.parentNode.insertBefore(newH1, enH1.nextSibling);
-  }
-  var enDesc = document.querySelector('.hero-desc[data-lang="en"]');
-  if (enDesc) {
-    var newDesc = enDesc.cloneNode(true);
-    newDesc.setAttribute('data-lang', code);
-    newDesc.style.display = 'none';
-    newDesc.removeAttribute('contenteditable');
-    enDesc.parentNode.insertBefore(newDesc, enDesc.nextSibling);
-  }
-
-  // Clone story sections from EN
-  document.querySelectorAll('.story-sec[data-lang="en"]').forEach(function(sec) {
-    var cl = sec.cloneNode(true);
-    cl.setAttribute('data-lang', code);
-    cl.style.display = 'none';
-    cl.querySelectorAll('[contenteditable]').forEach(function(el) {
-      el.removeAttribute('contenteditable');
-    });
-    sec.parentNode.insertBefore(cl, sec.nextSibling);
+  // 3. Clone all EN data-lang elements and create [code] versions
+  // Hero tag
+  _cloneForLang('.hero-tag[data-lang="en"]', code);
+  // Hero h1
+  _cloneForLang('h1[data-lang="en"]', code);
+  // Hero desc
+  _cloneForLang('.hero-desc[data-lang="en"]', code);
+  // Story sections
+  document.querySelectorAll('.story-sec[data-lang="en"]').forEach(function(el) {
+    _cloneElement(el, code);
   });
-
-  // Clone clip labels and quotes from EN
-  document.querySelectorAll('.clip-card').forEach(function(card) {
-    // Clone label span
-    var enSpan = card.querySelector('.clip-label span[data-lang="en"]');
-    if (enSpan) {
-      var newSpan = enSpan.cloneNode(true);
-      newSpan.setAttribute('data-lang', code);
-      newSpan.style.display = 'none';
-      newSpan.removeAttribute('contenteditable');
-      enSpan.parentNode.insertBefore(newSpan, enSpan.nextSibling);
-    }
-    // Clone quote
-    var enQuote = card.querySelector('.clip-quote[data-lang="en"]');
-    if (enQuote) {
-      var newQuote = enQuote.cloneNode(true);
-      newQuote.setAttribute('data-lang', code);
-      newQuote.style.display = 'none';
-      newQuote.removeAttribute('contenteditable');
-      enQuote.parentNode.insertBefore(newQuote, enQuote.nextSibling);
-    }
+  // Clip labels
+  document.querySelectorAll('.clip-label span[data-lang="en"]').forEach(function(el) {
+    _cloneElement(el, code);
   });
-
-  // Clone sidebar elements from EN
-  document.querySelectorAll('[data-lang="en"]').forEach(function(el) {
-    // Only clone sidebar-card children (p, h3) not already handled
-    if (el.closest('.sidebar-card') && (el.tagName === 'P' || el.tagName === 'H3')) {
-      var existing = el.parentNode.querySelector('[data-lang="' + code + '"]');
-      if (!existing) {
-        var cl = el.cloneNode(true);
-        cl.setAttribute('data-lang', code);
-        cl.style.display = 'none';
-        cl.removeAttribute('contenteditable');
-        el.parentNode.insertBefore(cl, el.nextSibling);
-      }
-    }
+  // Clip quotes
+  document.querySelectorAll('.clip-quote[data-lang="en"]').forEach(function(el) {
+    _cloneElement(el, code);
   });
-
-  // Clone result items from EN
+  // Sidebar h3 and p
+  document.querySelectorAll('.sidebar-card h3[data-lang="en"], .sidebar-card p[data-lang="en"]').forEach(function(el) {
+    _cloneElement(el, code);
+  });
+  // Result items
   document.querySelectorAll('.result-item[data-lang="en"]').forEach(function(el) {
-    var cl = el.cloneNode(true);
-    cl.setAttribute('data-lang', code);
-    cl.style.display = 'none';
-    cl.removeAttribute('contenteditable');
-    el.parentNode.insertBefore(cl, el.nextSibling);
+    _cloneElement(el, code);
   });
 
-  // Remove from dropdown
+  // 4. Remove from dropdown
   var opt = document.querySelector('#lang-add-select option[value="' + code + '"]');
   if (opt) opt.remove();
 
-  refreshRemoveBtns();
-
-  // If in edit mode, make new elements editable and switch to new lang
+  // 5. Switch to new language and make editable if in edit mode
+  setLang(code);
   if (document.body.classList.contains('edit-mode')) {
-    setLang(code);
-    ES.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(el) {
-        el.contentEditable = 'true';
-      });
-    });
+    _makeEditable();
   }
 }
 
+function _cloneForLang(selector, code) {
+  var el = document.querySelector(selector);
+  if (el) _cloneElement(el, code);
+}
+
+function _cloneElement(el, code) {
+  // Don't clone if one already exists
+  if (el.parentNode.querySelector('[data-lang="' + code + '"]')) return;
+  var cl = el.cloneNode(true);
+  cl.setAttribute('data-lang', code);
+  cl.style.display = 'none';
+  cl.removeAttribute('contenteditable');
+  el.parentNode.insertBefore(cl, el.nextSibling);
+}
+
 function removeLanguage(code) {
-  if (!confirm('Remove ' + LANG_NAMES[code] + ' language? All content for this language will be deleted.')) return;
+  if (code === 'en') return; // never remove EN
+  if (!confirm('Remove ' + LANG_NAMES[code] + '? All content for this language will be deleted.')) return;
+
   activeLangs = activeLangs.filter(function(l) { return l !== code; });
+
+  // Remove all elements for this language
   document.querySelectorAll('[data-lang="' + code + '"]').forEach(function(el) { el.remove(); });
   document.querySelectorAll('[data-remove-lang="' + code + '"]').forEach(function(el) { el.remove(); });
+
   // Re-add to dropdown
   var sel = document.getElementById('lang-add-select');
-  if (sel) {
+  if (sel && LANG_FULL[code]) {
     var opt = document.createElement('option');
     opt.value = code;
-    opt.textContent = LANG_NAMES[code];
+    opt.textContent = LANG_FULL[code];
     sel.appendChild(opt);
   }
+
   if (currentLang === code) setLang('en');
+}
+
+// ── Edit mode ─────────────────────────────────────────────────────────────────
+function _makeEditable() {
+  EDITABLE.forEach(function(sel) {
+    document.querySelectorAll(sel).forEach(function(el) {
+      el.contentEditable = 'true';
+    });
+  });
+}
+
+function _makeReadonly() {
+  EDITABLE.forEach(function(sel) {
+    document.querySelectorAll(sel).forEach(function(el) {
+      el.removeAttribute('contenteditable');
+    });
+  });
+}
+
+function _showRemoveBtns(show) {
+  document.querySelectorAll('.remove-lang').forEach(function(b) {
+    b.style.display = show ? '' : 'none';
+  });
+}
+
+function enableEditMode() {
+  document.body.classList.add('edit-mode');
+  _makeEditable();
+  _showRemoveBtns(true);
+  document.getElementById('edit-fab').classList.add('hidden');
+  document.getElementById('edit-toolbar').classList.add('visible');
+  document.getElementById('save-btn').disabled = false;
+  document.getElementById('save-status').textContent = 'Editing: ' + currentLang.toUpperCase();
+}
+
+function disableEditMode() {
+  document.body.classList.remove('edit-mode');
+  _makeReadonly();
+  _showRemoveBtns(false);
+  document.getElementById('edit-fab').classList.remove('hidden');
+  document.getElementById('edit-toolbar').classList.remove('visible');
+  document.getElementById('save-status').textContent = '';
+  document.getElementById('save-btn').disabled = false;
+}
+
+function closeModal() {
+  document.getElementById('pw-modal').classList.remove('visible');
+  document.getElementById('pw-input').value = '';
+  document.getElementById('token-input').value = '';
+  document.getElementById('pw-error').textContent = '';
 }
 
 // ── Audio clips ───────────────────────────────────────────────────────────────
@@ -195,23 +195,25 @@ function addClipInline(btn) {
   var card = document.createElement('div');
   card.className = 'clip-card';
 
+  // Remove button
   var rb = document.createElement('button');
   rb.className = 'clip-remove-btn';
   rb.innerHTML = '&times;';
   rb.addEventListener('click', function() { card.remove(); });
 
+  // SVG icon
   var svgNS = 'http://www.w3.org/2000/svg';
   var svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('width','14');svg.setAttribute('height','14');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','#EF363D');
-  var path = document.createElementNS(svgNS,'path');
+  svg.setAttribute('width','14'); svg.setAttribute('height','14');
+  svg.setAttribute('viewBox','0 0 24 24'); svg.setAttribute('fill','#EF363D');
+  var path = document.createElementNS(svgNS, 'path');
   path.setAttribute('d','M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z');
   svg.appendChild(path);
 
+  // Label with one span per active lang
   var lbl = document.createElement('div');
   lbl.className = 'clip-label';
   lbl.appendChild(svg);
-
-  // Create span for each active language
   activeLangs.forEach(function(l) {
     var sp = document.createElement('span');
     sp.setAttribute('data-lang', l);
@@ -221,8 +223,7 @@ function addClipInline(btn) {
     lbl.appendChild(sp);
   });
 
-  // Create quote for each active language
-  var quoteContainer = document.createElement('div');
+  // Quote div per active lang
   activeLangs.forEach(function(l) {
     var qt = document.createElement('div');
     qt.className = 'clip-quote';
@@ -230,51 +231,44 @@ function addClipInline(btn) {
     qt.contentEditable = 'true';
     qt.textContent = '"Quote here."';
     qt.style.display = l === currentLang ? '' : 'none';
-    quoteContainer.appendChild(qt);
+    card.appendChild(qt);  // will be after lbl once we append lbl
   });
 
+  // Audio player
   var aud = document.createElement('audio');
-  aud.controls = true;
-  aud.preload = 'metadata';
+  aud.controls = true; aud.preload = 'metadata';
   aud.style.cssText = 'width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block';
-  var src = document.createElement('source');
-  src.type = 'audio/mpeg';
+  var src = document.createElement('source'); src.type = 'audio/mpeg';
   aud.appendChild(src);
-
   var upBtn = document.createElement('button');
   upBtn.className = 'upload-audio-btn';
   upBtn.textContent = 'Upload MP3';
-  upBtn.style.display = '';
   upBtn.addEventListener('click', function() { uploadAudio(upBtn); });
-
   var pl = document.createElement('div');
   pl.className = 'clip-player';
-  pl.appendChild(aud);
-  pl.appendChild(upBtn);
+  pl.appendChild(aud); pl.appendChild(upBtn);
 
-  card.appendChild(rb);
-  card.appendChild(lbl);
-  card.appendChild(quoteContainer);
+  // Assemble: rb, lbl, quotes (already appended above), pl
+  card.insertBefore(rb, card.firstChild);
+  card.insertBefore(lbl, card.firstChild.nextSibling);
   card.appendChild(pl);
   btn.parentNode.insertBefore(card, btn);
 }
 
 function uploadAudio(btn) {
   var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'audio/mpeg,.mp3';
+  input.type = 'file'; input.accept = 'audio/mpeg,.mp3';
   input.onchange = function() {
-    var file = input.files[0];
-    if (!file) return;
+    var file = input.files[0]; if (!file) return;
     var reader = new FileReader();
     reader.onload = function(e) {
       var b64 = e.target.result.split(',')[1];
       btn.textContent = 'Uploading...';
       fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_CLIENT_FOLDER + file.name, {
         method: 'PUT',
-        headers: { 'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Audio: ' + file.name, content: b64 })
-      }).then(function(r) { return r.json(); }).then(function(d) {
+        headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+        body: JSON.stringify({message:'Audio: '+file.name, content:b64})
+      }).then(function(r){return r.json();}).then(function(d){
         if (d.content) {
           btn.closest('.clip-player').querySelector('audio source').src = file.name;
           btn.closest('.clip-player').querySelector('audio').load();
@@ -285,41 +279,6 @@ function uploadAudio(btn) {
     reader.readAsDataURL(file);
   };
   input.click();
-}
-
-// ── Edit mode ─────────────────────────────────────────────────────────────────
-function enableEditMode() {
-  document.body.classList.add('edit-mode');
-  // Make all visible elements editable
-  ES.forEach(function(sel) {
-    document.querySelectorAll(sel).forEach(function(el) {
-      el.contentEditable = 'true';
-    });
-  });
-  document.getElementById('edit-fab').classList.add('hidden');
-  document.getElementById('edit-toolbar').classList.add('visible');
-  document.getElementById('save-btn').disabled = false;
-  document.getElementById('save-status').textContent = 'Edit mode — lang: ' + currentLang.toUpperCase();
-  refreshRemoveBtns();
-}
-
-function disableEditMode() {
-  document.body.classList.remove('edit-mode');
-  ES.forEach(function(sel) {
-    document.querySelectorAll(sel).forEach(function(el) { el.removeAttribute('contenteditable'); });
-  });
-  document.getElementById('edit-fab').classList.remove('hidden');
-  document.getElementById('edit-toolbar').classList.remove('visible');
-  document.getElementById('save-status').textContent = '';
-  document.getElementById('save-btn').disabled = false;
-  refreshRemoveBtns();
-}
-
-function closeModal() {
-  document.getElementById('pw-modal').classList.remove('visible');
-  document.getElementById('pw-input').value = '';
-  document.getElementById('token-input').value = '';
-  document.getElementById('pw-error').textContent = '';
 }
 
 // ── Save to GitHub ────────────────────────────────────────────────────────────
@@ -334,37 +293,41 @@ async function saveToGitHub() {
     var sha = cachedSha;
     if (!sha) {
       var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE, {
-        headers: { 'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json' }
+        headers: {'Authorization':'Bearer '+sessionToken, 'Accept':'application/vnd.github+json'}
       });
       if (!r.ok) throw new Error('Auth failed — check your token');
       sha = (await r.json()).sha;
     }
 
-    // Clean DOM before capture
-    ES.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(el) { el.removeAttribute('contenteditable'); });
-    });
+    // Prepare DOM for clean capture:
+    // - remove contenteditable attrs
+    // - hide toolbar/fab
+    // - hide remove-lang buttons
+    // NOTE: do NOT call disableEditMode() — that fires side effects
+    // Do it manually and restore manually
+    _makeReadonly();
+    _showRemoveBtns(false);
     document.body.classList.remove('edit-mode');
     document.getElementById('edit-fab').classList.remove('hidden');
     document.getElementById('edit-toolbar').classList.remove('visible');
-    document.querySelectorAll('.remove-lang').forEach(function(el) { el.style.display = 'none'; });
 
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
-    // Restore edit mode
+    // Restore edit state
     document.body.classList.add('edit-mode');
     document.getElementById('edit-fab').classList.add('hidden');
     document.getElementById('edit-toolbar').classList.add('visible');
-    ES.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(el) { el.contentEditable = 'true'; });
-    });
-    refreshRemoveBtns();
+    _makeEditable();
+    _showRemoveBtns(true);
+    statusEl.textContent = 'Saving...';
+    saveBtn.disabled = true;
 
+    // Push to GitHub
     var enc = btoa(unescape(encodeURIComponent(html)));
     var pr = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE, {
       method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Live edit', content: enc, sha: sha })
+      headers: {'Authorization':'Bearer '+sessionToken, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json'},
+      body: JSON.stringify({message: 'Live edit', content: enc, sha: sha})
     });
 
     if (pr.ok) {
@@ -374,8 +337,12 @@ async function saveToGitHub() {
       setTimeout(function() { disableEditMode(); }, 1500);
     } else {
       var err = await pr.json();
-      if (err.message && err.message.indexOf('conflict') > -1) { cachedSha = ''; statusEl.textContent = 'Conflict — try again'; }
-      else statusEl.textContent = 'Error: ' + (err.message || 'Failed');
+      if (err.message && err.message.indexOf('conflict') > -1) {
+        cachedSha = '';
+        statusEl.textContent = 'Conflict — try again';
+      } else {
+        statusEl.textContent = 'Error: ' + (err.message || 'Failed');
+      }
       saveBtn.disabled = false;
     }
   } catch(e) {
@@ -387,18 +354,18 @@ async function saveToGitHub() {
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
 
-  // Wire up lang buttons
+  // Wire lang buttons
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
     btn.addEventListener('click', function() { setLang(btn.getAttribute('data-lang')); });
   });
 
-  // Wire up remove lang buttons (for langs set at creation time)
+  // Wire remove-lang buttons (for langs created at build time)
   document.querySelectorAll('.remove-lang').forEach(function(btn) {
     var code = btn.getAttribute('data-remove-lang');
     btn.addEventListener('click', function() { removeLanguage(code); });
   });
 
-  // Language add dropdown
+  // Lang add dropdown
   var langSel = document.getElementById('lang-add-select');
   if (langSel) {
     langSel.addEventListener('change', function() {
@@ -406,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Set initial language
+  // Start on EN
   setLang('en');
 
   // Edit FAB
@@ -415,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() { document.getElementById('pw-input').focus(); }, 50);
   });
 
-  // Auth submit
+  // Auth
   document.getElementById('pw-submit').addEventListener('click', function() {
     var pw = document.getElementById('pw-input').value;
     var token = document.getElementById('token-input').value.trim().replace(/[^\x20-\x7E]/g, '');
