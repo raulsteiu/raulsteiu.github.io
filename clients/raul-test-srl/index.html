@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Raul Test SRL — Customer Story | Prophix</title>
@@ -8,14 +9,12 @@
 *{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font);background:var(--light);color:#222}
 .hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:56px 40px 48px}
 .logo-pill{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;gap:8px;margin-bottom:22px}
-.hero-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px}
-.hero h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff}
-.hero-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:26px}
 .lang-toggle{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;align-items:center}
 .lang-btn{padding:7px 20px;border-radius:20px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s}
 .lang-btn.active{background:var(--red);border-color:var(--red);color:#fff}
 .lang-btn:hover:not(.active){border-color:rgba(255,255,255,.7);color:#fff}
-.lang-btn.remove-lang{padding:4px 10px;font-size:11px;border-color:rgba(255,100,100,.5);color:rgba(255,100,100,.8);margin-left:-6px;display:none}
+.lang-btn.remove-lang{padding:4px 10px;font-size:11px;border-color:rgba(255,100,100,.5);color:rgba(255,100,100,.8);margin-left:-4px;display:none}
+.lang-block{display:none}.lang-block.active{display:block}
 .stats{background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:center;flex-wrap:wrap}
 .stat{padding:22px 36px;text-align:center;border-right:1px solid var(--border);flex:1;min-width:150px}.stat:last-child{border-right:none}
 .stat-n{font-size:28px;font-weight:900;color:var(--red);line-height:1;margin-bottom:5px}
@@ -35,17 +34,16 @@
 .app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px;margin-right:4px}
 .app-dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
 .result-item{font-size:13.5px;line-height:1.55;color:#333;margin-bottom:8px;padding-left:16px;position:relative}
-.result-item::before{content:"\2714";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}
+.result-item::before{content:"✔";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}
 .page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:22px 20px;font-size:12px;line-height:1.7}
 .page-footer strong{color:rgba(255,255,255,.8)}
 #edit-fab{position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,0.25)}
 #edit-fab:hover{background:var(--red)}#edit-fab.hidden{display:none!important}
 #edit-toolbar{display:none;position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);border-radius:50px;padding:10px 18px;gap:10px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.25)}
 #edit-toolbar.visible{display:flex}
-#save-btn{background:var(--red);color:#fff;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
-#save-btn:disabled{opacity:0.5;cursor:not-allowed}
+#save-btn{background:var(--red);color:#fff;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}#save-btn:disabled{opacity:0.5;cursor:not-allowed}
 #cancel-btn{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
-#save-status{font-size:12px;color:rgba(255,255,255,0.7);min-width:80px;text-align:center}
+#save-status{font-size:12px;color:rgba(255,255,255,0.7);min-width:100px;text-align:center}
 body.edit-mode [contenteditable="true"]{outline:2px dashed rgba(239,54,61,0.5);border-radius:3px;padding:2px 4px;cursor:text;min-height:1em}
 body.edit-mode [contenteditable="true"]:focus{outline:2px solid var(--red);background:rgba(239,54,61,0.04)}
 #lang-add-wrap{display:none;align-items:center;gap:6px}body.edit-mode #lang-add-wrap{display:flex}
@@ -57,8 +55,7 @@ body.edit-mode .upload-audio-btn{display:inline-block}
 body.edit-mode .clip-remove-btn{display:block}
 .add-clip-btn{display:none;width:100%;padding:10px;border:2px dashed var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font);margin:16px 0;text-align:center}
 body.edit-mode .add-clip-btn{display:block}.add-clip-btn:hover{border-color:var(--red);color:var(--red)}
-#pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}
-#pw-modal.visible{display:flex}
+#pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}#pw-modal.visible{display:flex}
 #pw-box{background:#fff;border-radius:12px;padding:32px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
 #pw-box h3{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}
 .pw-field{margin-bottom:14px}.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
@@ -66,84 +63,93 @@ body.edit-mode .add-clip-btn{display:block}.add-clip-btn:hover{border-color:var(
 #pw-error{font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px}
 #pw-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:4px}
 #pw-cancel{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:8px}
-</style></head><body class="">
+</style></head><body>
 <div class="hero">
 <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
-<div class="hero-tag" data-lang="en" style="display: none;">Golden Boy of Prophix</div>
-<div class="hero-tag" data-lang="fr" style="display:none">Témoignage Client — Format Podcast</div>
-<div class="hero-tag" data-lang="nl" style="display:none">Klantverhaal — Podcast Formaat</div>
-<h1 data-lang="en" style="display: none;">Prophix</h1>
-<h1 data-lang="fr" style="display:none">[FR] Prophix</h1>
-<h1 data-lang="nl" style="display:none">[NL] Prophix</h1>
-<p class="hero-desc" data-lang="en" style="display: none;">Hello Sir</p>
-<p class="hero-desc" data-lang="fr" style="display:none">[FR] Hello Sir</p>
-<p class="hero-desc" data-lang="nl" style="display:none">[NL] Hello Sir</p>
 <div class="lang-toggle" id="lang-toggle">
-<button class="lang-btn" data-lang="en" style="display: none;">EN</button>
-<button class="lang-btn" data-lang="fr" style="display: none;">FR</button>
-<button class="lang-btn remove-lang" data-remove-lang="fr" style="display: none;">×</button>
-<button class="lang-btn" data-lang="nl" style="display: none;">NL</button>
-<button class="lang-btn remove-lang" data-remove-lang="nl" style="display: none;">×</button>
-<button class="lang-btn active" data-lang="de">DE</button><button class="lang-btn remove-lang" data-remove-lang="de" style="display: none;">×</button><div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>
-
+<button class="lang-btn active" data-lang="en">EN</button>
+<button class="lang-btn" data-lang="fr">FR</button>
+<button class="lang-btn remove-lang" data-remove-lang="fr">&times;</button>
+<div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>
+<option value="nl">Dutch (NL)</option>
+<option value="de">German (DE)</option>
 <option value="it">Italian (IT)</option>
 <option value="es">Spanish (ES)</option>
 <option value="pt">Portuguese (PT)</option>
-</select></div></div></div>
-<div class="stats">
-<div class="stat"><div class="stat-n">20</div><div class="stat-l">km run</div></div>
+</select></div>
+</div></div>
+<div class="stats" id="stats-bar">
+<div class="stat"><div class="stat-n">20</div><div class="stat-l">rated rich</div></div>
 </div>
-<div class="main"><div class="story-body" id="story-body">
-<div class="story-sec" data-lang="en" style="display: none;">
-<div class="sec-label">Cool Language</div>
-<h2>Language</h2>
-<p>one language</p>
-</div><div class="story-sec" data-lang="de" style="">
-<div class="sec-label">Cool Language</div>
-<h2>Language</h2>
-<p>one language</p>
+<div id="lang-blocks">
+<div class="lang-block active" id="block-en">
+<div class="hero-lang" style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:8px 40px 32px;margin-top:-1px">
+<div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">Raul the greatest</div>
+<h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">Hello Raul</h1>
+<p style="font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:8px">Hello sir</p>
 </div>
-<div class="story-sec" data-lang="fr" style="display:none">
-<div class="sec-label">[FR] Cool Language</div>
-<h2>[FR] Language</h2>
-<p>[FR] one language</p>
-</div>
-<div class="story-sec" data-lang="nl" style="display:none">
-<div class="sec-label">[NL] Cool Language</div>
-<h2>[NL] Language</h2>
-<p>[NL] one language</p>
+<div class="main">
+<div class="story-body">
+<div class="story-sec">
+<div class="sec-label">hello world</div>
+<h2>test1</h2>
+<p>test2</p>
 </div>
 <button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
 </div>
 <div class="sidebar">
-<div class="sidebar-card">
-<h3 data-lang="en" style="display: none;">Who is Raul Test SRL?</h3><h3 data-lang="de" style="">Who is Raul Test SRL?</h3>
-<p data-lang="en" style="display: none;">Yes</p>
-<h3 data-lang="fr" style="display:none">Who is Raul Test SRL?</h3>
-<p data-lang="fr" style="display:none">[FR] Yes</p>
-<h3 data-lang="nl" style="display:none">Who is Raul Test SRL?</h3>
-<p data-lang="nl" style="display:none">[NL] Yes</p>
-</div>
-<div class="sidebar-card"><h3 data-lang="en" style="display: none;">Applications Deployed</h3><h3 data-lang="de" style="">Applications Deployed</h3><div id="apps-display">
-<div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div>
+<div class="sidebar-card"><h3>Who is Raul Test SRL?</h3><p>i am me</p></div>
+<div class="sidebar-card"><h3>Applications Deployed</h3><div>
 <div class="app-tag"><span class="app-dot"></span>FPA+</div>
 </div></div>
-<div class="sidebar-card"><h3 data-lang="en" style="display: none;">Key Results Snapshot</h3><h3 data-lang="de" style="">Key Results Snapshot</h3><div id="results-list">
+<div class="sidebar-card"><h3>Key Results</h3>
+</div>
+<div class="sidebar-card"><h3>Interview Participants</h3>
+<p><strong>petre</strong><br><span style="font-size:13px;color:#666">america</span></p>
 </div></div>
-<div class="sidebar-card"><h3 data-lang="en" style="display: none;">Interview Participants</h3><h3 data-lang="de" style="">Interview Participants</h3><div id="participants-list">
-</div></div></div></div>
-<div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright © 2026. May only be reproduced with Prophix's prior consent.</div>
-<button id="edit-fab" class="">✏️ Edit</button>
-<div id="edit-toolbar" class=""><span id="save-status">Saving...</span><button id="cancel-btn">Cancel</button><button id="save-btn" disabled="">💾 Save Live</button></div>
-<div id="pw-modal" class=""><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
+</div>
+</div>
+<div class="lang-block" id="block-fr">
+<div class="hero-lang" style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:8px 40px 32px;margin-top:-1px">
+<div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">Témoignage Client — Format Podcast</div>
+<h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">[FR] Hello Raul</h1>
+<p style="font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:8px">[FR] Hello sir</p>
+</div>
+<div class="main">
+<div class="story-body">
+<div class="story-sec">
+<div class="sec-label">[FR] hello world</div>
+<h2>[FR] test1</h2>
+<p>[FR] test2</p>
+</div>
+<button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
+</div>
+<div class="sidebar">
+<div class="sidebar-card"><h3>Who is Raul Test SRL?</h3><p>[FR] i am me</p></div>
+<div class="sidebar-card"><h3>Applications Deployed</h3><div>
+<div class="app-tag"><span class="app-dot"></span>FPA+</div>
+</div></div>
+<div class="sidebar-card"><h3>Key Results</h3>
+</div>
+<div class="sidebar-card"><h3>Interview Participants</h3>
+<p><strong>petre</strong><br><span style="font-size:13px;color:#666">america</span></p>
+</div></div>
+</div>
+</div>
+</div>
+<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix&#x27;s prior consent.</div>
+<button id="edit-fab">&#x270F;&#xFE0F; Edit</button>
+<div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>
+<div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
 <script>
 var GH_REPO = "raulsteiu/raulsteiu.github.io";
 var GH_FILE = "clients/raul-test-srl/index.html";
 var GH_CLIENT_FOLDER = "clients/raul-test-srl/";
 var EDIT_PASSWORD = "prophix2026";
-var activeLangs = ["en","fr","nl"];
+var activeLangs = ["en","fr"];
 var LANG_NAMES = {"en":"EN","fr":"FR","nl":"NL","de":"DE","it":"IT","es":"ES","pt":"PT"};
 var LANG_LABELS = {"en":"Customer Story — Podcast Format","fr":"Témoignage Client — Format Podcast","nl":"Klantverhaal — Podcast Formaat","de":"Kundenbericht — Podcast Format","it":"Storia del Cliente — Formato Podcast","es":"Historia del Cliente — Formato Podcast","pt":"História do Cliente — Formato Podcast"};
+var LANG_FULL_NAMES = {"fr":"French (FR)","nl":"Dutch (NL)","de":"German (DE)","it":"Italian (IT)","es":"Spanish (ES)","pt":"Portuguese (PT)"};
 </script>
 <script src="/clients/story.js"></script>
 </body></html>
