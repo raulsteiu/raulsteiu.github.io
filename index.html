@@ -65,8 +65,8 @@ body.fr .q-en{display:none}body.fr .q-fr{display:block}
   <p class="hero-desc en">Listen to Quentin, Group Consolidation Manager at Eaglestone, share how Prophix Financial Consolidation and the Continuous Success Package helped him restructure a complex inherited setup, integrate France into the group consolidation, and build real-time visibility across three markets.</p>
   <p class="hero-desc fr">Écoutez Quentin, Group Consolidation Manager chez Eaglestone, partager comment la consolidation financière Prophix et le Continuous Success Package l'ont aidé à restructurer une configuration héritée complexe, intégrer la France dans la consolidation groupe, et construire une visibilité en temps réel sur trois marchés.</p>
   <div class="lang-toggle">
-    <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" data-lang="fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="fr">FR</button>
   </div>
 </div>
 <div class="stats">
@@ -141,6 +141,17 @@ body.fr .q-en{display:none}body.fr .q-fr{display:block}
 </div>
 <div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright &copy; 2026. May only be reproduced with Prophix's prior consent.<br><span class="en-i">Audio extracts from the original customer interview conducted July 1, 2026. Used with permission.</span><span class="fr-i">Les extraits audio sont issus de l'interview client originale menée le 1er juillet 2026. Utilisés avec autorisation.</span></div>
 <script>
-function setLang(l){document.body.className=l==='fr'?'fr':'';document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===l)});}
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.lang-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var lang = btn.getAttribute('data-lang');
+      document.body.className = lang === 'fr' ? 'fr' : '';
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+      });
+    });
+  });
+});
 </script>
-</body></html>
+</body>
+</html>
