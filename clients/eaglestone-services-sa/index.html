@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eaglestone Services SA — Customer Story | Prophix</title>
@@ -63,23 +62,23 @@ body.edit-mode .add-clip-btn{display:block}.add-clip-btn:hover{border-color:var(
 #pw-error{font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px}
 #pw-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:4px}
 #pw-cancel{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:8px}
-</style></head><body>
+</style></head><body class="">
 <div class="hero">
 <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
 <div class="lang-toggle" id="lang-toggle">
-<button class="lang-btn active" data-lang="en">EN</button>
+<button class="lang-btn" data-lang="en">EN</button>
 <button class="lang-btn" data-lang="fr">FR</button>
-<button class="lang-btn remove-lang" data-remove-lang="fr">&times;</button>
-<div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>
+<button class="lang-btn remove-lang" data-remove-lang="fr" style="display: none;">×</button>
+<button class="lang-btn active" data-lang="de">DE</button><button class="lang-btn remove-lang" data-remove-lang="de" style="display: none;">×</button><div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option>
 <option value="nl">Dutch (NL)</option>
-<option value="de">German (DE)</option>
+
 <option value="it">Italian (IT)</option>
 <option value="es">Spanish (ES)</option>
 <option value="pt">Portuguese (PT)</option>
 </select></div>
 </div></div>
 <div id="lang-blocks">
-<div class="lang-block active" id="block-en">
+<div class="lang-block" id="block-en">
 <div class="hero-lang" style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:8px 40px 32px;margin-top:-1px">
 <div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">Customer Story — Podcast Format</div>
 <h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">How Eaglestone Services SA transformed financial consolidation with Prophix</h1>
@@ -110,9 +109,9 @@ Full integration of France — local figures, console adjustments, and intercomp
 Dual reporting support (Luxembourgian statutory and IFRS) with segment-level consolidation, analytical dimensions, and full traceability of adjustments.</p>
 </div>
 <div class="clip-card">
-<div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>Clip 1 — More transparency, faster information (09:02)</div>
-<div class="clip-quote">&quot;The information is much more transparent — especially since France is now directly integrated into the system. I'm much faster at getting the information out.&quot;</div>
-<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip1_transparency.mp3" type="audio/mpeg"></audio>
+<div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg>Clip 1 — More transparency, faster information (09:02)</div>
+<div class="clip-quote">"The information is much more transparent — especially since France is now directly integrated into the system. I'm much faster at getting the information out."</div>
+<div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip1_transparency.mp3" type="audio/mpeg"></audio>
 <button class="upload-audio-btn" onclick="uploadAudio(this)">Upload MP3</button></div>
 </div>
 <button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
@@ -165,9 +164,9 @@ Full integration of France — local figures, console adjustments, and intercomp
 Dual reporting support (Luxembourgian statutory and IFRS) with segment-level consolidation, analytical dimensions, and full traceability of adjustments.</p>
 </div>
 <div class="clip-card">
-<div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>[FR] Clip 1 — More transparency, faster information (09:02)</div>
-<div class="clip-quote">[FR] &quot;The information is much more transparent — especially since France is now directly integrated into the system. I'm much faster at getting the information out.&quot;</div>
-<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip1_transparency.mp3" type="audio/mpeg"></audio>
+<div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg>[FR] Clip 1 — More transparency, faster information (09:02)</div>
+<div class="clip-quote">[FR] "The information is much more transparent — especially since France is now directly integrated into the system. I'm much faster at getting the information out."</div>
+<div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip1_transparency.mp3" type="audio/mpeg"></audio>
 <button class="upload-audio-btn" onclick="uploadAudio(this)">Upload MP3</button></div>
 </div>
 <button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
@@ -189,11 +188,65 @@ Dual reporting support (Luxembourgian statutory and IFRS) with segment-level con
 </div></div>
 </div>
 </div>
+<div class="lang-block active" id="block-de">
+<div class="hero-lang" style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:8px 40px 32px;margin-top:-1px">
+<div class="hero-tag" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px">Kundenbericht — Podcast Format</div>
+<h1 style="font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px;color:#fff">[DE] How Eaglestone Services SA transformed financial consolidation with Prophix</h1>
+<p style="font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:8px">Listen to Quentin, Group Consolidation Manager at Eaglestone, share how Prophix Financial Consolidation and the Continuous Success Package helped him restructure a complex inherited setup, integrate France into the group consolidation, and build real-time visibility across three markets.</p>
 </div>
-<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix&#x27;s prior consent.<br><span id="footer-interview-note">Audio extracts from the original customer interview. Used with permission.</span></div>
-<button id="edit-fab">&#x270F;&#xFE0F; Edit</button>
-<div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>
-<div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
+<div class="stats">
+<div class="stat"><div class="stat-n">[DE] ~1 wk</div><div class="stat-l">[DE] Closing cycle saved per period</div></div>
+<div class="stat"><div class="stat-n">[DE] 9/10</div><div class="stat-l">[DE] NPS — already referring peers</div></div>
+<div class="stat"><div class="stat-n">[DE] 3</div><div class="stat-l">[DE] Markets consolidated in Prophix (BE, FR, LU)</div></div>
+<div class="stat"><div class="stat-n">[DE] 2×</div><div class="stat-l">[DE] Reporting frameworks: LuxGAAP + IFRS</div></div>
+</div>
+<div class="main">
+<div class="story-body">
+<div class="story-sec">
+<div class="sec-label">[DE] Business Challenges</div>
+<h2>[DE] A complex, inherited setup across three decentralized markets</h2>
+<p>[DE] When Quentin joined Eaglestone as Group Consolidation Manager in July 2025, he inherited a Prophix environment configured by a predecessor without formal consolidation training. The structure was built bottom-up rather than top-down, sub-consolidations were not linked to the group consolidation, and France ran its own consolidation in SAP BFC, sending only pre-aggregated contributions to the group level.
+
+This created real visibility problems. Quentin had no access to the underlying intercompany eliminations, local data, or console adjustments for France. When questions arose from management or from IFRS-reporting shareholders, he had to go back to France for every detail. Deadlines were regularly missed. The group operates across Belgium, France, and Luxembourg with differing accounting systems and a dual reporting requirement — local Luxembourgian standards alongside IFRS.</p>
+</div>
+<div class="story-sec">
+<div class="sec-label">[DE] Why Prophix</div>
+<h2>[DE] The right platform to restructure and scale the consolidation</h2>
+<p>[DE] Prophix Financial Consolidation was already deployed at Eaglestone when Quentin arrived. What changed was how it was used. Through the Continuous Success Package, Quentin worked alongside a Prophix consultant to audit the existing setup, identify structural weaknesses, and rebuild the consolidation architecture from scratch — top-down, with all sub-consolidations linked to the group level in real time.
+
+A platform for top-down multi-country consolidation with real-time visibility across all entity and subgroup levels simultaneously.
+Full integration of France — local figures, console adjustments, and intercompany eliminations — replacing pre-aggregated SAP BFC contributions with entity-level detail.
+Dual reporting support (Luxembourgian statutory and IFRS) with segment-level consolidation, analytical dimensions, and full traceability of adjustments.</p>
+</div>
+<div class="clip-card">
+<div class="clip-label">[DE] Clip 1 — More transparency, faster information (09:02)</div>
+<div class="clip-quote">[DE] "The information is much more transparent — especially since France is now directly integrated into the system. I'm much faster at getting the information out."</div>
+<div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip1_transparency.mp3" type="audio/mpeg"></audio>
+<button class="upload-audio-btn" onclick="uploadAudio(this)">Upload MP3</button></div>
+</div>
+<button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
+</div>
+<div class="sidebar">
+<div class="sidebar-card"><h3>[DE] Who is Eaglestone Services SA?</h3><p>[DE] Eaglestone is a real estate promotion and development group headquartered in Luxembourg, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.</p></div>
+<div class="sidebar-card"><h3>[DE] Applications Deployed</h3><div>
+<div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div>
+</div></div>
+<div class="sidebar-card"><h3>[DE] Key Results</h3>
+<div class="result-item">[DE] Closing cycle reduced by approximately one week per period after restructuring.</div>
+<div class="result-item">[DE] France fully migrated from SAP BFC, delivering entity-level detail and correct intercompany eliminations.</div>
+<div class="result-item">[DE] Team shifted focus from maintaining consolidation to analysis and strategic reconciliation.</div>
+</div>
+<div class="sidebar-card"><h3>[DE] Interview Participants</h3>
+<p>[DE] Quentin FalisseGroup Consolidation Manager, Eaglestone</p>
+<p>[DE] Yassine FennicheCustomer Success Manager, Prophix</p>
+<p>[DE] Alexandre AzaarProduct Adoption Consultant, Prophix</p>
+</div></div>
+</div>
+</div></div>
+<div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright © 2026. May only be reproduced with Prophix's prior consent.<br><span id="footer-interview-note">Audio extracts from the original customer interview. Used with permission.</span></div>
+<button id="edit-fab" class="">✏️ Edit</button>
+<div id="edit-toolbar" class=""><span id="save-status">Saving...</span><button id="cancel-btn">Cancel</button><button id="save-btn" disabled="">💾 Save Live</button></div>
+<div id="pw-modal" class=""><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
 <script>
 var GH_REPO = "raulsteiu/raulsteiu.github.io";
 var GH_FILE = "clients/eaglestone-services-sa/index.html";
