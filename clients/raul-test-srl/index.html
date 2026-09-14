@@ -9,8 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--light);color:#222}
 .hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:56px 40px 48px}
-.logo-pill{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--red);margin-bottom:22px}
-.logo-sq{width:24px;height:24px;background:var(--red);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900}
+.logo-pill{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;gap:8px;margin-bottom:22px}
 .hero-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px}
 .hero h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px}
 .hero-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:26px}
@@ -34,7 +33,7 @@ body{font-family:var(--font);background:var(--light);color:#222}
 .story-sec ul{padding-left:0;list-style:none;margin-bottom:13px}
 .story-sec ul li{font-size:15px;line-height:1.65;color:#333;padding-left:19px;margin-bottom:9px;position:relative}
 .story-sec ul li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--red)}
-.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin:24px 0}
+.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin:24px 0;position:relative}
 .clip-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:8px}
 .clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;margin-bottom:14px;font-weight:500}
 .clip-player{margin-top:4px}
@@ -68,7 +67,6 @@ body.edit-mode #lang-add-wrap{display:flex}
 body.edit-mode .upload-audio-btn{display:inline-block}
 .clip-remove-btn{display:none;position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:14px;cursor:pointer;line-height:22px;text-align:center;padding:0}
 body.edit-mode .clip-remove-btn{display:block}
-.clip-card{position:relative}
 .add-clip-btn{display:none;width:100%;padding:10px;border:2px dashed var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font);margin:16px 0;text-align:center}
 body.edit-mode .add-clip-btn{display:block}
 .add-clip-btn:hover{border-color:var(--red);color:var(--red)}
@@ -90,104 +88,65 @@ body.edit-mode .add-clip-btn{display:block}
 <body>
 <div class="hero">
   <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
-  <div class="hero-tag lang-en" data-lang="en">Customer Story — Podcast Format</div>
-  <div class="hero-tag lang-fr" data-lang="fr" style="display:none">Témoignage Client — Format Podcast</div>
-  <div class="hero-tag lang-nl" data-lang="nl" style="display:none">Klantverhaal — Podcast Formaat</div>
-  <h1 class="lang-en" data-lang="en">How Raul Test SRL transformed financial performance with Prophix</h1>
-  <h1 class="lang-fr" data-lang="fr" style="display:none">[FR] How Raul Test SRL transformed financial performance with Prophix</h1>
-  <h1 class="lang-nl" data-lang="nl" style="display:none">[NL] How Raul Test SRL transformed financial performance with Prophix</h1>
-  <p class="hero-desc lang-en" data-lang="en">THis is really cool page</p>
-  <p class="hero-desc lang-fr" data-lang="fr" style="display:none">[FR] THis is really cool page</p>
-  <p class="hero-desc lang-nl" data-lang="nl" style="display:none">[NL] THis is really cool page</p>
+  <div class="hero-tag" data-lang="en">Customer Story — Podcast Format</div>
+  <div class="hero-tag" data-lang="fr" style="display:none">Témoignage Client — Format Podcast</div>
+  <div class="hero-tag" data-lang="de" style="display:none">Kundenbericht — Podcast Format</div>
+  <h1 data-lang="en">How Raul Test SRL transformed financial performance with Prophix</h1>
+  <h1 data-lang="fr" style="display:none">[FR] How Raul Test SRL transformed financial performance with Prophix</h1>
+  <h1 data-lang="de" style="display:none">[DE] How Raul Test SRL transformed financial performance with Prophix</h1>
+  <p class="hero-desc" data-lang="en">Hello World!</p>
+  <p class="hero-desc" data-lang="fr" style="display:none">[FR] Hello World!</p>
+  <p class="hero-desc" data-lang="de" style="display:none">[DE] Hello World!</p>
   <div class="lang-toggle" id="lang-toggle">
     <button class="lang-btn active" data-lang="en">EN</button>
     <button class="lang-btn" data-lang="fr">FR</button>
-    <button class="lang-btn" data-lang="nl">NL</button>
-    <div id="lang-add-wrap">
-      <select id="lang-add-select">
-        <option value="">+ Add language</option>
-        <option value="de">German (DE)</option><option value="it">Italian (IT)</option><option value="es">Spanish (ES)</option><option value="pt">Portuguese (PT)</option>
-      </select>
-    </div>
+    <button class="lang-btn" data-lang="de">DE</button>
+    <div id="lang-add-wrap"><select id="lang-add-select"><option value="">+ Add language</option><option value="nl">Dutch (NL)</option><option value="it">Italian (IT)</option><option value="es">Spanish (ES)</option><option value="pt">Portuguese (PT)</option></select></div>
   </div>
 </div>
 <div class="stats">
-  <div class="stat"><div class="stat-n">cool</div><div class="stat-l">something</div></div>
-  <div class="stat"><div class="stat-n">cool2</div><div class="stat-l">something2</div></div>
-  <div class="stat"><div class="stat-n">—</div><div class="stat-l"></div></div>
-  <div class="stat"><div class="stat-n">—</div><div class="stat-l"></div></div>
+  <div class="stat"><div class="stat-n">21</div><div class="stat-l">Integrations</div></div>
+  <div class="stat"><div class="stat-n">9/10</div><div class="stat-l">Customer Score</div></div>
+  <div class="stat"><div class="stat-n">Excelent</div><div class="stat-l">Score from Web</div></div>
 </div>
 <div class="main">
 <div class="story-body" id="story-body">
-<div class="story-sec" data-lang="en"><div class="sec-label">Something really cool</div><h2>I like it!</h2><p>i wanted to add this text</p></div>
-<div class="story-sec" data-lang="fr" style="display:none"><div class="sec-label">[FR] Something really cool</div><h2>[FR] I like it!</h2><p>[FR] i wanted to add this text</p></div>
-<div class="story-sec" data-lang="nl" style="display:none"><div class="sec-label">[NL] Something really cool</div><h2>[NL] I like it!</h2><p>[NL] i wanted to add this text</p></div>
-<div class="story-sec" data-lang="en"><div class="sec-label">Something cool 2</div><h2>I love it</h2><p>Can we continue?</p></div>
-<div class="story-sec" data-lang="fr" style="display:none"><div class="sec-label">[FR] Something cool 2</div><h2>[FR] I love it</h2><p>[FR] Can we continue?</p></div>
-<div class="story-sec" data-lang="nl" style="display:none"><div class="sec-label">[NL] Something cool 2</div><h2>[NL] I love it</h2><p>[NL] Can we continue?</p></div>
 
+<div class="clip-card"><div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg><span data-lang="en">Deadline covered?</span><span data-lang="fr" style="display:none">[FR] Deadline covered?</span><span data-lang="de" style="display:none">[DE] Deadline covered?</span></div><div class="clip-quote" data-lang="en">how can i cover a deadline?</div><div class="clip-quote" data-lang="fr" style="display:none">[FR] how can i cover a deadline?</div><div class="clip-quote" data-lang="de" style="display:none">[DE] how can i cover a deadline?</div><div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip2_deadlines.mp3" type="audio/mpeg"></audio><button class="upload-audio-btn" onclick="uploadAudio(this)">&#x2B06; Upload MP3</button></div></div>
 <button class="add-clip-btn" onclick="addClipInline(this)">+ Add Audio Clip</button>
 </div>
 <div class="sidebar">
-  <div class="sidebar-card">
-    <h3 class="lang-en" data-lang="en">Who is Raul Test SRL?</h3>
-    <h3 class="lang-fr" data-lang="fr" style="display:none">Qui est Raul Test SRL?</h3>
-    <h3 class="lang-nl" data-lang="nl" style="display:none">Qui est Raul Test SRL?</h3>
-    <p class="lang-en" data-lang="en">A client that is worth all the money</p><p class="lang-fr" data-lang="fr" style="display:none">[FR] A client that is worth all the money</p><p class="lang-nl" data-lang="nl" style="display:none">[NL] A client that is worth all the money</p>
-  </div>
-  <div class="sidebar-card">
-    <h3 class="lang-en" data-lang="en">Applications Deployed</h3>
-    <div id="apps-display"><div class="app-tag"><span class="app-dot"></span>FPA+</div></div>
-  </div>
-  <div class="sidebar-card">
-    <h3 class="lang-en" data-lang="en">Key Results Snapshot</h3>
-    <div id="results-list"></div>
-  </div>
-  <div class="sidebar-card">
-    <h3 class="lang-en" data-lang="en">Interview Participants</h3>
-    <div id="participants-list"><p style="margin-top:10px"><strong>Raul</strong><br><span style="font-size:13px;color:#666">Prophix</span></p><p style="margin-top:10px"><strong>Someone</strong><br><span style="font-size:13px;color:#666">Client SRL</span></p></div>
-  </div>
+  <div class="sidebar-card"><h3 data-lang="en">Who is Raul Test SRL?</h3><p data-lang="en">Something cool for real deal</p><p data-lang="fr" style="display:none">[FR] Something cool for real deal</p><p data-lang="de" style="display:none">[DE] Something cool for real deal</p></div>
+  <div class="sidebar-card"><h3 data-lang="en">Applications Deployed</h3><div id="apps-display"><div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div><div class="app-tag"><span class="app-dot"></span>FPA+</div></div></div>
+  <div class="sidebar-card"><h3 data-lang="en">Key Results Snapshot</h3><div id="results-list"></div></div>
+  <div class="sidebar-card"><h3 data-lang="en">Interview Participants</h3><div id="participants-list"><p style="margin-top:10px"><strong>Raul</strong><br><span style="font-size:13px;color:#666">Cooleanu</span></p></div></div>
 </div>
 </div>
-<div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright &copy; 2026. May only be reproduced with Prophix's prior consent.</div>
-<button id="edit-fab">✏️ Edit</button>
-<div id="edit-toolbar">
-  <span id="save-status"></span>
-  <button id="cancel-btn">Cancel</button>
-  <button id="save-btn">💾 Save Live</button>
-</div>
-<div id="pw-modal">
-  <div id="pw-box">
-    <h3>Editor Access</h3>
-    <p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p>
-    <div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div>
-    <div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div>
-    <div id="pw-error"></div>
-    <button id="pw-submit">Unlock Editor</button>
-    <button id="pw-cancel">Cancel</button>
-  </div>
-</div>
+<div class="page-footer"><strong>Prophix Software Inc.</strong> &mdash; Copyright &copy; 2026. May only be reproduced with Prophix's prior consent.</div>
+<button id="edit-fab">&#x270F;&#xFE0F; Edit</button>
+<div id="edit-toolbar"><span id="save-status"></span><button id="cancel-btn">Cancel</button><button id="save-btn">&#x1F4BE; Save Live</button></div>
+<div id="pw-modal"><div id="pw-box"><h3>Editor Access</h3><p style="font-size:13px;color:#666;margin-bottom:18px">Enter credentials to enable live editing</p><div class="pw-field"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password"/></div><div class="pw-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div><div id="pw-error"></div><button id="pw-submit">Unlock Editor</button><button id="pw-cancel">Cancel</button></div></div>
 <script>
-var GH_REPO='raulsteiu/raulsteiu.github.io';
-var GH_FILE='clients/raul-test-srl/index.html';
-var EDIT_PASSWORD='prophix2026';
-var sessionToken='';var cachedSha='';
-var activeLangs=["en","fr","nl"];
-var currentLang='en';
+var GH_REPO="raulsteiu/raulsteiu.github.io";
+var GH_FILE="clients/raul-test-srl/index.html";
+var EDIT_PASSWORD="prophix2026";
+var sessionToken="";var cachedSha="";
+var activeLangs=["en","fr","de"];
+var currentLang="en";
 var LANG_NAMES={"en":"EN","fr":"FR","nl":"NL","de":"DE","it":"IT","es":"ES","pt":"PT"};
 var LANG_LABELS={"en":"Customer Story — Podcast Format","fr":"Témoignage Client — Format Podcast","nl":"Klantverhaal — Podcast Formaat","de":"Kundenbericht — Podcast Format","it":"Storia del Cliente — Formato Podcast","es":"Historia del Cliente — Formato Podcast","pt":"História do Cliente — Formato Podcast"};
-var EDITABLE_SELECTORS=['.story-sec .sec-label','.story-sec h2','.story-sec p','.story-sec ul li','.clip-quote','.clip-label span','.sidebar-card p','.result-item','.stat-n','.stat-l','.hero h1','.hero-desc','.hero-tag','.page-footer','#participants-list strong','#participants-list span'];
-function setLang(l){currentLang=l;document.querySelectorAll('[data-lang]').forEach(function(el){el.style.display=el.getAttribute('data-lang')===l?'':'none';});document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lang')===l);});}
-function refreshRemoveBtns(){document.querySelectorAll('.remove-lang').forEach(function(b){b.style.display=document.body.classList.contains('edit-mode')?'':' none';});}
-function addLanguage(code){if(!code||activeLangs.indexOf(code)>-1)return;activeLangs.push(code);var toggle=document.getElementById('lang-toggle');var addWrap=document.getElementById('lang-add-wrap');var btn=document.createElement('button');btn.className='lang-btn';btn.setAttribute('data-lang',code);btn.textContent=LANG_NAMES[code];btn.addEventListener('click',function(){setLang(code);});toggle.insertBefore(btn,addWrap);var rb=document.createElement('button');rb.className='lang-btn remove-lang';rb.setAttribute('data-remove-lang',code);rb.textContent='✕';rb.title='Remove '+LANG_NAMES[code];rb.style.display='';rb.addEventListener('click',function(){removeLanguage(code);});toggle.insertBefore(rb,addWrap);var ht=document.createElement('div');ht.className='hero-tag lang-'+code;ht.setAttribute('data-lang',code);ht.textContent=LANG_LABELS[code]||'Customer Story';ht.style.display='none';document.querySelector('.hero').insertBefore(ht,document.querySelector('.lang-toggle'));document.querySelectorAll('.story-sec[data-lang="en"]').forEach(function(sec){var cl=sec.cloneNode(true);cl.setAttribute('data-lang',code);cl.style.display='none';cl.querySelectorAll('[contenteditable]').forEach(function(el){el.textContent='['+LANG_NAMES[code]+'] '+el.textContent;});sec.parentNode.insertBefore(cl,sec.nextSibling);});var opt=document.querySelector('#lang-add-select option[value="'+code+'"]');if(opt)opt.remove();}
-function removeLanguage(code){if(!confirm('Remove '+LANG_NAMES[code]+'?'))return;activeLangs=activeLangs.filter(function(l){return l!==code;});document.querySelectorAll('[data-lang="'+code+'"], [data-remove-lang="'+code+'"]').forEach(function(el){el.remove();});var sel=document.getElementById('lang-add-select');var opt=document.createElement('option');opt.value=code;opt.textContent=code;sel.appendChild(opt);if(currentLang===code)setLang('en');}
-function addClipInline(btn){var card=document.createElement('div');card.className='clip-card';card.innerHTML='<button class="clip-remove-btn" onclick="this.closest('.clip-card').remove()">✕</button><div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg><span contenteditable="true">Clip Title</span></div><div class="clip-quote" contenteditable="true">"Quote here."</div><div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="" type="audio/mpeg"></audio><button class="upload-audio-btn" onclick="uploadAudio(this)">⬆ Upload MP3</button></div>';btn.parentNode.insertBefore(card,btn);}
-function uploadAudio(btn){var input=document.createElement('input');input.type='file';input.accept='audio/mpeg,.mp3';input.onchange=function(){var file=input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){var b64=e.target.result.split(',')[1];btn.textContent='⏳ Uploading...';fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/raul-test-srl/'+file.name,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Upload: '+file.name,content:b64})}).then(function(r){return r.json();}).then(function(d){if(d.content){btn.closest('.clip-player').querySelector('audio source').src=file.name;btn.closest('.clip-player').querySelector('audio').load();btn.textContent='✅ '+file.name;}else{btn.textContent='❌ Failed';}});};reader.readAsDataURL(file);};input.click();}
-function enableEditMode(){document.body.classList.add('edit-mode');EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable='true';});});document.getElementById('edit-fab').classList.add('hidden');document.getElementById('edit-toolbar').classList.add('visible');document.getElementById('save-btn').disabled=false;document.getElementById('save-status').textContent='✏️ Edit mode on';refreshRemoveBtns();}
-function disableEditMode(){document.body.classList.remove('edit-mode');EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute('contenteditable');});});document.getElementById('edit-fab').classList.remove('hidden');document.getElementById('edit-toolbar').classList.remove('visible');document.getElementById('save-status').textContent='';document.getElementById('save-btn').disabled=false;refreshRemoveBtns();}
-function closeModal(){document.getElementById('pw-modal').classList.remove('visible');document.getElementById('pw-input').value='';document.getElementById('token-input').value='';document.getElementById('pw-error').textContent='';}
-async function saveToGitHub(){var statusEl=document.getElementById('save-status');var saveBtn=document.getElementById('save-btn');statusEl.textContent='⏳ Saving...';saveBtn.disabled=true;try{var sha=cachedSha;if(!sha){var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE,{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});if(!r.ok)throw new Error('Auth failed');sha=(await r.json()).sha;}EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute('contenteditable');});});document.body.classList.remove('edit-mode');document.getElementById('edit-fab').classList.remove('hidden');document.getElementById('edit-toolbar').classList.remove('visible');document.querySelectorAll('.remove-lang').forEach(function(el){el.style.display='none';});var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;document.body.classList.add('edit-mode');document.getElementById('edit-fab').classList.add('hidden');document.getElementById('edit-toolbar').classList.add('visible');EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable='true';});});refreshRemoveBtns();var enc=btoa(unescape(encodeURIComponent(html)));var pr=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Live edit',content:enc,sha:sha})});if(pr.ok){var pd=await pr.json();cachedSha=pd.content.sha;statusEl.textContent='✅ Saved!';setTimeout(function(){disableEditMode();},1500);}else{var err=await pr.json();statusEl.textContent='❌ '+(err.message||'Failed');saveBtn.disabled=false;}}catch(e){statusEl.textContent='❌ '+e.message;saveBtn.disabled=false;}}
-document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn){btn.addEventListener('click',function(){setLang(btn.getAttribute('data-lang'));});});setLang('en');document.getElementById('lang-add-select').addEventListener('change',function(){if(this.value){addLanguage(this.value);this.value='';}});document.getElementById('edit-fab').addEventListener('click',function(){document.getElementById('pw-modal').classList.add('visible');setTimeout(function(){document.getElementById('pw-input').focus();},50);});document.getElementById('pw-submit').addEventListener('click',function(){var pw=document.getElementById('pw-input').value;var token=document.getElementById('token-input').value.trim();document.getElementById('pw-error').textContent='';if(pw!==EDIT_PASSWORD){document.getElementById('pw-error').textContent='Incorrect password.';return;}if(!token){document.getElementById('pw-error').textContent='Please paste your GitHub token.';return;}sessionToken=token;closeModal();enableEditMode();});document.getElementById('pw-cancel').addEventListener('click',closeModal);document.getElementById('save-btn').addEventListener('click',saveToGitHub);document.getElementById('cancel-btn').addEventListener('click',disableEditMode);});
+var EDITABLE_SELECTORS=[".story-sec .sec-label",".story-sec h2",".story-sec p",".clip-quote",".clip-label span",".sidebar-card p",".result-item",".stat-n",".stat-l",".hero h1",".hero-desc",".hero-tag",".page-footer","#participants-list strong","#participants-list span"];
+function setLang(l){currentLang=l;document.querySelectorAll("[data-lang]").forEach(function(el){el.style.display=el.getAttribute("data-lang")===l?"":"none";});document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-lang")===l);});}
+function refreshRemoveBtns(){document.querySelectorAll(".remove-lang").forEach(function(b){b.style.display=document.body.classList.contains("edit-mode")?"":"none";});}
+function addLanguage(code){if(!code||activeLangs.indexOf(code)>-1)return;activeLangs.push(code);var toggle=document.getElementById("lang-toggle");var addWrap=document.getElementById("lang-add-wrap");var btn=document.createElement("button");btn.className="lang-btn";btn.setAttribute("data-lang",code);btn.textContent=LANG_NAMES[code];btn.addEventListener("click",function(){setLang(code);});toggle.insertBefore(btn,addWrap);var rb=document.createElement("button");rb.className="lang-btn remove-lang";rb.setAttribute("data-remove-lang",code);rb.textContent="✕";rb.style.display="";rb.addEventListener("click",function(){removeLanguage(code);});toggle.insertBefore(rb,addWrap);var ht=document.createElement("div");ht.className="hero-tag";ht.setAttribute("data-lang",code);ht.textContent=LANG_LABELS[code]||"Customer Story";ht.style.display="none";document.querySelector(".hero").insertBefore(ht,document.querySelector(".lang-toggle"));document.querySelectorAll(".story-sec[data-lang='en']").forEach(function(sec){var cl=sec.cloneNode(true);cl.setAttribute("data-lang",code);cl.style.display="none";cl.querySelectorAll("[contenteditable]").forEach(function(el){el.textContent="["+LANG_NAMES[code]+"] "+el.textContent;});sec.parentNode.insertBefore(cl,sec.nextSibling);});var opt=document.querySelector("#lang-add-select option[value='"+code+"']");if(opt)opt.remove();}
+function removeLanguage(code){if(!confirm("Remove "+LANG_NAMES[code]+"?"))return;activeLangs=activeLangs.filter(function(l){return l!==code;});document.querySelectorAll("[data-lang='"+code+"'], [data-remove-lang='"+code+"']").forEach(function(el){el.remove();});var sel=document.getElementById("lang-add-select");var opt=document.createElement("option");opt.value=code;opt.textContent=code;sel.appendChild(opt);if(currentLang===code)setLang("en");}
+function addClipInline(btn){var card=document.createElement("div");card.className="clip-card";card.innerHTML='<button class="clip-remove-btn" onclick="this.closest(\\".clip-card\\").remove()">✕</button><div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg><span contenteditable="true">Clip Title</span></div><div class="clip-quote" contenteditable="true">"Quote here."</div><div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="" type="audio/mpeg"></audio><button class="upload-audio-btn" onclick="uploadAudio(this)">⬆ Upload MP3</button></div>';btn.parentNode.insertBefore(card,btn);}
+function uploadAudio(btn){var input=document.createElement("input");input.type="file";input.accept="audio/mpeg,.mp3";input.onchange=function(){var file=input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){var b64=e.target.result.split(",")[1];btn.textContent="⏳ Uploading...";fetch("https://api.github.com/repos/"+GH_REPO+"/contents/clients/raul-test-srl/"+file.name,{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Upload: "+file.name,content:b64})}).then(function(r){return r.json();}).then(function(d){if(d.content){btn.closest(".clip-player").querySelector("audio source").src=file.name;btn.closest(".clip-player").querySelector("audio").load();btn.textContent="✅ "+file.name;}else{btn.textContent="❌ Failed";}});};reader.readAsDataURL(file);};input.click();}
+function enableEditMode(){document.body.classList.add("edit-mode");EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});document.getElementById("edit-fab").classList.add("hidden");document.getElementById("edit-toolbar").classList.add("visible");document.getElementById("save-btn").disabled=false;document.getElementById("save-status").textContent="✏️ Edit mode on";refreshRemoveBtns();}
+function disableEditMode(){document.body.classList.remove("edit-mode");EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});document.getElementById("edit-fab").classList.remove("hidden");document.getElementById("edit-toolbar").classList.remove("visible");document.getElementById("save-status").textContent="";document.getElementById("save-btn").disabled=false;refreshRemoveBtns();}
+function closeModal(){document.getElementById("pw-modal").classList.remove("visible");document.getElementById("pw-input").value="";document.getElementById("token-input").value="";document.getElementById("pw-error").textContent="";}
+async function saveToGitHub(){var statusEl=document.getElementById("save-status");var saveBtn=document.getElementById("save-btn");statusEl.textContent="⏳ Saving...";saveBtn.disabled=true;try{var sha=cachedSha;if(!sha){var r=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json"}});if(!r.ok)throw new Error("Auth failed");sha=(await r.json()).sha;}EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.removeAttribute("contenteditable");});});document.body.classList.remove("edit-mode");document.getElementById("edit-fab").classList.remove("hidden");document.getElementById("edit-toolbar").classList.remove("visible");document.querySelectorAll(".remove-lang").forEach(function(el){el.style.display="none";});var html="<!DOCTYPE html>\n"+document.documentElement.outerHTML;document.body.classList.add("edit-mode");document.getElementById("edit-fab").classList.add("hidden");document.getElementById("edit-toolbar").classList.add("visible");EDITABLE_SELECTORS.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.contentEditable="true";});});refreshRemoveBtns();var enc=btoa(unescape(encodeURIComponent(html)));var pr=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+GH_FILE,{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Live edit",content:enc,sha:sha})});if(pr.ok){var pd=await pr.json();cachedSha=pd.content.sha;statusEl.textContent="✅ Saved!";setTimeout(function(){disableEditMode();},1500);}else{var err=await pr.json();statusEl.textContent="❌ "+(err.message||"Failed");saveBtn.disabled=false;}}catch(e){statusEl.textContent="❌ "+e.message;saveBtn.disabled=false;}}
+document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".lang-btn:not(.remove-lang)").forEach(function(btn){btn.addEventListener("click",function(){setLang(btn.getAttribute("data-lang"));});});setLang("en");document.getElementById("lang-add-select").addEventListener("change",function(){if(this.value){addLanguage(this.value);this.value="";}});document.getElementById("edit-fab").addEventListener("click",function(){document.getElementById("pw-modal").classList.add("visible");setTimeout(function(){document.getElementById("pw-input").focus();},50);});document.getElementById("pw-submit").addEventListener("click",function(){var pw=document.getElementById("pw-input").value;var token=document.getElementById("token-input").value.trim();document.getElementById("pw-error").textContent="";if(pw!==EDIT_PASSWORD){document.getElementById("pw-error").textContent="Incorrect password.";return;}if(!token){document.getElementById("pw-error").textContent="Please paste your GitHub token.";return;}sessionToken=token;closeModal();enableEditMode();});document.getElementById("pw-cancel").addEventListener("click",closeModal);document.getElementById("save-btn").addEventListener("click",saveToGitHub);document.getElementById("cancel-btn").addEventListener("click",disableEditMode);});
 </script>
 </body>
 </html>
