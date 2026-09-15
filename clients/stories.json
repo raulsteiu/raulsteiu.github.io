@@ -1,5 +1,11 @@
 [
   {
+    "slug": "man-united",
+    "name": "Man United",
+    "created": "2026-09-15T14:02:35.112Z",
+    "logo": true
+  },
+  {
     "slug": "batman-srl",
     "name": "Batman SRL",
     "created": "2026-09-15T13:06:57.003Z",
