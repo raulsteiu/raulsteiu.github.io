@@ -3,245 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Client Story — Prophix Creator</title>
+<title>Client Story Creator — Prophix</title>
 <style>
 :root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif;--radius:8px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh}
 .header{background:linear-gradient(135deg,var(--dark) 0%,var(--mid) 100%);padding:24px 40px;display:flex;align-items:center;gap:16px}
 .logo-pill{background:#fff;border-radius:6px;padding:6px 12px;display:inline-flex;align-items:center}
-.header h1{font-size:18px;font-weight:900;color:#fff}
-.header p{font-size:13px;color:rgba(255,255,255,.5);margin-top:2px}
+.header-text h1{font-size:18px;font-weight:900;color:#fff}
+.header-text p{font-size:13px;color:rgba(255,255,255,.5);margin-top:2px}
 .container{max-width:780px;margin:0 auto;padding:36px 24px}
-.section{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
-.section-title{font-size:13px;font-weight:900;color:var(--dark);text-transform:uppercase;letter-spacing:.6px;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--light)}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.card-title{font-size:11px;font-weight:900;color:var(--dark);text-transform:uppercase;letter-spacing:.7px;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--light)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.row.three{grid-template-columns:1fr 1fr 1fr}
-@media(max-width:600px){.row,.row.three{grid-template-columns:1fr}}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:11px;font-weight:700;color:var(--dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
 .field input,.field textarea,.field select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none;background:#fff;transition:border-color .15s}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--red)}
+.field input:focus,.field textarea:focus{border-color:var(--red)}
 .field textarea{resize:vertical;min-height:80px;line-height:1.5}
-.field .hint{font-size:11px;color:#aaa;margin-top:4px}
-.file-field{border:2px dashed var(--border);border-radius:6px;padding:14px;text-align:center;cursor:pointer;transition:border-color .15s;background:#fafafa}
-.file-field:hover{border-color:var(--red)}
-.file-field input{display:none}
-.file-field .file-label{font-size:13px;color:#888}
-.file-field .file-name{font-size:12px;color:var(--dark);font-weight:700;margin-top:4px;display:none}
-.products-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.product-check{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;transition:all .15s;user-select:none}
-.product-check input{display:none}
-.product-check.checked{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}
-.stat-row{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:10px;align-items:center}
-.stat-row label{font-size:11px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
-.langs-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.lang-check{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;transition:all .15s;user-select:none}
-.lang-check input{display:none}
-.lang-check.checked{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}
-.lang-check.locked{opacity:.6;cursor:default}
+.hint{font-size:11px;color:#aaa;margin-top:4px}
+.file-drop{border:2px dashed var(--border);border-radius:6px;padding:14px;text-align:center;cursor:pointer;transition:border-color .15s;background:#fafafa}
+.file-drop:hover{border-color:var(--red)}
+.file-drop input{display:none}
+.file-drop-label{font-size:13px;color:#888}
+.file-drop-name{font-size:12px;color:var(--dark);font-weight:700;margin-top:4px;display:none}
 
-/* Dynamic sections */
-.dyn-item{border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px;position:relative}
-.dyn-item .remove-btn{position:absolute;top:10px;right:10px;background:transparent;border:none;cursor:pointer;color:#aaa;font-size:16px;line-height:1;padding:2px 6px}
-.dyn-item .remove-btn:hover{color:var(--red)}
-.add-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:6px;padding:8px 14px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;margin-top:4px}
+/* Stat builder */
+.stats-builder{display:flex;flex-direction:column;gap:8px}
+.stat-row-item{display:grid;grid-template-columns:1fr 2fr 28px;gap:8px;align-items:center}
+.stat-row-item input{margin-bottom:0}
+.remove-small{width:28px;height:28px;border:1px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;color:#aaa;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.remove-small:hover{border-color:var(--red);color:var(--red)}
+.add-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;margin-top:4px}
 .add-btn:hover{border-color:var(--red);color:var(--red)}
 
+/* Products */
+.products-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.prod-lbl{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;transition:all .15s;user-select:none}
+.prod-lbl input{display:none}
+.prod-lbl.on{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}
+
+/* Langs */
+.langs-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.lang-lbl{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;transition:all .15s;user-select:none}
+.lang-lbl input{display:none}
+.lang-lbl.on{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}
+.lang-lbl.locked{opacity:.5;cursor:default}
+
+/* Dynamic items */
+.dyn-item{border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px;position:relative}
+.dyn-item .rm{position:absolute;top:10px;right:10px;background:transparent;border:none;cursor:pointer;color:#bbb;font-size:15px;padding:2px 6px}
+.dyn-item .rm:hover{color:var(--red)}
+
+/* Access card */
+.access-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.access-card-title{font-size:13px;font-weight:900;color:var(--dark);margin-bottom:14px}
+.token-row{display:flex;gap:10px;align-items:flex-end}
+.token-row .field{flex:1;margin-bottom:0}
+.unlock-btn{background:var(--dark);color:#fff;border:none;border-radius:6px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap}
+.unlock-btn:hover{background:var(--mid)}
+.access-error{font-size:12px;color:var(--red);min-height:16px;margin-top:6px}
+.access-ok{font-size:12px;color:#2a7a2a;margin-top:6px;display:none}
+
 /* Submit */
-.submit-area{text-align:center;padding:12px 0 0}
-.submit-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;border:none;border-radius:8px;padding:13px 32px;font-size:15px;font-weight:900;font-family:var(--font);cursor:pointer;transition:background .15s}
+.submit-area{text-align:center;padding:8px 0 0}
+.submit-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;border:none;border-radius:8px;padding:13px 36px;font-size:15px;font-weight:900;font-family:var(--font);cursor:pointer;transition:background .15s}
 .submit-btn:hover{background:#c0272d}
 .submit-btn:disabled{opacity:.5;cursor:not-allowed}
 
 /* Progress */
 #progress-wrap{display:none;position:fixed;inset:0;background:rgba(26,26,46,.88);z-index:2000;align-items:center;justify-content:center}
 #progress-wrap.visible{display:flex}
-#progress-box{background:#fff;border-radius:12px;padding:36px;width:100%;max-width:420px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2)}
-#progress-icon{font-size:40px;margin-bottom:16px}
-#progress-title{font-size:17px;font-weight:900;color:var(--dark);margin-bottom:6px}
-#progress-step{font-size:13px;color:var(--muted);margin-bottom:20px;min-height:20px}
-#progress-bar-wrap{background:#f0f0f6;border-radius:20px;height:6px;overflow:hidden;margin-bottom:8px}
-#progress-bar{height:100%;background:var(--red);border-radius:20px;width:0%;transition:width .3s}
-#progress-link{display:none;margin-top:18px}
-#progress-link a{display:inline-flex;align-items:center;gap:8px;background:var(--dark);color:#fff;text-decoration:none;border-radius:7px;padding:11px 22px;font-size:14px;font-weight:700;font-family:var(--font)}
-#progress-link a:hover{background:var(--mid)}
-#progress-error{color:#c0272d;font-size:13px;margin-top:10px;display:none}
-
-/* Auth */
-#auth-wrap{display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
-#auth-wrap.visible{display:block}
-#auth-error{font-size:12px;color:var(--red);min-height:16px;margin-bottom:8px}
-.unlock-btn{background:var(--dark);color:#fff;border:none;border-radius:6px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
-.unlock-btn:hover{background:var(--mid)}
+#progress-box{background:#fff;border-radius:14px;padding:40px;width:100%;max-width:420px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.25)}
+#prog-icon{font-size:44px;margin-bottom:16px}
+#prog-title{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:6px}
+#prog-step{font-size:13px;color:var(--muted);margin-bottom:18px;min-height:18px}
+#prog-bar-wrap{background:#f0f0f6;border-radius:20px;height:6px;overflow:hidden;margin-bottom:16px}
+#prog-bar{height:100%;background:var(--red);border-radius:20px;width:0%;transition:width .3s}
+#prog-link{display:none;flex-direction:column;gap:8px;margin-top:8px}
+#prog-link a{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:7px;padding:11px 22px;font-size:14px;font-weight:700;font-family:var(--font);text-decoration:none}
+.prog-open{background:var(--dark);color:#fff}
+.prog-open:hover{background:var(--mid)}
+.prog-dir{background:transparent;border:1px solid var(--border);color:var(--dark)}
+.prog-dir:hover{border-color:var(--dark)}
+#prog-error{color:#c0272d;font-size:13px;margin-top:10px;display:none}
+#prog-retry{background:var(--red);color:#fff;border:none;border-radius:6px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:10px;display:none}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="logo-pill">
-    <img src="/prophix-logo-1000px.png" style="height:22px;width:auto;display:block" alt="Prophix">
-  </div>
-  <div>
-    <h1>New Client Story</h1>
-    <p>Fill in the details — the page is created automatically</p>
+  <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:22px;width:auto;display:block" alt="Prophix"></div>
+  <div class="header-text">
+    <h1>Client Story Creator</h1>
+    <p>Build and publish a new customer story page in minutes</p>
   </div>
 </div>
 
 <div class="container">
 
-  <!-- Auth -->
-  <div id="auth-wrap" class="section visible">
-    <div class="section-title">Access</div>
-    <div class="row">
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="auth-pw" placeholder="Enter password"/>
-      </div>
-      <div class="field">
-        <label>GitHub Token</label>
-        <input type="password" id="auth-token" placeholder="Paste your GitHub token"/>
-      </div>
+  <!-- Access -->
+  <div class="access-card">
+    <div class="access-card-title">GitHub Access</div>
+    <div class="token-row">
+      <div class="field"><label>GitHub Token</label><input type="password" id="auth-token" placeholder="Paste your GitHub token"/></div>
+      <button class="unlock-btn" id="auth-submit">Access Creator</button>
     </div>
-    <div id="auth-error"></div>
-    <button class="unlock-btn" id="auth-submit">Unlock Creator</button>
+    <div class="access-error" id="auth-error"></div>
+    <div class="access-ok" id="auth-ok">✓ Token accepted — fill in the form and publish</div>
   </div>
 
-  <!-- Main form (locked until auth) -->
-  <div id="main-form" style="opacity:.35;pointer-events:none">
+  <div id="main-form" style="opacity:.3;pointer-events:none;transition:opacity .3s">
 
   <!-- Client basics -->
-  <div class="section">
-    <div class="section-title">Client</div>
+  <div class="card">
+    <div class="card-title">Client</div>
     <div class="row">
-      <div class="field">
-        <label>Client name *</label>
-        <input type="text" id="client-name" placeholder="e.g. Acme Corp"/>
-      </div>
-      <div class="field">
-        <label>Industry / HQ</label>
-        <input type="text" id="client-industry" placeholder="e.g. Manufacturing, Brussels"/>
-      </div>
+      <div class="field"><label>Client name *</label><input type="text" id="client-name" placeholder="e.g. Acme Corp"/></div>
+      <div class="field"><label>Industry / HQ</label><input type="text" id="client-industry" placeholder="e.g. Manufacturing, Brussels"/></div>
     </div>
-    <div class="field">
-      <label>Short description</label>
-      <textarea id="client-desc" placeholder="One or two sentences about who this client is."></textarea>
-    </div>
+    <div class="field"><label>Short description</label><textarea id="client-desc" placeholder="One or two sentences about this client."></textarea></div>
     <div class="field">
       <label>Client logo (PNG / JPG / SVG)</label>
-      <div class="file-field" id="logo-drop" onclick="document.getElementById('logo-file').click()">
+      <div class="file-drop" id="logo-drop" onclick="document.getElementById('logo-file').click()">
         <input type="file" id="logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
-        <div class="file-label">Click to choose logo file</div>
-        <div class="file-name" id="logo-name"></div>
+        <div class="file-drop-label">Click to choose logo file</div>
+        <div class="file-drop-name" id="logo-name"></div>
       </div>
-      <div class="hint">Shown in the hero and on the directory card. Max ~500 KB.</div>
+      <div class="hint">Shown in the hero (top-right) and on the directory card.</div>
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="section">
-    <div class="section-title">Key stats (4 tiles)</div>
-    <div id="stats-rows">
-      <div class="stat-row"><label>Stat 1 value</label><input class="stat-val" type="text" placeholder="e.g. ~1 wk"/></div>
-      <div class="stat-row"><label>Stat 1 label</label><input class="stat-lbl" type="text" placeholder="e.g. Closing cycle saved"/></div>
-      <div class="stat-row" style="margin-top:10px"><label>Stat 2 value</label><input class="stat-val" type="text" placeholder="e.g. 9/10"/></div>
-      <div class="stat-row"><label>Stat 2 label</label><input class="stat-lbl" type="text" placeholder="e.g. NPS score"/></div>
-      <div class="stat-row" style="margin-top:10px"><label>Stat 3 value</label><input class="stat-val" type="text" placeholder="e.g. 6"/></div>
-      <div class="stat-row"><label>Stat 3 label</label><input class="stat-lbl" type="text" placeholder="e.g. Markets covered"/></div>
-      <div class="stat-row" style="margin-top:10px"><label>Stat 4 value</label><input class="stat-val" type="text" placeholder="e.g. 40%"/></div>
-      <div class="stat-row"><label>Stat 4 label</label><input class="stat-lbl" type="text" placeholder="e.g. Reporting time saved"/></div>
+  <!-- Stats — flexible -->
+  <div class="card">
+    <div class="card-title">Stats (flexible — add as many as needed)</div>
+    <div class="stats-builder" id="stats-builder">
+      <div class="stat-row-item">
+        <input type="text" class="stat-val" placeholder="Value e.g. ~1 wk"/>
+        <input type="text" class="stat-lbl" placeholder="Label e.g. Closing cycle saved"/>
+        <button class="remove-small" onclick="this.closest('.stat-row-item').remove()">✕</button>
+      </div>
+      <div class="stat-row-item">
+        <input type="text" class="stat-val" placeholder="9/10"/>
+        <input type="text" class="stat-lbl" placeholder="NPS score"/>
+        <button class="remove-small" onclick="this.closest('.stat-row-item').remove()">✕</button>
+      </div>
     </div>
+    <button class="add-btn" onclick="addStat()">+ Add stat</button>
   </div>
 
   <!-- Key Results Snapshot -->
-  <div class="section">
-    <div class="section-title">Key Results Snapshot</div>
-    <p style="font-size:12px;color:#aaa;margin-bottom:14px">3 highlighted outcomes shown below the stats row</p>
-    <div id="krs-rows">
-      <div class="dyn-item">
-        <div class="row">
-          <div class="field"><label>Number / metric</label><input class="krs-num" type="text" placeholder="e.g. 40%"/></div>
-          <div class="field"><label>Label</label><input class="krs-lbl" type="text" placeholder="e.g. Faster reporting"/></div>
-        </div>
-        <div class="field"><label>Description</label><input class="krs-desc" type="text" placeholder="One-line context"/></div>
-      </div>
-      <div class="dyn-item">
-        <div class="row">
-          <div class="field"><label>Number / metric</label><input class="krs-num" type="text" placeholder="e.g. 3×"/></div>
-          <div class="field"><label>Label</label><input class="krs-lbl" type="text" placeholder="e.g. Consolidation speed"/></div>
-        </div>
-        <div class="field"><label>Description</label><input class="krs-desc" type="text" placeholder="One-line context"/></div>
-      </div>
-      <div class="dyn-item">
-        <div class="row">
-          <div class="field"><label>Number / metric</label><input class="krs-num" type="text" placeholder="e.g. 9/10"/></div>
-          <div class="field"><label>Label</label><input class="krs-lbl" type="text" placeholder="e.g. User satisfaction"/></div>
-        </div>
-        <div class="field"><label>Description</label><input class="krs-desc" type="text" placeholder="One-line context"/></div>
+  <div class="card">
+    <div class="card-title">Key Results Snapshot</div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:14px">Bullet-style highlights shown in a dark tile below the stats row</p>
+    <div id="krs-list">
+      <div class="dyn-item"><button class="rm" onclick="this.closest('.dyn-item').remove()">✕</button>
+        <div class="field"><label>Result</label><input type="text" class="krs-text" placeholder="e.g. Full transparency, faster close: consolidated data now visible in one system."/></div>
+        <div class="field"><label>Bold prefix (optional)</label><input type="text" class="krs-bold" placeholder="e.g. Full transparency, faster close"/></div>
       </div>
     </div>
+    <button class="add-btn" onclick="addKRS()">+ Add result</button>
   </div>
 
-  <!-- Sections -->
-  <div class="section">
-    <div class="section-title">Story sections</div>
+  <!-- Story sections -->
+  <div class="card">
+    <div class="card-title">Story sections</div>
     <div id="sections-list">
-      <div class="dyn-item">
-        <button class="remove-btn" onclick="removeItem(this)">✕</button>
+      <div class="dyn-item"><button class="rm" onclick="this.closest('.dyn-item').remove()">✕</button>
         <div class="row">
-          <div class="field"><label>Label</label><input class="sec-label" type="text" placeholder="e.g. Business Challenge"/></div>
-          <div class="field"><label>Heading</label><input class="sec-heading" type="text" placeholder="e.g. Manual close was costing them days"/></div>
+          <div class="field"><label>Label</label><input type="text" class="sec-label" placeholder="e.g. Business Challenge"/></div>
+          <div class="field"><label>Heading</label><input type="text" class="sec-heading" placeholder="Heading"/></div>
         </div>
-        <div class="field"><label>Body text</label><textarea class="sec-body" placeholder="Write the section content…"></textarea></div>
-      </div>
-      <div class="dyn-item">
-        <button class="remove-btn" onclick="removeItem(this)">✕</button>
-        <div class="row">
-          <div class="field"><label>Label</label><input class="sec-label" type="text" placeholder="e.g. Why Prophix"/></div>
-          <div class="field"><label>Heading</label><input class="sec-heading" type="text" placeholder="e.g. One platform for planning and close"/></div>
-        </div>
-        <div class="field"><label>Body text</label><textarea class="sec-body" placeholder="Write the section content…"></textarea></div>
+        <div class="field"><label>Body</label><textarea class="sec-body" placeholder="Section content…"></textarea></div>
       </div>
     </div>
     <button class="add-btn" onclick="addSection()">+ Add section</button>
   </div>
 
   <!-- Audio clips -->
-  <div class="section">
-    <div class="section-title">Audio clips</div>
-    <p style="font-size:12px;color:#aaa;margin-bottom:14px">MP3 files can be uploaded after publishing in edit mode</p>
+  <div class="card">
+    <div class="card-title">Audio clips</div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:14px">Upload MP3 files after publishing via edit mode</p>
     <div id="clips-list">
-      <div class="dyn-item">
-        <button class="remove-btn" onclick="removeItem(this)">✕</button>
+      <div class="dyn-item"><button class="rm" onclick="this.closest('.dyn-item').remove()">✕</button>
         <div class="row">
-          <div class="field"><label>Clip title</label><input class="clip-title" type="text" placeholder="e.g. On the close process"/></div>
-          <div class="field"><label>Timestamp</label><input class="clip-ts" type="text" placeholder="e.g. 01:24"/></div>
+          <div class="field"><label>Clip title</label><input type="text" class="clip-title" placeholder="e.g. On the close process"/></div>
+          <div class="field"><label>Timestamp</label><input type="text" class="clip-ts" placeholder="e.g. 01:24"/></div>
         </div>
-        <div class="field"><label>Quote</label><textarea class="clip-quote" placeholder='"The most impactful change was…"'></textarea></div>
+        <div class="field"><label>Quote</label><textarea class="clip-quote" placeholder='"The most impactful change…"'></textarea></div>
       </div>
     </div>
     <button class="add-btn" onclick="addClip()">+ Add clip</button>
   </div>
 
   <!-- Results bullets -->
-  <div class="section">
-    <div class="section-title">Results list (sidebar)</div>
+  <div class="card">
+    <div class="card-title">Results list (sidebar)</div>
     <div id="results-list">
-      <div class="dyn-item"><button class="remove-btn" onclick="removeItem(this)">✕</button><div class="field"><input class="result-text" type="text" placeholder="e.g. Reduced close from 10 days to 2"/></div></div>
-      <div class="dyn-item"><button class="remove-btn" onclick="removeItem(this)">✕</button><div class="field"><input class="result-text" type="text" placeholder="e.g. Finance team handles all reporting in-house"/></div></div>
+      <div class="dyn-item"><button class="rm" onclick="this.closest('.dyn-item').remove()">✕</button>
+        <div class="field"><input type="text" class="result-text" placeholder="e.g. Reduced close from 10 days to 2"/></div>
+      </div>
     </div>
     <button class="add-btn" onclick="addResult()">+ Add result</button>
   </div>
 
+  <!-- Who is the client sidebar -->
+  <div class="card">
+    <div class="card-title">"Who is [Client]?" sidebar</div>
+    <div class="field"><label>Description text</label><textarea id="who-text" placeholder="2–3 sentences about who this client is, their industry, size, etc."></textarea></div>
+    <p style="font-size:12px;color:#aaa;margin:8px 0 12px">Stats tiles inside the Who card (flexible)</p>
+    <div id="who-stats-builder">
+      <div class="stat-row-item">
+        <input type="text" class="who-stat-val" placeholder="e.g. 69"/>
+        <input type="text" class="who-stat-lbl" placeholder="Active projects"/>
+        <button class="remove-small" onclick="this.closest('.stat-row-item').remove()">✕</button>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addWhoStat()">+ Add stat</button>
+  </div>
+
   <!-- Participants -->
-  <div class="section">
-    <div class="section-title">Interview participants</div>
+  <div class="card">
+    <div class="card-title">Interview participants</div>
     <div id="participants-list">
-      <div class="dyn-item">
-        <button class="remove-btn" onclick="removeItem(this)">✕</button>
+      <div class="dyn-item"><button class="rm" onclick="this.closest('.dyn-item').remove()">✕</button>
         <div class="row">
-          <div class="field"><label>Full name</label><input class="p-name" type="text" placeholder="Jane Smith"/></div>
-          <div class="field"><label>Title, Company</label><input class="p-title" type="text" placeholder="CFO, Acme Corp"/></div>
+          <div class="field"><label>Full name</label><input type="text" class="p-name" placeholder="Jane Smith"/></div>
+          <div class="field"><label>Title, Company</label><input type="text" class="p-title" placeholder="CFO, Acme Corp"/></div>
         </div>
       </div>
     </div>
@@ -249,32 +238,32 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
   </div>
 
   <!-- Applications -->
-  <div class="section">
-    <div class="section-title">Applications deployed</div>
-    <div class="products-grid" id="products-grid">
-      <label class="product-check"><input type="checkbox" value="Financial Consolidation"> Financial Consolidation</label>
-      <label class="product-check"><input type="checkbox" value="FPA+"> FPA+</label>
-      <label class="product-check"><input type="checkbox" value="Account Reconciliation"> Account Reconciliation</label>
-      <label class="product-check"><input type="checkbox" value="Cashflow Management"> Cashflow Management</label>
+  <div class="card">
+    <div class="card-title">Applications deployed</div>
+    <div class="products-grid">
+      <label class="prod-lbl"><input type="checkbox" value="Financial Consolidation"> Financial Consolidation</label>
+      <label class="prod-lbl"><input type="checkbox" value="FPA+"> FPA+</label>
+      <label class="prod-lbl"><input type="checkbox" value="Account Reconciliation"> Account Reconciliation</label>
+      <label class="prod-lbl"><input type="checkbox" value="Cashflow Management"> Cashflow Management</label>
     </div>
   </div>
 
   <!-- Languages -->
-  <div class="section">
-    <div class="section-title">Languages</div>
-    <p style="font-size:12px;color:#aaa;margin-bottom:12px">English is always included. Extra languages start as empty placeholders — fill them in after publishing via edit mode.</p>
-    <div class="langs-grid" id="langs-grid">
-      <label class="lang-check locked"><input type="checkbox" value="en" checked disabled> EN — English</label>
-      <label class="lang-check"><input type="checkbox" value="fr"> FR — French</label>
-      <label class="lang-check"><input type="checkbox" value="nl"> NL — Dutch</label>
-      <label class="lang-check"><input type="checkbox" value="de"> DE — German</label>
-      <label class="lang-check"><input type="checkbox" value="it"> IT — Italian</label>
-      <label class="lang-check"><input type="checkbox" value="es"> ES — Spanish</label>
+  <div class="card">
+    <div class="card-title">Languages</div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:12px">EN is always included. Extra languages add empty placeholder blocks — fill them in via edit mode after publishing.</p>
+    <div class="langs-grid">
+      <label class="lang-lbl locked"><input type="checkbox" value="en" checked disabled> EN — English</label>
+      <label class="lang-lbl"><input type="checkbox" value="fr"> FR — French</label>
+      <label class="lang-lbl"><input type="checkbox" value="nl"> NL — Dutch</label>
+      <label class="lang-lbl"><input type="checkbox" value="de"> DE — German</label>
+      <label class="lang-lbl"><input type="checkbox" value="it"> IT — Italian</label>
+      <label class="lang-lbl"><input type="checkbox" value="es"> ES — Spanish</label>
     </div>
   </div>
 
   <div class="submit-area">
-    <button class="submit-btn" id="submit-btn">Publish client story →</button>
+    <button class="submit-btn" id="submit-btn" disabled>Publish client story →</button>
   </div>
 
   </div><!-- /main-form -->
@@ -283,645 +272,552 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 <!-- Progress overlay -->
 <div id="progress-wrap">
   <div id="progress-box">
-    <div id="progress-icon">⚙️</div>
-    <div id="progress-title">Creating story…</div>
-    <div id="progress-step">Starting…</div>
-    <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-    <div id="progress-link"></div>
-    <div id="progress-error"></div>
+    <div id="prog-icon">⚙️</div>
+    <div id="prog-title">Creating story…</div>
+    <div id="prog-step">Starting…</div>
+    <div id="prog-bar-wrap"><div id="prog-bar"></div></div>
+    <div id="prog-link"></div>
+    <div id="prog-error"></div>
+    <button id="prog-retry" onclick="document.getElementById('progress-wrap').classList.remove('visible')">Try again</button>
   </div>
 </div>
 
 <script>
 var GH_REPO = 'raulsteiu/raulsteiu.github.io';
-var EDIT_PASSWORD = 'prophix2026';
 var sessionToken = '';
 
 var LANG_NAMES = {en:'EN',fr:'FR',nl:'NL',de:'DE',it:'IT',es:'ES'};
-var LANG_FULL = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish'};
-var LANG_LABELS = {en:'In English',fr:'En français',nl:'In het Nederlands',de:'Auf Deutsch',it:'In italiano',es:'En español'};
+var LANG_FULL  = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish'};
+var LANG_LABELS= {en:'Customer Story',fr:'En français',nl:'In het Nederlands',de:'Auf Deutsch',it:'In italiano',es:'En español'};
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
+// ── Auth — token only ─────────────────────────────────────────────────────────
 document.getElementById('auth-submit').addEventListener('click', function() {
-  var pw = document.getElementById('auth-pw').value;
   var tok = document.getElementById('auth-token').value.trim().replace(/[^\x20-\x7E]/g,'');
   document.getElementById('auth-error').textContent = '';
-  if (pw !== EDIT_PASSWORD) { document.getElementById('auth-error').textContent = 'Incorrect password.'; return; }
   if (!tok) { document.getElementById('auth-error').textContent = 'Please paste your GitHub token.'; return; }
-  sessionToken = tok;
-  document.getElementById('auth-wrap').style.display = 'none';
-  var form = document.getElementById('main-form');
-  form.style.opacity = '1'; form.style.pointerEvents = '';
+  // Quick verify
+  fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json',{
+    headers:{'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'}
+  }).then(function(r){
+    if (!r.ok) { document.getElementById('auth-error').textContent = 'Token invalid or no access.'; return; }
+    sessionToken = tok;
+    document.getElementById('auth-ok').style.display = 'block';
+    document.getElementById('auth-submit').textContent = '✓ Unlocked';
+    document.getElementById('auth-submit').style.background = '#2a7a2a';
+    var form = document.getElementById('main-form');
+    form.style.opacity = '1'; form.style.pointerEvents = '';
+    document.getElementById('submit-btn').disabled = false;
+  }).catch(function(){ document.getElementById('auth-error').textContent = 'Could not verify token.'; });
 });
-['auth-pw','auth-token'].forEach(function(id) {
-  document.getElementById(id).addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('auth-submit').click();
-  });
-});
+document.getElementById('auth-token').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('auth-submit').click(); });
 
 // ── Toggle helpers ────────────────────────────────────────────────────────────
-document.querySelectorAll('.product-check').forEach(function(lbl) {
-  lbl.addEventListener('click', function() {
-    var cb = lbl.querySelector('input');
-    cb.checked = !cb.checked;
-    lbl.classList.toggle('checked', cb.checked);
+document.querySelectorAll('.prod-lbl').forEach(function(lbl){
+  lbl.addEventListener('click',function(){
+    var cb=lbl.querySelector('input'); cb.checked=!cb.checked; lbl.classList.toggle('on',cb.checked);
   });
 });
-document.querySelectorAll('.lang-check:not(.locked)').forEach(function(lbl) {
-  lbl.addEventListener('click', function() {
-    var cb = lbl.querySelector('input');
-    cb.checked = !cb.checked;
-    lbl.classList.toggle('checked', cb.checked);
+document.querySelectorAll('.lang-lbl:not(.locked)').forEach(function(lbl){
+  lbl.addEventListener('click',function(){
+    var cb=lbl.querySelector('input'); cb.checked=!cb.checked; lbl.classList.toggle('on',cb.checked);
   });
 });
 
-// ── Logo file input ───────────────────────────────────────────────────────────
-document.getElementById('logo-file').addEventListener('change', function() {
-  var file = this.files[0];
-  if (file) {
-    document.getElementById('logo-name').textContent = file.name;
-    document.getElementById('logo-name').style.display = 'block';
-    document.querySelector('#logo-drop .file-label').textContent = 'Click to change';
-  }
+// ── Logo ──────────────────────────────────────────────────────────────────────
+document.getElementById('logo-file').addEventListener('change',function(){
+  var f=this.files[0]; if(!f) return;
+  document.getElementById('logo-name').textContent=f.name; document.getElementById('logo-name').style.display='block';
+  document.querySelector('#logo-drop .file-drop-label').textContent='Click to change';
 });
 
 // ── Dynamic rows ──────────────────────────────────────────────────────────────
-function removeItem(btn) { btn.closest('.dyn-item').remove(); }
-
-function addSection() {
-  var div = document.createElement('div'); div.className = 'dyn-item';
-  div.innerHTML = '<button class="remove-btn" onclick="removeItem(this)">✕</button>' +
-    '<div class="row"><div class="field"><label>Label</label><input class="sec-label" type="text" placeholder="e.g. Key Results"/></div>' +
-    '<div class="field"><label>Heading</label><input class="sec-heading" type="text" placeholder="Heading"/></div></div>' +
-    '<div class="field"><label>Body text</label><textarea class="sec-body" placeholder="Section content…"></textarea></div>';
-  document.getElementById('sections-list').appendChild(div);
+function addStat(){
+  var d=document.createElement('div'); d.className='stat-row-item';
+  d.innerHTML='<input type="text" class="stat-val" placeholder="Value"/><input type="text" class="stat-lbl" placeholder="Label"/><button class="remove-small" onclick="this.closest(\'.stat-row-item\').remove()">✕</button>';
+  document.getElementById('stats-builder').appendChild(d);
+}
+function addWhoStat(){
+  var d=document.createElement('div'); d.className='stat-row-item';
+  d.innerHTML='<input type="text" class="who-stat-val" placeholder="Value"/><input type="text" class="who-stat-lbl" placeholder="Label"/><button class="remove-small" onclick="this.closest(\'.stat-row-item\').remove()">✕</button>';
+  document.getElementById('who-stats-builder').appendChild(d);
+}
+function addKRS(){
+  var d=document.createElement('div'); d.className='dyn-item';
+  d.innerHTML='<button class="rm" onclick="this.closest(\'.dyn-item\').remove()">✕</button><div class="field"><label>Result</label><input type="text" class="krs-text" placeholder="Full result sentence"/></div><div class="field"><label>Bold prefix</label><input type="text" class="krs-bold" placeholder="Bold part of the sentence"/></div>';
+  document.getElementById('krs-list').appendChild(d);
+}
+function addSection(){
+  var d=document.createElement('div'); d.className='dyn-item';
+  d.innerHTML='<button class="rm" onclick="this.closest(\'.dyn-item\').remove()">✕</button><div class="row"><div class="field"><label>Label</label><input type="text" class="sec-label" placeholder="Label"/></div><div class="field"><label>Heading</label><input type="text" class="sec-heading" placeholder="Heading"/></div></div><div class="field"><label>Body</label><textarea class="sec-body" placeholder="Content…"></textarea></div>';
+  document.getElementById('sections-list').appendChild(d);
+}
+function addClip(){
+  var d=document.createElement('div'); d.className='dyn-item';
+  d.innerHTML='<button class="rm" onclick="this.closest(\'.dyn-item\').remove()">✕</button><div class="row"><div class="field"><label>Title</label><input type="text" class="clip-title" placeholder="Clip title"/></div><div class="field"><label>Timestamp</label><input type="text" class="clip-ts" placeholder="e.g. 02:15"/></div></div><div class="field"><label>Quote</label><textarea class="clip-quote" placeholder="&quot;Quote…&quot;"></textarea></div>';
+  document.getElementById('clips-list').appendChild(d);
+}
+function addResult(){
+  var d=document.createElement('div'); d.className='dyn-item';
+  d.innerHTML='<button class="rm" onclick="this.closest(\'.dyn-item\').remove()">✕</button><div class="field"><input type="text" class="result-text" placeholder="Result bullet…"/></div>';
+  document.getElementById('results-list').appendChild(d);
+}
+function addParticipant(){
+  var d=document.createElement('div'); d.className='dyn-item';
+  d.innerHTML='<button class="rm" onclick="this.closest(\'.dyn-item\').remove()">✕</button><div class="row"><div class="field"><label>Full name</label><input type="text" class="p-name" placeholder="Name"/></div><div class="field"><label>Title, Company</label><input type="text" class="p-title" placeholder="Title, Company"/></div></div>';
+  document.getElementById('participants-list').appendChild(d);
 }
 
-function addClip() {
-  var div = document.createElement('div'); div.className = 'dyn-item';
-  div.innerHTML = '<button class="remove-btn" onclick="removeItem(this)">✕</button>' +
-    '<div class="row"><div class="field"><label>Clip title</label><input class="clip-title" type="text" placeholder="Clip title"/></div>' +
-    '<div class="field"><label>Timestamp</label><input class="clip-ts" type="text" placeholder="e.g. 02:15"/></div></div>' +
-    '<div class="field"><label>Quote</label><textarea class="clip-quote" placeholder="&quot;Quote…&quot;"></textarea></div>';
-  document.getElementById('clips-list').appendChild(div);
-}
+// ── Slug ──────────────────────────────────────────────────────────────────────
+function toSlug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,60); }
 
-function addResult() {
-  var div = document.createElement('div'); div.className = 'dyn-item';
-  div.innerHTML = '<button class="remove-btn" onclick="removeItem(this)">✕</button>' +
-    '<div class="field"><input class="result-text" type="text" placeholder="Result bullet…"/></div>';
-  document.getElementById('results-list').appendChild(div);
-}
-
-function addParticipant() {
-  var div = document.createElement('div'); div.className = 'dyn-item';
-  div.innerHTML = '<button class="remove-btn" onclick="removeItem(this)">✕</button>' +
-    '<div class="row"><div class="field"><label>Full name</label><input class="p-name" type="text" placeholder="Name"/></div>' +
-    '<div class="field"><label>Title, Company</label><input class="p-title" type="text" placeholder="Title, Company"/></div></div>';
-  document.getElementById('participants-list').appendChild(div);
-}
-
-// ── Slug util ─────────────────────────────────────────────────────────────────
-function toSlug(s) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,60);
-}
-
-// ── Progress helpers ──────────────────────────────────────────────────────────
-function setProgress(step, pct) {
-  document.getElementById('progress-step').textContent = step;
-  document.getElementById('progress-bar').style.width = pct + '%';
-}
+// ── Progress ──────────────────────────────────────────────────────────────────
+function setProgress(step,pct){ document.getElementById('prog-step').textContent=step; document.getElementById('prog-bar').style.width=pct+'%'; }
 
 // ── GitHub helpers ────────────────────────────────────────────────────────────
-async function ghPut(path, content, message, existingSha) {
-  var body = {message:message, content:btoa(unescape(encodeURIComponent(content)))};
-  if (existingSha) body.sha = existingSha;
-  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-    method:'PUT',
-    headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-    body:JSON.stringify(body)
-  });
-  var d = await r.json();
-  if (!r.ok) throw new Error(d.message || 'GitHub error on '+path);
-  return d;
+async function ghPut(path,content,message,sha){
+  var body={message:message,content:btoa(unescape(encodeURIComponent(content)))};
+  if(sha) body.sha=sha;
+  var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  var d=await r.json(); if(!r.ok) throw new Error(d.message||'GitHub error'); return d;
 }
-
-async function ghPutBinary(path, b64, message) {
-  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-    method:'PUT',
-    headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-    body:JSON.stringify({message:message, content:b64})
-  });
-  var d = await r.json();
-  if (!r.ok) throw new Error(d.message || 'GitHub error on '+path);
-  return d;
+async function ghPutBin(path,b64,message){
+  var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:message,content:b64})});
+  var d=await r.json(); if(!r.ok) throw new Error(d.message||'GitHub error'); return d;
 }
-
-async function ghGetSha(path) {
-  var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-    headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-  });
-  if (!r.ok) return null;
-  return (await r.json()).sha;
+async function ghGetSha(path){
+  var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
+  if(!r.ok) return null; return (await r.json()).sha;
 }
-
-function fileToBase64(file) {
-  return new Promise(function(resolve,reject){
-    var reader = new FileReader();
-    reader.onload = function(e){ resolve(e.target.result.split(',')[1]); };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
+function fileToB64(file){ return new Promise(function(res,rej){ var fr=new FileReader(); fr.onload=function(e){res(e.target.result.split(',')[1]);}; fr.onerror=rej; fr.readAsDataURL(file); }); }
 
 // ── Submit ────────────────────────────────────────────────────────────────────
-document.getElementById('submit-btn').addEventListener('click', async function() {
-  if (!sessionToken) { alert('Please unlock the creator first.'); return; }
-
+document.getElementById('submit-btn').addEventListener('click', async function(){
+  if (!sessionToken) return;
   var name = document.getElementById('client-name').value.trim();
   if (!name) { alert('Client name is required.'); document.getElementById('client-name').focus(); return; }
-
   var slug = toSlug(name);
   var desc = document.getElementById('client-desc').value.trim();
   var industry = document.getElementById('client-industry').value.trim();
+  var whoText = document.getElementById('who-text').value.trim();
 
-  // Stats
-  var statVals = Array.from(document.querySelectorAll('.stat-val')).map(function(i){return i.value.trim()||'—';});
-  var statLbls = Array.from(document.querySelectorAll('.stat-lbl')).map(function(i){return i.value.trim()||'—';});
-  var stats = [{v:statVals[0],l:statLbls[0]},{v:statVals[1],l:statLbls[1]},{v:statVals[2],l:statLbls[2]},{v:statVals[3],l:statLbls[3]}];
+  var stats = Array.from(document.querySelectorAll('#stats-builder .stat-row-item')).map(function(r){
+    return {v:r.querySelector('.stat-val').value.trim()||'—',l:r.querySelector('.stat-lbl').value.trim()||'—'};
+  }).filter(function(s){return s.v!=='—'||s.l!=='—';});
 
-  // KRS
-  var krsNums = Array.from(document.querySelectorAll('.krs-num')).map(function(i){return i.value.trim();});
-  var krsLbls = Array.from(document.querySelectorAll('.krs-lbl')).map(function(i){return i.value.trim();});
-  var krsDescs = Array.from(document.querySelectorAll('.krs-desc')).map(function(i){return i.value.trim();});
-  var krsItems = krsNums.map(function(n,i){return {num:n,lbl:krsLbls[i],desc:krsDescs[i]};}).filter(function(k){return k.num||k.lbl;});
+  var whoStats = Array.from(document.querySelectorAll('#who-stats-builder .stat-row-item')).map(function(r){
+    return {v:r.querySelector('.who-stat-val').value.trim(),l:r.querySelector('.who-stat-lbl').value.trim()};
+  }).filter(function(s){return s.v||s.l;});
 
-  // Sections
+  var krsItems = Array.from(document.querySelectorAll('#krs-list .dyn-item')).map(function(el){
+    return {text:el.querySelector('.krs-text').value.trim(), bold:el.querySelector('.krs-bold').value.trim()};
+  }).filter(function(k){return k.text;});
+
   var sections = Array.from(document.querySelectorAll('#sections-list .dyn-item')).map(function(el){
     return {label:el.querySelector('.sec-label').value.trim(),heading:el.querySelector('.sec-heading').value.trim(),body:el.querySelector('.sec-body').value.trim()};
-  }).filter(function(s){return s.label||s.heading;});
+  }).filter(function(s){return s.heading;});
 
-  // Clips
   var clips = Array.from(document.querySelectorAll('#clips-list .dyn-item')).map(function(el){
     return {title:el.querySelector('.clip-title').value.trim(),ts:el.querySelector('.clip-ts').value.trim(),quote:el.querySelector('.clip-quote').value.trim()};
   }).filter(function(c){return c.title;});
 
-  // Results
   var results = Array.from(document.querySelectorAll('.result-text')).map(function(i){return i.value.trim();}).filter(Boolean);
-
-  // Participants
   var participants = Array.from(document.querySelectorAll('#participants-list .dyn-item')).map(function(el){
     return {name:el.querySelector('.p-name').value.trim(),title:el.querySelector('.p-title').value.trim()};
   }).filter(function(p){return p.name;});
 
-  // Products
-  var products = Array.from(document.querySelectorAll('#products-grid input:checked')).map(function(cb){return cb.value;});
+  var products = Array.from(document.querySelectorAll('.products-grid input:checked')).map(function(cb){return cb.value;});
+  var langs = Array.from(document.querySelectorAll('.langs-grid input:checked')).map(function(cb){return cb.value;});
+  if (langs.indexOf('en')===-1) langs.unshift('en');
 
-  // Languages
-  var langs = Array.from(document.querySelectorAll('#langs-grid input:checked')).map(function(cb){return cb.value;});
-  if (langs.indexOf('en') === -1) langs.unshift('en');
-
-  // Logo file
   var logoFile = document.getElementById('logo-file').files[0];
 
-  // Show progress
   document.getElementById('progress-wrap').classList.add('visible');
-  document.getElementById('progress-error').style.display = 'none';
-  document.getElementById('submit-btn').disabled = true;
-  setProgress('Preparing…', 5);
+  document.getElementById('prog-error').style.display='none';
+  document.getElementById('prog-retry').style.display='none';
+  document.getElementById('prog-link').style.display='none';
+  document.getElementById('prog-icon').textContent='⚙️';
+  document.getElementById('prog-title').textContent='Creating story…';
+  document.getElementById('submit-btn').disabled=true;
 
   try {
-    var folder = 'clients/' + slug + '/';
-
-    // Upload logo if provided
-    var hasLogo = false;
+    var folder='clients/'+slug+'/';
+    var hasLogo=false;
     if (logoFile) {
-      setProgress('Uploading logo…', 15);
-      var ext = logoFile.name.split('.').pop().toLowerCase();
-      var logob64 = await fileToBase64(logoFile);
-      await ghPutBinary(folder + 'logo.' + ext, logob64, 'Logo: ' + name);
-      hasLogo = true;
+      setProgress('Uploading logo…',15);
+      var ext=logoFile.name.split('.').pop().toLowerCase();
+      await ghPutBin(folder+'logo.'+ext, await fileToB64(logoFile), 'Logo: '+name);
+      hasLogo=true;
     }
-
-    // Generate page HTML
-    setProgress('Generating page…', 35);
-    var html = buildPageHTML({slug,name,desc,industry,stats,krsItems,sections,clips,results,participants,products,langs,hasLogo});
-
-    // Upload page
-    setProgress('Uploading page…', 55);
-    await ghPut(folder + 'index.html', html, 'Story: ' + name);
-
-    // Update stories.json
-    setProgress('Updating directory…', 75);
-    var storiesSha = await ghGetSha('clients/stories.json');
-    var storiesRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
-      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-    });
-    var currentStories = [];
-    if (storiesRes.ok) {
-      var storiesData = await storiesRes.json();
-      try { currentStories = JSON.parse(atob(storiesData.content.replace(/\n/g,''))); } catch(e){}
-    }
-
-    // Remove if slug already exists (re-publish), then add
-    currentStories = currentStories.filter(function(s){return s.slug !== slug;});
-    currentStories.unshift({slug:slug, name:name, created:new Date().toISOString(), logo:hasLogo});
-
-    await ghPut(
-      'clients/stories.json',
-      JSON.stringify(currentStories, null, 2),
-      'Add story: ' + name,
-      storiesSha
-    );
-
-    setProgress('Done!', 100);
-    document.getElementById('progress-icon').textContent = '🎉';
-    document.getElementById('progress-title').textContent = 'Story published!';
-    document.getElementById('progress-step').textContent = name + ' is live';
-    var link = document.getElementById('progress-link');
-    link.style.display = 'block';
-    link.innerHTML = '<a href="/clients/'+slug+'/" target="_blank">Open '+name+' story &#x2192;</a>';
-
+    setProgress('Generating page…',35);
+    var html=buildPageHTML({slug,name,desc,industry,stats,whoText,whoStats,krsItems,sections,clips,results,participants,products,langs,hasLogo});
+    setProgress('Uploading page…',55);
+    await ghPut(folder+'index.html',html,'Story: '+name);
+    setProgress('Updating directory…',75);
+    var storiesSha=await ghGetSha('clients/stories.json');
+    var storiesRes=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json',{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
+    var currentStories=[];
+    if(storiesRes.ok){try{currentStories=JSON.parse(atob((await storiesRes.json()).content.replace(/\n/g,'')));}catch(e){}}
+    currentStories=currentStories.filter(function(s){return s.slug!==slug;});
+    currentStories.unshift({slug:slug,name:name,created:new Date().toISOString(),logo:hasLogo});
+    await ghPut('clients/stories.json',JSON.stringify(currentStories,null,2),'Add story: '+name,storiesSha);
+    setProgress('Done!',100);
+    document.getElementById('prog-icon').textContent='🎉';
+    document.getElementById('prog-title').textContent='Story published!';
+    document.getElementById('prog-step').textContent=name+' is now live';
+    var lnk=document.getElementById('prog-link');
+    lnk.style.display='flex';
+    lnk.innerHTML='<a class="prog-open" href="/clients/'+slug+'/" target="_blank">Open '+esc(name)+' story &#x2192;</a>'+
+      '<a class="prog-dir" href="/clients/" onclick="window.open(\'/clients/\',\'_blank\');return false;">View all stories</a>';
   } catch(e) {
-    document.getElementById('progress-icon').textContent = '⚠️';
-    document.getElementById('progress-title').textContent = 'Something went wrong';
-    document.getElementById('progress-step').textContent = '';
-    document.getElementById('progress-error').textContent = e.message;
-    document.getElementById('progress-error').style.display = 'block';
-    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('prog-icon').textContent='⚠️';
+    document.getElementById('prog-title').textContent='Something went wrong';
+    document.getElementById('prog-step').textContent='';
+    document.getElementById('prog-error').textContent=e.message; document.getElementById('prog-error').style.display='block';
+    document.getElementById('prog-retry').style.display='inline-block';
+    document.getElementById('submit-btn').disabled=false;
   }
 });
 
-// ── Page HTML builder ─────────────────────────────────────────────────────────
-function buildPageHTML(d) {
-  var slug = d.slug, name = d.name, desc = d.desc, industry = d.industry;
-  var stats = d.stats, krsItems = d.krsItems, sections = d.sections;
-  var clips = d.clips, results = d.results, participants = d.participants;
-  var products = d.products, langs = d.langs, hasLogo = d.hasLogo;
+// ── HTML builder ──────────────────────────────────────────────────────────────
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  // Derive available-add languages for dropdown
-  var allLangs = ['fr','nl','de','it','es'];
-  var addableLangs = allLangs.filter(function(l){return langs.indexOf(l)===-1;});
-
-  var p = [];
+function buildPageHTML(d){
+  var slug=d.slug,name=d.name,desc=d.desc,industry=d.industry;
+  var stats=d.stats,whoText=d.whoText,whoStats=d.whoStats;
+  var krsItems=d.krsItems,sections=d.sections,clips=d.clips;
+  var results=d.results,participants=d.participants;
+  var products=d.products,langs=d.langs,hasLogo=d.hasLogo;
+  var allLangs=['fr','nl','de','it','es'];
+  var addable=allLangs.filter(function(l){return langs.indexOf(l)===-1;});
+  var p=[];
 
   p.push('<!DOCTYPE html>');
-  p.push('<html lang="en">');
-  p.push('<head>');
-  p.push('<meta charset="UTF-8">');
-  p.push('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
-  p.push('<title>' + esc(name) + ' — Prophix Client Story</title>');
-  p.push('<style>');
-  p.push(getPageCSS());
-  p.push('</style>');
-  p.push('</head>');
-  p.push('<body>');
+  p.push('<html lang="en"><head>');
+  p.push('<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">');
+  p.push('<title>'+esc(name)+' — Prophix Customer Story</title>');
+  p.push('<style>'+getPageCSS()+'</style>');
+  p.push('</head><body>');
 
-  // Globals
+  // Globals — no password
   p.push('<script>');
   p.push('var GH_REPO="raulsteiu/raulsteiu.github.io";');
-  p.push('var GH_FILE="clients/' + slug + '/index.html";');
-  p.push('var GH_CLIENT_FOLDER="clients/' + slug + '/";');
-  p.push('var EDIT_PASSWORD="prophix2026";');
-  p.push('var activeLangs=' + JSON.stringify(langs) + ';');
+  p.push('var GH_FILE="clients/'+slug+'/index.html";');
+  p.push('var GH_CLIENT_FOLDER="clients/'+slug+'/";');
+  p.push('var activeLangs='+JSON.stringify(langs)+';');
   p.push('var LANG_NAMES={en:"EN",fr:"FR",nl:"NL",de:"DE",it:"IT",es:"ES"};');
-  p.push('var LANG_LABELS={en:"In English",fr:"En fran\\u00e7ais",nl:"In het Nederlands",de:"Auf Deutsch",it:"In italiano",es:"En espa\\u00f1ol"};');
+  p.push('var LANG_LABELS={en:"Customer Story",fr:"En fran\\u00e7ais",nl:"In het Nederlands",de:"Auf Deutsch",it:"In italiano",es:"En espa\\u00f1ol"};');
   p.push('var LANG_FULL_NAMES={fr:"French",nl:"Dutch",de:"German",it:"Italian",es:"Spanish"};');
   p.push('<\/script>');
 
   // Edit FAB
-  p.push('<button id="edit-fab" class="edit-fab" title="Edit this page">✏</button>');
+  p.push('<button id="edit-fab" class="edit-fab" title="Edit">✏</button>');
 
-  // Edit toolbar
+  // Edit toolbar — no password fields, just status
   p.push('<div id="edit-toolbar" class="edit-toolbar">');
-  p.push('<div class="toolbar-left">');
+  p.push('<div style="display:flex;align-items:center;gap:8px">');
   p.push('<button id="save-btn" class="tb-btn tb-save">Save</button>');
   p.push('<button id="cancel-btn" class="tb-btn tb-cancel">Cancel</button>');
   p.push('<span id="save-status" class="save-status"></span>');
-  p.push('</div>');
-  p.push('<div class="toolbar-right">');
-  p.push('<button id="upload-logo-btn" class="tb-btn tb-tool edit-only" style="display:none">Upload logo</button>');
-  p.push('<button id="edit-products-btn" class="tb-btn tb-tool edit-only" style="display:none">Edit products</button>');
-  p.push('</div>');
-  p.push('</div>');
+  p.push('</div></div>');
 
   // Lang toggle
   p.push('<div id="lang-toggle" class="lang-toggle">');
-  langs.forEach(function(l) {
-    var isEn = l === 'en';
-    p.push('<button class="lang-btn' + (isEn?' active':'') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>');
-    if (!isEn) p.push('<button class="lang-btn remove-lang" data-remove-lang="' + l + '" style="display:none">&times;</button>');
+  langs.forEach(function(l){
+    p.push('<button class="lang-btn'+(l==='en'?' active':'')+'" data-lang="'+l+'">'+LANG_NAMES[l]+'</button>');
+    if(l!=='en') p.push('<button class="lang-btn remove-lang" data-remove-lang="'+l+'" style="display:none">&times;</button>');
   });
-  if (addableLangs.length > 0) {
-    p.push('<span id="lang-add-wrap" class="lang-add-wrap edit-only" style="display:none">');
+  p.push('<span id="lang-add-wrap" class="lang-add-wrap edit-only" style="display:none">');
+  if(addable.length>0){
     p.push('<select id="lang-add-select"><option value="">+ Add language</option>');
-    addableLangs.forEach(function(l){p.push('<option value="'+l+'">'+LANG_FULL[l]+'</option>');});
+    addable.forEach(function(l){p.push('<option value="'+l+'">'+LANG_FULL[l]+'</option>');});
     p.push('</select>');
-    p.push('</span>');
-  } else {
-    p.push('<span id="lang-add-wrap"></span>');
   }
-  p.push('</div>');
+  p.push('</span></div>');
 
-  // Blocks container
   p.push('<div id="lang-blocks">');
 
-  langs.forEach(function(langCode, li) {
-    var isActive = langCode === 'en';
-    var prefix = langCode !== 'en' ? ('[' + LANG_NAMES[langCode] + '] ') : '';
+  langs.forEach(function(langCode){
+    var isEN=langCode==='en';
+    var pfx=isEN?'':('['+LANG_NAMES[langCode]+'] ');
+    p.push('<div class="lang-block'+(isEN?' active':'')+'" id="block-'+langCode+'">');
 
-    p.push('<div class="lang-block' + (isActive?' active':'') + '" id="block-' + langCode + '">');
-
-    // Hero
+    // Hero — logo top right opposite to prophix logo
     p.push('<div class="hero">');
     p.push('<div class="hero-inner">');
-    p.push('<div class="hero-content">');
-    p.push('<div class="hero-tag">' + prefix + (LANG_LABELS[langCode]||'Customer Story') + '</div>');
-    p.push('<h1>' + prefix + esc(name) + ' Customer Story</h1>');
-    p.push('<div class="hero-desc">' + prefix + esc(desc||'How '+name+' transformed their financial performance with Prophix.') + '</div>');
-    if (industry) p.push('<div class="hero-industry">' + esc(industry) + '</div>');
-    p.push('</div>');
-    // Client logo in hero
-    if (hasLogo) {
-      p.push('<div class="hero-logo-wrap">');
-      p.push('<img class="hero-client-logo" src="logo.png" alt="' + esc(name) + ' logo">');
-      p.push('</div>');
+    // Prophix logo top left
+    p.push('<div class="hero-prophix-logo"><img src="/prophix-logo-1000px.png" alt="Prophix" style="height:28px;width:auto;filter:brightness(0) invert(1);opacity:.7"></div>');
+    // Client logo top right
+    p.push('<div class="hero-client-logo-wrap">');
+    if(hasLogo){
+      p.push('<img class="hero-client-logo" src="logo.png" alt="'+esc(name)+' logo" onclick="if(document.body.classList.contains(\'edit-mode\'))triggerLogoUpload()" title="Click to replace logo in edit mode">');
     } else {
-      p.push('<div class="hero-logo-wrap">');
-      p.push('<img class="hero-client-logo" src="logo.png" alt="' + esc(name) + ' logo" style="display:none">');
-      p.push('</div>');
+      p.push('<img class="hero-client-logo" src="logo.png" alt="'+esc(name)+' logo" style="display:none" onclick="if(document.body.classList.contains(\'edit-mode\'))triggerLogoUpload()" title="Click to upload logo">');
+      p.push('<div class="hero-logo-placeholder edit-only" style="display:none" onclick="triggerLogoUpload()" title="Upload client logo">+ Logo</div>');
     }
-    p.push('</div>'); // hero-inner
-    p.push('</div>'); // hero
-
-    // Stats row
-    p.push('<div class="stats-row">');
-    stats.forEach(function(s) {
-      p.push('<div class="stat-tile"><div class="stat-n">' + esc(s.v) + '</div><div class="stat-l">' + esc(s.l) + '</div></div>');
-    });
     p.push('</div>');
+    // Hero content
+    p.push('<div class="hero-content">');
+    p.push('<div class="hero-tag">'+pfx+(LANG_LABELS[langCode]||'Customer Story')+'</div>');
+    p.push('<h1>'+pfx+esc(name)+' Customer Story</h1>');
+    p.push('<div class="hero-desc">'+pfx+esc(desc||'How '+name+' transformed their financial performance with Prophix.')+'</div>');
+    if(industry) p.push('<div class="hero-industry" contenteditable="false">'+pfx+esc(industry)+'</div>');
+    p.push('</div>');
+    p.push('</div></div>'); // hero-inner / hero
 
-    // Key Results Snapshot
-    if (krsItems.length > 0) {
-      p.push('<div class="krs-section">');
-      p.push('<div class="krs-label-row">' + prefix + 'Key Results Snapshot</div>');
-      p.push('<div class="krs-grid">');
-      krsItems.forEach(function(k) {
-        p.push('<div class="krs-card">');
-        p.push('<div class="krs-number">' + prefix + esc(k.num) + '</div>');
-        p.push('<div class="krs-label">' + prefix + esc(k.lbl) + '</div>');
-        if (k.desc) p.push('<div class="krs-desc">' + prefix + esc(k.desc) + '</div>');
-        p.push('</div>');
+    // Stats row — flexible
+    if(stats.length>0){
+      p.push('<div class="stats-row" id="stats-row-'+langCode+'">');
+      stats.forEach(function(s){
+        p.push('<div class="stat-tile"><div class="stat-n">'+pfx+esc(s.v)+'</div><div class="stat-l">'+pfx+esc(s.l)+'</div></div>');
       });
       p.push('</div>');
-      p.push('</div>');
     }
 
-    // Main body layout
-    p.push('<div class="body-layout">');
+    // KRS — dark tile with checkmarks
+    if(krsItems.length>0){
+      p.push('<div class="krs-section">');
+      p.push('<div class="krs-inner">');
+      p.push('<div class="krs-heading">Key Results Snapshot</div>');
+      p.push('<ul class="krs-list">');
+      krsItems.forEach(function(k){
+        p.push('<li class="krs-item">');
+        p.push('<span class="krs-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF363D" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>');
+        p.push('<span class="krs-text">');
+        if(k.bold) p.push('<strong>'+pfx+esc(k.bold)+':</strong> '+pfx+esc(k.text.replace(k.bold+':','').replace(k.bold,'').trim()));
+        else p.push(pfx+esc(k.text));
+        p.push('</span>');
+        p.push('</li>');
+      });
+      p.push('</ul></div></div>');
+    }
 
-    // Main column (sections + clips)
+    // Body layout
+    p.push('<div class="body-layout">');
+    // Main col
     p.push('<div class="main-col">');
     p.push('<div class="sections-container">');
-    sections.forEach(function(s) {
+    sections.forEach(function(s){
       p.push('<div class="story-sec">');
-      p.push('<button class="sec-delete-btn edit-only" onclick="deleteSection(this)" style="display:none" title="Remove section">✕</button>');
-      p.push('<div class="sec-label">' + prefix + esc(s.label) + '</div>');
-      p.push('<h2>' + prefix + esc(s.heading) + '</h2>');
-      p.push('<p>' + prefix + esc(s.body) + '</p>');
+      p.push('<div class="sec-label">'+pfx+esc(s.label)+'</div>');
+      p.push('<h2>'+pfx+esc(s.heading)+'</h2>');
+      p.push('<p>'+pfx+esc(s.body)+'</p>');
       p.push('</div>');
     });
-    p.push('</div>'); // sections-container
-
-    // Add section button
+    p.push('</div>');
     p.push('<button class="add-sec-btn edit-only" onclick="addSection(this)" style="display:none">+ Add section</button>');
-
     // Clips
     p.push('<div class="clips-section">');
-    clips.forEach(function(c) {
+    clips.forEach(function(c){
       p.push('<div class="clip-card">');
-      p.push('<div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>' + esc(c.title) + (c.ts?' · '+esc(c.ts):'') + '</div>');
-      p.push('<div class="clip-quote">' + esc(c.quote||'"…"') + '</div>');
+      p.push('<div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>'+esc(c.title)+(c.ts?' · '+esc(c.ts):'')+'</div>');
+      p.push('<div class="clip-quote">'+esc(c.quote||'"…"')+'</div>');
       p.push('<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D"><source type="audio/mpeg"></audio></div>');
       p.push('</div>');
     });
     p.push('<button class="add-clip-btn edit-only" onclick="addClipInline(this)" style="display:none">+ Add clip</button>');
-    p.push('</div>'); // clips-section
-
+    p.push('</div>');
     p.push('</div>'); // main-col
 
     // Sidebar
     p.push('<div class="sidebar">');
 
-    // Why client card
-    p.push('<div class="sidebar-card sidebar-why">');
-    p.push('<h3>Why ' + esc(name) + '</h3>');
-    p.push('<div class="sidebar-stats">');
-    stats.forEach(function(s) {
-      p.push('<div class="sidebar-stat"><div class="stat-n">' + esc(s.v) + '</div><div class="stat-l">' + esc(s.l) + '</div></div>');
-    });
-    p.push('</div>');
+    // Who is client
+    p.push('<div class="sidebar-card who-card">');
+    p.push('<h3>Who is '+esc(name)+'?</h3>');
+    if(whoText) p.push('<p class="who-text">'+pfx+esc(whoText)+'</p>');
+    if(whoStats.length>0){
+      p.push('<div class="who-stats-grid">');
+      whoStats.forEach(function(s){
+        p.push('<div class="who-stat-tile"><div class="who-stat-n">'+esc(s.v)+'</div><div class="who-stat-l">'+esc(s.l)+'</div></div>');
+      });
+      p.push('</div>');
+    }
     p.push('</div>');
 
-    // Applications deployed
+    // Products
     p.push('<div class="sidebar-card">');
     p.push('<h3>Applications deployed</h3>');
-    p.push('<div class="apps-display">');
-    products.forEach(function(prod){
-      p.push('<div class="app-tag"><span class="app-dot"></span><span>' + esc(prod) + '</span></div>');
-    });
+    p.push('<div class="apps-display edit-products-trigger" onclick="if(document.body.classList.contains(\'edit-mode\'))toggleProductsPanel(this)" title="Click to edit products in edit mode">');
+    if(products.length>0){
+      products.forEach(function(prod){ p.push('<div class="app-tag"><span class="app-dot"></span><span>'+esc(prod)+'</span></div>'); });
+    } else {
+      p.push('<span style="font-size:12px;color:#aaa">No products selected</span>');
+    }
     p.push('</div>');
     p.push('</div>');
 
     // Results
-    if (results.length > 0) {
+    if(results.length>0){
       p.push('<div class="sidebar-card">');
-      p.push('<h3>Results</h3>');
-      p.push('<ul class="results-ul">');
-      results.forEach(function(r){p.push('<li class="result-item">' + esc(r) + '</li>');});
-      p.push('</ul>');
-      p.push('</div>');
+      p.push('<h3>Results</h3><ul class="results-ul">');
+      results.forEach(function(r){ p.push('<li class="result-item">'+esc(r)+'</li>'); });
+      p.push('</ul></div>');
     }
 
     // Participants
-    if (participants.length > 0) {
+    if(participants.length>0){
       p.push('<div class="sidebar-card">');
       p.push('<h3>Participants</h3>');
-      p.push('<div id="participants-list">');
       participants.forEach(function(pt){
-        p.push('<p style="margin-top:10px"><strong>' + esc(pt.name) + '</strong><br><span style="font-size:12px;color:#888">' + esc(pt.title) + '</span></p>');
+        p.push('<p style="margin-top:10px"><strong>'+esc(pt.name)+'</strong><br><span style="font-size:12px;color:#888">'+esc(pt.title)+'</span></p>');
       });
       p.push('</div>');
-      p.push('</div>');
     }
-
     p.push('</div>'); // sidebar
     p.push('</div>'); // body-layout
 
-    // Footer
-    p.push('<div class="page-footer"><strong>Prophix Software Inc.</strong> — prophix.com</div>');
+    // Footer / disclaimer — editable
+    p.push('<div class="page-footer">');
+    p.push('<p class="disclaimer-text"><strong>Prophix Software Inc.</strong> Copyright &copy; <span class="footer-year"></span>. May only be reproduced with Prophix\'s prior consent.</p>');
+    p.push('<p class="disclaimer-text" style="margin-top:4px">Audio extracts from the original customer interview. Used with permission.</p>');
+    p.push('</div>');
 
     p.push('</div>'); // lang-block
   });
 
   p.push('</div>'); // lang-blocks
 
-  // Auth modal
-  p.push('<div id="pw-modal" class="modal-overlay"><div class="modal-box">');
-  p.push('<h3>Edit story</h3><p>Enter your credentials to enable edit mode.</p>');
-  p.push('<div class="form-field"><label>Password</label><input type="password" id="pw-input" placeholder="Password"/></div>');
-  p.push('<div class="form-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="GitHub token"/></div>');
-  p.push('<div id="pw-error" class="modal-error"></div>');
-  p.push('<button id="pw-submit" class="btn-primary">Unlock edit mode</button>');
-  p.push('<button id="pw-cancel" class="btn-ghost">Cancel</button>');
+  // Token modal only — no password
+  p.push('<div id="token-modal" class="modal-overlay"><div class="modal-box">');
+  p.push('<h3>Edit story</h3><p>Paste your GitHub token to enable edit mode.</p>');
+  p.push('<div class="form-field"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your GitHub token"/></div>');
+  p.push('<div id="token-error" class="modal-error"></div>');
+  p.push('<button id="token-submit" class="btn-primary">Unlock edit mode</button>');
+  p.push('<button id="token-cancel" class="btn-ghost">Cancel</button>');
   p.push('</div></div>');
 
+  p.push('<script>document.querySelectorAll(".footer-year").forEach(function(el){el.textContent=new Date().getFullYear();});<\/script>');
   p.push('<script src="/clients/story.js"><\/script>');
-  p.push('</body>');
-  p.push('</html>');
-
+  p.push('</body></html>');
   return p.join('\n');
 }
 
-function esc(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-var LANG_NAMES = {en:'EN',fr:'FR',nl:'NL',de:'DE',it:'IT',es:'ES'};
-var LANG_FULL = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish'};
-var LANG_LABELS = {en:'Customer Story',fr:'En français',nl:'In het Nederlands',de:'Auf Deutsch',it:'In italiano',es:'En español'};
-
-function getPageCSS() {
-return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}' +
-'*{box-sizing:border-box;margin:0;padding:0}' +
-'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}' +
-
-/* Edit FAB */
-'.edit-fab{position:fixed;bottom:28px;right:28px;z-index:500;width:48px;height:48px;border-radius:50%;background:var(--dark);color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:background .15s}' +
-'.edit-fab:hover{background:var(--mid)}' +
-'.edit-fab.hidden{display:none}' +
-
-/* Edit toolbar */
-'.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:var(--dark);padding:10px 20px;align-items:center;justify-content:space-between;gap:12px}' +
-'.edit-toolbar.visible{display:flex}' +
-'.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px}' +
-'.tb-btn{border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}' +
-'.tb-save{background:var(--red);color:#fff}' +
-'.tb-save:hover{background:#c0272d}' +
-'.tb-save:disabled{opacity:.5;cursor:not-allowed}' +
-'.tb-cancel{background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2)}' +
-'.tb-cancel:hover{color:#fff;border-color:rgba(255,255,255,.5)}' +
-'.tb-tool{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}' +
-'.tb-tool:hover{background:rgba(255,255,255,.2)}' +
-'.save-status{font-size:12px;color:rgba(255,255,255,.6);margin-left:4px}' +
-
-/* Lang toggle */
-'.lang-toggle{background:var(--mid);padding:10px 24px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}' +
-'.lang-btn{border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.7);border-radius:5px;padding:5px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}' +
-'.lang-btn.active{background:#fff;color:var(--dark);border-color:#fff}' +
-'.lang-btn.remove-lang{padding:5px 9px;color:rgba(255,100,100,.8);border-color:rgba(255,100,100,.3)}' +
-'.lang-add-wrap select{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:5px 10px;font-size:12px;font-family:var(--font);cursor:pointer}' +
-
-/* Lang block */
-'.lang-block{display:none}.lang-block.active{display:block}' +
-
-/* Hero */
-'.hero{background:linear-gradient(135deg,var(--dark) 0%,var(--mid) 100%);padding:48px 40px 40px;color:#fff}' +
-'.hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}' +
-'.hero-content{flex:1;min-width:280px}' +
-'.hero-tag{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:12px}' +
-'h1{font-size:32px;font-weight:900;line-height:1.2;margin-bottom:14px}' +
-'.hero-desc{font-size:15px;color:rgba(255,255,255,.75);line-height:1.7;max-width:600px;margin-bottom:10px}' +
-'.hero-industry{display:inline-block;font-size:12px;color:rgba(255,255,255,.45);margin-top:6px;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 12px}' +
-'.hero-logo-wrap{flex-shrink:0}' +
-'.hero-client-logo{max-height:70px;max-width:200px;object-fit:contain;background:rgba(255,255,255,.1);border-radius:8px;padding:10px 16px}' +
-
-/* Stats row */
-'.stats-row{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-bottom:1px solid var(--border)}' +
-'@media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr)}}' +
-'.stat-tile{padding:22px 20px;border-right:1px solid var(--border);text-align:center}' +
-'.stat-tile:last-child{border-right:none}' +
-'.stat-n{font-size:28px;font-weight:900;color:var(--dark);line-height:1}' +
-'.stat-l{font-size:12px;color:var(--muted);margin-top:4px}' +
-
-/* KRS section */
-'.krs-section{background:#fff;padding:28px 40px;border-bottom:1px solid var(--border)}' +
-'.krs-label-row{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--red);margin-bottom:16px}' +
-'.krs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}' +
-'@media(max-width:640px){.krs-grid{grid-template-columns:1fr}}' +
-'.krs-card{background:var(--light);border:1px solid var(--border);border-radius:8px;padding:18px 16px}' +
-'.krs-number{font-size:26px;font-weight:900;color:var(--dark);line-height:1}' +
-'.krs-label{font-size:13px;font-weight:700;color:var(--mid);margin-top:4px}' +
-'.krs-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}' +
-
-/* Body layout */
-'.body-layout{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 300px;gap:28px;padding:32px 24px}' +
-'@media(max-width:840px){.body-layout{grid-template-columns:1fr;padding:20px 16px}}' +
-
-/* Sections */
-'.story-sec{background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:16px;position:relative}' +
-'.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--red);margin-bottom:8px}' +
-'.story-sec h2{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:10px;line-height:1.3}' +
-'.story-sec p{color:#444;line-height:1.75}' +
-'.story-sec li{color:#444;line-height:1.75;margin-left:16px}' +
-'.sec-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 6px}' +
-'.sec-delete-btn:hover{color:var(--red)}' +
-'.add-sec-btn{width:100%;background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:10px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-bottom:16px;transition:all .15s}' +
-'.add-sec-btn:hover{border-color:var(--red);color:var(--red)}' +
-
-/* Clips */
-'.clips-section{margin-top:8px}' +
-'.clip-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:12px;position:relative}' +
-'.clip-remove-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ccc;font-size:16px;padding:2px 7px}' +
-'.clip-remove-btn:hover{color:var(--red)}' +
-'.clip-label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px}' +
-'.clip-quote{font-size:14px;color:#555;font-style:italic;margin-bottom:12px;line-height:1.6;border-left:3px solid var(--red);padding-left:12px}' +
-'.clip-player{display:flex;flex-direction:column;gap:6px}' +
-'.upload-audio-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:5px 12px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s;align-self:flex-start}' +
-'.upload-audio-btn:hover{border-color:var(--red);color:var(--red)}' +
-'.add-clip-btn{width:100%;background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:10px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-top:4px;transition:all .15s}' +
-'.add-clip-btn:hover{border-color:var(--red);color:var(--red)}' +
-
-/* Sidebar */
-'.sidebar{display:flex;flex-direction:column;gap:16px}' +
-'.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px}' +
-'.sidebar-card h3{font-size:13px;font-weight:900;color:var(--dark);margin-bottom:12px;text-transform:uppercase;letter-spacing:.4px}' +
-'.sidebar-why .sidebar-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}' +
-'.sidebar-stat{text-align:center;background:var(--light);border-radius:6px;padding:10px 8px}' +
-'.sidebar-stat .stat-n{font-size:20px}' +
-'.sidebar-stat .stat-l{font-size:10px}' +
-'.apps-display{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}' +
-'.app-tag{display:flex;align-items:center;gap:5px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--dark)}' +
-'.app-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}' +
-'.results-ul{list-style:none;padding:0}' +
-'.result-item{font-size:13px;color:#444;padding:5px 0;border-bottom:1px solid var(--light);line-height:1.5}' +
-'.result-item:last-child{border-bottom:none}' +
-'.result-item::before{content:"→ ";color:var(--red);font-weight:700}' +
-
-/* Footer */
-'.page-footer{text-align:center;padding:24px;font-size:12px;color:#aaa;border-top:1px solid var(--border)}' +
-
-/* Auth modal */
-'.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center}' +
-'.modal-overlay.visible{display:flex}' +
-'.modal-box{background:#fff;border-radius:12px;padding:28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.2)}' +
-'.modal-box h3{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}' +
-'.modal-box p{font-size:13px;color:var(--muted);margin-bottom:16px}' +
-'.form-field{margin-bottom:12px}' +
-'.form-field label{display:block;font-size:11px;font-weight:700;color:var(--dark);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}' +
-'.form-field input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none}' +
-'.form-field input:focus{border-color:var(--red)}' +
-'.modal-error{font-size:12px;color:var(--red);min-height:16px;margin-bottom:8px}' +
-'.btn-primary{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}' +
-'.btn-primary:hover{background:#c0272d}' +
-'.btn-ghost{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:9px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:8px}' +
-
-/* Edit mode outline */
-'.edit-mode [contenteditable]{outline:2px dashed rgba(239,54,61,.3);border-radius:3px;min-width:20px;min-height:18px}' +
-'.edit-mode [contenteditable]:focus{outline:2px solid var(--red);background:rgba(239,54,61,.03)}' +
-
-/* Products panel (appended inline by JS) */
-'#products-panel label:hover{background:#fff5f5}';
+function getPageCSS(){
+return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}'+
+'*{box-sizing:border-box;margin:0;padding:0}'+
+'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}'+
+// FAB
+'.edit-fab{position:fixed;bottom:28px;right:28px;z-index:500;width:48px;height:48px;border-radius:50%;background:var(--dark);color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:background .15s}'+
+'.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}'+
+// Toolbar
+'.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:var(--dark);padding:10px 20px;align-items:center;gap:12px}'+
+'.edit-toolbar.visible{display:flex}'+
+'.tb-btn{border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}'+
+'.tb-save{background:var(--red);color:#fff}.tb-save:hover{background:#c0272d}.tb-save:disabled{opacity:.5;cursor:not-allowed}'+
+'.tb-cancel{background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2)}.tb-cancel:hover{color:#fff}'+
+'.save-status{font-size:12px;color:rgba(255,255,255,.6);margin-left:4px}'+
+// Lang toggle
+'.lang-toggle{background:var(--mid);padding:10px 24px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}'+
+'.lang-btn{border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.7);border-radius:5px;padding:5px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}'+
+'.lang-btn.active{background:#fff;color:var(--dark);border-color:#fff}'+
+'.lang-btn.remove-lang{padding:5px 9px;color:rgba(255,100,100,.8);border-color:rgba(255,100,100,.3)}'+
+'.lang-add-wrap select{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:5px 10px;font-size:12px;font-family:var(--font);cursor:pointer}'+
+// Blocks
+'.lang-block{display:none}.lang-block.active{display:block}'+
+// Hero — full width dark, prophix logo top-left, client logo top-right
+'.hero{background:linear-gradient(135deg,var(--dark) 0%,#3a1020 100%);padding:0;color:#fff;position:relative}'+
+'.hero-inner{max-width:1100px;margin:0 auto;padding:32px 40px 40px;position:relative;min-height:200px}'+
+'.hero-prophix-logo{position:absolute;top:0;left:0;padding:16px 20px}'+
+'.hero-client-logo-wrap{position:absolute;top:0;right:0;padding:16px 20px}'+
+'.hero-client-logo{max-height:60px;max-width:180px;object-fit:contain;background:rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;cursor:pointer;transition:opacity .2s}'+
+'.hero-client-logo:hover{opacity:.85}'+
+'.hero-logo-placeholder{background:rgba(255,255,255,.1);border:2px dashed rgba(255,255,255,.3);border-radius:8px;padding:10px 18px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s}'+
+'.hero-logo-placeholder:hover{background:rgba(255,255,255,.2);color:#fff}'+
+'.hero-content{padding-top:56px;max-width:660px}'+
+'.hero-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--red);margin-bottom:12px}'+
+'h1{font-size:34px;font-weight:900;line-height:1.2;margin-bottom:14px;color:#fff}'+
+'.hero-desc{font-size:15px;color:rgba(255,255,255,.75);line-height:1.75;max-width:600px;margin-bottom:12px}'+
+'.hero-industry{display:inline-flex;align-items:center;font-size:12px;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;margin-top:4px}'+
+// Stats
+'.stats-row{display:flex;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--border)}'+
+'.stat-tile{flex:1;min-width:120px;padding:22px 20px;border-right:1px solid var(--border);text-align:center;position:relative}'+
+'.stat-tile:last-child{border-right:none}'+
+'.stat-n{font-size:28px;font-weight:900;color:var(--red);line-height:1}'+
+'.stat-l{font-size:12px;color:var(--muted);margin-top:4px}'+
+'.stat-add-btn{background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:8px 16px;font-size:20px;font-weight:700;cursor:pointer;align-self:center;margin:12px}'+
+'.stat-add-btn:hover{border-color:var(--red);color:var(--red)}'+
+'.stat-tile-del{position:absolute;top:4px;right:4px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:12px;padding:2px 5px}'+
+'.stat-tile-del:hover{color:var(--red)}'+
+// KRS — dark tile
+'.krs-section{padding:28px 40px;background:var(--dark)}'+
+'.krs-inner{max-width:800px;margin:0 auto}'+
+'.krs-heading{font-size:14px;font-weight:900;color:#fff;margin-bottom:16px;letter-spacing:.3px}'+
+'.krs-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:12px}'+
+'.krs-item{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:rgba(255,255,255,.85);line-height:1.6}'+
+'.krs-check{flex-shrink:0;margin-top:2px}'+
+'.krs-text strong{color:#fff}'+
+// Body layout
+'.body-layout{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 300px;gap:28px;padding:32px 24px}'+
+'@media(max-width:840px){.body-layout{grid-template-columns:1fr;padding:20px 16px}}'+
+// Sections
+'.story-sec{background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:16px;position:relative}'+
+'.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--red);margin-bottom:8px}'+
+'.story-sec h2{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:10px;line-height:1.3}'+
+'.story-sec p,.story-sec li{color:#444;line-height:1.75}'+
+'.sec-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;padding:2px 6px}'+
+'.sec-delete-btn:hover{color:var(--red)}'+
+'.add-sec-btn,.add-clip-btn{width:100%;background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:10px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-bottom:12px;transition:all .15s}'+
+'.add-sec-btn:hover,.add-clip-btn:hover{border-color:var(--red);color:var(--red)}'+
+// Clips
+'.clip-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:12px;position:relative}'+
+'.clip-remove-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:16px;padding:2px 7px}'+
+'.clip-remove-btn:hover{color:var(--red)}'+
+'.clip-label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px}'+
+'.clip-quote{font-size:14px;color:#555;font-style:italic;margin-bottom:12px;line-height:1.6;border-left:3px solid var(--red);padding-left:12px}'+
+'.clip-player{display:flex;flex-direction:column;gap:6px}'+
+'.upload-audio-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:5px 12px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s;align-self:flex-start}'+
+'.upload-audio-btn:hover{border-color:var(--red);color:var(--red)}'+
+// Sidebar
+'.sidebar{display:flex;flex-direction:column;gap:16px}'+
+'.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px}'+
+'.sidebar-card h3{font-size:11px;font-weight:900;color:var(--dark);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;padding-bottom:8px;border-bottom:2px solid var(--red)}'+
+// Who card
+'.who-text{font-size:13px;color:#444;line-height:1.65;margin-bottom:12px}'+
+'.who-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}'+
+'.who-stat-tile{background:var(--light);border-radius:6px;padding:10px;text-align:center;position:relative}'+
+'.who-stat-n{font-size:20px;font-weight:900;color:var(--red);line-height:1}'+
+'.who-stat-l{font-size:11px;color:var(--muted);margin-top:3px}'+
+'.who-stat-del{position:absolute;top:3px;right:3px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;padding:1px 4px}'+
+'.who-stat-del:hover{color:var(--red)}'+
+'.who-stat-add-btn{grid-column:1/-1;background:transparent;border:1px dashed var(--border);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s}'+
+'.who-stat-add-btn:hover{border-color:var(--red);color:var(--red)}'+
+// Products
+'.apps-display{display:flex;flex-wrap:wrap;gap:6px;cursor:default}'+
+'.edit-mode .apps-display{cursor:pointer;border:2px dashed rgba(239,54,61,.3);border-radius:6px;padding:6px;min-height:32px}'+
+'.edit-mode .apps-display:hover{border-color:var(--red);background:rgba(239,54,61,.03)}'+
+'.app-tag{display:flex;align-items:center;gap:5px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--dark)}'+
+'.app-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}'+
+// Products inline panel
+'.inline-products-panel{position:absolute;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:6px;margin-top:4px}'+
+'.prod-toggle{font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;user-select:none;transition:all .15s}'+
+'.prod-toggle.active{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}'+
+'.prod-toggle:hover{border-color:var(--red)}'+
+// Results
+'.results-ul{list-style:none;padding:0}'+
+'.result-item{font-size:13px;color:#444;padding:5px 0;border-bottom:1px solid var(--light);line-height:1.5}'+
+'.result-item:last-child{border-bottom:none}'+
+'.result-item::before{content:"→ ";color:var(--red);font-weight:700}'+
+// Footer
+'.page-footer{background:var(--dark);padding:20px 40px;text-align:center}'+
+'.disclaimer-text{font-size:12px;color:rgba(255,255,255,.4);line-height:1.6}'+
+'.disclaimer-text strong{color:rgba(255,255,255,.7)}'+
+// Edit outlines
+'.edit-mode [contenteditable]{outline:2px dashed rgba(239,54,61,.3);border-radius:3px;min-width:20px;min-height:18px}'+
+'.edit-mode [contenteditable]:focus{outline:2px solid var(--red);background:rgba(239,54,61,.03)}'+
+// Modal
+'.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center}'+
+'.modal-overlay.visible{display:flex}'+
+'.modal-box{background:#fff;border-radius:12px;padding:28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.2)}'+
+'.modal-box h3{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}'+
+'.modal-box p{font-size:13px;color:var(--muted);margin-bottom:16px}'+
+'.form-field{margin-bottom:12px}'+
+'.form-field label{display:block;font-size:11px;font-weight:700;color:var(--dark);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}'+
+'.form-field input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none}'+
+'.form-field input:focus{border-color:var(--red)}'+
+'.modal-error{font-size:12px;color:var(--red);min-height:16px;margin-bottom:8px}'+
+'.btn-primary{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}'+
+'.btn-primary:hover{background:#c0272d}'+
+'.btn-ghost{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:9px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:8px}';
 }
 </script>
 </body>
