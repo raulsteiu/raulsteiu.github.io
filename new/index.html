@@ -407,12 +407,12 @@ function buildPage(d){
   p.push('<span id="save-status" class="save-status"></span>');
   p.push('</div></div>');
 
-  p.push('<div class="hero-outer">');
-  p.push('<div class="hero-nav">');
+  // ── Dark nav bar (outside lang-blocks, always visible) ───────────────────
+  p.push('<div class="page-nav">');
   p.push('<a href="/clients/" class="portal-link">← All stories</a>');
   p.push('<div style="display:flex;align-items:center;gap:8px">');
-  p.push('<span class="last-edited" style="font-size:11px;color:rgba(255,255,255,.35)"></span>');
-  p.push('<button id="story-share-btn" style="display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s">⧉ Share</button>');
+  p.push('<span class="last-edited" style="font-size:11px;color:rgba(255,255,255,.45)"></span>');
+  p.push('<button id="story-share-btn" class="share-page-btn">⧉ Share</button>');
   p.push('</div>');
   p.push('<div id="lang-toggle" class="lang-toggle">');
   langs.forEach(function(l){
@@ -424,7 +424,8 @@ function buildPage(d){
     addable.forEach(function(l){p.push('<option value="'+l+'">'+LANG_FULL[l]+'</option>');});
     p.push('</select></span>');
   } else { p.push('<span id="lang-add-wrap"></span>'); }
-  p.push('</div></div>');
+  p.push('</div>'); // close lang-toggle
+  p.push('</div>'); // close page-nav
 
   p.push('<div id="lang-blocks">');
   langs.forEach(function(lc){
@@ -432,7 +433,9 @@ function buildPage(d){
     var pfx=isEN?'':('['+LANG_NAMES[lc]+'] ');
     p.push('<div class="lang-block'+(isEN?' active':'')+'" id="block-'+lc+'">');
 
+    // Dark hero for this language
     p.push('<div class="hero">');
+    p.push('<div class="logo-row">');
     // Logo row: Prophix left, client logo right — matching Eaglestone style
     p.push('<div class="logo-row">');
     p.push('<div class="logo-pill-hero"><img src="/prophix-logo-1000px.png" alt="Prophix"></div>');
@@ -447,8 +450,9 @@ function buildPage(d){
     p.push('<h1>'+pfx+esc(name)+' Customer Story</h1>');
     p.push('<div class="hero-desc">'+pfx+esc(desc||'How '+name+' transformed their financial performance with Prophix.')+'</div>');
     if(ind) p.push('<div class="hero-ind">'+pfx+esc(ind)+'</div>');
-    p.push('</div></div>');
+    p.push('</div></div>'); // close hero-body and hero
 
+    // ── Light background section — stats, KRS, body ──
     if(stats.length>0){
       p.push('<div class="stats-row">');
       stats.forEach(function(s){
@@ -530,9 +534,9 @@ function buildPage(d){
     p.push('<p class="disclaimer-text">Audio extracts from the original customer interview. Used with permission.</p>');
     p.push('</div>');
 
-    p.push('</div>');
+    p.push('</div>'); // close lang-block
   });
-  p.push('</div></div>');
+  p.push('</div>'); // close lang-blocks
 
   p.push('<div id="token-modal" class="modal-ov"><div class="modal-box">');
   p.push('<h3>Edit story</h3><p>Paste your access token to enable edit mode.</p>');
@@ -556,10 +560,13 @@ function css(){
 return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}'+
 '*{box-sizing:border-box;margin:0;padding:0}'+
 'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}'+
-'.hero-outer{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%)}'+
-'.hero-nav{padding:10px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}'+
-'.portal-link{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);text-decoration:none;border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;transition:all .15s;white-space:nowrap;flex-shrink:0}'+
+// Page nav bar — dark strip, sits above hero, always visible
+'.page-nav{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:10px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}'+
+'.portal-link{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;transition:all .15s;white-space:nowrap;flex-shrink:0}'+
 '.portal-link:hover{color:#fff;border-color:rgba(255,255,255,.5)}'+
+'.share-page-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}'+
+'.share-page-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.6)}'+
+'.share-page-btn.share-copied{background:#2a7a2a;border-color:#2a7a2a;color:#fff}'+
 '.edit-fab{position:fixed;bottom:28px;right:28px;z-index:500;width:46px;height:46px;border-radius:50%;background:var(--dark);color:#fff;border:none;font-size:17px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}'+
 '.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}'+
 '.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:rgba(26,26,46,.97);padding:9px 20px;align-items:center;gap:10px;backdrop-filter:blur(4px)}'+
@@ -570,7 +577,7 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.tb-cancel:hover{color:#fff}'+
 '.save-status{font-size:12px;color:rgba(255,255,255,.5);margin-left:2px}'+
 '.lang-block{display:none}.lang-block.active{display:block}'+
-'.hero{padding:26px 40px 48px}'+
+'.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:26px 40px 48px}'+
 '.logo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}'+
 '.logo-pill-hero{background:#fff;border-radius:8px;padding:10px 16px;display:inline-flex;align-items:center}'+
 '.logo-pill-hero img{height:26px;display:block}'+
