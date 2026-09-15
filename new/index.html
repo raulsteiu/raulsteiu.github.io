@@ -513,6 +513,9 @@ function buildPage(d){
     p.push('</div>');
     p.push('<button class="add-sec-btn edit-only" onclick="addSection(this)">+ Add section</button>');
     p.push('<div class="clips-wrap">');
+    if(clips.length>0){
+      p.push('<div class="clips-section-title">Quotes</div>');
+    }
     clips.forEach(function(c){
       p.push('<div class="clip-card">');
       p.push('<div class="clip-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>'+esc(c.title)+(c.ts?' · '+esc(c.ts):'')+'</div>');
@@ -662,7 +665,8 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.sec-delete-btn:hover{color:var(--red)}'+
 '.add-sec-btn,.add-clip-btn{width:100%;background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:9px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-bottom:10px;transition:all .15s}'+
 '.add-sec-btn:hover,.add-clip-btn:hover{border-color:var(--red);color:var(--red)}'+
-'.clip-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:10px;position:relative}'+
+'.clips-wrap{margin-top:8px}'+
+'.clips-section-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}'+
 '.clip-remove-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:15px;padding:2px 6px}'+
 '.clip-remove-btn:hover{color:var(--red)}'+
 '.clip-label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--dark);margin-bottom:7px}'+
