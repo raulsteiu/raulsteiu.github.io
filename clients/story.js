@@ -11,7 +11,7 @@ var currentLang = 'en';
 var EDITABLE_SELECTORS = [
   '.hero-tag', 'h1', '.hero-desc', '.hero-industry', '.hero-ind',
   '.sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
-  '.clip-label', '.clip-quote',
+  '.clip-label', '.clip-quote', '.clips-section-title',
   '.sidebar-card h3',
   '.result-item',
   '.stat-n', '.stat-l',
