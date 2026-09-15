@@ -97,6 +97,8 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
   overflow: hidden;
   transition: border-color .15s, box-shadow .15s, transform .15s;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 .story-card:hover {
   border-color: var(--red);
@@ -113,6 +115,7 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .card-logo-wrap img {
   max-height: 52px;
@@ -124,19 +127,21 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
   color: #ccc;
 }
 
-/* Card body */
-.card-body { padding: 14px 16px 10px; }
+/* Card body — flex:1 pushes actions to bottom */
+.card-body { padding: 14px 16px 10px; flex: 1; }
 .story-name { font-size: 15px; font-weight: 900; color: var(--dark); margin-bottom: 3px; }
 .story-url { font-size: 11px; color: #aaa; margin-bottom: 4px; word-break: break-all; }
 .story-date { font-size: 11px; color: #bbb; }
 
-/* Card actions */
+/* Card actions — always pinned to bottom */
 .card-actions {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 10px 12px;
   border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: auto;
 }
 .open-btn {
   flex: 1;
