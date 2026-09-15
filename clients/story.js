@@ -149,15 +149,20 @@ function addEditControlsToExisting() {
       delBtn.title = 'Delete MP3 from GitHub and clear this clip';
       delBtn.addEventListener('click', function() {
         var srcEl = player.querySelector('audio source');
-        var filename = srcEl ? srcEl.getAttribute('src') : '';
-        filename = filename ? filename.split('?')[0].split('/').pop() : '';
-        if (!filename) { alert('No audio file attached to this clip.'); return; }
-        if (!confirm('Delete "' + filename + '" from GitHub? This cannot be undone.')) return;
+        // Use .src property (works for both attribute-set and JS-set sources)
+        var rawSrc = srcEl ? (srcEl.getAttribute('src') || srcEl.src || '') : '';
+        var filename = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
+        // If src is a full URL, extract just the filename
+        if (filename && filename.indexOf('://') > -1) filename = '';
+        if (!filename || filename === 'undefined') { alert('No audio file attached to this clip.\n\nTip: upload an MP3 first using the Upload MP3 button.'); return; }
+        if (!confirm('Delete "' + filename + '" from the repository? This cannot be undone.')) return;
+        var origText = delBtn.innerHTML;
         delBtn.textContent = 'Deleting…';
+        delBtn.disabled = true;
         fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_CLIENT_FOLDER + filename, {
           headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
         }).then(function(r) {
-          if (!r.ok) throw new Error('File not found in repo');
+          if (!r.ok) throw new Error('File "' + filename + '" not found in repository. It may have already been deleted.');
           return r.json();
         }).then(function(d) {
           return fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_CLIENT_FOLDER + filename, {
@@ -166,17 +171,17 @@ function addEditControlsToExisting() {
             body: JSON.stringify({message: 'Delete audio: ' + filename, sha: d.sha})
           });
         }).then(function(r) {
-          if (!r.ok) throw new Error('Delete failed');
-          if (srcEl) { srcEl.src = ''; }
+          if (!r.ok) throw new Error('Delete request failed');
+          if (srcEl) { srcEl.removeAttribute('src'); }
           var aud = player.querySelector('audio');
           if (aud) aud.load();
           var upBtn2 = player.querySelector('.upload-audio-btn');
           if (upBtn2) upBtn2.textContent = 'Upload MP3';
           delBtn.textContent = '✓ Deleted';
-          delBtn.disabled = true;
         }).catch(function(err) {
-          delBtn.textContent = '🗑 Delete audio';
-          alert('Error: ' + err.message);
+          delBtn.innerHTML = origText;
+          delBtn.disabled = false;
+          alert('Could not delete audio:\n' + err.message);
         });
       });
       player.appendChild(delBtn);
@@ -237,6 +242,60 @@ function addEditControlsToExisting() {
     krsAdd.addEventListener('click', function() { addKrsItem(krsList, krsAdd); });
     krsList.appendChild(krsAdd);
   }
+
+  // Participants: add delete btns + "Add participant" button
+  document.querySelectorAll('.sidebar-card').forEach(function(card) {
+    if (!card.querySelector('h3')) return;
+    if (card.querySelector('h3').textContent.toLowerCase().indexOf('participant') === -1) return;
+    // Delete buttons on existing participants
+    card.querySelectorAll('p').forEach(function(p) {
+      if (!p.querySelector('.part-del-btn')) {
+        var del = document.createElement('button');
+        del.className = 'part-del-btn edit-only';
+        del.innerHTML = '✕'; del.title = 'Remove participant';
+        del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px;line-height:1';
+        del.addEventListener('click', function() { p.remove(); });
+        p.insertBefore(del, p.firstChild);
+        // Make name and title editable
+        var strong = p.querySelector('strong'); if (strong) strong.contentEditable = 'true';
+        var span = p.querySelector('span'); if (span) span.contentEditable = 'true';
+      }
+    });
+    // "Add participant" button
+    if (!card.querySelector('.part-add-btn')) {
+      var addBtn = document.createElement('button');
+      addBtn.className = 'part-add-btn edit-only';
+      addBtn.textContent = '+ Add participant';
+      addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
+      addBtn.addEventListener('click', function() { addParticipantInline(card, addBtn); });
+      card.appendChild(addBtn);
+    }
+  });
+
+  // Results sidebar: add delete btns + "Add result" button
+  document.querySelectorAll('.sidebar-card').forEach(function(card) {
+    if (!card.querySelector('h3')) return;
+    var h3text = card.querySelector('h3').textContent.toLowerCase();
+    if (h3text.indexOf('result') === -1) return;
+    card.querySelectorAll('.result-item').forEach(function(item) {
+      if (!item.querySelector('.result-del-btn')) {
+        var del = document.createElement('button');
+        del.className = 'result-del-btn edit-only';
+        del.innerHTML = '✕'; del.title = 'Remove result';
+        del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px;line-height:1.5';
+        del.addEventListener('click', function() { item.remove(); });
+        item.insertBefore(del, item.firstChild);
+      }
+    });
+    if (!card.querySelector('.result-add-btn')) {
+      var addBtn = document.createElement('button');
+      addBtn.className = 'result-add-btn edit-only';
+      addBtn.textContent = '+ Add result';
+      addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
+      addBtn.addEventListener('click', function() { addResultInline(card, addBtn); });
+      card.appendChild(addBtn);
+    }
+  });
 }
 
 // ── Section management ────────────────────────────────────────────────────────
@@ -313,15 +372,18 @@ function addClipInline(btn) {
   var delAudioBtn = document.createElement('button');
   delAudioBtn.className = 'delete-audio-btn edit-only'; delAudioBtn.innerHTML = '🗑 Delete audio';
   delAudioBtn.addEventListener('click', function() {
-    var filename = src.getAttribute('src') ? src.getAttribute('src').split('?')[0].split('/').pop() : '';
-    if (!filename) { alert('No audio attached.'); return; }
-    if (!confirm('Delete "' + filename + '" from GitHub?')) return;
-    delAudioBtn.textContent = 'Deleting…';
+    var rawSrc = src.getAttribute('src') || src.src || '';
+    var filename = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
+    if (filename && filename.indexOf('://') > -1) filename = '';
+    if (!filename || filename === 'undefined') { alert('No audio attached. Upload an MP3 first.'); return; }
+    if (!confirm('Delete "' + filename + '" from the repository?')) return;
+    var origText = delAudioBtn.innerHTML;
+    delAudioBtn.textContent = 'Deleting…'; delAudioBtn.disabled = true;
     fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_CLIENT_FOLDER+filename,{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}})
-      .then(function(r){if(!r.ok)throw new Error('Not found');return r.json();})
+      .then(function(r){if(!r.ok)throw new Error('Not found in repo');return r.json();})
       .then(function(d){return fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_CLIENT_FOLDER+filename,{method:'DELETE',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Delete audio: '+filename,sha:d.sha})});})
-      .then(function(){src.src='';aud.load();upBtn.textContent='Upload MP3';delAudioBtn.textContent='✓ Deleted';delAudioBtn.disabled=true;})
-      .catch(function(e){delAudioBtn.textContent='🗑 Delete audio';alert('Error: '+e.message);});
+      .then(function(r){if(!r.ok)throw new Error('Delete failed');src.removeAttribute('src');aud.load();upBtn.textContent='Upload MP3';delAudioBtn.textContent='✓ Deleted';})
+      .catch(function(e){delAudioBtn.innerHTML=origText;delAudioBtn.disabled=false;alert('Error: '+e.message);});
   });
 
   var pl = document.createElement('div');
@@ -347,6 +409,40 @@ function addWhoStat(grid, addBtn) {
   tile.innerHTML = '<div class="who-stat-n" contenteditable="true">—</div><div class="who-stat-l" contenteditable="true">Label</div>';
   addWhoStatDeleteBtn(tile);
   grid.insertBefore(tile, addBtn);
+}
+
+// ── Participant inline add ────────────────────────────────────────────────────
+function addParticipantInline(card, addBtn) {
+  var p = document.createElement('p');
+  p.style.marginTop = '10px';
+  var del = document.createElement('button');
+  del.className = 'part-del-btn edit-only';
+  del.innerHTML = '✕';
+  del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px;line-height:1';
+  del.addEventListener('click', function() { p.remove(); });
+  var strong = document.createElement('strong');
+  strong.className = 'participant-name'; strong.contentEditable = 'true'; strong.textContent = 'Full name';
+  var br = document.createElement('br');
+  var span = document.createElement('span');
+  span.className = 'participant-title'; span.contentEditable = 'true';
+  span.style.cssText = 'font-size:12px;color:#888'; span.textContent = 'Title, Company';
+  p.appendChild(del); p.appendChild(strong); p.appendChild(br); p.appendChild(span);
+  card.insertBefore(p, addBtn);
+}
+
+// ── Result inline add ─────────────────────────────────────────────────────────
+function addResultInline(card, addBtn) {
+  var item = document.createElement('li');
+  item.className = 'result-item'; item.contentEditable = 'true'; item.textContent = 'New result';
+  var del = document.createElement('button');
+  del.className = 'result-del-btn edit-only'; del.innerHTML = '✕';
+  del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px;line-height:1.5';
+  del.addEventListener('click', function() { item.remove(); });
+  item.insertBefore(del, item.firstChild);
+  // Find or create the ul
+  var ul = card.querySelector('.results-ul');
+  if (!ul) { ul = document.createElement('ul'); ul.className = 'results-ul'; card.insertBefore(ul, addBtn); }
+  ul.insertBefore(item, addBtn.parentNode === ul ? addBtn : null);
 }
 
 // ── Products inline panel ─────────────────────────────────────────────────────
@@ -397,11 +493,19 @@ function triggerLogoUpload() {
         body:JSON.stringify({message:'Logo: '+filename, content:b64})
       }).then(function(r){return r.json();}).then(function(d){
         if (d.content) {
-          if (img) { img.src = filename+'?v='+Date.now(); img.style.display='block'; img.style.opacity='1'; }
+          if (img) {
+            img.src = filename+'?v='+Date.now();
+            img.style.display = 'block';
+            img.style.opacity = '1';
+          }
           // Show the pill container if it was hidden, hide placeholder
-          var pill = document.querySelector('.logo-pill-client'); if (pill) pill.style.display='';
-          var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display='none';
-        } else { if (img) img.style.opacity='1'; }
+          var pill = document.querySelector('.logo-pill-client');
+          if (pill) { pill.style.display = ''; pill.style.visibility = 'visible'; }
+          var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display = 'none';
+        } else {
+          if (img) img.style.opacity = '1';
+          alert('Upload failed. Check your access token has write permission.');
+        }
       }).catch(function(){ if (img) { img.style.opacity='1'; } });
     };
     reader.readAsDataURL(file);
@@ -560,16 +664,14 @@ document.addEventListener('DOMContentLoaded', function() {
   var shareBtn = document.getElementById('story-share-btn');
   if (shareBtn) {
     shareBtn.addEventListener('click', function() {
-      var url = window.location.href.split('?')[0]; // strip ?edit=1 if present
+      var url = window.location.href.split('?')[0];
       navigator.clipboard.writeText(url).then(function() {
         var orig = shareBtn.textContent;
         shareBtn.textContent = '✓ Copied!';
-        shareBtn.style.background = '#2a7a2a';
-        shareBtn.style.borderColor = '#2a7a2a';
+        shareBtn.classList.add('share-copied');
         setTimeout(function() {
           shareBtn.textContent = orig;
-          shareBtn.style.background = '';
-          shareBtn.style.borderColor = '';
+          shareBtn.classList.remove('share-copied');
         }, 2000);
       }).catch(function() { prompt('Copy this link:', url); });
     });
