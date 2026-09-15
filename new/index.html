@@ -328,10 +328,28 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
     var hasLogo=false;
     if(logoFile){
       setP('Uploading logo…',15);
-      var ext=logoFile.name.split('.').pop().toLowerCase();
-      var logoPath=folder+'logo.'+ext;
+      // Always convert to PNG via canvas so logo.png is consistent regardless of input format
+      var logob64 = await new Promise(function(resolve) {
+        var objectUrl = URL.createObjectURL(logoFile);
+        var tempImg = new Image();
+        tempImg.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = tempImg.naturalWidth || 400;
+          canvas.height = tempImg.naturalHeight || 200;
+          canvas.getContext('2d').drawImage(tempImg, 0, 0);
+          URL.revokeObjectURL(objectUrl);
+          resolve(canvas.toDataURL('image/png').split(',')[1]);
+        };
+        tempImg.onerror = function() {
+          URL.revokeObjectURL(objectUrl);
+          // Fallback: read raw file
+          var fr=new FileReader(); fr.onload=function(e){resolve(e.target.result.split(',')[1]);};
+          fr.readAsDataURL(logoFile);
+        };
+        tempImg.src = objectUrl;
+      });
+      var logoPath=folder+'logo.png'; // always .png
       var logoSha=await ghGetSha(logoPath);
-      var logob64=await f2b(logoFile);
       var logoBody={message:'Logo: '+name,content:logob64};
       if(logoSha)logoBody.sha=logoSha;
       var lr=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+logoPath,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(logoBody)});
@@ -443,23 +461,23 @@ function buildPage(d){
     // Dark hero for this language
     p.push('<div class="hero">');
     p.push('<div class="logo-row">');
-    // Logo row: Prophix left, client logo right — matching Eaglestone style
-    p.push('<div class="logo-row">');
     p.push('<div class="logo-pill-hero"><img src="/prophix-logo-1000px.png" alt="Prophix"></div>');
     if(hasLogo){
       p.push('<div class="logo-pill-client" onclick="triggerLogoUpload()" title="Click in edit mode to replace logo"><img class="hero-client-logo" src="logo.png" alt="'+esc(name)+' logo"></div>');
     } else {
       p.push('<div class="logo-pill-client edit-only" style="display:none" onclick="triggerLogoUpload()" title="Upload client logo"><div class="hero-logo-ph">+ Upload logo</div></div>');
     }
-    p.push('</div>');
+    p.push('</div>'); // close logo-row
     p.push('<div class="hero-body">');
     p.push('<div class="hero-tag">'+pfx+esc(LANG_LABELS[lc]||'Customer Story')+'</div>');
     p.push('<h1>'+pfx+esc(name)+' Customer Story</h1>');
     p.push('<div class="hero-desc">'+pfx+esc(desc||'How '+name+' transformed their financial performance with Prophix.')+'</div>');
     if(ind) p.push('<div class="hero-ind">'+pfx+esc(ind)+'</div>');
-    p.push('</div></div>'); // close hero-body and hero
+    p.push('</div>'); // close hero-body
+    p.push('</div>'); // close hero
 
     // ── Light background section — stats, KRS, body ──
+    p.push('<div class="content-area">');
     if(stats.length>0){
       p.push('<div class="stats-row">');
       stats.forEach(function(s){
@@ -482,7 +500,6 @@ function buildPage(d){
       p.push('</ul></div></div>');
     }
 
-    p.push('<div class="content-area">'); // explicit light background section
     p.push('<div class="body-layout">');
     p.push('<div class="main-col">');
     p.push('<div class="sections-container">');
