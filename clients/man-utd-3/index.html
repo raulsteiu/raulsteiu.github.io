@@ -42,7 +42,7 @@ var LANG_FULL_NAMES={fr:"French",nl:"Dutch",de:"German",it:"Italian",es:"Spanish
 <div class="hero">
 <div class="logo-row">
 <div class="logo-pill-hero"><img src="/prophix-logo-1000px.png" alt="Prophix"></div>
-<div class="logo-pill-client" onclick="triggerLogoUpload()" title="Click in edit mode to replace logo"><img class="hero-client-logo" src="logo.png" alt="Man UTD 3 logo"></div>
+<div class="logo-pill-client" onclick="triggerLogoUpload()" title="Click in edit mode to replace logo" style="visibility: visible;"><img class="hero-client-logo" src="logo.png?v=1789488928261" alt="Man UTD 3 logo" style="opacity: 1; display: block;"></div>
 </div>
 <div class="hero-body">
 <div class="hero-tag">Customer Story</div>
@@ -83,11 +83,9 @@ var LANG_FULL_NAMES={fr:"French",nl:"Dutch",de:"German",it:"Italian",es:"Spanish
 <div class="who-stat-tile"><div class="who-stat-n">3</div><div class="who-stat-l">goals</div><button class="who-stat-del edit-only" style="display: none;">✕</button></div>
 <button class="who-stat-add-btn edit-only" style="display: none;">+ Add stat</button></div>
 </div>
-<div class="sidebar-card">
+<div class="sidebar-card" style="position: relative;">
 <h3>Applications deployed</h3>
-<div class="apps-display" onclick="if(document.body.classList.contains('edit-mode'))toggleProductsPanel(this)" title="Click in edit mode to change">
-<div class="app-tag"><span class="app-dot"></span><span>Financial Consolidation</span></div>
-</div></div>
+<div class="apps-display" onclick="if(document.body.classList.contains('edit-mode'))toggleProductsPanel(this)" title="Click in edit mode to change"><div class="app-tag"><span class="app-dot"></span><span>Financial Consolidation</span></div><div class="app-tag"><span class="app-dot"></span><span>FPA+</span></div></div></div>
 <div class="sidebar-card"><h3>Results</h3><ul class="results-ul">
 <li class="result-item"><button class="result-del-btn edit-only" title="Remove result" style="background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; color: rgb(221, 221, 221); font-size: 11px; float: right; padding: 0px 2px; line-height: 1.5; display: none;">✕</button>10 days</li>
 <li class="result-item"><button class="result-del-btn edit-only" title="Remove result" style="background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; color: rgb(221, 221, 221); font-size: 11px; float: right; padding: 0px 2px; line-height: 1.5; display: none;">✕</button>10 goals</li>
@@ -150,9 +148,7 @@ var LANG_FULL_NAMES={fr:"French",nl:"Dutch",de:"German",it:"Italian",es:"Spanish
 </div>
 <div class="sidebar-card">
 <h3>Applications deployed</h3>
-<div class="apps-display" onclick="if(document.body.classList.contains('edit-mode'))toggleProductsPanel(this)" title="Click in edit mode to change">
-<div class="app-tag"><span class="app-dot"></span><span>Financial Consolidation</span></div>
-</div></div>
+<div class="apps-display" onclick="if(document.body.classList.contains('edit-mode'))toggleProductsPanel(this)" title="Click in edit mode to change"><div class="app-tag"><span class="app-dot"></span><span>Financial Consolidation</span></div><div class="app-tag"><span class="app-dot"></span><span>FPA+</span></div></div></div>
 <div class="sidebar-card"><h3>Results</h3><ul class="results-ul">
 <li class="result-item"><button class="result-del-btn edit-only" title="Remove result" style="background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; color: rgb(221, 221, 221); font-size: 11px; float: right; padding: 0px 2px; line-height: 1.5; display: none;">✕</button>10 days</li>
 <li class="result-item"><button class="result-del-btn edit-only" title="Remove result" style="background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; color: rgb(221, 221, 221); font-size: 11px; float: right; padding: 0px 2px; line-height: 1.5; display: none;">✕</button>10 goals</li>
