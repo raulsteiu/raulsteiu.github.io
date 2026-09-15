@@ -348,21 +348,23 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
     await ghPut('clients/stories.json',JSON.stringify(cur,null,2),'Add story: '+name,sSha);
     setP('Done!',100);
 
-    // Load preview in iframe
-    var preview=document.getElementById('prog-preview');
-    preview.style.display='block';
-    preview.style.minHeight='400px';
-    preview.src='https://raulsteiu.github.io/clients/'+slug+'/?v='+Date.now();
-
     document.getElementById('prog-icon').textContent='🎉';
-    document.getElementById('prog-title').textContent=name+' is live';
-    document.getElementById('prog-step').textContent='Published successfully — preview loading below (may take ~30s)';
+    document.getElementById('prog-title').textContent=name+' is live!';
     document.getElementById('prog-bar').style.width='100%';
 
+    // 3-second countdown then redirect to /clients/
+    var countdown=3;
+    function tick(){
+      document.getElementById('prog-step').textContent='Redirecting to all stories in '+countdown+'s…';
+      if(countdown<=0){ window.location.href='/clients/'; return; }
+      countdown--;
+      setTimeout(tick,1000);
+    }
+    tick();
+
     document.getElementById('prog-actions').innerHTML=
-      '<a class="pa-open" href="https://raulsteiu.github.io/clients/'+slug+'/" target="_blank">Open in new tab ↗</a>'+
-      '<a class="pa-dir" href="/clients/" target="_blank">All stories</a>'+
-      '<button onclick="document.getElementById(\'prog-wrap\').classList.remove(\'vis\');document.getElementById(\'sub-btn\').disabled=false" style="background:transparent;border:1px solid var(--border,#E0DFF0);border-radius:7px;padding:9px 14px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888">Create another</button>';
+      '<a class="pa-open" href="https://raulsteiu.github.io/clients/'+slug+'/" target="_blank">Open story ↗</a>'+
+      '<a class="pa-dir" href="/clients/" onclick="window.location.href=\'/clients/\';return false;">Go now →</a>';
   }catch(e){
     document.getElementById('prog-icon').textContent='⚠️';
     document.getElementById('prog-title').textContent='Something went wrong';
@@ -400,8 +402,7 @@ function buildPage(d){
   p.push('var LANG_FULL_NAMES={fr:"French",nl:"Dutch",de:"German",it:"Italian",es:"Spanish"};');
   p.push('<\/script>');
 
-  // Back-to-portal link + edit FAB
-  p.push('<a href="/clients/" class="portal-link" title="Back to all stories">← All stories</a>');
+  // Edit FAB only at top level — portal link goes inside hero-body
   p.push('<button id="edit-fab" class="edit-fab" title="Edit">✏</button>');
 
   // Edit toolbar
@@ -412,17 +413,32 @@ function buildPage(d){
   p.push('<span id="save-status" class="save-status"></span>');
   p.push('</div></div>');
 
+  // Outer dark wrapper: nav bar + hero share the same dark gradient background
+  p.push('<div class="hero-outer">');
+  p.push('<div class="hero-nav">');
+  p.push('<a href="/clients/" class="portal-link">← All stories</a>');
+  p.push('<div id="lang-toggle" class="lang-toggle">');
+  langs.forEach(function(l){
+    p.push('<button class="lang-btn'+(l==='en'?' active':'')+'" data-lang="'+l+'">'+LANG_NAMES[l]+'</button>');
+    if(l!=='en') p.push('<button class="lang-btn remove-lang" data-remove-lang="'+l+'" style="display:none">&times;</button>');
+  });
+  if(addable.length>0){
+    p.push('<span id="lang-add-wrap" class="edit-only" style="display:none"><select id="lang-add-select"><option value="">+ Add language</option>');
+    addable.forEach(function(l){p.push('<option value="'+l+'">'+LANG_FULL[l]+'</option>');});
+    p.push('</select></span>');
+  } else { p.push('<span id="lang-add-wrap"></span>'); }
+  p.push('</div>'); // lang-toggle
+  p.push('</div>'); // hero-nav
+
   p.push('<div id="lang-blocks">');
   langs.forEach(function(lc){
     var isEN=lc==='en';
     var pfx=isEN?'':('['+LANG_NAMES[lc]+'] ');
     p.push('<div class="lang-block'+(isEN?' active':'')+'" id="block-'+lc+'">');
 
-    // HERO — Prophix logo top-left, client logo bottom-right, lang toggle INSIDE hero
+    // HERO — client logo top-right, content below nav bar
     p.push('<div class="hero">');
-    // Prophix logo top-left
-    p.push('<div class="hero-prophix"><img src="/prophix-logo-1000px.png" alt="Prophix" style="height:26px;width:auto"></div>');
-    // Client logo top-right (always at top-right of hero)
+    // Client logo top-right
     p.push('<div class="hero-client-wrap">');
     p.push('<img class="hero-client-logo" src="logo.png" alt="'+esc(name)+' logo"'+(hasLogo?'':' style="display:none"')+' onclick="triggerLogoUpload()" title="Click to replace logo">');
     p.push('<div class="hero-logo-ph edit-only" style="display:none" onclick="triggerLogoUpload()">+ Upload logo</div>');
@@ -433,19 +449,7 @@ function buildPage(d){
     p.push('<h1>'+pfx+esc(name)+' Customer Story</h1>');
     p.push('<div class="hero-desc">'+pfx+esc(desc||'How '+name+' transformed their financial performance with Prophix.')+'</div>');
     if(ind) p.push('<div class="hero-ind">'+pfx+esc(ind)+'</div>');
-    // Lang toggle INSIDE hero, below the text
-    p.push('<div id="lang-toggle" class="lang-toggle">');
-    langs.forEach(function(l){
-      p.push('<button class="lang-btn'+(l===lc?' active':'')+'" data-lang="'+l+'">'+LANG_NAMES[l]+'</button>');
-      if(l!=='en') p.push('<button class="lang-btn remove-lang" data-remove-lang="'+l+'" style="display:none">&times;</button>');
-    });
-    if(addable.length>0){
-      p.push('<span id="lang-add-wrap" class="edit-only" style="display:none"><select id="lang-add-select"><option value="">+ Add language</option>');
-      addable.forEach(function(l){p.push('<option value="'+l+'">'+LANG_FULL[l]+'</option>');});
-      p.push('</select></span>');
-    } else { p.push('<span id="lang-add-wrap"></span>'); }
-    p.push('</div>'); // lang-toggle
-    p.push('</div>'); // hero-body
+    p.push('</div>'); // hero-body (lang-toggle rendered once outside block loop)
     p.push('</div>'); // hero
 
     // Stats row
@@ -543,11 +547,12 @@ function buildPage(d){
     p.push('</div>'); // lang-block
   });
   p.push('</div>'); // lang-blocks
+  p.push('</div>'); // hero-outer
 
   // Token modal
   p.push('<div id="token-modal" class="modal-ov"><div class="modal-box">');
-  p.push('<h3>Edit story</h3><p>Paste your Access token to enable edit mode.</p>');
-  p.push('<div class="mf"><label>Access Token</label><input type="password" id="token-input" placeholder="Paste your token"/></div>');
+  p.push('<h3>Edit story</h3><p>Paste your GitHub token to enable edit mode.</p>');
+  p.push('<div class="mf"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your token"/></div>');
   p.push('<div id="token-error" class="merr"></div>');
   p.push('<button id="token-submit" class="mbtn-p">Unlock edit mode</button>');
   p.push('<button id="token-cancel" class="mbtn-g">Cancel</button>');
@@ -567,9 +572,12 @@ function css(){
 return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}'+
 '*{box-sizing:border-box;margin:0;padding:0}'+
 'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}'+
-// Portal link
-'.portal-link{position:fixed;top:14px;left:16px;z-index:300;font-size:12px;font-weight:700;color:rgba(255,255,255,.55);text-decoration:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 12px;transition:all .15s;backdrop-filter:blur(4px)}'+
-'.portal-link:hover{color:#fff;background:rgba(255,255,255,.15)}'+
+// Outer dark wrapper — holds nav bar + hero, single gradient
+'.hero-outer{background:linear-gradient(135deg,#1A1A2E 0%,#2d1020 60%,#1A1A2E 100%)}'+
+// Nav bar inside the dark section — no extra background, just padding + flex
+'.hero-nav{padding:12px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.07)}'+
+'.portal-link{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);text-decoration:none;border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;transition:all .15s;white-space:nowrap;flex-shrink:0}'+
+'.portal-link:hover{color:#fff;border-color:rgba(255,255,255,.5)}'+
 // Edit FAB
 '.edit-fab{position:fixed;bottom:28px;right:28px;z-index:500;width:46px;height:46px;border-radius:50%;background:var(--dark);color:#fff;border:none;font-size:17px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}'+
 '.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}'+
@@ -583,15 +591,14 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.save-status{font-size:12px;color:rgba(255,255,255,.5);margin-left:2px}'+
 // Lang blocks
 '.lang-block{display:none}.lang-block.active{display:block}'+
-// HERO — deep dark gradient, all elements positioned inside
-'.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2d1020 60%,#1A1A2E 100%);position:relative;overflow:hidden;padding:18px 28px 36px}'+
-'.hero-prophix{position:absolute;top:16px;left:20px}'+
-'.hero-client-wrap{position:absolute;top:14px;right:18px}'+
+// HERO — background comes from hero-outer
+'.hero{position:relative;overflow:hidden;padding:28px 28px 36px}'+
+'.hero-client-wrap{position:absolute;top:18px;right:20px}'+
 '.hero-client-logo{max-height:56px;max-width:160px;object-fit:contain;background:rgba(255,255,255,.08);border-radius:8px;padding:7px 12px;cursor:pointer;transition:opacity .15s;display:block}'+
 '.hero-client-logo:hover{opacity:.85}'+
 '.hero-logo-ph{background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.2);border-radius:8px;padding:8px 14px;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer}'+
 '.hero-logo-ph:hover{background:rgba(255,255,255,.14);color:#fff}'+
-'.hero-body{max-width:700px;padding-top:50px}'+
+'.hero-body{max-width:700px;padding-right:180px}'+
 '.hero-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--red);margin-bottom:14px}'+
 'h1{font-size:32px;font-weight:900;line-height:1.2;color:#fff;margin-bottom:14px}'+
 '.hero-desc{font-size:15px;color:rgba(255,255,255,.7);line-height:1.75;max-width:600px;margin-bottom:14px}'+
