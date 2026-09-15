@@ -1,336 +1,675 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eaglestone Services SA — Customer Story Podcast | Prophix</title>
+<title>Client Story Creator — Prophix</title>
 <style>
-:root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F7F7FB;--border:#E0DFF0;--muted:#666;--font:Arial,sans-serif}
+:root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif;--r:8px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--light);color:#222}
-.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);color:#fff;padding:56px 40px 48px}
-.logo-pill{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--red);margin-bottom:22px}
-.logo-sq{width:24px;height:24px;background:var(--red);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900}
-.hero-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px}
-.hero h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;margin-bottom:14px;max-width:680px}
-.hero-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:26px}
-.lang-toggle{display:flex;gap:8px;margin-bottom:4px}
-.lang-btn{padding:7px 20px;border-radius:20px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s}
-.lang-btn.active{background:var(--red);border-color:var(--red);color:#fff}
-.lang-btn:hover:not(.active){border-color:rgba(255,255,255,.7);color:#fff}
-.stats{background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:center;flex-wrap:wrap}
-.stat{padding:22px 36px;text-align:center;border-right:1px solid var(--border);flex:1;min-width:150px}
-.stat:last-child{border-right:none}
-.stat-n{font-size:28px;font-weight:900;color:var(--red);line-height:1;margin-bottom:5px}
-.stat-l{font-size:12px;color:var(--muted);line-height:1.4;max-width:130px;margin:0 auto}
-.main{max-width:1100px;margin:0 auto;padding:44px 24px;display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start}
-@media(max-width:860px){.main{grid-template-columns:1fr}}
-.sec-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:7px}
-.story-sec{margin-bottom:40px}
-.story-sec h2{font-size:21px;font-weight:900;color:var(--dark);margin-bottom:14px;line-height:1.2}
-.story-sec p{font-size:15px;line-height:1.72;color:#333;margin-bottom:13px}
-.story-sec ul{padding-left:0;list-style:none;margin-bottom:13px}
-.story-sec ul li{font-size:15px;line-height:1.65;color:#333;padding-left:19px;margin-bottom:9px;position:relative}
-.story-sec ul li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--red)}
-.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin:24px 0}
-.clip-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:8px}
-.clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;margin-bottom:14px;font-weight:500}
-.clip-player{margin-top:4px}
-.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:20px}
-.sidebar-card h3{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--dark);margin-bottom:13px;padding-bottom:9px;border-bottom:2px solid var(--red)}
-.sidebar-card p{font-size:14px;line-height:1.65;color:#444;margin-bottom:9px}
-.app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px}
-.app-dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
-.result-item{font-size:13.5px;line-height:1.55;color:#333;margin-bottom:8px;padding-left:16px;position:relative}
-.result-item::before{content:"✔";position:absolute;left:0;color:var(--red);font-size:11px;top:1px}
-.page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:22px 20px;font-size:12px;line-height:1.7}
-.page-footer strong{color:rgba(255,255,255,.8)}
-#edit-fab{position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,0.25);transition:all .2s}
-#edit-fab:hover{background:var(--red)}
-#edit-toolbar{display:none;position:fixed;bottom:28px;right:28px;z-index:1000;background:var(--dark);border-radius:50px;padding:10px 18px;gap:10px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.25)}
-#edit-toolbar.visible{display:flex}
-#save-btn{background:var(--red);color:#fff;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
-#save-btn:hover{background:#c0272d}
-#save-btn:disabled{opacity:0.6;cursor:not-allowed}
-#cancel-btn{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
-#cancel-btn:hover{color:#fff;border-color:#fff}
-#save-status{font-size:12px;color:rgba(255,255,255,0.7);min-width:100px;text-align:center}
-body.edit-mode [contenteditable="true"]{outline:2px dashed rgba(239,54,61,0.5);border-radius:3px;padding:2px 4px;cursor:text;min-height:1em}
-body.edit-mode [contenteditable="true"]:focus{outline:2px solid var(--red);background:rgba(239,54,61,0.04)}
-#pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}
-#pw-modal.visible{display:flex}
-#pw-box{background:#fff;border-radius:12px;padding:32px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
-#pw-box h3{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px}
-#pw-box p{font-size:13px;color:var(--muted);margin-bottom,18px}
-.pw-field{margin-bottom:14px}
-.pw-field label{display:block;font-size:12px;font-weight:700;color:var(--dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
-.pw-field input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:var(--font);outline:none}
-.pw-field input:focus{border-color:var(--red)}
-#pw-error{font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px}
-#pw-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:4px}
-#pw-submit:hover{background:#c0272d}
-#pw-cancel{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:8px}
-#pw-cancel:hover{color:var(--dark);border-color:#aaa}
-#edit-fab.hidden{display:none!important}
+body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh}
+.header{background:linear-gradient(135deg,var(--dark) 0%,var(--mid) 100%);padding:22px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header-left{display:flex;align-items:center;gap:16px}
+.logo-pill{background:#fff;border-radius:6px;padding:6px 12px;display:inline-flex;align-items:center}
+.hdr-text h1{font-size:18px;font-weight:900;color:#fff}
+.hdr-text p{font-size:13px;color:rgba(255,255,255,.5);margin-top:2px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:2px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:20px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);text-decoration:none;transition:all .2s;white-space:nowrap}
+.back-btn:hover{border-color:#fff;color:#fff}
+.wrap{max-width:780px;margin:0 auto;padding:32px 24px}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px}
+.card-title{font-size:11px;font-weight:900;color:var(--dark);text-transform:uppercase;letter-spacing:.7px;margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--light)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:580px){.row{grid-template-columns:1fr}}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:11px;font-weight:700;color:var(--dark);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.f input,.f textarea{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none;background:#fff;transition:border-color .15s}
+.f input:focus,.f textarea:focus{border-color:var(--red)}
+.f textarea{resize:vertical;min-height:72px;line-height:1.5}
+.hint{font-size:11px;color:#aaa;margin-top:4px}
+.filedrop{border:2px dashed var(--border);border-radius:6px;padding:12px;text-align:center;cursor:pointer;transition:border-color .15s;background:#fafafa}
+.filedrop:hover{border-color:var(--red)}
+.filedrop input{display:none}
+.fdlabel{font-size:13px;color:#888}
+.fdname{font-size:12px;color:var(--dark);font-weight:700;margin-top:3px;display:none}
+.stat-row{display:grid;grid-template-columns:1fr 2fr 28px;gap:8px;align-items:center;margin-bottom:7px}
+.stat-row input{margin:0}
+.rm-sm{width:28px;height:28px;border:1px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;color:#bbb;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.rm-sm:hover{border-color:var(--red);color:var(--red)}
+.add-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:6px;padding:7px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;margin-top:4px}
+.add-btn:hover{border-color:var(--red);color:var(--red)}
+.prods{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.plbl{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;padding:6px 11px;border:1px solid var(--border);border-radius:6px;background:#fff;transition:all .15s;user-select:none}
+.plbl input{display:none}
+.plbl.on{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}
+.langs{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.llbl{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;padding:6px 11px;border:1px solid var(--border);border-radius:6px;background:#fff;transition:all .15s;user-select:none}
+.llbl input{display:none}
+.llbl.on{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}
+.llbl.locked{opacity:.5;cursor:default}
+.dyn{border:1px solid var(--border);border-radius:6px;padding:13px;margin-bottom:9px;position:relative}
+.dyn .rm{position:absolute;top:9px;right:9px;background:none;border:none;cursor:pointer;color:#bbb;font-size:14px;padding:2px 5px}
+.dyn .rm:hover{color:var(--red)}
+.access{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px}
+.access h3{font-size:13px;font-weight:900;color:var(--dark);margin-bottom:12px}
+.tok-row{display:flex;gap:10px;align-items:flex-end}
+.tok-row .f{flex:1;margin:0}
+.unlock{background:var(--dark);color:#fff;border:none;border-radius:6px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:background .15s}
+.unlock:hover{background:var(--mid)}
+.tok-err{font-size:12px;color:var(--red);margin-top:6px;min-height:14px}
+.tok-ok{font-size:12px;color:#2a7a2a;margin-top:6px;display:none}
+.sub-area{text-align:center;padding:6px 0 0}
+.sub-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;border:none;border-radius:8px;padding:13px 34px;font-size:15px;font-weight:900;font-family:var(--font);cursor:pointer;transition:background .15s}
+.sub-btn:hover{background:#c0272d}
+.sub-btn:disabled{opacity:.5;cursor:not-allowed}
+#prog-wrap{display:none;position:fixed;inset:0;background:rgba(20,20,40,.92);z-index:2000;align-items:center;justify-content:center;flex-direction:column}
+#prog-wrap.vis{display:flex}
+#prog-inner{background:#fff;border-radius:14px;padding:0;width:100%;max-width:680px;min-height:300px;overflow:hidden;display:flex;flex-direction:column}
+#prog-preview{flex:1;width:100%;border:none;display:none}
+#prog-footer{padding:20px 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#prog-status-area{flex:1}
+#prog-icon{font-size:28px;margin-bottom:4px}
+#prog-title{font-size:15px;font-weight:900;color:var(--dark)}
+#prog-step{font-size:12px;color:var(--muted);margin-top:3px}
+#prog-bar-wrap{background:#f0f0f6;border-radius:20px;height:5px;overflow:hidden;margin-top:8px;max-width:300px}
+#prog-bar{height:100%;background:var(--red);border-radius:20px;width:0%;transition:width .3s}
+#prog-actions{display:flex;gap:8px;flex-shrink:0}
+#prog-actions a,#prog-actions button{display:inline-flex;align-items:center;gap:6px;border-radius:7px;padding:9px 16px;font-size:13px;font-weight:700;font-family:var(--font);text-decoration:none;cursor:pointer;border:none;white-space:nowrap}
+.pa-open{background:var(--dark);color:#fff}
+.pa-open:hover{background:var(--mid)}
+.pa-dir{background:transparent;border:1px solid var(--border)!important;color:var(--dark)}
+.pa-dir:hover{border-color:var(--dark)!important}
+#prog-err{font-size:12px;color:#c0272d;margin-top:4px;display:none}
 </style>
-<style>:is([id*='google_ads_iframe'],[id*='taboola-'],.taboolaHeight,.taboola-placeholder,#top-ad,#credential_picker_container,#credentials-picker-container,#credential_picker_iframe,#onetap_google_intermediate_iframe,[id*='google-one-tap-iframe'],#google-one-tap-popup-container,.google-one-tap__module,.google-one-tap-modal-div,.adthrive-auto-injected-player-container,.adthrive[id^="cls-video-container"]:has(.adthrive-auto-injected-player-container),#amp_floatingAdDiv,#ez-content-blocker-container) {display:none!important;min-height:0!important;height:0!important;}</style></head>
-<body class="">
-<div class="hero">
-  <div class="logo-pill"><div class="logo-sq">P</div>Prophix</div>
-  <div class="lang-en hero-tag" style="display: none;">Customer Story — Podcast Format</div>
-  <div class="lang-fr hero-tag" style="">Témoignage Client — Format Podcast</div>
-  <h1 class="lang-en" style="display: none;">How Eaglestone Services SA transformed financial consolidation with Prophix</h1>
-  <h1 class="lang-fr" style="">Comment Eaglestone Services SA a transformé sa consolidation financière avec Prophix</h1>
-  <p class="hero-desc lang-en" style="display: none;">Listen to Quentin, Group Consolidation Manager at Eaglestone, share how Prophix Financial Consolidation and the Continuous Success Package helped him restructure a complex inherited setup, integrate France into the group consolidation, and build real-time visibility across three markets.</p>
-  <p class="hero-desc lang-fr" style="">Écoutez Quentin, Group Consolidation Manager chez Eaglestone, partager comment la consolidation financière Prophix et le Continuous Success Package l'ont aidé à restructurer une configuration héritée complexe, intégrer la France dans la consolidation groupe, et construire une visibilité en temps réel sur trois marchés.</p>
-  <div class="lang-toggle">
-    <button class="lang-btn" data-lang="en">EN</button>
-    <button class="lang-btn active" data-lang="fr">FR</button>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:22px;width:auto;display:block" alt="Prophix"></div>
+    <div class="hdr-text"><h1>Client Story Creator</h1><p>Build and publish a new customer story page in minutes</p></div>
   </div>
-</div>
-<div class="stats">
-  <div class="stat"><div class="stat-n">~1 wk</div><div class="stat-l lang-en" style="display: none;">Closing cycle saved per period</div><div class="stat-l lang-fr" style="">Économisé par clôture</div></div>
-  <div class="stat"><div class="stat-n">9/10</div><div class="stat-l lang-en" style="display: none;">NPS — already referring peers</div><div class="stat-l lang-fr" style="">NPS — déjà des recommandations</div></div>
-  <div class="stat"><div class="stat-n">3</div><div class="stat-l lang-en" style="display: none;">Markets consolidated in Prophix (BE, FR, LU)</div><div class="stat-l lang-fr" style="">Marchés dans Prophix (BE, FR, LU)</div></div>
-  <div class="stat"><div class="stat-n">2×</div><div class="stat-l lang-en" style="display: none;">Reporting frameworks: LuxGAAP + IFRS</div><div class="stat-l lang-fr" style="">Référentiels : Luxembourgeois + IFRS</div></div>
-</div>
-<div class="main">
-<div class="story-body">
-  <div class="story-sec lang-en" style="display: none;"><div class="sec-label">Business Challenges</div><h2>A complex, inherited setup across three decentralized markets</h2><p>When Quentin joined Eaglestone as Group Consolidation Manager in July 2025, he inherited a Prophix environment configured by a predecessor without formal consolidation training. The structure was built bottom-up rather than top-down, sub-consolidations were not linked to the group consolidation, and France ran its own consolidation in SAP BFC, sending only pre-aggregated contributions to the group level.</p><p>This created real visibility problems. Quentin had no access to the underlying intercompany eliminations, local data, or console adjustments for France. When questions arose from management or from IFRS-reporting shareholders, he had to go back to France for every detail. Deadlines were regularly missed. The group operates across Belgium, France, and Luxembourg with differing accounting systems and a dual reporting requirement — local Luxembourgian standards alongside IFRS.</p></div>
-  <div class="story-sec lang-fr" style=""><div class="sec-label">Défis Business</div><h2>Une configuration héritée complexe sur trois marchés décentralisés</h2><p>Quand Quentin a rejoint Eaglestone en tant que Group Consolidation Manager en juillet 2025, il a hérité d'un environnement Prophix configuré par un prédécesseur sans formation formelle en consolidation. La structure était construite en bottom-up plutôt qu'en top-down, les sous-consolidations n'étaient pas liées à la consolidation groupe, et la France gérait sa propre consolidation dans SAP BFC, en envoyant uniquement des contributions pré-agrégées au niveau groupe.</p><p>Cela créait de vrais problèmes de visibilité. Quentin n'avait pas accès aux éliminations intercos sous-jacentes, aux données locales, ni aux ajustements de consolidation pour la France. Lorsque des questions émergeaient de la direction ou des actionnaires soumis à l'IFRS, il devait systématiquement retourner vers la France. Les délais étaient régulièrement dépassés.</p></div>
-  <div class="clip-card">
-    <div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span class="lang-en" style="display: none;">Clip 1 — More transparency, faster information (09:02)</span><span class="lang-fr" style="">Extrait 1 — Plus de transparence, information plus rapide (09:02)</span></div>
-    <div class="clip-quote lang-en" style="display: none;">"The information is much more transparent — especially since France is now directly integrated into the system. I'm much faster at getting the information out."</div>
-    <div class="clip-quote lang-fr" style="">« L'information est beaucoup plus transparente — surtout depuis que la France est maintenant directement intégrée dans le système. Je suis beaucoup plus rapide à faire ressortir l'information. »</div>
-    <div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip1_transparency.mp3" type="audio/mpeg"></audio></div>
-  </div>
-  <div class="story-sec lang-en" style="display: none;"><div class="sec-label">Why Prophix</div><h2>The right platform to restructure and scale the consolidation</h2><p>Prophix Financial Consolidation was already deployed at Eaglestone when Quentin arrived. What changed was how it was used. Through the Continuous Success Package, Quentin worked alongside a Prophix consultant to audit the existing setup, identify structural weaknesses, and rebuild the consolidation architecture from scratch — top-down, with all sub-consolidations linked to the group level in real time.</p><ul><li>A platform for top-down multi-country consolidation with real-time visibility across all entity and subgroup levels simultaneously.</li><li>Full integration of France — local figures, console adjustments, and intercompany eliminations — replacing pre-aggregated SAP BFC contributions with entity-level detail.</li><li>Dual reporting support (Luxembourgian statutory and IFRS) with segment-level consolidation, analytical dimensions, and full traceability of adjustments.</li></ul></div>
-  <div class="story-sec lang-fr" style=""><div class="sec-label">Pourquoi Prophix</div><h2>La bonne plateforme pour restructurer et faire évoluer la consolidation</h2><p><b>Prophix Financial Consolidation</b> était déjà déployé chez Eaglestone à l'arrivée de Quentin. Ce qui a changé, c'est la façon dont il était utilisé. Grâce au Continuous Success Package, Quentin a travaillé avec un consultant Prophix pour auditer la configuration existante, identifier les faiblesses structurelles et reconstruire l'architecture de consolidation de zéro — en top-down, avec toutes les sous-consolidations liées au niveau groupe en temps réel.</p><ul><li>Une plateforme pour une consolidation multinationale en top-down avec visibilité en temps réel sur tous les niveaux d'entités et de sous-groupes.</li><li>Intégration complète de la France — données locales, ajustements de consolidation et éliminations intercos — remplaçant les contributions pré-agrégées de SAP BFC.</li><li>Double référentiel de reporting (luxembourgeois statutaire et IFRS) avec consolidation au niveau segment, dimensions analytiques et traçabilité complète.</li></ul></div>
-  <div class="clip-card">
-    <div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span class="lang-en" style="display: none;">Clip 2 — Meeting investor deadlines (11:19)</span><span class="lang-fr" style="">Extrait 2 — Respecter les délais investisseurs (11:19)</span></div>
-    <div class="clip-quote lang-en" style="display: none;">"Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines."</div>
-    <div class="clip-quote lang-fr" style="">« Nos investisseurs auxquels nous reportons en IFRS avaient beaucoup de questions. On était toujours en retard. Maintenant, on peut respecter nos délais stricts. »</div>
-    <div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip2_deadlines.mp3" type="audio/mpeg"></audio></div>
-  </div>
-  <div class="clip-card">
-    <div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span class="lang-en" style="display: none;">Clip 3 — Learning by doing with the CSP (19:50)</span><span class="lang-fr" style="">Extrait 3 — Apprendre en faisant avec le CSP (19:50)</span></div>
-    <div class="clip-quote lang-en" style="display: none;">"The work we do with these consultants — we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool."</div>
-    <div class="clip-quote lang-fr" style="">« Le travail que l'on fait avec ces consultants — on se forme en travaillant. Ils nous guident et nous supervisent, et c'est nous qui avons les clés. C'est la meilleure façon de comprendre l'outil. »</div>
-    <div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip3_csp_coaching.mp3" type="audio/mpeg"></audio></div>
-  </div>
-  <div class="story-sec lang-en" style="display: none;"><div class="sec-label">Key Results</div><h2>From inherited complexity to full consolidation independence</h2><p>With the restructured Prophix setup, Eaglestone now runs a top-down group consolidation with sub-consolidations for Belgium, France, and Luxembourg linked in real time. Quentin has full visibility into intercompany eliminations, local data, and console adjustments for every entity — detail that was simply unavailable before.</p><p>The quality and traceability of consolidated figures improved significantly. Quentin builds detailed reporting using Prophix's DynProfit layer, analyses segment-level contributions, and reconciles consolidated accounts against treasury and business plan data — work that previously had no time allocated to it.</p><p>The closing cycle shortened by approximately one week per period. France was fully migrated from SAP BFC into Prophix during 2024. Investor-facing IFRS reporting now meets strict deadlines consistently. The team moved from spending most of its energy keeping consolidation running to spending that energy on analysis.</p></div>
-  <div class="story-sec lang-fr" style=""><div class="sec-label">Résultats Clés</div><h2>De la complexité héritée à une indépendance complète en consolidation</h2><p>Avec la configuration Prophix restructurée, Eaglestone dispose désormais d'une consolidation groupe en top-down avec des sous-consolidations pour la Belgique, la France et le Luxembourg liées en temps réel. Quentin a une visibilité complète sur les éliminations intercos, les données locales et les ajustements de consolidation pour chaque entité.</p><p>La qualité et la traçabilité des chiffres consolidés se sont considérablement améliorées. Quentin construit des reportings détaillés en utilisant la couche DynProfit de Prophix, analyse les contributions au niveau segment et réconcilie les comptes consolidés avec les données trésorerie et business plan.</p><p>Le cycle de clôture a raccourci d'environ une semaine par période. La France a été entièrement migrée de SAP BFC vers Prophix au cours de 2024. Le reporting IFRS à destination des investisseurs respecte désormais des délais stricts de façon constante.</p></div>
-  <div class="clip-card">
-    <div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span class="lang-en" style="display: none;">Clip 4 — A next-generation consolidation tool (21:42)</span><span class="lang-fr" style="">Extrait 4 — Un outil de consolidation nouvelle génération (21:42)</span></div>
-    <div class="clip-quote lang-en" style="display: none;">"Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC."</div>
-    <div class="clip-quote lang-fr" style="">« Prophix est beaucoup plus convivial. C'est vraiment un outil de consolidation de nouvelle génération. Je peux le paramétrer bien plus facilement que dans SAP BFC. »</div>
-    <div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip4_new_generation.mp3" type="audio/mpeg"></audio></div>
-  </div>
-  <div class="clip-card">
-    <div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span class="lang-en" style="display: none;">Clip 6 — Time freed for strategic analysis (33:58)</span><span class="lang-fr" style="">Extrait 6 — Du temps libéré pour l'analyse stratégique (33:58)</span></div>
-    <div class="clip-quote lang-en" style="display: none;">"We spend less time on consolidation because we know it works — it is much more transparent. We direct our efforts on reconciliations with treasury and management data."</div>
-    <div class="clip-quote lang-fr" style="">« On passe moins de temps sur la consolidation parce qu'on sait que ça fonctionne. On dirige nos efforts sur les réconciliations avec les données trésorerie et de pilotage. »</div>
-    <div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip6_time_saved.mp3" type="audio/mpeg"></audio></div>
-  </div>
-  <div class="clip-card">
-    <div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span class="lang-en" style="display: none;">Clip 7 — Team support during France integration (38:25)</span><span class="lang-fr" style="">Extrait 7 — Soutien des équipes lors de l'intégration France (38:25)</span></div>
-    <div class="clip-quote lang-en" style="display: none;">"I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success."</div>
-    <div class="clip-quote lang-fr" style="">« Je suis extrêmement reconnaissant pour la réactivité et la disponibilité des équipes Prophix. J'ai été accompagné exactement comme il le fallait pour que ce soit un succès. »</div>
-    <div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip7_team_support.mp3" type="audio/mpeg"></audio></div>
-  </div>
-  <div class="story-sec lang-en" style="display: none;"><div class="sec-label">With Prophix, Eaglestone Services SA was able to:</div><ul><li>Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.</li><li>Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.</li><li>Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.</li><li>Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration.</li></ul></div>
-  <div class="story-sec lang-fr" style=""><div class="sec-label">Avec Prophix, Eaglestone Services SA a pu :</div><ul><li>Restructurer la consolidation groupe en top-down, en liant toutes les sous-consolidations en temps réel.</li><li>Intégrer entièrement la France dans Prophix avec toutes les couches de données sous-jacentes, en remplaçant les contributions pré-agrégées de SAP BFC par des détails au niveau entité.</li><li>Produire des reportings de consolidation au niveau segment et réconcilier la consolidation statutaire avec les données de pilotage et de trésorerie.</li><li>Développer les compétences internes en consolidation grâce au modèle de coaching CSP, rendant l'équipe entièrement indépendante dans la gestion de la configuration Prophix.</li></ul></div>
-  <div class="clip-card">
-    <div class="clip-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path></svg><span class="lang-en" style="display: none;">Clip 5 — 9 out of 10, already referring peers (24:42)</span><span class="lang-fr" style="">Extrait 5 — 9 sur 10, et déjà des recommandations (24:42)</span></div>
-    <div class="clip-quote lang-en" style="display: none;">"I would put 9 — not 10 because we can always go further — and yes, I would clearly recommend this system to my peers."</div>
-    <div class="clip-quote lang-fr" style="">« Je mettrais 9 — pas 10 parce qu'on peut toujours aller plus loin — et oui, je recommanderais clairement ce système à mes pairs. »</div>
-    <div class="clip-player"><audio controls="" preload="metadata" style="width:100%;height:40px;border-radius:6px;accent-color:#EF363D;display:block"><source src="clip5_nps_recommendation.mp3" type="audio/mpeg"></audio></div>
-  </div>
-</div>
-<div class="sidebar">
-  <div class="sidebar-card"><h3 class="lang-en" style="display: none;">Who is Eaglestone Services SA?</h3><h3 class="lang-fr" style="">Qui est Eaglestone Services SA ?</h3><p class="lang-en" style="display: none;">Eaglestone is a real estate promotion and development group headquartered in Luxembourg, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.</p><p class="lang-fr" style="">Eaglestone est un groupe de promotion et développement immobilier dont le siège est au Luxembourg, opérant en Belgique, France et Luxembourg. Le groupe établit ses comptes selon les référentiels statutaires luxembourgeois et IFRS, au service d'investisseurs dont au moins un actionnaire coté en bourse.</p></div>
-  <div class="sidebar-card"><h3 class="lang-en" style="display: none;">Applications Deployed</h3><h3 class="lang-fr" style="">Applications déployées</h3><div class="app-tag"><span class="app-dot"></span>Financial Consolidation</div></div>
-  <div class="sidebar-card"><h3 class="lang-en" style="display: none;">Key Results Snapshot</h3><h3 class="lang-fr" style="">Résultats en bref</h3><div class="result-item lang-en" style="display: none;">Closing cycle reduced by approximately one week per period after restructuring.</div><div class="result-item lang-en" style="display: none;">France fully migrated from SAP BFC, delivering entity-level detail and correct intercompany eliminations.</div><div class="result-item lang-en" style="display: none;">Team shifted focus from maintaining consolidation to analysis and strategic reconciliation.</div><div class="result-item lang-fr" style="">Cycle de clôture réduit d'environ une semaine par période après restructuration.</div><div class="result-item lang-fr" style="">France entièrement migrée de SAP BFC, avec détail au niveau entité et éliminations intercos correctes.</div><div class="result-item lang-fr" style="">L'équipe a réorienté ses efforts de la maintenance vers l'analyse et la réconciliation stratégique.</div></div>
-  <div class="sidebar-card"><h3 class="lang-en" style="display: none;">Interview Participants</h3><h3 class="lang-fr" style="">Participants à l'interview</h3><p><strong>Quentin Falisse</strong><br><span style="font-size:13px;color:#666">Group Consolidation Manager, Eaglestone</span></p><p style="margin-top:10px"><strong>Yassine Fenniche</strong><br><span style="font-size:13px;color:#666">Customer Success Manager, Prophix</span></p><p style="margin-top:10px"><strong>Alexandre Azaar</strong><br><span class="lang-en" style="font-size: 13px; color: rgb(102, 102, 102); display: none;">Product Adoption Consultant, Prophix</span><span class="lang-fr" style="font-size: 13px; color: rgb(102, 102, 102);">Consultant CSP, Prophix</span></p></div>
-</div>
-</div>
-<div class="page-footer"><strong>Prophix Software Inc.</strong> — Copyright © 2026. May only be reproduced with Prophix's prior consent.<br><span class="lang-en" style="display: none;">Audio extracts from the original customer interview conducted July 1, 2026. Used with permission.</span><span class="lang-fr" style="">Les extraits audio sont issus de l'interview client originale menée le 1er juillet 2026. Utilisés avec autorisation.</span></div>
-
-<button id="edit-fab" class="">✏️ Edit</button>
-<div id="edit-toolbar" class="">
-  <span id="save-status">⏳ Saving...</span>
-  <button id="cancel-btn">Cancel</button>
-  <button id="save-btn" disabled="">💾 Save Live</button>
+  <a href="/clients/" class="back-btn">&#x2190; Client Stories</a>
 </div>
 
-<div id="pw-modal" class="">
-  <div id="pw-box">
-    <h3>Editor Access</h3>
-    <p style="font-size:13px;color:#666;margin-bottom:18px">Enter your credentials to enable live editing</p>
-    <div class="pw-field">
-      <label>Password</label>
-      <input type="password" id="pw-input" placeholder="Enter password">
+<div class="wrap">
+  <div class="access">
+    <h3>GitHub Access</h3>
+    <div class="tok-row">
+      <div class="f"><label>GitHub Token</label><input type="password" id="tok" placeholder="Paste your GitHub token"/></div>
+      <button class="unlock" id="tok-btn">Access Creator</button>
     </div>
-    <div class="pw-field">
-      <label>GitHub Token</label>
-      <input type="password" id="token-input" placeholder="Paste your GitHub token">
+    <div class="tok-err" id="tok-err"></div>
+    <div class="tok-ok" id="tok-ok">✓ Accepted — fill in the form below and publish</div>
+  </div>
+
+  <div id="form" style="opacity:.3;pointer-events:none;transition:opacity .3s">
+
+  <div class="card">
+    <div class="card-title">Client</div>
+    <div class="row">
+      <div class="f"><label>Client name *</label><input type="text" id="c-name" placeholder="e.g. Acme Corp"/></div>
+      <div class="f"><label>Industry / HQ</label><input type="text" id="c-ind" placeholder="e.g. Manufacturing, Brussels"/></div>
     </div>
-    <div id="pw-error"></div>
-    <button id="pw-submit">Unlock Editor</button>
-    <button id="pw-cancel">Cancel</button>
+    <div class="f"><label>Short description</label><textarea id="c-desc" placeholder="One or two sentences about this client."></textarea></div>
+    <div class="f">
+      <label>Client logo (PNG / JPG / SVG)</label>
+      <div class="filedrop" id="logo-drop" onclick="document.getElementById('logo-file').click()">
+        <input type="file" id="logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+        <div class="fdlabel">Click to choose logo file</div>
+        <div class="fdname" id="logo-name"></div>
+      </div>
+      <div class="hint">Shown at top-right of the hero and on the directory card.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Stats (flexible)</div>
+    <div id="stats-b">
+      <div class="stat-row"><input type="text" class="sv" placeholder="~1 wk"/><input type="text" class="sl" placeholder="Closing cycle saved"/><button class="rm-sm" onclick="this.closest('.stat-row').remove()">✕</button></div>
+      <div class="stat-row"><input type="text" class="sv" placeholder="9/10"/><input type="text" class="sl" placeholder="NPS score"/><button class="rm-sm" onclick="this.closest('.stat-row').remove()">✕</button></div>
+    </div>
+    <button class="add-btn" onclick="addStat()">+ Add stat</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Key Results Snapshot</div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:12px">Checkmark bullets in a dark centered card below the stats</p>
+    <div id="krs-b">
+      <div class="dyn"><button class="rm" onclick="this.closest('.dyn').remove()">✕</button>
+        <div class="f" style="margin:0"><label>Bold prefix (optional)</label><input type="text" class="kb" placeholder="e.g. Full transparency, faster close"/></div>
+        <div class="f" style="margin-top:8px;margin-bottom:0"><label>Full sentence</label><input type="text" class="kt" placeholder="Full transparency, faster close: consolidated data now visible in one system."/></div>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addKRS()">+ Add result</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Story sections</div>
+    <div id="secs-b">
+      <div class="dyn"><button class="rm" onclick="this.closest('.dyn').remove()">✕</button>
+        <div class="row"><div class="f"><label>Label</label><input type="text" class="sl2" placeholder="Business Challenge"/></div><div class="f"><label>Heading</label><input type="text" class="sh" placeholder="Heading"/></div></div>
+        <div class="f" style="margin-bottom:0"><label>Body</label><textarea class="sb" placeholder="Section content…"></textarea></div>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addSec()">+ Add section</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Audio clips</div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:12px">MP3 files uploaded via edit mode after publishing</p>
+    <div id="clips-b">
+      <div class="dyn"><button class="rm" onclick="this.closest('.dyn').remove()">✕</button>
+        <div class="row"><div class="f"><label>Title</label><input type="text" class="ct" placeholder="On the close process"/></div><div class="f"><label>Timestamp</label><input type="text" class="cts" placeholder="01:24"/></div></div>
+        <div class="f" style="margin-bottom:0"><label>Quote</label><textarea class="cq" placeholder='"The most impactful change…"'></textarea></div>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addClip()">+ Add clip</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Results list (sidebar)</div>
+    <div id="res-b">
+      <div class="dyn"><button class="rm" onclick="this.closest('.dyn').remove()">✕</button><div class="f" style="margin:0"><input type="text" class="rt" placeholder="Reduced close from 10 days to 2"/></div></div>
+    </div>
+    <button class="add-btn" onclick="addRes()">+ Add result</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">"Who is [Client]?" sidebar card</div>
+    <div class="f"><label>Description text</label><textarea id="who-txt" placeholder="2–3 sentences about who this client is."></textarea></div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:10px">Stat tiles inside the Who card (flexible)</p>
+    <div id="who-b">
+      <div class="stat-row"><input type="text" class="wv" placeholder="69"/><input type="text" class="wl" placeholder="Active projects"/><button class="rm-sm" onclick="this.closest('.stat-row').remove()">✕</button></div>
+    </div>
+    <button class="add-btn" onclick="addWhoStat()">+ Add stat</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Participants</div>
+    <div id="part-b">
+      <div class="dyn"><button class="rm" onclick="this.closest('.dyn').remove()">✕</button>
+        <div class="row"><div class="f"><label>Name</label><input type="text" class="pn" placeholder="Jane Smith"/></div><div class="f"><label>Title, Company</label><input type="text" class="pt" placeholder="CFO, Acme Corp"/></div></div>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addPart()">+ Add participant</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Applications deployed</div>
+    <div class="prods">
+      <label class="plbl"><input type="checkbox" value="Financial Consolidation"> Financial Consolidation</label>
+      <label class="plbl"><input type="checkbox" value="FPA+"> FPA+</label>
+      <label class="plbl"><input type="checkbox" value="Account Reconciliation"> Account Reconciliation</label>
+      <label class="plbl"><input type="checkbox" value="Cashflow Management"> Cashflow Management</label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Languages</div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:10px">EN always included. Others add empty placeholder blocks.</p>
+    <div class="langs">
+      <label class="llbl locked"><input type="checkbox" value="en" checked disabled> EN</label>
+      <label class="llbl"><input type="checkbox" value="fr"> FR — French</label>
+      <label class="llbl"><input type="checkbox" value="nl"> NL — Dutch</label>
+      <label class="llbl"><input type="checkbox" value="de"> DE — German</label>
+      <label class="llbl"><input type="checkbox" value="it"> IT — Italian</label>
+      <label class="llbl"><input type="checkbox" value="es"> ES — Spanish</label>
+    </div>
+  </div>
+
+  <div class="sub-area">
+    <button class="sub-btn" id="sub-btn" disabled>Publish client story →</button>
+  </div>
+  </div>
+</div>
+
+<!-- Progress / preview overlay -->
+<div id="prog-wrap">
+  <div id="prog-inner">
+    <iframe id="prog-preview" title="Story preview"></iframe>
+    <div id="prog-footer">
+      <div id="prog-status-area">
+        <div id="prog-icon">⚙️</div>
+        <div id="prog-title">Creating story…</div>
+        <div id="prog-step">Starting…</div>
+        <div id="prog-bar-wrap"><div id="prog-bar"></div></div>
+        <div id="prog-err"></div>
+      </div>
+      <div id="prog-actions"></div>
+    </div>
   </div>
 </div>
 
 <script>
-var GH_REPO = 'raulsteiu/raulsteiu.github.io';
-var GH_FILE = 'index.html';
-var EDIT_PASSWORD = 'prophix2026';
-var sessionToken = "";
-var cachedSha = "";
+var GH_REPO='raulsteiu/raulsteiu.github.io';
+var sessionToken='';
+var LANG_NAMES={en:'EN',fr:'FR',nl:'NL',de:'DE',it:'IT',es:'ES'};
+var LANG_FULL={en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish'};
+var LANG_LABELS={en:'Customer Story',fr:'En français',nl:'In het Nederlands',de:'Auf Deutsch',it:'In italiano',es:'En español'};
 
-var EDITABLE_SELECTORS = [
-  '.story-sec h2','.story-sec p','.story-sec ul li',
-  '.clip-quote','.clip-label span','.sidebar-card p',
-  '.result-item','.stat-l','.hero h1','.hero-desc',
-  '.hero-tag','.sec-label','.sidebar-card h3','.page-footer'
-];
-
-function setLang(lang) {
-  document.querySelectorAll('.lang-en').forEach(function(el){ el.style.display = lang==='en' ? '' : 'none'; });
-  document.querySelectorAll('.lang-fr').forEach(function(el){ el.style.display = lang==='fr' ? '' : 'none'; });
-  document.querySelectorAll('.lang-btn').forEach(function(btn){ btn.classList.toggle('active', btn.getAttribute('data-lang')===lang); });
-}
-
-function enableEditMode() {
-  document.body.classList.add('edit-mode');
-  EDITABLE_SELECTORS.forEach(function(sel){
-    document.querySelectorAll(sel).forEach(function(el){ el.setAttribute('contenteditable','true'); });
-  });
-  document.getElementById('edit-fab').classList.add('hidden');
-  document.getElementById('edit-toolbar').classList.add('visible');
-  document.getElementById('save-status').textContent = '✏️ Edit mode on';
-  document.getElementById('save-btn').disabled = false;
-}
-
-function disableEditMode() {
-  document.body.classList.remove('edit-mode');
-  EDITABLE_SELECTORS.forEach(function(sel){
-    document.querySelectorAll(sel).forEach(function(el){ el.removeAttribute('contenteditable'); });
-  });
-  document.getElementById('edit-fab').classList.remove('hidden');
-  document.getElementById('edit-toolbar').classList.remove('visible');
-  document.getElementById('save-status').textContent = '';
-  document.getElementById('save-btn').disabled = false;
-}
-
-function closeModal() {
-  document.getElementById('pw-modal').classList.remove('visible');
-  document.getElementById('pw-input').value = '';
-  document.getElementById('token-input').value = '';
-  document.getElementById('pw-error').textContent = '';
-}
-
-async function saveToGitHub() {
-  var statusEl = document.getElementById('save-status');
-  var saveBtn = document.getElementById('save-btn');
-  statusEl.textContent = '⏳ Saving...';
-  saveBtn.disabled = true;
-
-  try {
-    // Use cached SHA if available, otherwise fetch it
-    var sha = cachedSha;
-    if (!sha) {
-      var shaRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE, {
-        headers: { 'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json' }
-      });
-      if (!shaRes.ok) { throw new Error('Auth failed — check your token'); }
-      sha = (await shaRes.json()).sha;
-    }
-
-    // Temporarily clean DOM for capture
-    EDITABLE_SELECTORS.forEach(function(sel){
-      document.querySelectorAll(sel).forEach(function(el){ el.removeAttribute('contenteditable'); });
-    });
-    document.body.classList.remove('edit-mode');
-    document.getElementById('edit-fab').classList.remove('hidden');
-    document.getElementById('edit-toolbar').classList.remove('visible');
-
-    // Capture clean HTML
-    var htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-
-    // Restore DOM to edit state
-    document.body.classList.add('edit-mode');
-    document.getElementById('edit-fab').classList.add('hidden');
-    document.getElementById('edit-toolbar').classList.add('visible');
-    EDITABLE_SELECTORS.forEach(function(sel){
-      document.querySelectorAll(sel).forEach(function(el){ el.setAttribute('contenteditable','true'); });
-    });
-
-    // Push to GitHub
-    var encoded = btoa(unescape(encodeURIComponent(htmlContent)));
-    var pushRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Live edit update', content: encoded, sha: sha })
-    });
-
-    if (pushRes.ok) {
-      // Cache the new SHA from GitHub's response for next save
-      var pushData = await pushRes.json();
-      cachedSha = pushData.content.sha;
-      statusEl.textContent = '✅ Saved!';
-      setTimeout(function(){ disableEditMode(); }, 1500);
-    } else {
-      var err = await pushRes.json();
-      // If conflict (stale SHA), clear cache so next save fetches fresh
-      if (err.status === 409 || (err.message && err.message.indexOf('conflict') > -1)) {
-        cachedSha = '';
-        statusEl.textContent = '⚠️ Conflict — please try again';
-      } else {
-        statusEl.textContent = '❌ ' + (err.message || 'Save failed');
-      }
-      saveBtn.disabled = false;
-    }
-  } catch(e) {
-    statusEl.textContent = '❌ ' + e.message;
-    saveBtn.disabled = false;
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.lang-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){ setLang(btn.getAttribute('data-lang')); });
-  });
-  setLang('en');
-
-  document.getElementById('edit-fab').addEventListener('click', function(){
-    document.getElementById('pw-modal').classList.add('visible');
-    setTimeout(function(){ document.getElementById('pw-input').focus(); }, 50);
-  });
-
-  document.getElementById('pw-submit').addEventListener('click', function(){
-    var pw = document.getElementById('pw-input').value;
-    var token = document.getElementById('token-input').value.trim();
-    document.getElementById('pw-error').textContent = '';
-    if (pw !== EDIT_PASSWORD) { document.getElementById('pw-error').textContent = 'Incorrect password.'; return; }
-    if (!token) { document.getElementById('pw-error').textContent = 'Please paste your GitHub token.'; return; }
-    sessionToken = token;
-    closeModal();
-    enableEditMode();
-  });
-
-  document.getElementById('pw-cancel').addEventListener('click', closeModal);
-
-  ['pw-input','token-input'].forEach(function(id){
-    document.getElementById(id).addEventListener('keydown', function(e){
-      if (e.key === 'Enter') document.getElementById('pw-submit').click();
-      if (e.key === 'Escape') closeModal();
-    });
-  });
-
-  document.getElementById('save-btn').addEventListener('click', saveToGitHub);
-  document.getElementById('cancel-btn').addEventListener('click', disableEditMode);
+document.getElementById('tok-btn').addEventListener('click',function(){
+  var tok=document.getElementById('tok').value.trim().replace(/[^\x20-\x7E]/g,'');
+  document.getElementById('tok-err').textContent='';
+  if(!tok){document.getElementById('tok-err').textContent='Please paste your token.';return;}
+  fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json',{
+    headers:{'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'}
+  }).then(function(r){
+    if(!r.ok){document.getElementById('tok-err').textContent='Token invalid or no access.';return;}
+    sessionToken=tok;
+    document.getElementById('tok-ok').style.display='block';
+    document.getElementById('tok-btn').textContent='✓ Unlocked';
+    document.getElementById('tok-btn').style.background='#2a7a2a';
+    var f=document.getElementById('form');f.style.opacity='1';f.style.pointerEvents='';
+    document.getElementById('sub-btn').disabled=false;
+  }).catch(function(){document.getElementById('tok-err').textContent='Could not verify.';});
 });
+document.getElementById('tok').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('tok-btn').click();});
+
+document.querySelectorAll('.plbl').forEach(function(l){l.addEventListener('click',function(){var c=l.querySelector('input');c.checked=!c.checked;l.classList.toggle('on',c.checked);});});
+document.querySelectorAll('.llbl:not(.locked)').forEach(function(l){l.addEventListener('click',function(){var c=l.querySelector('input');c.checked=!c.checked;l.classList.toggle('on',c.checked);});});
+document.getElementById('logo-file').addEventListener('change',function(){var f=this.files[0];if(!f)return;document.getElementById('logo-name').textContent=f.name;document.getElementById('logo-name').style.display='block';document.querySelector('#logo-drop .fdlabel').textContent='Click to change';});
+
+function mk(html){var d=document.createElement('div');d.className='dyn';d.innerHTML=html;return d;}
+function addStat(){var d=document.createElement('div');d.className='stat-row';d.innerHTML='<input type="text" class="sv" placeholder="Value"/><input type="text" class="sl" placeholder="Label"/><button class="rm-sm" onclick="this.closest(\'.stat-row\').remove()">✕</button>';document.getElementById('stats-b').appendChild(d);}
+function addWhoStat(){var d=document.createElement('div');d.className='stat-row';d.innerHTML='<input type="text" class="wv" placeholder="Value"/><input type="text" class="wl" placeholder="Label"/><button class="rm-sm" onclick="this.closest(\'.stat-row\').remove()">✕</button>';document.getElementById('who-b').appendChild(d);}
+function addKRS(){document.getElementById('krs-b').appendChild(mk('<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="f" style="margin:0"><label>Bold prefix</label><input type="text" class="kb" placeholder="Bold part"/></div><div class="f" style="margin-top:8px;margin-bottom:0"><label>Full sentence</label><input type="text" class="kt" placeholder="Full sentence"/></div>'));}
+function addSec(){document.getElementById('secs-b').appendChild(mk('<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="row"><div class="f"><label>Label</label><input type="text" class="sl2" placeholder="Label"/></div><div class="f"><label>Heading</label><input type="text" class="sh" placeholder="Heading"/></div></div><div class="f" style="margin-bottom:0"><label>Body</label><textarea class="sb" placeholder="Content…"></textarea></div>'));}
+function addClip(){document.getElementById('clips-b').appendChild(mk('<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="row"><div class="f"><label>Title</label><input type="text" class="ct" placeholder="Title"/></div><div class="f"><label>Timestamp</label><input type="text" class="cts" placeholder="00:00"/></div></div><div class="f" style="margin-bottom:0"><label>Quote</label><textarea class="cq" placeholder="&quot;Quote…&quot;"></textarea></div>'));}
+function addRes(){document.getElementById('res-b').appendChild(mk('<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="f" style="margin:0"><input type="text" class="rt" placeholder="Result bullet…"/></div>'));}
+function addPart(){document.getElementById('part-b').appendChild(mk('<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="row"><div class="f"><label>Name</label><input type="text" class="pn" placeholder="Name"/></div><div class="f"><label>Title</label><input type="text" class="pt" placeholder="Title, Company"/></div></div>'));}
+
+function toSlug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,60);}
+function setP(s,p){document.getElementById('prog-step').textContent=s;document.getElementById('prog-bar').style.width=p+'%';}
+
+async function ghPut(path,content,message,sha){
+  var body={message:message,content:btoa(unescape(encodeURIComponent(content)))};
+  if(sha)body.sha=sha;
+  var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  var d=await r.json();if(!r.ok)throw new Error(d.message||'GitHub error');return d;
+}
+async function ghPutBin(path,b64,msg){
+  var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:msg,content:b64})});
+  var d=await r.json();if(!r.ok)throw new Error(d.message||'GitHub error');return d;
+}
+async function ghGetSha(path){var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});if(!r.ok)return null;return(await r.json()).sha;}
+function f2b(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(e){res(e.target.result.split(',')[1]);};fr.onerror=rej;fr.readAsDataURL(file);});}
+
+document.getElementById('sub-btn').addEventListener('click',async function(){
+  if(!sessionToken)return;
+  var name=document.getElementById('c-name').value.trim();
+  if(!name){alert('Client name required.');document.getElementById('c-name').focus();return;}
+  var slug=toSlug(name);
+  var desc=document.getElementById('c-desc').value.trim();
+  var ind=document.getElementById('c-ind').value.trim();
+  var whoTxt=document.getElementById('who-txt').value.trim();
+
+  var stats=Array.from(document.querySelectorAll('#stats-b .stat-row')).map(function(r){return{v:r.querySelector('.sv').value.trim()||'—',l:r.querySelector('.sl').value.trim()||'—'};}).filter(function(s){return s.v!=='—'||s.l!=='—';});
+  var whoStats=Array.from(document.querySelectorAll('#who-b .stat-row')).map(function(r){return{v:r.querySelector('.wv').value.trim(),l:r.querySelector('.wl').value.trim()};}).filter(function(s){return s.v||s.l;});
+  var krs=Array.from(document.querySelectorAll('#krs-b .dyn')).map(function(el){return{text:el.querySelector('.kt').value.trim(),bold:el.querySelector('.kb').value.trim()};}).filter(function(k){return k.text;});
+  var secs=Array.from(document.querySelectorAll('#secs-b .dyn')).map(function(el){return{label:el.querySelector('.sl2').value.trim(),heading:el.querySelector('.sh').value.trim(),body:el.querySelector('.sb').value.trim()};}).filter(function(s){return s.heading;});
+  var clips=Array.from(document.querySelectorAll('#clips-b .dyn')).map(function(el){return{title:el.querySelector('.ct').value.trim(),ts:el.querySelector('.cts').value.trim(),quote:el.querySelector('.cq').value.trim()};}).filter(function(c){return c.title;});
+  var results=Array.from(document.querySelectorAll('.rt')).map(function(i){return i.value.trim();}).filter(Boolean);
+  var parts=Array.from(document.querySelectorAll('#part-b .dyn')).map(function(el){return{name:el.querySelector('.pn').value.trim(),title:el.querySelector('.pt').value.trim()};}).filter(function(p){return p.name;});
+  var prods=Array.from(document.querySelectorAll('.plbl input:checked')).map(function(cb){return cb.value;});
+  var langs=Array.from(document.querySelectorAll('.langs input:checked')).map(function(cb){return cb.value;});
+  if(langs.indexOf('en')===-1)langs.unshift('en');
+  var logoFile=document.getElementById('logo-file').files[0];
+
+  var pw=document.getElementById('prog-wrap');
+  pw.classList.add('vis');
+  document.getElementById('prog-err').style.display='none';
+  document.getElementById('prog-actions').innerHTML='';
+  document.getElementById('prog-icon').textContent='⚙️';
+  document.getElementById('prog-title').textContent='Creating story…';
+  document.getElementById('prog-preview').style.display='none';
+  document.getElementById('sub-btn').disabled=true;
+
+  try{
+    var folder='clients/'+slug+'/';
+    var hasLogo=false;
+    if(logoFile){
+      setP('Uploading logo…',15);
+      var ext=logoFile.name.split('.').pop().toLowerCase();
+      await ghPutBin(folder+'logo.'+ext,await f2b(logoFile),'Logo: '+name);
+      hasLogo=true;
+    }
+    setP('Generating page…',35);
+    var html=buildPage({slug,name,desc,ind,stats,whoTxt,whoStats,krs,secs,clips,results,parts,prods,langs,hasLogo});
+    setP('Uploading page…',55);
+    await ghPut(folder+'index.html',html,'Story: '+name);
+    setP('Updating directory…',78);
+    var sSha=await ghGetSha('clients/stories.json');
+    var sRes=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json',{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
+    var cur=[];
+    if(sRes.ok){try{cur=JSON.parse(atob((await sRes.json()).content.replace(/\n/g,'')));}catch(e){}}
+    cur=cur.filter(function(s){return s.slug!==slug;});
+    cur.unshift({slug:slug,name:name,created:new Date().toISOString(),logo:hasLogo});
+    await ghPut('clients/stories.json',JSON.stringify(cur,null,2),'Add story: '+name,sSha);
+    setP('Done!',100);
+
+    document.getElementById('prog-icon').textContent='🎉';
+    document.getElementById('prog-title').textContent=name+' is live!';
+    document.getElementById('prog-bar').style.width='100%';
+
+    var countdown=3;
+    function tick(){
+      document.getElementById('prog-step').textContent='Redirecting to all stories in '+countdown+'s…';
+      if(countdown<=0){ window.location.href='/clients/'; return; }
+      countdown--;
+      setTimeout(tick,1000);
+    }
+    tick();
+
+    document.getElementById('prog-actions').innerHTML=
+      '<a class="pa-open" href="https://raulsteiu.github.io/clients/'+slug+'/" target="_blank">Open story ↗</a>'+
+      '<a class="pa-dir" href="/clients/" onclick="window.location.href=\'/clients/\';return false;">Go now →</a>';
+  }catch(e){
+    document.getElementById('prog-icon').textContent='⚠️';
+    document.getElementById('prog-title').textContent='Something went wrong';
+    document.getElementById('prog-step').textContent='';
+    document.getElementById('prog-err').textContent=e.message;
+    document.getElementById('prog-err').style.display='block';
+    document.getElementById('prog-actions').innerHTML='<button onclick="document.getElementById(\'prog-wrap\').classList.remove(\'vis\');document.getElementById(\'sub-btn\').disabled=false" style="background:#EF363D;color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">Try again</button>';
+    document.getElementById('sub-btn').disabled=false;
+  }
+});
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function buildPage(d){
+  var slug=d.slug,name=d.name,desc=d.desc,ind=d.ind;
+  var stats=d.stats,whoTxt=d.whoTxt,whoStats=d.whoStats;
+  var krs=d.krs,secs=d.secs,clips=d.clips;
+  var results=d.results,parts=d.parts,prods=d.prods,langs=d.langs,hasLogo=d.hasLogo;
+  var addable=['fr','nl','de','it','es'].filter(function(l){return langs.indexOf(l)===-1;});
+  var p=[];
+
+  p.push('<!DOCTYPE html><html lang="en"><head>');
+  p.push('<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">');
+  p.push('<title>'+esc(name)+' — Prophix Customer Story</title>');
+  p.push('<style>'+css()+'</style></head><body>');
+
+  p.push('<script>');
+  p.push('var GH_REPO="raulsteiu/raulsteiu.github.io";');
+  p.push('var GH_FILE="clients/'+slug+'/index.html";');
+  p.push('var GH_CLIENT_FOLDER="clients/'+slug+'/";');
+  p.push('var activeLangs='+JSON.stringify(langs)+';');
+  p.push('var LANG_NAMES={en:"EN",fr:"FR",nl:"NL",de:"DE",it:"IT",es:"ES"};');
+  p.push('var LANG_LABELS={en:"Customer Story",fr:"En fran\\u00e7ais",nl:"In het Nederlands",de:"Auf Deutsch",it:"In italiano",es:"En espa\\u00f1ol"};');
+  p.push('var LANG_FULL_NAMES={fr:"French",nl:"Dutch",de:"German",it:"Italian",es:"Spanish"};');
+  p.push('<\/script>');
+
+  p.push('<button id="edit-fab" class="edit-fab" title="Edit">✏</button>');
+
+  p.push('<div id="edit-toolbar" class="edit-toolbar">');
+  p.push('<div style="display:flex;align-items:center;gap:8px">');
+  p.push('<button id="save-btn" class="tb-save">Save</button>');
+  p.push('<button id="cancel-btn" class="tb-cancel">Cancel</button>');
+  p.push('<span id="save-status" class="save-status"></span>');
+  p.push('</div></div>');
+
+  p.push('<div class="hero-outer">');
+  p.push('<div class="hero-nav">');
+  p.push('<a href="/clients/" class="portal-link">← All stories</a>');
+  p.push('<div id="lang-toggle" class="lang-toggle">');
+  langs.forEach(function(l){
+    p.push('<button class="lang-btn'+(l==='en'?' active':'')+'" data-lang="'+l+'">'+LANG_NAMES[l]+'</button>');
+    if(l!=='en') p.push('<button class="lang-btn remove-lang" data-remove-lang="'+l+'" style="display:none">&times;</button>');
+  });
+  if(addable.length>0){
+    p.push('<span id="lang-add-wrap" class="edit-only" style="display:none"><select id="lang-add-select"><option value="">+ Add language</option>');
+    addable.forEach(function(l){p.push('<option value="'+l+'">'+LANG_FULL[l]+'</option>');});
+    p.push('</select></span>');
+  } else { p.push('<span id="lang-add-wrap"></span>'); }
+  p.push('</div></div>');
+
+  p.push('<div id="lang-blocks">');
+  langs.forEach(function(lc){
+    var isEN=lc==='en';
+    var pfx=isEN?'':('['+LANG_NAMES[lc]+'] ');
+    p.push('<div class="lang-block'+(isEN?' active':'')+'" id="block-'+lc+'">');
+
+    p.push('<div class="hero">');
+    // Logo row: Prophix left, client logo right — matching Eaglestone style
+    p.push('<div class="logo-row">');
+    p.push('<div class="logo-pill-hero"><img src="/prophix-logo-1000px.png" alt="Prophix"></div>');
+    if(hasLogo){
+      p.push('<div class="logo-pill-client" onclick="triggerLogoUpload()" title="Click in edit mode to replace logo"><img class="hero-client-logo" src="logo.png" alt="'+esc(name)+' logo"></div>');
+    } else {
+      p.push('<div class="logo-pill-client edit-only" style="display:none" onclick="triggerLogoUpload()" title="Upload client logo"><div class="hero-logo-ph">+ Upload logo</div></div>');
+    }
+    p.push('</div>');
+    p.push('<div class="hero-body">');
+    p.push('<div class="hero-tag">'+pfx+esc(LANG_LABELS[lc]||'Customer Story')+'</div>');
+    p.push('<h1>'+pfx+esc(name)+' Customer Story</h1>');
+    p.push('<div class="hero-desc">'+pfx+esc(desc||'How '+name+' transformed their financial performance with Prophix.')+'</div>');
+    if(ind) p.push('<div class="hero-ind">'+pfx+esc(ind)+'</div>');
+    p.push('</div></div>');
+
+    if(stats.length>0){
+      p.push('<div class="stats-row">');
+      stats.forEach(function(s){
+        p.push('<div class="stat-tile"><div class="stat-n">'+pfx+esc(s.v)+'</div><div class="stat-l">'+pfx+esc(s.l)+'</div></div>');
+      });
+      p.push('</div>');
+    }
+
+    if(krs.length>0){
+      p.push('<div class="krs-outer"><div class="krs-card">');
+      p.push('<div class="krs-heading">Key Results Snapshot</div>');
+      p.push('<ul class="krs-list">');
+      krs.forEach(function(k){
+        p.push('<li class="krs-item">');
+        p.push('<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>');
+        var txt = k.bold ? '<strong>'+pfx+esc(k.bold)+':</strong> '+pfx+esc(k.text.replace(k.bold+':','').replace(k.bold,'').trim()) : pfx+esc(k.text);
+        p.push('<span class="krs-item-text">'+txt+'</span>');
+        p.push('</li>');
+      });
+      p.push('</ul></div></div>');
+    }
+
+    p.push('<div class="body-layout">');
+    p.push('<div class="main-col">');
+    p.push('<div class="sections-container">');
+    secs.forEach(function(s){
+      p.push('<div class="story-sec">');
+      p.push('<div class="sec-label">'+pfx+esc(s.label)+'</div>');
+      p.push('<h2>'+pfx+esc(s.heading)+'</h2>');
+      p.push('<p>'+pfx+esc(s.body)+'</p>');
+      p.push('</div>');
+    });
+    p.push('</div>');
+    p.push('<button class="add-sec-btn edit-only" onclick="addSection(this)" style="display:none">+ Add section</button>');
+    p.push('<div class="clips-wrap">');
+    clips.forEach(function(c){
+      p.push('<div class="clip-card">');
+      p.push('<div class="clip-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>'+esc(c.title)+(c.ts?' · '+esc(c.ts):'')+'</div>');
+      p.push('<div class="clip-quote">'+esc(c.quote||'"…"')+'</div>');
+      p.push('<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:38px;border-radius:6px;accent-color:#EF363D"><source type="audio/mpeg"></audio></div>');
+      p.push('</div>');
+    });
+    p.push('<button class="add-clip-btn edit-only" onclick="addClipInline(this)" style="display:none">+ Add clip</button>');
+    p.push('</div></div>');
+
+    p.push('<div class="sidebar">');
+    p.push('<div class="sidebar-card">');
+    p.push('<h3>Who is '+esc(name)+'?</h3>');
+    if(whoTxt) p.push('<p class="who-text">'+pfx+esc(whoTxt)+'</p>');
+    if(whoStats.length>0){
+      p.push('<div class="who-stats-grid">');
+      whoStats.forEach(function(s){ p.push('<div class="who-stat-tile"><div class="who-stat-n">'+esc(s.v)+'</div><div class="who-stat-l">'+esc(s.l)+'</div></div>'); });
+      p.push('</div>');
+    }
+    p.push('</div>');
+    p.push('<div class="sidebar-card">');
+    p.push('<h3>Applications deployed</h3>');
+    p.push('<div class="apps-display" onclick="if(document.body.classList.contains(\'edit-mode\'))toggleProductsPanel(this)" title="Click in edit mode to change">');
+    prods.forEach(function(pr){ p.push('<div class="app-tag"><span class="app-dot"></span><span>'+esc(pr)+'</span></div>'); });
+    if(!prods.length) p.push('<span style="font-size:12px;color:#aaa">None selected</span>');
+    p.push('</div></div>');
+    if(results.length>0){
+      p.push('<div class="sidebar-card"><h3>Results</h3><ul class="results-ul">');
+      results.forEach(function(r){ p.push('<li class="result-item">'+esc(r)+'</li>'); });
+      p.push('</ul></div>');
+    }
+    if(parts.length>0){
+      p.push('<div class="sidebar-card"><h3>Participants</h3>');
+      parts.forEach(function(pt){
+        // FIX #2: participant-name and participant-title classes added
+        p.push('<p style="margin-top:10px"><strong class="participant-name">'+esc(pt.name)+'</strong><br><span class="participant-title" style="font-size:12px;color:#888">'+esc(pt.title)+'</span></p>');
+      });
+      p.push('</div>');
+    }
+    p.push('</div></div>');
+
+    p.push('<div class="page-footer">');
+    p.push('<p class="disclaimer-text"><strong>Prophix Software Inc.</strong> Copyright &copy; <span class="yr"></span>. May only be reproduced with Prophix\'s prior consent.</p>');
+    p.push('<p class="disclaimer-text">Audio extracts from the original customer interview. Used with permission.</p>');
+    p.push('</div>');
+
+    p.push('</div>');
+  });
+  p.push('</div></div>');
+
+  p.push('<div id="token-modal" class="modal-ov"><div class="modal-box">');
+  p.push('<h3>Edit story</h3><p>Paste your GitHub token to enable edit mode.</p>');
+  p.push('<div class="mf"><label>GitHub Token</label><input type="password" id="token-input" placeholder="Paste your token"/></div>');
+  p.push('<div id="token-error" class="merr"></div>');
+  p.push('<button id="token-submit" class="mbtn-p">Unlock edit mode</button>');
+  p.push('<button id="token-cancel" class="mbtn-g">Cancel</button>');
+  p.push('</div></div>');
+
+  p.push('<script>document.querySelectorAll(".yr").forEach(function(e){e.textContent=new Date().getFullYear();});<\/script>');
+  p.push('<script src="/clients/story.js"><\/script>');
+  p.push('</body></html>');
+  return p.join('\n');
+}
+
+var LANG_NAMES={en:'EN',fr:'FR',nl:'NL',de:'DE',it:'IT',es:'ES'};
+var LANG_FULL={en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish'};
+var LANG_LABELS={en:'Customer Story',fr:'En français',nl:'In het Nederlands',de:'Auf Deutsch',it:'In italiano',es:'En español'};
+
+function css(){
+return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}'+
+'*{box-sizing:border-box;margin:0;padding:0}'+
+'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}'+
+'.hero-outer{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%)}'+
+'.hero-nav{padding:10px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}'+
+'.portal-link{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);text-decoration:none;border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;transition:all .15s;white-space:nowrap;flex-shrink:0}'+
+'.portal-link:hover{color:#fff;border-color:rgba(255,255,255,.5)}'+
+'.edit-fab{position:fixed;bottom:28px;right:28px;z-index:500;width:46px;height:46px;border-radius:50%;background:var(--dark);color:#fff;border:none;font-size:17px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}'+
+'.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}'+
+'.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:rgba(26,26,46,.97);padding:9px 20px;align-items:center;gap:10px;backdrop-filter:blur(4px)}'+
+'.edit-toolbar.visible{display:flex}'+
+'.tb-save{background:var(--red);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}'+
+'.tb-save:hover{background:#c0272d}.tb-save:disabled{opacity:.5;cursor:not-allowed}'+
+'.tb-cancel{background:transparent;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}'+
+'.tb-cancel:hover{color:#fff}'+
+'.save-status{font-size:12px;color:rgba(255,255,255,.5);margin-left:2px}'+
+'.lang-block{display:none}.lang-block.active{display:block}'+
+'.hero{padding:26px 40px 48px}'+
+'.logo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}'+
+'.logo-pill-hero{background:#fff;border-radius:8px;padding:10px 16px;display:inline-flex;align-items:center}'+
+'.logo-pill-hero img{height:26px;display:block}'+
+'.logo-pill-client{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;cursor:pointer;transition:opacity .15s}'+
+'.logo-pill-client img{max-height:30px;max-width:140px;object-fit:contain;display:block}'+
+'.logo-pill-client:hover{opacity:.85}'+
+'.hero-logo-ph{background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.3);border-radius:8px;padding:8px 14px;font-size:11px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s}'+
+'.hero-logo-ph:hover{background:rgba(255,255,255,.2);color:#fff}'+
+'.hero-body{max-width:700px}'+
+'.hero-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--red);margin-bottom:12px}'+
+'h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;color:#fff;margin-bottom:14px;max-width:680px}'+
+'.hero-desc{font-size:15px;color:rgba(255,255,255,.82);line-height:1.65;max-width:640px;margin-bottom:14px}'+
+'.hero-ind{display:inline-flex;align-items:center;font-size:12px;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 13px;margin-bottom:18px}'+
+'.lang-toggle{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}'+
+'.lang-btn{border:1px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.65);border-radius:20px;padding:5px 16px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}'+
+'.lang-btn.active{background:#fff;color:var(--dark);border-color:#fff}'+
+'.lang-btn:hover:not(.active){color:#fff;border-color:rgba(255,255,255,.6)}'+
+'.lang-btn.remove-lang{padding:5px 10px;color:rgba(255,100,100,.8);border-color:rgba(255,100,100,.3)}'+
+'#lang-add-wrap select{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:5px;padding:5px 9px;font-size:12px;font-family:var(--font);cursor:pointer}'+
+'.stats-row{display:flex;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--border);position:relative}'+
+'.stat-tile{flex:1;min-width:110px;padding:20px 16px;border-right:1px solid var(--border);text-align:center;position:relative}'+
+'.stat-tile:last-of-type{border-right:none}'+
+'.stat-n{font-size:26px;font-weight:900;color:var(--red);line-height:1}'+
+'.stat-l{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}'+
+'.stat-tile-del{position:absolute;top:4px;right:4px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;padding:2px 5px}'+
+'.stat-tile-del:hover{color:var(--red)}'+
+'.stat-add-btn{background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:0;padding:0 18px;font-size:22px;cursor:pointer;min-width:52px;transition:all .15s;align-self:stretch}'+
+'.stat-add-btn:hover{border-color:var(--red);color:var(--red)}'+
+'.krs-outer{max-width:1100px;margin:0 auto;padding:32px 24px 0}'+
+'.krs-card{background:linear-gradient(135deg,#2C2C4A 0%,#1A1A2E 55%,#5A1A1A 100%);border-radius:14px;padding:30px 34px;max-width:100%;width:100%}'+
+'.krs-heading{font-size:15px;font-weight:900;color:#fff;margin-bottom:18px}'+
+'.krs-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:13px}'+
+'.krs-item{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:rgba(255,255,255,.8);line-height:1.6;position:relative}'+
+'.krs-check{flex-shrink:0;margin-top:1px}'+
+'.krs-item-text strong{color:#fff}'+
+'.krs-item-del{position:absolute;right:0;top:0;background:transparent;border:none;cursor:pointer;color:rgba(255,255,255,.3);font-size:12px;padding:2px 5px}'+
+'.krs-item-del:hover{color:var(--red)}'+
+'.krs-add-btn{background:transparent;border:1px dashed rgba(255,255,255,.2);color:rgba(255,255,255,.5);border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-top:12px;transition:all .15s}'+
+'.krs-add-btn:hover{border-color:rgba(255,255,255,.5);color:#fff}'+
+'.body-layout{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 290px;gap:24px;padding:28px 24px}'+
+'@media(max-width:820px){.body-layout{grid-template-columns:1fr;padding:18px 14px}}'+
+'.story-sec{background:#fff;border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:14px;position:relative}'+
+'.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--red);margin-bottom:7px}'+
+'.story-sec h2{font-size:19px;font-weight:900;color:var(--dark);margin-bottom:9px;line-height:1.3}'+
+'.story-sec p,.story-sec li{color:#444;line-height:1.75}'+
+'.sec-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:14px;padding:2px 6px}'+
+'.sec-delete-btn:hover{color:var(--red)}'+
+'.add-sec-btn,.add-clip-btn{width:100%;background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:9px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-bottom:10px;transition:all .15s}'+
+'.add-sec-btn:hover,.add-clip-btn:hover{border-color:var(--red);color:var(--red)}'+
+'.clip-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:10px;position:relative}'+
+'.clip-remove-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:15px;padding:2px 6px}'+
+'.clip-remove-btn:hover{color:var(--red)}'+
+'.clip-label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--dark);margin-bottom:7px}'+
+'.clip-quote{font-size:13px;color:#555;font-style:italic;margin-bottom:10px;line-height:1.6;border-left:3px solid var(--red);padding-left:11px}'+
+'.clip-player{display:flex;flex-direction:column;gap:5px}'+
+'.upload-audio-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:5px 11px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s;align-self:flex-start}'+
+'.upload-audio-btn:hover{border-color:var(--red);color:var(--red)}'+
+'.delete-audio-btn{background:transparent;border:1px solid #f5c6c6;border-radius:5px;padding:5px 11px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:#c0272d;transition:all .15s;align-self:flex-start}'+
+'.delete-audio-btn:hover{background:#fff0f0}'+
+'.sidebar{display:flex;flex-direction:column;gap:14px}'+
+'.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px}'+
+'.sidebar-card h3{font-size:11px;font-weight:900;color:var(--dark);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;padding-bottom:7px;border-bottom:2px solid var(--red)}'+
+'.who-text{font-size:13px;color:#444;line-height:1.65;margin-bottom:10px}'+
+'.who-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;position:relative}'+
+'.who-stat-tile{background:var(--light);border-radius:6px;padding:9px;text-align:center;position:relative}'+
+'.who-stat-n{font-size:19px;font-weight:900;color:var(--red);line-height:1}'+
+'.who-stat-l{font-size:11px;color:var(--muted);margin-top:3px}'+
+'.who-stat-del{position:absolute;top:3px;right:3px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;padding:1px 4px}'+
+'.who-stat-del:hover{color:var(--red)}'+
+'.who-stat-add-btn{grid-column:1/-1;background:transparent;border:1px dashed var(--border);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s}'+
+'.who-stat-add-btn:hover{border-color:var(--red);color:var(--red)}'+
+'.apps-display{display:flex;flex-wrap:wrap;gap:5px;min-height:24px;border-radius:5px;padding:3px;transition:all .15s}'+
+'.edit-mode .apps-display{border:2px dashed rgba(239,54,61,.35);cursor:pointer}'+
+'.edit-mode .apps-display:hover{border-color:var(--red);background:rgba(239,54,61,.03)}'+
+'.app-tag{display:flex;align-items:center;gap:4px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:3px 9px;font-size:12px;font-weight:700;color:var(--dark)}'+
+'.app-dot{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0}'+
+'.inline-products-panel{position:absolute;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:5px;margin-top:3px}'+
+'.prod-toggle{font-size:13px;padding:6px 11px;border:1px solid var(--border);border-radius:6px;cursor:pointer;user-select:none;transition:all .15s}'+
+'.prod-toggle.active{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}'+
+'.prod-toggle:hover{border-color:var(--red)}'+
+'.results-ul{list-style:none;padding:0}'+
+'.result-item{font-size:12px;color:#444;padding:4px 0;border-bottom:1px solid var(--light);line-height:1.5}'+
+'.result-item:last-child{border-bottom:none}'+
+'.result-item::before{content:"→ ";color:var(--red);font-weight:700}'+
+'.page-footer{background:var(--dark);padding:18px 32px;text-align:center}'+
+'.disclaimer-text{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6}'+
+'.disclaimer-text strong{color:rgba(255,255,255,.6)}'+
+'.edit-mode [contenteditable]{outline:2px dashed rgba(239,54,61,.3);border-radius:3px;min-width:20px;min-height:16px}'+
+'.edit-mode [contenteditable]:focus{outline:2px solid var(--red);background:rgba(239,54,61,.03)}'+
+'.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center}'+
+'.modal-ov.visible{display:flex}'+
+'.modal-box{background:#fff;border-radius:12px;padding:26px;width:100%;max-width:370px;box-shadow:0 8px 40px rgba(0,0,0,.2)}'+
+'.modal-box h3{font-size:15px;font-weight:900;color:var(--dark);margin-bottom:5px}'+
+'.modal-box p{font-size:13px;color:var(--muted);margin-bottom:14px}'+
+'.mf{margin-bottom:11px}'+
+'.mf label{display:block;font-size:11px;font-weight:700;color:var(--dark);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}'+
+'.mf input{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none}'+
+'.mf input:focus{border-color:var(--red)}'+
+'.merr{font-size:12px;color:var(--red);min-height:15px;margin-bottom:7px}'+
+'.mbtn-p{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}'+
+'.mbtn-p:hover{background:#c0272d}'+
+'.mbtn-g{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:9px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:7px}';
+}
 </script>
-
-
-</body></html>
+</body>
+</html>
