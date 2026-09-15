@@ -133,6 +133,11 @@ function addEditControlsToExisting() {
       card.insertBefore(rb, card.firstChild);
     }
     var player = card.querySelector('.clip-player');
+    // Remove old-style "Delete audio" button (replaced by ✕ on the clip label)
+    if (player) {
+      var oldDelBtn = player.querySelector('.delete-audio-btn');
+      if (oldDelBtn) oldDelBtn.remove();
+    }
     if (player && !player.querySelector('.upload-audio-btn')) {
       var upBtn = document.createElement('button');
       upBtn.className = 'upload-audio-btn edit-only';
