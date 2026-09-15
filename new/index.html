@@ -511,7 +511,7 @@ function buildPage(d){
       p.push('</div>');
     });
     p.push('</div>');
-    p.push('<button class="add-sec-btn edit-only" onclick="addSection(this)" style="display:none">+ Add section</button>');
+    p.push('<button class="add-sec-btn edit-only" onclick="addSection(this)">+ Add section</button>');
     p.push('<div class="clips-wrap">');
     clips.forEach(function(c){
       p.push('<div class="clip-card">');
@@ -520,7 +520,7 @@ function buildPage(d){
       p.push('<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:38px;border-radius:6px;accent-color:#EF363D"><source type="audio/mpeg"></audio></div>');
       p.push('</div>');
     });
-    p.push('<button class="add-clip-btn edit-only" onclick="addClipInline(this)" style="display:none">+ Add clip</button>');
+    p.push('<button class="add-clip-btn edit-only" onclick="addClipInline(this)">+ Add clip</button>');
     p.push('</div></div>');
 
     p.push('<div class="sidebar">');
@@ -603,6 +603,13 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.tb-cancel{background:transparent;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}'+
 '.tb-cancel:hover{color:#fff}'+
 '.save-status{font-size:12px;color:rgba(255,255,255,.5);margin-left:2px}'+
+'.edit-only{display:none!important}'+
+'.edit-mode .edit-only{display:block!important}'+
+'.edit-mode .add-sec-btn,.edit-mode .add-clip-btn{display:block!important}'+
+'.edit-mode .clip-remove-btn,.edit-mode .sec-delete-btn{display:inline-block!important}'+
+'.edit-mode .lang-btn.remove-lang{display:inline-flex!important}'+
+'#lang-add-wrap{display:none}'+
+'.edit-mode #lang-add-wrap{display:flex!important}'+
 '.lang-block{display:none}.lang-block.active{display:block}'+
 '.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:26px 40px 48px}'+
 '.logo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}'+
