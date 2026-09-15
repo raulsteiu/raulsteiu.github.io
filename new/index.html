@@ -329,13 +329,20 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
     if(logoFile){
       setP('Uploading logo…',15);
       var ext=logoFile.name.split('.').pop().toLowerCase();
-      await ghPutBin(folder+'logo.'+ext,await f2b(logoFile),'Logo: '+name);
+      var logoPath=folder+'logo.'+ext;
+      var logoSha=await ghGetSha(logoPath);
+      var logob64=await f2b(logoFile);
+      var logoBody={message:'Logo: '+name,content:logob64};
+      if(logoSha)logoBody.sha=logoSha;
+      var lr=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+logoPath,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(logoBody)});
+      var ld=await lr.json();if(!lr.ok)throw new Error(ld.message||'Logo upload failed');
       hasLogo=true;
     }
     setP('Generating page…',35);
     var html=buildPage({slug,name,desc,ind,stats,whoTxt,whoStats,krs,secs,clips,results,parts,prods,langs,hasLogo});
     setP('Uploading page…',55);
-    await ghPut(folder+'index.html',html,'Story: '+name);
+    var pageSha=await ghGetSha(folder+'index.html');
+    await ghPut(folder+'index.html',html,'Story: '+name,pageSha);
     setP('Updating directory…',78);
     var sSha=await ghGetSha('clients/stories.json');
     var sRes=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json',{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
@@ -475,6 +482,7 @@ function buildPage(d){
       p.push('</ul></div></div>');
     }
 
+    p.push('<div class="content-area">'); // explicit light background section
     p.push('<div class="body-layout">');
     p.push('<div class="main-col">');
     p.push('<div class="sections-container">');
@@ -527,7 +535,7 @@ function buildPage(d){
       });
       p.push('</div>');
     }
-    p.push('</div></div>');
+    p.push('</div></div>'); // close body-layout and content-area
 
     p.push('<div class="page-footer">');
     p.push('<p class="disclaimer-text"><strong>Prophix Software Inc.</strong> Copyright &copy; <span class="yr"></span>. May only be reproduced with Prophix\'s prior consent.</p>');
@@ -597,7 +605,7 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.lang-btn:hover:not(.active){color:#fff;border-color:rgba(255,255,255,.6)}'+
 '.lang-btn.remove-lang{padding:5px 10px;color:rgba(255,100,100,.8);border-color:rgba(255,100,100,.3)}'+
 '#lang-add-wrap select{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:5px;padding:5px 9px;font-size:12px;font-family:var(--font);cursor:pointer}'+
-'.stats-row{display:flex;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--border);position:relative}'+
+'.stats-row{display:flex;flex-wrap:wrap;background:#fff;border-top:none;border-bottom:1px solid var(--border);position:relative}'+
 '.stat-tile{flex:1;min-width:110px;padding:20px 16px;border-right:1px solid var(--border);text-align:center;position:relative}'+
 '.stat-tile:last-of-type{border-right:none}'+
 '.stat-n{font-size:26px;font-weight:900;color:var(--red);line-height:1}'+
@@ -606,7 +614,7 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.stat-tile-del:hover{color:var(--red)}'+
 '.stat-add-btn{background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:0;padding:0 18px;font-size:22px;cursor:pointer;min-width:52px;transition:all .15s;align-self:stretch}'+
 '.stat-add-btn:hover{border-color:var(--red);color:var(--red)}'+
-'.krs-outer{max-width:1100px;margin:0 auto;padding:32px 24px 0}'+
+'.krs-outer{background:var(--light);max-width:1100px;margin:0 auto;padding:32px 24px 0}'+
 '.krs-card{background:linear-gradient(135deg,#2C2C4A 0%,#1A1A2E 55%,#5A1A1A 100%);border-radius:14px;padding:30px 34px;max-width:100%;width:100%}'+
 '.krs-heading{font-size:15px;font-weight:900;color:#fff;margin-bottom:18px}'+
 '.krs-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:13px}'+
@@ -617,6 +625,7 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.krs-item-del:hover{color:var(--red)}'+
 '.krs-add-btn{background:transparent;border:1px dashed rgba(255,255,255,.2);color:rgba(255,255,255,.5);border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-top:12px;transition:all .15s}'+
 '.krs-add-btn:hover{border-color:rgba(255,255,255,.5);color:#fff}'+
+'.content-area{background:var(--light)}'+
 '.body-layout{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 290px;gap:24px;padding:28px 24px}'+
 '@media(max-width:820px){.body-layout{grid-template-columns:1fr;padding:18px 14px}}'+
 '.story-sec{background:#fff;border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:14px;position:relative}'+
