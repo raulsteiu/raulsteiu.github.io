@@ -123,7 +123,7 @@ function closeModal() {
 
 // ── Add edit controls to existing elements ────────────────────────────────────
 function addEditControlsToExisting() {
-  // Clips: delete clip button + upload btn + DELETE AUDIO button
+  // Clips: delete clip button + upload btn + ✕ on label to delete audio
   document.querySelectorAll('.clip-card').forEach(function(card) {
     if (!card.querySelector('.clip-remove-btn')) {
       var rb = document.createElement('button');
@@ -140,68 +140,18 @@ function addEditControlsToExisting() {
       upBtn.addEventListener('click', function() { uploadAudio(upBtn); });
       player.appendChild(upBtn);
     }
-    if (player && !player.querySelector('.delete-audio-btn')) {
-      var delBtn = document.createElement('button');
-      delBtn.className = 'delete-audio-btn edit-only';
-      delBtn.textContent = '🗑 Delete audio';
-      delBtn.title = 'Delete MP3 from GitHub';
-      delBtn.addEventListener('click', async function() {
-        var srcEl = player.querySelector('audio source');
-        var rawSrc = srcEl ? (srcEl.getAttribute('src') || '') : '';
-        if (!rawSrc && srcEl && srcEl.src && srcEl.src.indexOf('.mp3') > -1) {
-          rawSrc = srcEl.src; // absolute URL — e.g. https://raulsteiu.github.io/clients/slug/clip.mp3
-        }
-        if (!rawSrc) { alert('No audio file on this clip yet.'); return; }
-        // Extract just the filename from whatever form rawSrc is in
-        var filename = rawSrc.split('?')[0].split('/').pop();
-        if (!filename || !filename.includes('.')) { alert('Could not determine filename from: ' + rawSrc); return; }
-
-        if (!confirm('Delete "' + filename + '" from GitHub?\nThis cannot be undone.')) return;
-
-        delBtn.textContent = 'Deleting…';
-        delBtn.disabled = true;
-
-        var path = GH_CLIENT_FOLDER + filename;
-        // Remove any double slashes that might exist
-        path = path.replace(/\/\//g, '/');
-
-        try {
-          // Step 1: get SHA
-          var getRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
-            headers: {'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json'}
-          });
-          if (!getRes.ok) {
-            var getErr = await getRes.json().catch(function(){return {};});
-            throw new Error('Could not find file in repo (HTTP ' + getRes.status + '): ' + (getErr.message || path));
-          }
-          var fileData = await getRes.json();
-
-          // Step 2: delete
-          var delRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
-            method: 'DELETE',
-            headers: {'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'},
-            body: JSON.stringify({message: 'Delete audio: ' + filename, sha: fileData.sha})
-          });
-          if (!delRes.ok) {
-            var delErr = await delRes.json().catch(function(){return {};});
-            throw new Error('Delete failed (HTTP ' + delRes.status + '): ' + (delErr.message || 'unknown'));
-          }
-
-          // Clear the player
-          if (srcEl) srcEl.removeAttribute('src');
-          var aud = player.querySelector('audio');
-          if (aud) aud.load();
-          var upBtn2 = player.querySelector('.upload-audio-btn');
-          if (upBtn2) upBtn2.textContent = 'Upload MP3';
-          delBtn.textContent = '✓ Deleted';
-
-        } catch(err) {
-          delBtn.textContent = '🗑 Delete audio';
-          delBtn.disabled = false;
-          alert('Delete audio failed:\n\n' + err.message + '\n\nPath attempted: ' + path);
-        }
+    // ✕ on the clip label — removes uploaded audio file
+    var clipLabel = card.querySelector('.clip-label');
+    if (clipLabel && !clipLabel.querySelector('.audio-del-x')) {
+      var xBtn = document.createElement('button');
+      xBtn.className = 'audio-del-x edit-only';
+      xBtn.title = 'Delete uploaded audio file';
+      xBtn.textContent = '✕';
+      xBtn.addEventListener('click', async function(e) {
+        e.stopPropagation();
+        await deleteAudioFile(player, xBtn);
       });
-      player.appendChild(delBtn);
+      clipLabel.appendChild(xBtn);
     }
   });
 
@@ -368,6 +318,41 @@ function addKrsItem(list, addBtn) {
   list.insertBefore(li, addBtn);
 }
 
+// ── Delete audio file from GitHub ────────────────────────────────────────────
+async function deleteAudioFile(player, xBtn) {
+  var srcEl = player.querySelector('audio source');
+  var rawSrc = srcEl ? (srcEl.getAttribute('src') || '') : '';
+  if (!rawSrc && srcEl && srcEl.src && srcEl.src.indexOf('.mp3') > -1) rawSrc = srcEl.src;
+  if (!rawSrc) { alert('No audio file on this clip yet.'); return; }
+  var filename = rawSrc.split('?')[0].split('/').pop();
+  if (!filename || !filename.includes('.')) { alert('Could not determine filename.'); return; }
+  if (!confirm('Delete "' + filename + '" from GitHub?\nThis cannot be undone.')) return;
+
+  var orig = xBtn.textContent;
+  xBtn.textContent = '…'; xBtn.disabled = true;
+  var path = (GH_CLIENT_FOLDER + filename).replace(/\/\//g, '/');
+  try {
+    var getRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
+    });
+    if (!getRes.ok) { var e=await getRes.json().catch(function(){return{};}); throw new Error('File not found ('+getRes.status+'): '+(e.message||path)); }
+    var fileData = await getRes.json();
+    var delRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+      method:'DELETE',
+      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:'Delete audio: '+filename, sha:fileData.sha})
+    });
+    if (!delRes.ok) { var e2=await delRes.json().catch(function(){return{};}); throw new Error('Delete failed ('+delRes.status+'): '+(e2.message||'unknown')); }
+    if (srcEl) srcEl.removeAttribute('src');
+    var aud = player.querySelector('audio'); if (aud) aud.load();
+    var upBtn = player.querySelector('.upload-audio-btn'); if (upBtn) upBtn.textContent = 'Upload MP3';
+    xBtn.style.display = 'none'; // hide ✕ since no audio now
+  } catch(err) {
+    xBtn.textContent = orig; xBtn.disabled = false;
+    alert('Delete audio failed:\n\n' + err.message + '\n\nPath: ' + path);
+  }
+}
+
 // ── Clips ─────────────────────────────────────────────────────────────────────
 function addClipInline(btn) {
   var card = document.createElement('div');
@@ -394,29 +379,19 @@ function addClipInline(btn) {
   upBtn.className = 'upload-audio-btn edit-only'; upBtn.textContent = 'Upload MP3';
   upBtn.addEventListener('click', function() { uploadAudio(upBtn); });
 
-  var delAudioBtn = document.createElement('button');
-  delAudioBtn.className = 'delete-audio-btn edit-only'; delAudioBtn.innerHTML = '🗑 Delete audio';
-  delAudioBtn.addEventListener('click', function() {
-    var rawSrc = src.getAttribute('src') || '';
-    if (!rawSrc) {
-      var propSrc = src.src || '';
-      if (propSrc && propSrc !== window.location.href && propSrc.indexOf('.mp3') > -1) rawSrc = propSrc;
-    }
-    var filename = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
-    if (!filename || filename.length < 2) { alert('No audio attached. Upload an MP3 first.'); return; }
-    if (!confirm('Delete "' + filename + '" from the repository?')) return;
-    var origText = delAudioBtn.innerHTML;
-    delAudioBtn.textContent = 'Deleting…'; delAudioBtn.disabled = true;
-    fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_CLIENT_FOLDER+filename,{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}})
-      .then(function(r){if(!r.ok)throw new Error('Not found in repo');return r.json();})
-      .then(function(d){return fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_CLIENT_FOLDER+filename,{method:'DELETE',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Delete audio: '+filename,sha:d.sha})});})
-      .then(function(r){if(!r.ok)throw new Error('Delete failed');src.removeAttribute('src');aud.load();upBtn.textContent='Upload MP3';delAudioBtn.textContent='✓ Deleted';})
-      .catch(function(e){delAudioBtn.innerHTML=origText;delAudioBtn.disabled=false;alert('Error: '+e.message);});
+  // ✕ on the label — deletes the uploaded audio file
+  var xBtn = document.createElement('button');
+  xBtn.className = 'audio-del-x edit-only';
+  xBtn.title = 'Delete uploaded audio'; xBtn.textContent = '✕';
+  xBtn.addEventListener('click', async function(e) {
+    e.stopPropagation();
+    await deleteAudioFile(pl, xBtn);
   });
+  lbl.appendChild(xBtn);
 
   var pl = document.createElement('div');
   pl.className = 'clip-player';
-  pl.appendChild(aud); pl.appendChild(upBtn); pl.appendChild(delAudioBtn);
+  pl.appendChild(aud); pl.appendChild(upBtn);
 
   card.appendChild(rb); card.appendChild(lbl); card.appendChild(qt); card.appendChild(pl);
   btn.parentNode.insertBefore(card, btn);
