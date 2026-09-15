@@ -300,17 +300,25 @@ function addEditControlsToExisting() {
 
 // ── Section management ────────────────────────────────────────────────────────
 function addSection(btn) {
-  var container = btn.closest('.lang-block').querySelector('.sections-container');
+  var block = btn.closest('.lang-block');
+  if (!block) return;
+  var container = block.querySelector('.sections-container');
+  if (!container) return;
   var sec = document.createElement('div');
   sec.className = 'story-sec';
   var delBtn = document.createElement('button');
   delBtn.className = 'sec-delete-btn edit-only'; delBtn.innerHTML = '🗑'; delBtn.title = 'Delete section';
   delBtn.addEventListener('click', function() { if (confirm('Delete this section?')) sec.remove(); });
   sec.appendChild(delBtn);
-  sec.innerHTML += '<div class="sec-label" contenteditable="true">Section label</div>' +
-    '<h2 contenteditable="true">Section heading</h2>' +
-    '<p contenteditable="true">Write your content here.</p>';
-  container.insertBefore(sec, btn);
+  // Use innerHTML += after appending delBtn to avoid losing the event listener
+  var label = document.createElement('div');
+  label.className = 'sec-label'; label.contentEditable = 'true'; label.textContent = 'Section label';
+  var h2 = document.createElement('h2');
+  h2.contentEditable = 'true'; h2.textContent = 'Section heading';
+  var p = document.createElement('p');
+  p.contentEditable = 'true'; p.textContent = 'Write your content here.';
+  sec.appendChild(label); sec.appendChild(h2); sec.appendChild(p);
+  container.appendChild(sec); // append to end of container, not before the button (which is outside container)
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
@@ -482,31 +490,39 @@ function triggerLogoUpload() {
   input.onchange = function() {
     var file = input.files[0]; if (!file) return;
     var reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
       var b64 = e.target.result.split(',')[1];
       var ext = file.name.split('.').pop().toLowerCase();
       var filename = 'logo.' + ext;
+      var path = GH_CLIENT_FOLDER + filename;
       var img = document.querySelector('.hero-client-logo');
       if (img) img.style.opacity = '0.4';
-      fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_CLIENT_FOLDER+filename, {
-        method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-        body:JSON.stringify({message:'Logo: '+filename, content:b64})
-      }).then(function(r){return r.json();}).then(function(d){
-        if (d.content) {
-          if (img) {
-            img.src = filename+'?v='+Date.now();
-            img.style.display = 'block';
-            img.style.opacity = '1';
-          }
-          // Show the pill container if it was hidden, hide placeholder
+      try {
+        // Fetch existing SHA so we can overwrite if logo already exists
+        var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+          headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
+        });
+        var body = {message:'Logo: '+filename, content:b64};
+        if (shaRes.ok) { var existing = await shaRes.json(); if (existing.sha) body.sha = existing.sha; }
+
+        var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+          method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+          body:JSON.stringify(body)
+        });
+        var d = await r.json();
+        if (r.ok && d.content) {
+          if (img) { img.src = filename+'?v='+Date.now(); img.style.display='block'; img.style.opacity='1'; }
           var pill = document.querySelector('.logo-pill-client');
-          if (pill) { pill.style.display = ''; pill.style.visibility = 'visible'; }
-          var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display = 'none';
+          if (pill) { pill.style.display=''; pill.style.visibility='visible'; }
+          var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display='none';
         } else {
-          if (img) img.style.opacity = '1';
-          alert('Upload failed. Check your access token has write permission.');
+          if (img) img.style.opacity='1';
+          alert('Logo upload failed: '+(d.message||'Unknown error')+'\n\nCheck your access token has write permission.');
         }
-      }).catch(function(){ if (img) { img.style.opacity='1'; } });
+      } catch(err) {
+        if (img) img.style.opacity='1';
+        alert('Logo upload error: '+err.message);
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -520,19 +536,38 @@ function uploadAudio(btn) {
   input.onchange = function() {
     var file = input.files[0]; if (!file) return;
     var reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
       var b64 = e.target.result.split(',')[1];
       btn.textContent = 'Uploading…';
-      fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_CLIENT_FOLDER+file.name, {
-        method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-        body:JSON.stringify({message:'Audio: '+file.name, content:b64})
-      }).then(function(r){return r.json();}).then(function(d){
-        if (d.content) {
+      btn.disabled = true;
+      try {
+        var path = GH_CLIENT_FOLDER + file.name;
+        // Fetch existing SHA in case file already exists
+        var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+          headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
+        });
+        var body = {message:'Audio: '+file.name, content:b64};
+        if (shaRes.ok) { var existing = await shaRes.json(); if (existing.sha) body.sha = existing.sha; }
+
+        var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+          method:'PUT',
+          headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+          body:JSON.stringify(body)
+        });
+        var d = await r.json();
+        if (r.ok && d.content) {
           var src = btn.closest('.clip-player').querySelector('audio source');
           if (src) { src.src = file.name; src.parentNode.load(); }
           btn.textContent = '✓ '+file.name;
-        } else { btn.textContent = 'Failed'; }
-      }).catch(function(){ btn.textContent = 'Failed'; });
+        } else {
+          btn.textContent = 'Upload MP3';
+          alert('Upload failed: ' + (d.message || 'Unknown error') + '\n\nCheck your access token has write permission.');
+        }
+      } catch(err) {
+        btn.textContent = 'Upload MP3';
+        alert('Upload error: ' + err.message);
+      }
+      btn.disabled = false;
     };
     reader.readAsDataURL(file);
   };
