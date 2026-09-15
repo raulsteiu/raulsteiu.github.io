@@ -141,7 +141,7 @@ var manageMode = false;
 var pendingDelete = null;
 
 // Stories data — injected by creator on each publish
-var stories = STORIES_DATA;
+var stories = [];
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderStories(filter) {
@@ -340,7 +340,7 @@ function buildDirectoryHTML(storiesList) {
   var storyDataJS = JSON.stringify(storiesList);
   // Return current page HTML but with updated STORIES_DATA
   var currentHTML = document.documentElement.outerHTML;
-  return '<!DOCTYPE html>\n' + currentHTML.replace(/var stories = STORIES_DATA;[\s\S]*?\/\/ --/, 'var stories = ' + storyDataJS + ';\n// --').replace('var stories = ' + JSON.stringify(stories.concat([{slug:pendingDelete?pendingDelete.slug:'',name:''}]).filter(function(s){return s.slug;})) + ';', 'var stories = ' + storyDataJS + ';');
+  return '<!DOCTYPE html>\n' + currentHTML.replace(/var stories = [];[\s\S]*?\/\/ --/, 'var stories = ' + storyDataJS + ';\n// --').replace('var stories = ' + JSON.stringify(stories.concat([{slug:pendingDelete?pendingDelete.slug:'',name:''}]).filter(function(s){return s.slug;})) + ';', 'var stories = ' + storyDataJS + ';');
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
