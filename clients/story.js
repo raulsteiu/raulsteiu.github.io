@@ -673,6 +673,21 @@ async function _updateEditedTimestamp() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
+
+  // Inject styles needed for features added after a page was first published.
+  // This guarantees they work on old pages without re-publishing.
+  var runtimeStyle = document.createElement('style');
+  runtimeStyle.textContent = [
+    '.audio-del-x{display:none;margin-left:auto;background:transparent;border:none;cursor:pointer;color:#ccc;font-size:13px;padding:0 4px;line-height:1;flex-shrink:0}',
+    '.audio-del-x:hover{color:#EF363D}',
+    '.edit-mode .audio-del-x{display:inline!important}',
+    '.clips-section-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E0DFF0}',
+    '.edit-only{display:none!important}',
+    '.edit-mode .edit-only{display:block!important}',
+    '.edit-mode .clip-remove-btn,.edit-mode .sec-delete-btn{display:inline-block!important}',
+    '.edit-mode .lang-btn.remove-lang{display:inline-flex!important}'
+  ].join('');
+  document.head.appendChild(runtimeStyle);
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
     btn.addEventListener('click', function() { setLang(btn.getAttribute('data-lang')); });
   });
