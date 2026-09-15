@@ -71,7 +71,7 @@ raulsteiu.github.io/
 ## How to publish a new client story
 
 1. Go to `https://raulsteiu.github.io/new/`
-2. Enter password (`prophix2026`) and your GitHub token
+2. Enter your GitHub token
 3. Fill in the form:
    - **Client name** — used as the page title and to generate the URL slug (e.g. "Acme Corp" → `/clients/acme-corp/`)
    - **Industry / HQ** — shown as a tag in the hero
@@ -128,7 +128,7 @@ raulsteiu.github.io/
 1. Go to `https://raulsteiu.github.io/clients/`
 2. Hover over the story card — a 🗑 trash icon appears on the right of the card
 3. Click the trash icon
-4. If not already authenticated, enter password and GitHub token
+4. If not already authenticated, enter your GitHub token
 5. Confirm the deletion
 6. The app deletes all files in `clients/[slug]/` and removes the entry from `stories.json`
 
@@ -175,12 +175,12 @@ The GitHub token is never stored in the HTML files. It's entered at runtime thro
 
 ---
 
-## Changing the password
-
-The password is hardcoded in three files. To change it, update the value in each:
-
-| File | Where to find it |
-|---|---|
+REMOVED_PW_SECTION
+REMOVED_PW_SECTION
+REMOVED_PW_SECTION
+REMOVED_PW_SECTION
+REMOVED_PW_SECTION
+REMOVED_PW_SECTION
 | `new/index.html` | Search for `var EDIT_PASSWORD = 'prophix2026'` |
 | `clients/index.html` | Same |
 | Every client page | In the inline `<script>` block at the top of the page |
