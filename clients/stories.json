@@ -1,5 +1,11 @@
 [
   {
+    "slug": "man-united-fc",
+    "name": "Man United FC",
+    "created": "2026-09-15T14:24:07.356Z",
+    "logo": true
+  },
+  {
     "slug": "man-united",
     "name": "Man United",
     "created": "2026-09-15T14:02:35.112Z",
