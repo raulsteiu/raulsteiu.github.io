@@ -552,7 +552,9 @@ function buildPage(d){
       });
       p.push('</div>');
     }
-    p.push('</div></div>'); // close body-layout and content-area
+    p.push('</div>'); // close sidebar
+    p.push('</div>'); // close body-layout
+    p.push('</div>'); // close content-area
 
     p.push('<div class="page-footer">');
     p.push('<p class="disclaimer-text"><strong>Prophix Software Inc.</strong> Copyright &copy; <span class="yr"></span>. May only be reproduced with Prophix\'s prior consent.</p>');
