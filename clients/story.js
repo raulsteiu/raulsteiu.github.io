@@ -99,9 +99,8 @@ function enableEditMode() {
   document.getElementById('edit-fab').classList.add('hidden');
   document.getElementById('edit-toolbar').classList.add('visible');
   document.getElementById('save-btn').disabled = false;
-  document.getElementById('save-status').textContent = 'Editing: EN';
-  document.querySelectorAll('.remove-lang').forEach(function(b) { b.style.display = 'inline-flex'; });
-  document.querySelectorAll('.edit-only').forEach(function(el) { el.style.display = ''; });
+  document.getElementById('save-status').textContent = 'Editing: ' + currentLang.toUpperCase();
+  // CSS handles .edit-only visibility via .edit-mode .edit-only rule
   addEditControlsToExisting();
 }
 
@@ -112,8 +111,7 @@ function disableEditMode() {
   document.getElementById('edit-toolbar').classList.remove('visible');
   document.getElementById('save-status').textContent = '';
   document.getElementById('save-btn').disabled = false;
-  document.querySelectorAll('.remove-lang').forEach(function(b) { b.style.display = 'none'; });
-  document.querySelectorAll('.edit-only').forEach(function(el) { el.style.display = 'none'; });
+  // CSS hides .edit-only when body doesn't have .edit-mode
   var panel = document.getElementById('inline-products-panel'); if (panel) panel.remove();
 }
 
@@ -145,52 +143,63 @@ function addEditControlsToExisting() {
     if (player && !player.querySelector('.delete-audio-btn')) {
       var delBtn = document.createElement('button');
       delBtn.className = 'delete-audio-btn edit-only';
-      delBtn.innerHTML = '🗑 Delete audio';
-      delBtn.title = 'Delete MP3 from GitHub and clear this clip';
-      delBtn.addEventListener('click', function() {
+      delBtn.textContent = '🗑 Delete audio';
+      delBtn.title = 'Delete MP3 from GitHub';
+      delBtn.addEventListener('click', async function() {
         var srcEl = player.querySelector('audio source');
-        // Try attribute first (HTML-set), then property (JS-set after upload)
         var rawSrc = srcEl ? (srcEl.getAttribute('src') || '') : '';
-        if (!rawSrc && srcEl) {
-          // src was set via property — srcEl.src gives full absolute URL
-          var propSrc = srcEl.src || '';
-          // Only use if it's not just the page base URL
-          if (propSrc && propSrc !== window.location.href && propSrc.indexOf('.mp3') > -1) {
-            rawSrc = propSrc;
-          }
+        if (!rawSrc && srcEl && srcEl.src && srcEl.src.indexOf('.mp3') > -1) {
+          rawSrc = srcEl.src; // absolute URL — e.g. https://raulsteiu.github.io/clients/slug/clip.mp3
         }
-        var filename = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
-        if (!filename || filename.length < 2 || filename === 'undefined') {
-          alert('No audio file found on this clip.\n\nTip: the file must be uploaded via the Upload MP3 button first.'); return;
-        }
-        if (!confirm('Delete "' + filename + '" from the repository? This cannot be undone.')) return;
-        var origText = delBtn.innerHTML;
+        if (!rawSrc) { alert('No audio file on this clip yet.'); return; }
+        // Extract just the filename from whatever form rawSrc is in
+        var filename = rawSrc.split('?')[0].split('/').pop();
+        if (!filename || !filename.includes('.')) { alert('Could not determine filename from: ' + rawSrc); return; }
+
+        if (!confirm('Delete "' + filename + '" from GitHub?\nThis cannot be undone.')) return;
+
         delBtn.textContent = 'Deleting…';
         delBtn.disabled = true;
-        fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_CLIENT_FOLDER + filename, {
-          headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-        }).then(function(r) {
-          if (!r.ok) throw new Error('File "' + filename + '" not found in repository. It may have already been deleted.');
-          return r.json();
-        }).then(function(d) {
-          return fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_CLIENT_FOLDER + filename, {
-            method: 'DELETE',
-            headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-            body: JSON.stringify({message: 'Delete audio: ' + filename, sha: d.sha})
+
+        var path = GH_CLIENT_FOLDER + filename;
+        // Remove any double slashes that might exist
+        path = path.replace(/\/\//g, '/');
+
+        try {
+          // Step 1: get SHA
+          var getRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+            headers: {'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json'}
           });
-        }).then(function(r) {
-          if (!r.ok) throw new Error('Delete request failed');
-          if (srcEl) { srcEl.removeAttribute('src'); }
+          if (!getRes.ok) {
+            var getErr = await getRes.json().catch(function(){return {};});
+            throw new Error('Could not find file in repo (HTTP ' + getRes.status + '): ' + (getErr.message || path));
+          }
+          var fileData = await getRes.json();
+
+          // Step 2: delete
+          var delRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+            method: 'DELETE',
+            headers: {'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'},
+            body: JSON.stringify({message: 'Delete audio: ' + filename, sha: fileData.sha})
+          });
+          if (!delRes.ok) {
+            var delErr = await delRes.json().catch(function(){return {};});
+            throw new Error('Delete failed (HTTP ' + delRes.status + '): ' + (delErr.message || 'unknown'));
+          }
+
+          // Clear the player
+          if (srcEl) srcEl.removeAttribute('src');
           var aud = player.querySelector('audio');
           if (aud) aud.load();
           var upBtn2 = player.querySelector('.upload-audio-btn');
           if (upBtn2) upBtn2.textContent = 'Upload MP3';
           delBtn.textContent = '✓ Deleted';
-        }).catch(function(err) {
-          delBtn.innerHTML = origText;
+
+        } catch(err) {
+          delBtn.textContent = '🗑 Delete audio';
           delBtn.disabled = false;
-          alert('Could not delete audio:\n' + err.message);
-        });
+          alert('Delete audio failed:\n\n' + err.message + '\n\nPath attempted: ' + path);
+        }
       });
       player.appendChild(delBtn);
     }
@@ -624,7 +633,6 @@ async function saveToGitHub() {
     document.getElementById('edit-fab').classList.remove('hidden');
     document.getElementById('edit-toolbar').classList.remove('visible');
     document.querySelectorAll('.remove-lang').forEach(function(b){ b.style.display='none'; });
-    document.querySelectorAll('.edit-only').forEach(function(el){ el.style.display='none'; });
     var panel = document.getElementById('inline-products-panel'); if (panel) panel.remove();
 
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
@@ -634,7 +642,6 @@ async function saveToGitHub() {
     document.getElementById('edit-toolbar').classList.add('visible');
     document.querySelectorAll('.lang-block').forEach(makeBlockEditable);
     document.querySelectorAll('.remove-lang').forEach(function(b){ b.style.display='inline-flex'; });
-    document.querySelectorAll('.edit-only').forEach(function(el){ el.style.display=''; });
     statusEl.textContent = 'Saving…'; saveBtn.disabled = true;
 
     var enc = btoa(unescape(encodeURIComponent(html)));
