@@ -489,44 +489,61 @@ function triggerLogoUpload() {
   input.type = 'file'; input.accept = 'image/png,image/jpeg,image/svg+xml,image/webp';
   input.onchange = function() {
     var file = input.files[0]; if (!file) return;
-    var reader = new FileReader();
-    reader.onload = async function(e) {
-      var b64 = e.target.result.split(',')[1];
-      var ext = file.name.split('.').pop().toLowerCase();
-      var filename = 'logo.' + ext;
-      var path = GH_CLIENT_FOLDER + filename;
-      var img = document.querySelector('.hero-client-logo');
-      if (img) img.style.opacity = '0.4';
-      try {
-        // Fetch existing SHA so we can overwrite if logo already exists
-        var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-          headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-        });
-        var body = {message:'Logo: '+filename, content:b64};
-        if (shaRes.ok) { var existing = await shaRes.json(); if (existing.sha) body.sha = existing.sha; }
+    var img2 = document.querySelector('.hero-client-logo');
+    if (img2) img2.style.opacity = '0.4';
 
-        var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-          method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-          body:JSON.stringify(body)
-        });
-        var d = await r.json();
-        if (r.ok && d.content) {
-          if (img) { img.src = filename+'?v='+Date.now(); img.style.display='block'; img.style.opacity='1'; }
-          var pill = document.querySelector('.logo-pill-client');
-          if (pill) { pill.style.display=''; pill.style.visibility='visible'; }
-          var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display='none';
-        } else {
-          if (img) img.style.opacity='1';
-          alert('Logo upload failed: '+(d.message||'Unknown error')+'\n\nCheck your access token has write permission.');
-        }
-      } catch(err) {
-        if (img) img.style.opacity='1';
-        alert('Logo upload error: '+err.message);
-      }
+    // Convert any format to PNG via canvas so we always save logo.png
+    var objectUrl = URL.createObjectURL(file);
+    var tempImg = new Image();
+    tempImg.onload = function() {
+      var canvas = document.createElement('canvas');
+      canvas.width = tempImg.naturalWidth || 400;
+      canvas.height = tempImg.naturalHeight || 200;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(tempImg, 0, 0);
+      URL.revokeObjectURL(objectUrl);
+      var b64 = canvas.toDataURL('image/png').split(',')[1];
+      uploadLogoB64(b64, img2);
     };
-    reader.readAsDataURL(file);
+    tempImg.onerror = function() {
+      // Canvas failed (e.g. SVG with external resources) — fall back to raw file read
+      URL.revokeObjectURL(objectUrl);
+      var reader = new FileReader();
+      reader.onload = function(e) { uploadLogoB64(e.target.result.split(',')[1], img2); };
+      reader.readAsDataURL(file);
+    };
+    tempImg.src = objectUrl;
   };
   input.click();
+}
+
+async function uploadLogoB64(b64, img2) {
+  var path = GH_CLIENT_FOLDER + 'logo.png'; // always logo.png
+  try {
+    var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
+    });
+    var body = {message:'Logo: logo.png', content:b64};
+    if (shaRes.ok) { var existing = await shaRes.json(); if (existing.sha) body.sha = existing.sha; }
+
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+      method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    var d = await r.json();
+    if (r.ok && d.content) {
+      if (img2) { img2.src='logo.png?v='+Date.now(); img2.style.display='block'; img2.style.opacity='1'; }
+      var pill = document.querySelector('.logo-pill-client');
+      if (pill) { pill.style.display=''; pill.style.visibility='visible'; }
+      var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display='none';
+    } else {
+      if (img2) img2.style.opacity='1';
+      alert('Logo upload failed: '+(d.message||'Unknown error')+'\n\nCheck your access token has write permission.');
+    }
+  } catch(err) {
+    if (img2) img2.style.opacity='1';
+    alert('Logo upload error: '+err.message);
+  }
 }
 
 // ── Audio upload ──────────────────────────────────────────────────────────────
