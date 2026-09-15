@@ -1,4 +1,4 @@
-// Prophix Client Story — story.js v8
+// Prophix Client Story — story.js v8.1
 // Block-based multilingual architecture.
 // Required globals (inline before this script):
 //   GH_REPO, GH_FILE, GH_CLIENT_FOLDER
@@ -17,6 +17,7 @@ var EDITABLE_SELECTORS = [
   '.stat-n', '.stat-l',
   '.krs-item-text',
   '.who-text', '.who-stat-n', '.who-stat-l',
+  '.participant-name', '.participant-title',
   '.disclaimer-text'
 ];
 
@@ -126,7 +127,6 @@ function closeModal() {
 function addEditControlsToExisting() {
   // Clips: delete clip button + upload btn + DELETE AUDIO button
   document.querySelectorAll('.clip-card').forEach(function(card) {
-    // Remove entire clip button
     if (!card.querySelector('.clip-remove-btn')) {
       var rb = document.createElement('button');
       rb.className = 'clip-remove-btn edit-only';
@@ -134,7 +134,6 @@ function addEditControlsToExisting() {
       rb.addEventListener('click', function() { if (confirm('Delete this clip?')) card.remove(); });
       card.insertBefore(rb, card.firstChild);
     }
-    // Upload MP3 button
     var player = card.querySelector('.clip-player');
     if (player && !player.querySelector('.upload-audio-btn')) {
       var upBtn = document.createElement('button');
@@ -143,7 +142,6 @@ function addEditControlsToExisting() {
       upBtn.addEventListener('click', function() { uploadAudio(upBtn); });
       player.appendChild(upBtn);
     }
-    // Delete audio file button — removes file from GitHub + clears player
     if (player && !player.querySelector('.delete-audio-btn')) {
       var delBtn = document.createElement('button');
       delBtn.className = 'delete-audio-btn edit-only';
@@ -152,7 +150,6 @@ function addEditControlsToExisting() {
       delBtn.addEventListener('click', function() {
         var srcEl = player.querySelector('audio source');
         var filename = srcEl ? srcEl.getAttribute('src') : '';
-        // Strip query strings/paths
         filename = filename ? filename.split('?')[0].split('/').pop() : '';
         if (!filename) { alert('No audio file attached to this clip.'); return; }
         if (!confirm('Delete "' + filename + '" from GitHub? This cannot be undone.')) return;
@@ -170,7 +167,6 @@ function addEditControlsToExisting() {
           });
         }).then(function(r) {
           if (!r.ok) throw new Error('Delete failed');
-          // Clear player
           if (srcEl) { srcEl.src = ''; }
           var aud = player.querySelector('audio');
           if (aud) aud.load();
@@ -279,7 +275,7 @@ function addStatTile(row, addBtn) {
 function addKrsItem(list, addBtn) {
   var li = document.createElement('li');
   li.className = 'krs-item';
-  li.innerHTML = '<span class="krs-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF363D" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>' +
+  li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
     '<span class="krs-item-text" contenteditable="true">New result</span>';
   var delBtn = document.createElement('button');
   delBtn.className = 'krs-item-del edit-only'; delBtn.innerHTML = '✕';
@@ -360,7 +356,6 @@ function toggleProductsPanel(triggerEl) {
   var panel = document.createElement('div');
   panel.id = 'inline-products-panel';
   panel.className = 'inline-products-panel';
-  var appsDisplay = triggerEl.closest ? triggerEl : document.querySelector('.apps-display');
   var currentApps = [];
   document.querySelectorAll('.app-tag span:last-child').forEach(function(s) { currentApps.push(s.textContent.trim()); });
   PROPHIX_PRODUCTS.forEach(function(p) {
@@ -383,7 +378,7 @@ function toggleProductsPanel(triggerEl) {
   triggerEl.parentNode.appendChild(panel);
 }
 
-// ── Logo upload (click on logo) ───────────────────────────────────────────────
+// ── Logo upload ───────────────────────────────────────────────────────────────
 function triggerLogoUpload() {
   if (!document.body.classList.contains('edit-mode')) return;
   var input = document.createElement('input');
@@ -403,7 +398,9 @@ function triggerLogoUpload() {
       }).then(function(r){return r.json();}).then(function(d){
         if (d.content) {
           if (img) { img.src = filename+'?v='+Date.now(); img.style.display='block'; img.style.opacity='1'; }
-          var ph = document.querySelector('.hero-logo-placeholder'); if (ph) ph.style.display='none';
+          // Show the pill container if it was hidden, hide placeholder
+          var pill = document.querySelector('.logo-pill-client'); if (pill) pill.style.display='';
+          var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display='none';
         } else { if (img) img.style.opacity='1'; }
       }).catch(function(){ if (img) { img.style.opacity='1'; } });
     };
@@ -452,7 +449,6 @@ async function saveToGitHub() {
       if (!r.ok) throw new Error('Token invalid or expired');
       sha = (await r.json()).sha;
     }
-    // Clean DOM snapshot
     document.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     document.body.classList.remove('edit-mode');
     document.getElementById('edit-fab').classList.remove('hidden');
@@ -463,7 +459,6 @@ async function saveToGitHub() {
 
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
-    // Restore
     document.body.classList.add('edit-mode');
     document.getElementById('edit-fab').classList.add('hidden');
     document.getElementById('edit-toolbar').classList.add('visible');
