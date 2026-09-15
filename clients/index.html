@@ -22,10 +22,9 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 .search-input:focus{border-color:var(--red)}
 .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#aaa;pointer-events:none}
 .search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:18px;display:none;padding:4px}
-.search-clear:hover{color:var(--dark)}
 .results-count{font-size:13px;color:var(--muted);margin-bottom:16px;min-height:20px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-.story-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;text-decoration:none;color:#222;transition:all .2s;display:block;position:relative}
+.story-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;color:#222;transition:all .2s;position:relative}
 .story-card:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(239,54,61,0.1);transform:translateY(-2px)}
 .story-icon{font-size:28px;margin-bottom:12px}
 .story-name{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:4px}
@@ -36,32 +35,22 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 .delete-btn{background:transparent;color:#c0272d;border:1px solid #f5c6c6;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);display:none;transition:all .2s}
 .delete-btn:hover{background:#fff0f0;border-color:#c0272d}
 .manage-mode .delete-btn{display:block}
-.empty{text-align:center;padding:60px 20px;color:#999}
-.empty-icon{font-size:48px;margin-bottom:16px}
-.empty p{font-size:15px;margin-bottom:20px}
 .no-results{display:none;text-align:center;padding:40px;color:#999}
-.no-results-icon{font-size:36px;margin-bottom:12px}
-.new-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;text-decoration:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;font-family:var(--font);margin-top:24px;border:none;cursor:pointer}
+.new-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;text-decoration:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;font-family:var(--font);margin-top:24px}
 .new-btn:hover{background:#c0272d}
-
-/* Delete confirm modal */
 #delete-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}
 #delete-modal.visible{display:flex}
-#delete-box{background:#fff;border-radius:12px;padding:36px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,0.2)}
-.delete-icon{font-size:40px;text-align:center;margin-bottom:16px}
-#delete-box h3{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:10px;text-align:center}
-#delete-box p{font-size:14px;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:8px}
+#delete-box{background:#fff;border-radius:12px;padding:36px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,0.2);text-align:center}
+.delete-icon{font-size:40px;margin-bottom:16px}
+#delete-box h3{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:10px}
+#delete-box p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:8px}
 #delete-client-name{font-weight:700;color:var(--dark)}
-#delete-warning{font-size:13px;color:#c0272d;text-align:center;margin-bottom:24px;padding:10px;background:#fff0f0;border-radius:6px;border:1px solid #f5c6c6}
+#delete-warning{font-size:13px;color:#c0272d;margin-bottom:24px;padding:10px;background:#fff0f0;border-radius:6px;border:1px solid #f5c6c6}
 .delete-actions{display:flex;gap:10px}
 #delete-confirm-btn{flex:1;background:var(--red);color:#fff;border:none;border-radius:6px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}
-#delete-confirm-btn:hover{background:#c0272d}
 #delete-confirm-btn:disabled{opacity:0.5;cursor:not-allowed}
-#delete-cancel-btn{flex:1;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
-#delete-cancel-btn:hover{color:var(--dark);border-color:#aaa}
-#delete-status{font-size:13px;text-align:center;margin-top:12px;min-height:18px;color:var(--muted)}
-
-/* Auth modal */
+#delete-cancel-btn{flex:1;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:14px;cursor:pointer;font-family:var(--font)}
+#delete-status{font-size:13px;margin-top:12px;min-height:18px;color:var(--muted)}
 #auth-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center}
 #auth-modal.visible{display:flex}
 #auth-box{background:#fff;border-radius:12px;padding:36px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,0.2)}
@@ -77,18 +66,16 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-top">
     <div>
       <div class="logo-pill"><img src="/prophix-logo-1000px.png" style="height:24px;width:auto;display:block"></div>
       <h1>Client Stories</h1>
-      <p id="story-count">All published customer stories</p>
+      <p id="story-count">1 published story</p>
     </div>
     <button class="manage-btn" id="manage-btn">&#x2699;&#xFE0F; Manage Stories</button>
   </div>
 </div>
-
 <div class="content">
   <div class="search-wrap">
     <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -96,259 +83,33 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
     <button class="search-clear" id="search-clear">&#x2715;</button>
   </div>
   <div class="results-count" id="results-count"></div>
-  <div class="grid" id="stories-grid"></div>
-  <div class="no-results" id="no-results">
-    <div class="no-results-icon">&#x1F50D;</div>
-    <p>No stories match your search.</p>
-  </div>
+  <div class="grid" id="stories-grid"><div class="story-card" id="card-eaglestone-services-sa-auto"><div class="story-icon">&#x1F4C4;</div><div class="story-name">Eaglestone Services SA-auto</div><div class="story-url">raulsteiu.github.io/clients/eaglestone-services-sa-auto</div><div class="card-actions"><a class="open-btn" href="/clients/eaglestone-services-sa-auto/" target="_blank">Open Story &#x2192;</a><button class="delete-btn" onclick="confirmDelete('eaglestone-services-sa-auto','Eaglestone Services SA-auto')">&#x1F5D1; Delete</button></div></div></div>
+  <div class="no-results" id="no-results"><p>No results found.</p></div>
+  
   <a href="/new/" class="new-btn">+ Create New Story</a>
 </div>
-
-<!-- Auth modal -->
-<div id="auth-modal">
-  <div id="auth-box">
-    <h3>Manage Stories</h3>
-    <p>Enter your credentials to enable story management</p>
-    <div class="auth-field"><label>Password</label><input type="password" id="auth-pw" placeholder="Enter password"/></div>
-    <div class="auth-field"><label>GitHub Token</label><input type="password" id="auth-token" placeholder="Paste your GitHub token"/></div>
-    <div id="auth-error"></div>
-    <button id="auth-submit">Unlock Management</button>
-    <button id="auth-cancel">Cancel</button>
-  </div>
-</div>
-
-<!-- Delete confirm modal -->
-<div id="delete-modal">
-  <div id="delete-box">
-    <div class="delete-icon">&#x26A0;&#xFE0F;</div>
-    <h3>Delete Client Story</h3>
-    <p>You are about to permanently delete the story for:</p>
-    <p><span id="delete-client-name"></span></p>
-    <div id="delete-warning">This action cannot be undone. The story page and all associated files will be permanently removed from the repository and will no longer be accessible.</div>
-    <div class="delete-actions">
-      <button id="delete-cancel-btn">Cancel</button>
-      <button id="delete-confirm-btn">&#x1F5D1; Yes, Delete Permanently</button>
-    </div>
-    <div id="delete-status"></div>
-  </div>
-</div>
-
+<div id="auth-modal"><div id="auth-box"><h3>Manage Stories</h3><p>Enter your credentials to enable story management</p><div class="auth-field"><label>Password</label><input type="password" id="auth-pw" placeholder="Enter password"/></div><div class="auth-field"><label>GitHub Token</label><input type="password" id="auth-token" placeholder="Paste your GitHub token"/></div><div id="auth-error"></div><button id="auth-submit">Unlock Management</button><button id="auth-cancel">Cancel</button></div></div>
+<div id="delete-modal"><div id="delete-box"><div class="delete-icon">&#x26A0;&#xFE0F;</div><h3>Delete Client Story</h3><p>You are about to permanently delete the story for:</p><p><strong id="delete-client-name"></strong></p><div id="delete-warning">This action cannot be undone. The story page and all associated files will be permanently removed from the repository.</div><div class="delete-actions"><button id="delete-cancel-btn">Cancel</button><button id="delete-confirm-btn">&#x1F5D1; Yes, Delete Permanently</button></div><div id="delete-status"></div></div></div>
 <script>
-var GH_REPO = 'raulsteiu/raulsteiu.github.io';
-var EDIT_PASSWORD = 'prophix2026';
-var sessionToken = '';
-var manageMode = false;
-var pendingDelete = null;
-
-// Stories data — injected by creator on each publish
-var stories = [];
-
-// ── Render ────────────────────────────────────────────────────────────────────
-function renderStories(filter) {
-  var grid = document.getElementById('stories-grid');
-  var noResults = document.getElementById('no-results');
-  var countEl = document.getElementById('results-count');
-  var q = (filter || '').toLowerCase().trim();
-
-  var filtered = stories.filter(function(s) {
-    return !q || s.name.toLowerCase().indexOf(q) > -1 || s.slug.toLowerCase().indexOf(q) > -1;
-  });
-
-  document.getElementById('story-count').textContent = stories.length + ' published stor' + (stories.length === 1 ? 'y' : 'ies');
-
-  if (filtered.length === 0 && q) {
-    grid.style.display = 'none';
-    noResults.style.display = 'block';
-    countEl.textContent = 'No results for "' + filter + '"';
-    return;
-  }
-
-  noResults.style.display = 'none';
-  grid.style.display = '';
-  countEl.textContent = q ? filtered.length + ' result' + (filtered.length === 1 ? '' : 's') + ' for "' + filter + '"' : '';
-
-  grid.innerHTML = filtered.map(function(s) {
-    return '<div class="story-card" id="card-' + s.slug + '">' +
-      '<div class="story-icon">&#x1F4C4;</div>' +
-      '<div class="story-name">' + escHtml(s.name) + '</div>' +
-      '<div class="story-url">raulsteiu.github.io/clients/' + s.slug + '</div>' +
-      '<div class="card-actions">' +
-        '<a class="open-btn" href="/clients/' + s.slug + '/" target="_blank">Open Story &#x2192;</a>' +
-        '<button class="delete-btn" onclick="confirmDelete(\'' + s.slug + '\',\'' + escHtml(s.name) + '\')">&#x1F5D1; Delete</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-
-  if (manageMode) grid.classList.add('manage-mode');
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
-}
-
-// ── Search ────────────────────────────────────────────────────────────────────
-document.getElementById('search-input').addEventListener('input', function() {
-  var val = this.value;
-  document.getElementById('search-clear').style.display = val ? 'block' : 'none';
-  renderStories(val);
+var GH_REPO="raulsteiu/raulsteiu.github.io";
+var EDIT_PASSWORD="prophix2026";
+var sessionToken="";
+var manageMode=false;
+var pendingDelete=null;
+var stories=[{"slug":"eaglestone-services-sa-auto","name":"Eaglestone Services SA-auto"}];
+function renderStories(q){var grid=document.getElementById("stories-grid");var noRes=document.getElementById("no-results");var countEl=document.getElementById("results-count");q=(q||"").toLowerCase().trim();var filtered=stories.filter(function(s){return !q||s.name.toLowerCase().indexOf(q)>-1||s.slug.toLowerCase().indexOf(q)>-1;});if(filtered.length===0&&q){grid.style.display="none";noRes.style.display="block";countEl.textContent="No results for \""+q+"\"";return;}noRes.style.display="none";grid.style.display="";countEl.textContent=q?filtered.length+" result"+(filtered.length===1?"":"s")+" for \""+q+"\"":"";grid.innerHTML=filtered.map(function(s){return"<div class=\"story-card\" id=\"card-"+s.slug+"\"><div class=\"story-icon\">&#x1F4C4;</div><div class=\"story-name\">"+s.name+"</div><div class=\"story-url\">raulsteiu.github.io/clients/"+s.slug+"</div><div class=\"card-actions\"><a class=\"open-btn\" href=\"/clients/"+s.slug+"/\" target=\"_blank\">Open Story &#x2192;</a><button class=\"delete-btn\" onclick=\"confirmDelete('"+s.slug+"','"+s.name.replace(/'/g,"\\x27")+"')\">&#x1F5D1; Delete</button></div></div>";}).join("");if(manageMode)grid.classList.add("manage-mode");}
+function confirmDelete(slug,name){pendingDelete={slug:slug,name:name};document.getElementById("delete-client-name").textContent=name;document.getElementById("delete-status").textContent="";document.getElementById("delete-confirm-btn").disabled=false;document.getElementById("delete-confirm-btn").textContent="Delete Permanently";document.getElementById("delete-modal").classList.add("visible");}
+document.addEventListener("DOMContentLoaded",function(){
+  renderStories("");
+  document.getElementById("search-input").addEventListener("input",function(){var v=this.value;document.getElementById("search-clear").style.display=v?"block":"none";renderStories(v);});
+  document.getElementById("search-clear").addEventListener("click",function(){document.getElementById("search-input").value="";this.style.display="none";renderStories("");document.getElementById("search-input").focus();});
+  document.getElementById("manage-btn").addEventListener("click",function(){if(manageMode){manageMode=false;sessionToken="";this.textContent="\u2699\uFE0F Manage Stories";this.classList.remove("active");document.getElementById("stories-grid").classList.remove("manage-mode");}else{document.getElementById("auth-modal").classList.add("visible");setTimeout(function(){document.getElementById("auth-pw").focus();},50);}});
+  document.getElementById("auth-submit").addEventListener("click",function(){var pw=document.getElementById("auth-pw").value;var token=document.getElementById("auth-token").value.trim().replace(/[^\x20-\x7E]/g,"");document.getElementById("auth-error").textContent="";if(pw!==EDIT_PASSWORD){document.getElementById("auth-error").textContent="Incorrect password.";return;}if(!token){document.getElementById("auth-error").textContent="Please paste your GitHub token.";return;}sessionToken=token;manageMode=true;document.getElementById("auth-modal").classList.remove("visible");document.getElementById("auth-pw").value="";document.getElementById("auth-token").value="";document.getElementById("manage-btn").textContent="\u2715 Exit Manage Mode";document.getElementById("manage-btn").classList.add("active");document.getElementById("stories-grid").classList.add("manage-mode");});
+  document.getElementById("auth-cancel").addEventListener("click",function(){document.getElementById("auth-modal").classList.remove("visible");});
+  document.getElementById("delete-cancel-btn").addEventListener("click",function(){document.getElementById("delete-modal").classList.remove("visible");pendingDelete=null;});
+  document.getElementById("delete-confirm-btn").addEventListener("click",async function(){if(!pendingDelete)return;var btn=this;var statusEl=document.getElementById("delete-status");btn.disabled=true;btn.textContent="Deleting...";try{var slug=pendingDelete.slug;var listRes=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/clients/"+slug+"/",{headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json"}});if(!listRes.ok)throw new Error("Could not list files");var files=await listRes.json();for(var i=0;i<files.length;i++){statusEl.textContent="Deleting file "+(i+1)+"/"+files.length+"...";await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/"+files[i].path,{method:"DELETE",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Delete: "+slug,sha:files[i].sha})});}stories=stories.filter(function(s){return s.slug!==slug;});statusEl.textContent="Updating directory...";var newHtml=buildDirectoryHTML(stories);var enc=btoa(unescape(encodeURIComponent(newHtml)));var ex=await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/clients/index.html",{headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json"}});var body={message:"Update directory",content:enc};if(ex.ok)body.sha=(await ex.json()).sha;await fetch("https://api.github.com/repos/"+GH_REPO+"/contents/clients/index.html",{method:"PUT",headers:{"Authorization":"Bearer "+sessionToken,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify(body)});var card=document.getElementById("card-"+slug);if(card)card.remove();document.getElementById("story-count").textContent=stories.length+" published stor"+(stories.length===1?"y":"ies");statusEl.textContent="Deleted.";setTimeout(function(){document.getElementById("delete-modal").classList.remove("visible");pendingDelete=null;renderStories(document.getElementById("search-input").value);},1200);}catch(e){statusEl.textContent="Error: "+e.message;btn.disabled=false;btn.textContent="Delete Permanently";}});
 });
-
-document.getElementById('search-clear').addEventListener('click', function() {
-  document.getElementById('search-input').value = '';
-  this.style.display = 'none';
-  renderStories('');
-  document.getElementById('search-input').focus();
-});
-
-// ── Manage mode ───────────────────────────────────────────────────────────────
-document.getElementById('manage-btn').addEventListener('click', function() {
-  if (manageMode) {
-    // Exit manage mode
-    manageMode = false;
-    sessionToken = '';
-    this.textContent = '⚙️ Manage Stories';
-    this.classList.remove('active');
-    document.getElementById('stories-grid').classList.remove('manage-mode');
-  } else {
-    // Show auth modal
-    document.getElementById('auth-modal').classList.add('visible');
-    setTimeout(function(){ document.getElementById('auth-pw').focus(); }, 50);
-  }
-});
-
-document.getElementById('auth-submit').addEventListener('click', function() {
-  var pw = document.getElementById('auth-pw').value;
-  var token = document.getElementById('auth-token').value.trim().replace(/[^\x20-\x7E]/g,'');
-  document.getElementById('auth-error').textContent = '';
-  if (pw !== EDIT_PASSWORD) { document.getElementById('auth-error').textContent = 'Incorrect password.'; return; }
-  if (!token) { document.getElementById('auth-error').textContent = 'Please paste your GitHub token.'; return; }
-  sessionToken = token;
-  manageMode = true;
-  document.getElementById('auth-modal').classList.remove('visible');
-  document.getElementById('auth-pw').value = '';
-  document.getElementById('auth-token').value = '';
-  document.getElementById('manage-btn').textContent = '✕ Exit Manage Mode';
-  document.getElementById('manage-btn').classList.add('active');
-  document.getElementById('stories-grid').classList.add('manage-mode');
-});
-
-document.getElementById('auth-cancel').addEventListener('click', function() {
-  document.getElementById('auth-modal').classList.remove('visible');
-  document.getElementById('auth-pw').value = '';
-  document.getElementById('auth-token').value = '';
-  document.getElementById('auth-error').textContent = '';
-});
-
-['auth-pw','auth-token'].forEach(function(id) {
-  document.getElementById(id).addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('auth-submit').click();
-    if (e.key === 'Escape') document.getElementById('auth-cancel').click();
-  });
-});
-
-// ── Delete ────────────────────────────────────────────────────────────────────
-function confirmDelete(slug, name) {
-  pendingDelete = {slug: slug, name: name};
-  document.getElementById('delete-client-name').textContent = name;
-  document.getElementById('delete-status').textContent = '';
-  document.getElementById('delete-confirm-btn').disabled = false;
-  document.getElementById('delete-confirm-btn').textContent = '🗑 Yes, Delete Permanently';
-  document.getElementById('delete-modal').classList.add('visible');
-}
-
-document.getElementById('delete-cancel-btn').addEventListener('click', function() {
-  document.getElementById('delete-modal').classList.remove('visible');
-  pendingDelete = null;
-});
-
-document.getElementById('delete-confirm-btn').addEventListener('click', async function() {
-  if (!pendingDelete) return;
-  var btn = this;
-  var statusEl = document.getElementById('delete-status');
-  btn.disabled = true;
-  btn.textContent = 'Deleting...';
-
-  try {
-    var slug = pendingDelete.slug;
-    var folder = 'clients/' + slug + '/';
-
-    // Get all files in the client folder
-    statusEl.textContent = 'Finding files...';
-    var listRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + folder, {
-      headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-    });
-
-    if (!listRes.ok) throw new Error('Could not list files');
-    var files = await listRes.json();
-
-    // Delete each file
-    for (var i = 0; i < files.length; i++) {
-      statusEl.textContent = 'Deleting file ' + (i+1) + '/' + files.length + '...';
-      await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + files[i].path, {
-        method: 'DELETE',
-        headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-        body: JSON.stringify({message:'Delete client: '+slug, sha: files[i].sha})
-      });
-    }
-
-    // Remove from stories array
-    stories = stories.filter(function(s){ return s.slug !== slug; });
-
-    // Update directory
-    statusEl.textContent = 'Updating directory...';
-    await updateDirectory();
-
-    // Remove card from UI
-    var card = document.getElementById('card-' + slug);
-    if (card) card.remove();
-
-    document.getElementById('story-count').textContent = stories.length + ' published stor' + (stories.length===1?'y':'ies');
-    statusEl.textContent = 'Deleted successfully.';
-    setTimeout(function() {
-      document.getElementById('delete-modal').classList.remove('visible');
-      pendingDelete = null;
-      renderStories(document.getElementById('search-input').value);
-    }, 1200);
-
-  } catch(e) {
-    statusEl.textContent = 'Error: ' + e.message;
-    btn.disabled = false;
-    btn.textContent = '🗑 Yes, Delete Permanently';
-  }
-});
-
-async function updateDirectory() {
-  var newHtml = buildDirectoryHTML(stories);
-  var encoded = btoa(unescape(encodeURIComponent(newHtml)));
-
-  // Get current SHA
-  var existing = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/clients/index.html', {
-    headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-  });
-  var body = {message:'Update directory', content:encoded};
-  if (existing.ok) body.sha = (await existing.json()).sha;
-
-  await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/clients/index.html', {
-    method:'PUT',
-    headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-    body:JSON.stringify(body)
-  });
-}
-
-function buildDirectoryHTML(storiesList) {
-  // Rebuild the full page with updated stories list
-  var storyDataJS = JSON.stringify(storiesList);
-  // Return current page HTML but with updated STORIES_DATA
-  var currentHTML = document.documentElement.outerHTML;
-  return '<!DOCTYPE html>\n' + currentHTML.replace(/var stories = [];[\s\S]*?\/\/ --/, 'var stories = ' + storyDataJS + ';\n// --').replace('var stories = ' + JSON.stringify(stories.concat([{slug:pendingDelete?pendingDelete.slug:'',name:''}]).filter(function(s){return s.slug;})) + ';', 'var stories = ' + storyDataJS + ';');
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-if (stories.length === 0) {
-  document.getElementById('stories-grid').innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">&#x1F4C2;</div><p>No client stories published yet.</p></div>';
-} else {
-  renderStories('');
-}
+function buildDirectoryHTML(s){return document.documentElement.outerHTML.replace("var stories="+JSON.stringify(stories)+";","var stories="+JSON.stringify(s)+";");}
 </script>
 </body>
 </html>
