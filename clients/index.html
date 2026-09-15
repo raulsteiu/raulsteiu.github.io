@@ -83,7 +83,7 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
     <button class="search-clear" id="search-clear">&#x2715;</button>
   </div>
   <div class="results-count" id="results-count"></div>
-  <div class="grid" id="stories-grid"><div class="story-card" id="card-eaglestone-services-sa-auto"><div class="story-icon">&#x1F4C4;</div><div class="story-name">Eaglestone Services SA-auto</div><div class="story-url">raulsteiu.github.io/clients/eaglestone-services-sa-auto</div><div class="card-actions"><a class="open-btn" href="/clients/eaglestone-services-sa-auto/" target="_blank">Open Story &#x2192;</a><button class="delete-btn" onclick="confirmDelete('eaglestone-services-sa-auto','Eaglestone Services SA-auto')">&#x1F5D1; Delete</button></div></div></div>
+  <div class="grid" id="stories-grid"><div class="story-card" id="card-yassine-srl"><div class="story-icon">&#x1F4C4;</div><div class="story-name">Yassine SRL</div><div class="story-url">raulsteiu.github.io/clients/yassine-srl</div><div class="card-actions"><a class="open-btn" href="/clients/yassine-srl/" target="_blank">Open Story &#x2192;</a><button class="delete-btn" onclick="confirmDelete('yassine-srl','Yassine SRL')">&#x1F5D1; Delete</button></div></div></div>
   <div class="no-results" id="no-results"><p>No results found.</p></div>
   
   <a href="/new/" class="new-btn">+ Create New Story</a>
@@ -96,7 +96,7 @@ var EDIT_PASSWORD="prophix2026";
 var sessionToken="";
 var manageMode=false;
 var pendingDelete=null;
-var stories=[{"slug":"eaglestone-services-sa-auto","name":"Eaglestone Services SA-auto"}];
+var stories=[{"slug":"yassine-srl","name":"Yassine SRL"}];
 function renderStories(q){var grid=document.getElementById("stories-grid");var noRes=document.getElementById("no-results");var countEl=document.getElementById("results-count");q=(q||"").toLowerCase().trim();var filtered=stories.filter(function(s){return !q||s.name.toLowerCase().indexOf(q)>-1||s.slug.toLowerCase().indexOf(q)>-1;});if(filtered.length===0&&q){grid.style.display="none";noRes.style.display="block";countEl.textContent="No results for \""+q+"\"";return;}noRes.style.display="none";grid.style.display="";countEl.textContent=q?filtered.length+" result"+(filtered.length===1?"":"s")+" for \""+q+"\"":"";grid.innerHTML=filtered.map(function(s){return"<div class=\"story-card\" id=\"card-"+s.slug+"\"><div class=\"story-icon\">&#x1F4C4;</div><div class=\"story-name\">"+s.name+"</div><div class=\"story-url\">raulsteiu.github.io/clients/"+s.slug+"</div><div class=\"card-actions\"><a class=\"open-btn\" href=\"/clients/"+s.slug+"/\" target=\"_blank\">Open Story &#x2192;</a><button class=\"delete-btn\" onclick=\"confirmDelete('"+s.slug+"','"+s.name.replace(/'/g,"\\x27")+"')\">&#x1F5D1; Delete</button></div></div>";}).join("");if(manageMode)grid.classList.add("manage-mode");}
 function confirmDelete(slug,name){pendingDelete={slug:slug,name:name};document.getElementById("delete-client-name").textContent=name;document.getElementById("delete-status").textContent="";document.getElementById("delete-confirm-btn").disabled=false;document.getElementById("delete-confirm-btn").textContent="Delete Permanently";document.getElementById("delete-modal").classList.add("visible");}
 document.addEventListener("DOMContentLoaded",function(){
