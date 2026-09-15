@@ -149,12 +149,20 @@ function addEditControlsToExisting() {
       delBtn.title = 'Delete MP3 from GitHub and clear this clip';
       delBtn.addEventListener('click', function() {
         var srcEl = player.querySelector('audio source');
-        // Use .src property (works for both attribute-set and JS-set sources)
-        var rawSrc = srcEl ? (srcEl.getAttribute('src') || srcEl.src || '') : '';
+        // Try attribute first (HTML-set), then property (JS-set after upload)
+        var rawSrc = srcEl ? (srcEl.getAttribute('src') || '') : '';
+        if (!rawSrc && srcEl) {
+          // src was set via property — srcEl.src gives full absolute URL
+          var propSrc = srcEl.src || '';
+          // Only use if it's not just the page base URL
+          if (propSrc && propSrc !== window.location.href && propSrc.indexOf('.mp3') > -1) {
+            rawSrc = propSrc;
+          }
+        }
         var filename = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
-        // If src is a full URL, extract just the filename
-        if (filename && filename.indexOf('://') > -1) filename = '';
-        if (!filename || filename === 'undefined') { alert('No audio file attached to this clip.\n\nTip: upload an MP3 first using the Upload MP3 button.'); return; }
+        if (!filename || filename.length < 2 || filename === 'undefined') {
+          alert('No audio file found on this clip.\n\nTip: the file must be uploaded via the Upload MP3 button first.'); return;
+        }
         if (!confirm('Delete "' + filename + '" from the repository? This cannot be undone.')) return;
         var origText = delBtn.innerHTML;
         delBtn.textContent = 'Deleting…';
@@ -380,10 +388,13 @@ function addClipInline(btn) {
   var delAudioBtn = document.createElement('button');
   delAudioBtn.className = 'delete-audio-btn edit-only'; delAudioBtn.innerHTML = '🗑 Delete audio';
   delAudioBtn.addEventListener('click', function() {
-    var rawSrc = src.getAttribute('src') || src.src || '';
+    var rawSrc = src.getAttribute('src') || '';
+    if (!rawSrc) {
+      var propSrc = src.src || '';
+      if (propSrc && propSrc !== window.location.href && propSrc.indexOf('.mp3') > -1) rawSrc = propSrc;
+    }
     var filename = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
-    if (filename && filename.indexOf('://') > -1) filename = '';
-    if (!filename || filename === 'undefined') { alert('No audio attached. Upload an MP3 first.'); return; }
+    if (!filename || filename.length < 2) { alert('No audio attached. Upload an MP3 first.'); return; }
     if (!confirm('Delete "' + filename + '" from the repository?')) return;
     var origText = delAudioBtn.innerHTML;
     delAudioBtn.textContent = 'Deleting…'; delAudioBtn.disabled = true;
@@ -573,8 +584,11 @@ function uploadAudio(btn) {
         });
         var d = await r.json();
         if (r.ok && d.content) {
-          var src = btn.closest('.clip-player').querySelector('audio source');
-          if (src) { src.src = file.name; src.parentNode.load(); }
+          var srcEl2 = btn.closest('.clip-player').querySelector('audio source');
+          if (srcEl2) {
+            srcEl2.setAttribute('src', file.name); // set as attribute so delete can find it
+            srcEl2.parentNode.load();
+          }
           btn.textContent = '✓ '+file.name;
         } else {
           btn.textContent = 'Upload MP3';
