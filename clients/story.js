@@ -474,8 +474,14 @@ async function saveToGitHub() {
     });
     if (pr.ok) {
       cachedSha = (await pr.json()).content.sha;
+      // Update last-edited timestamp on page
+      document.querySelectorAll('.last-edited').forEach(function(el) {
+        el.textContent = 'Last edited ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      });
       statusEl.textContent = 'Saved ✓';
       setTimeout(disableEditMode, 1500);
+      // Update edited timestamp in stories.json quietly in background
+      _updateEditedTimestamp();
     } else {
       var err = await pr.json();
       if ((err.message||'').indexOf('conflict')>-1) { cachedSha=''; statusEl.textContent='Conflict — retry'; }
@@ -483,6 +489,29 @@ async function saveToGitHub() {
       saveBtn.disabled = false;
     }
   } catch(e) { statusEl.textContent='Error: '+e.message; saveBtn.disabled=false; }
+}
+
+// ── Update edited timestamp in stories.json (background, best-effort) ────────
+async function _updateEditedTimestamp() {
+  try {
+    var slug = GH_FILE.split('/')[1]; // clients/<slug>/index.html → slug
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
+      headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
+    });
+    if (!r.ok) return;
+    var d = await r.json();
+    var stories;
+    try { stories = JSON.parse(atob(d.content.replace(/\n/g,''))); } catch(e) { return; }
+    var entry = stories.find(function(s) { return s.slug === slug; });
+    if (!entry) return;
+    entry.edited = new Date().toISOString();
+    var enc = btoa(unescape(encodeURIComponent(JSON.stringify(stories, null, 2))));
+    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
+      method: 'PUT',
+      headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+      body: JSON.stringify({message: 'Update edited: '+slug, content: enc, sha: d.sha})
+    });
+  } catch(e) { /* silent — non-critical */ }
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -506,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('token-submit').addEventListener('click', function() {
     var token = document.getElementById('token-input').value.trim().replace(/[^\x20-\x7E]/g,'');
     document.getElementById('token-error').textContent = '';
-    if (!token) { document.getElementById('token-error').textContent = 'Please paste your GitHub token.'; return; }
+    if (!token) { document.getElementById('token-error').textContent = 'Please paste your access token.'; return; }
     sessionToken = token;
     closeModal();
     enableEditMode();
@@ -518,4 +547,31 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   document.getElementById('save-btn').addEventListener('click', saveToGitHub);
   document.getElementById('cancel-btn').addEventListener('click', disableEditMode);
+
+  // ── UX #1: ?edit=1 param — auto-open token modal on load ─────────────────
+  if (new URLSearchParams(window.location.search).get('edit') === '1') {
+    setTimeout(function() {
+      document.getElementById('token-modal').classList.add('visible');
+      setTimeout(function(){ document.getElementById('token-input').focus(); }, 80);
+    }, 300);
+  }
+
+  // ── UX #2: Share button on story page — copy current URL to clipboard ─────
+  var shareBtn = document.getElementById('story-share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+      var url = window.location.href.split('?')[0]; // strip ?edit=1 if present
+      navigator.clipboard.writeText(url).then(function() {
+        var orig = shareBtn.textContent;
+        shareBtn.textContent = '✓ Copied!';
+        shareBtn.style.background = '#2a7a2a';
+        shareBtn.style.borderColor = '#2a7a2a';
+        setTimeout(function() {
+          shareBtn.textContent = orig;
+          shareBtn.style.background = '';
+          shareBtn.style.borderColor = '';
+        }, 2000);
+      }).catch(function() { prompt('Copy this link:', url); });
+    });
+  }
 });
