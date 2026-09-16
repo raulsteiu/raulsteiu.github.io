@@ -30,36 +30,49 @@
     {
       "v": "1880",
       "l": "Founded"
+    },
+    {
+      "v": "60,000",
+      "l": "Stadium Capacity"
+    },
+    {
+      "v": "8",
+      "l": "Titles Won"
     }
   ],
   "whoText": "Manchester City FC is a founding member of the Premier League and part of City Football Group, one of the world's largest multi-club football ownership groups. The club has won multiple league titles and operates a world-class training and stadium facility in east Manchester.",
   "krs": [
     {
-      "text": "Consolidated multi-entity financials across City Football Group within a single platform",
-      "bold": ""
+      "bold": "",
+      "text": "Consolidated multi-entity financials across City Football Group within a single platform"
     },
     {
-      "text": "Eliminated manual Excel-based reporting and reduced risk of version errors",
-      "bold": ""
+      "bold": "",
+      "text": "Eliminated manual Excel-based reporting and reduced risk of version errors"
     },
     {
-      "text": "Delivered real-time budget tracking for both football operations and commercial divisions",
-      "bold": ""
+      "bold": "",
+      "text": "Delivered real-time budget tracking for both football operations and commercial divisions"
     }
   ],
   "results": [
-    "Reduced close cycle from ~3 weeks to under 1 week",
-    "Improved cross-entity consolidation accuracy",
-    "Board pack preparation time cut by more than half"
+    "✕Reduced close cycle from ~3 weeks to under 1 week",
+    "✕Improved cross-entity consolidation accuracy",
+    "✕Board pack preparation time cut by more than half"
   ],
   "participants": [
     {
       "name": "Sarah Thompson",
       "title": "Head of Finance"
+    },
+    {
+      "name": "Raul Steiu",
+      "title": "Data Integration Engineer"
     }
   ],
   "products": [
     "Financial Consolidation",
+    "Cash Management",
     "Account Reconciliation"
   ],
   "content": [
@@ -68,7 +81,16 @@
       "data": {
         "label": "Business Challange",
         "heading": "From spreadsheets to a single source of truth",
-        "body": "Manchester City FC's finance team was managing budgets and forecasts across multiple entities using disconnected spreadsheets. With operations spanning football, commercial, and academy divisions, version control was a constant challenge and month-end close was time-consuming.\n\nProphix gave the team a centralised platform to manage all entities in one place, with role-based access and a structured close process.\n\n- good client\n- good team"
+        "body": "Manchester City FC's finance team was managing budgets and forecasts across multiple entities using disconnected spreadsheets. With operations spanning football, commercial, and academy divisions, version control was a constant challenge and month-end close was time-consuming.\nProphix gave the team a centralised platform to manage all entities in one place, with role-based access and a structured close process.\n- good client\n- good team"
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "Sarah Thompson, Head of Finance✕",
+        "ts": "",
+        "quote": "Before Prophix, month-end was a scramble across dozens of spreadsheets. Now we close with confidence, and leadership can see exactly where we are — in real time.",
+        "audio": ""
       }
     },
     {
@@ -76,16 +98,39 @@
       "data": {
         "label": "",
         "heading": "Faster, more confident board reporting",
-        "body": "With Prophix, the finance team now produces board packs in a fraction of the time. Automated consolidation and pre-built report templates mean the team spends less time on data wrangling and more time on analysis.\n\nLeadership now has instant access to actuals vs. budget across all departments — giving them the visibility they need to make decisions quickly."
-      }
-    },
-    {
-      "type": "clip",
-      "data": {
-        "title": "Sarah Thompson, Head of Finance",
-        "ts": "",
-        "quote": "Before Prophix, month-end was a scramble across dozens of spreadsheets. Now we close with confidence, and leadership can see exactly where we are — in real time."
+        "body": "With Prophix, the finance team now produces board packs in a fraction of the time. Automated consolidation and pre-built report templates mean the team spends less time on data wrangling and more time on analysis.\nLeadership now has instant access to actuals vs. budget across all departments — giving them the visibility they need to make decisions quickly."
       }
     }
-  ]
+  ],
+  "translations": {
+    "fr": {
+      "name": "[FR] Manchester City FC",
+      "desc": "[FR] Manchester City FC is a Premier League football club and one of the most successful clubs in English football. Based at the Etihad Stadium, the club operates as part of the City Football Group and manages complex multi-entity financial operations across its global portfolio.",
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] Business Challange",
+            "heading": "[FR] From spreadsheets to a single source of truth",
+            "body": "[FR] Manchester City FC's finance team was managing budgets and forecasts across multiple entities using disconnected spreadsheets. With operations spanning football, commercial, and academy divisions, version control was a constant challenge and month-end close was time-consuming.\nProphix gave the team a centralised platform to manage all entities in one place, with role-based access and a structured close process.\n- good client\n- good team"
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] ",
+            "heading": "[FR] Faster, more confident board reporting",
+            "body": "[FR] With Prophix, the finance team now produces board packs in a fraction of the time. Automated consolidation and pre-built report templates mean the team spends less time on data wrangling and more time on analysis.\nLeadership now has instant access to actuals vs. budget across all departments — giving them the visibility they need to make decisions quickly."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "Sarah Thompson, Head of Finance✕",
+            "quote": "Before Prophix, month-end was a scramble across dozens of spreadsheets. Now we close with confidence, and leadership can see exactly where we are — in real time."
+          }
+        }
+      ]
+    }
+  }
 }
