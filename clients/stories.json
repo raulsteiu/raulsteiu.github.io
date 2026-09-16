@@ -1,5 +1,11 @@
 [
   {
+    "slug": "client-2-tbd",
+    "name": "client 2 tbd",
+    "created": "2026-09-16T13:39:40.123Z",
+    "logo": false
+  },
+  {
     "slug": "acme-corp",
     "name": "Acme Corp",
     "created": "2026-09-16T12:48:38.592Z",
