@@ -726,6 +726,8 @@ return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--borde
 '.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin-bottom:14px;position:relative}'+
 '.clip-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:9px}'+
 '.clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;font-weight:500;margin-bottom:10px}'+
+'.clip-quote::before{content:"\u201C"}'+
+'.clip-quote::after{content:"\u201D"}'+
 '.clip-player{display:flex;flex-direction:column;gap:5px}'+
 '.upload-audio-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:5px 11px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s;align-self:flex-start}'+
 '.upload-audio-btn:hover{border-color:var(--red);color:var(--red)}'+
