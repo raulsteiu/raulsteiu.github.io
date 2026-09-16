@@ -1,223 +1,623 @@
-// Prophix Client Story — story.js v8.1
-// Block-based multilingual architecture.
-// Required globals (inline before this script):
-//   GH_REPO, GH_FILE, GH_CLIENT_FOLDER
-//   activeLangs, LANG_NAMES, LANG_LABELS, LANG_FULL_NAMES
+// Prophix Client Story — story.js v9.0
+// Data-driven architecture: renders from data.json, saves back to data.json.
+// Required globals in index.html shell:
+//   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
+//   STORY_META = { slug, name, hasLogo, langs }
+
+'use strict';
 
 var sessionToken = '';
-var cachedSha = '';
+var cachedDataSha = '';
 var currentLang = 'en';
+var storyData = null; // loaded from data.json
 
-// ── Language registry — add new languages here, they appear everywhere automatically ──
-var LANG_NAMES = {en:'EN', fr:'FR', nl:'NL', de:'DE', it:'IT', es:'ES', pt:'PT', pl:'PL', sv:'SV', da:'DA', fi:'FI', no:'NO', ja:'JA', zh:'ZH', ko:'KO'};
+// ── Language registry ─────────────────────────────────────────────────────────
+var LANG_NAMES = {en:'EN',fr:'FR',nl:'NL',de:'DE',it:'IT',es:'ES',pt:'PT',pl:'PL',sv:'SV',da:'DA',fi:'FI',no:'NO',ja:'JA',zh:'ZH',ko:'KO'};
 var LANG_LABELS = {
-  en:'Customer Story', fr:'En français', nl:'In het Nederlands',
-  de:'Auf Deutsch', it:'In italiano', es:'En español',
-  pt:'Em português', pl:'Po polsku', sv:'På svenska',
-  da:'På dansk', fi:'Suomeksi', no:'På norsk',
-  ja:'カスタマーストーリー', zh:'客户案例', ko:'고객 사례'
+  en:'Customer Story',fr:'En français',nl:'In het Nederlands',
+  de:'Auf Deutsch',it:'In italiano',es:'En español',
+  pt:'Em português',pl:'Po polsku',sv:'På svenska',
+  da:'På dansk',fi:'Suomeksi',no:'På norsk',
+  ja:'カスタマーストーリー',zh:'客户案例',ko:'고객 사례'
 };
 var LANG_FULL_NAMES = {
-  fr:'French', nl:'Dutch', de:'German', it:'Italian', es:'Spanish',
-  pt:'Portuguese', pl:'Polish', sv:'Swedish', da:'Danish',
-  fi:'Finnish', no:'Norwegian', ja:'Japanese', zh:'Chinese', ko:'Korean'
+  fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish',
+  pt:'Portuguese',pl:'Polish',sv:'Swedish',da:'Danish',
+  fi:'Finnish',no:'Norwegian',ja:'Japanese',zh:'Chinese',ko:'Korean'
 };
 
-// ── Live bullet parser — converts "- text" lines to <ul><li> on save ────────
-// Runs on all .story-sec content blocks before the HTML snapshot
-function parseBulletsInSections() {
-  document.querySelectorAll('.story-sec').forEach(function(sec) {
-    // Process each direct child p element
-    var children = Array.from(sec.childNodes);
-    var i = 0;
-    while (i < children.length) {
-      var node = children[i];
-      if (node.nodeType === 1 && node.tagName === 'P') {
-        var text = node.textContent || '';
-        var lines = text.split('\n');
-        // Check if ANY line starts with - or –
-        var hasBullets = lines.some(function(l) { return /^[-–]\s/.test(l.trim()); });
-        if (hasBullets) {
-          var fragment = document.createDocumentFragment();
-          var currentUl = null;
-          lines.forEach(function(line) {
-            var trimmed = line.trim();
-            if (/^[-–]\s/.test(trimmed)) {
-              if (!currentUl) { currentUl = document.createElement('ul'); fragment.appendChild(currentUl); }
-              var li = document.createElement('li');
-              var content = trimmed.replace(/^[-–]\s+/, '');
-              // Bold prefix: "Bold text: rest"
-              var colonIdx = content.indexOf(':');
-              if (colonIdx > 0 && colonIdx < 60) {
-                var strong = document.createElement('strong');
-                strong.textContent = content.substring(0, colonIdx) + ':';
-                li.appendChild(strong);
-                li.appendChild(document.createTextNode(content.substring(colonIdx + 1)));
-              } else {
-                li.textContent = content;
-              }
-              currentUl.appendChild(li);
-            } else {
-              currentUl = null;
-              if (trimmed) {
-                var p = document.createElement('p');
-                p.textContent = trimmed;
-                fragment.appendChild(p);
-              }
-            }
-          });
-          node.parentNode.insertBefore(fragment, node);
-          node.remove();
-          // Refresh children list after DOM change
-          children = Array.from(sec.childNodes);
-          i = 0; continue;
-        }
-      }
-      i++;
-    }
-  });
-}
-
-var EDITABLE_SELECTORS = [
-  '.hero-tag', 'h1', '.hero-desc', '.hero-industry', '.hero-ind',
-  '.sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
-  '.clip-label', '.clip-quote', '.clips-section-title',
-  '.sidebar-card h3',
-  '.result-item',
-  '.stat-n', '.stat-l',
-  '.krs-item-text',
-  '.who-text', '.who-stat-n', '.who-stat-l',
-  '.participant-name', '.participant-title',
-  '.disclaimer-text'
-];
-
+// ── Product registry ──────────────────────────────────────────────────────────
 var PROPHIX_PRODUCTS = [
   {name:'Financial Consolidation', icon:'/assets/icons/financial-consolidation.png'},
-  {name:'Cash Management', icon:'/assets/icons/cash-management.png'},
-  {name:'Account Reconciliation', icon:'/assets/icons/account-reconciliation.png'},
-  {name:'FP&A Plus', icon:'/assets/icons/fpanda-plus.png'},
+  {name:'Cash Management',         icon:'/assets/icons/cash-management.png'},
+  {name:'Account Reconciliation',  icon:'/assets/icons/account-reconciliation.png'},
+  {name:'FP&A Plus',               icon:'/assets/icons/fpanda-plus.png'},
   {name:'Intercompany Management', icon:'/assets/icons/intercompany-management.png'},
-  {name:'Lease Accounting', icon:'/assets/icons/lease-accounting.png'}
+  {name:'Lease Accounting',        icon:'/assets/icons/lease-accounting.png'}
 ];
 
-// ── Language toggle ───────────────────────────────────────────────────────────
-function setLang(code) {
-  currentLang = code;
-  document.querySelectorAll('.lang-block').forEach(function(b) {
-    b.classList.toggle('active', b.id === 'block-' + code);
-  });
-  document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(b) {
-    b.classList.toggle('active', b.getAttribute('data-lang') === code);
-  });
-  if (document.body.classList.contains('edit-mode')) {
-    document.getElementById('save-status').textContent = 'Editing: ' + code.toUpperCase();
-  }
+// ── CSS ───────────────────────────────────────────────────────────────────────
+function getCSS() {
+  return [
+    ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}',
+    '*{box-sizing:border-box;margin:0;padding:0}',
+    'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}',
+    '.page-nav{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:10px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}',
+    '.portal-link{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;transition:all .15s;white-space:nowrap;flex-shrink:0}',
+    '.portal-link:hover{color:#fff;border-color:rgba(255,255,255,.5)}',
+    '.share-page-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}',
+    '.share-page-btn:hover{background:rgba(255,255,255,.1)}',
+    '.share-page-btn.share-copied{background:#2a7a2a;border-color:#2a7a2a}',
+    '.lang-toggle{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto}',
+    '.lang-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s}',
+    '.lang-btn.active{background:#fff;color:var(--dark);border-color:#fff}',
+    '.lang-btn.remove-lang{padding:2px 8px;border-color:rgba(255,255,255,.15);font-size:13px}',
+    '.lang-btn.remove-lang:hover{background:rgba(239,54,61,.3);border-color:var(--red)}',
+    '#lang-add-wrap select{background:transparent;border:1px dashed rgba(255,255,255,.3);color:rgba(255,255,255,.6);border-radius:20px;padding:4px 10px;font-size:11px;font-family:var(--font);cursor:pointer;outline:none}',
+    '.lang-block{display:none}.lang-block.active{display:block}',
+    '.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:26px 40px 48px}',
+    '.logo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}',
+    '.logo-pill-hero{background:#fff;border-radius:8px;padding:10px 16px;display:inline-flex;align-items:center}',
+    '.logo-pill-hero img{height:26px;display:block}',
+    '.logo-pill-client{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;cursor:pointer;transition:opacity .15s}',
+    '.logo-pill-client img{max-height:30px;max-width:140px;object-fit:contain;display:block}',
+    '.hero-logo-ph{background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.3);border-radius:8px;padding:8px 14px;font-size:11px;color:rgba(255,255,255,.5);cursor:pointer}',
+    '.hero-body{max-width:700px}',
+    '.hero-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--red);margin-bottom:12px}',
+    'h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;color:#fff;margin-bottom:14px;max-width:680px}',
+    '.hero-desc{font-size:15px;color:rgba(255,255,255,.82);line-height:1.65;max-width:640px;margin-bottom:14px}',
+    '.hero-ind{display:inline-block;border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-size:12px;color:rgba(255,255,255,.6)}',
+    '.content-area{background:var(--light)}',
+    '.stats-row{display:flex;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--border);position:relative}',
+    '.stat-tile{flex:1;min-width:120px;padding:20px 24px;text-align:center;border-right:1px solid var(--border);position:relative}',
+    '.stat-tile:last-child{border-right:none}',
+    '.stat-n{font-size:28px;font-weight:900;color:var(--red);line-height:1}',
+    '.stat-l{font-size:12px;color:var(--muted);margin-top:5px}',
+    '.krs-outer{max-width:1100px;margin:0 auto;padding:32px 24px 0;background:var(--light)}',
+    '.krs-card{background:linear-gradient(135deg,#2C2C4A 0%,#1A1A2E 55%,#5A1A1A 100%);border-radius:14px;padding:30px 34px}',
+    '.krs-heading{font-size:15px;font-weight:900;color:#fff;margin-bottom:18px}',
+    '.krs-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:13px}',
+    '.krs-item{display:flex;align-items:flex-start;gap:10px}',
+    '.krs-check{flex-shrink:0;margin-top:1px}',
+    '.krs-item-text{font-size:14px;color:rgba(255,255,255,.88);line-height:1.55}',
+    '.krs-item-text strong{color:#fff}',
+    '.body-layout{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 290px;gap:24px;padding:28px 24px}',
+    '@media(max-width:820px){.body-layout{grid-template-columns:1fr;padding:18px 14px}}',
+    '.main-content{display:flex;flex-direction:column;gap:0}',
+    '.add-blocks-bar{display:none;gap:10px;margin-top:8px}',
+    '.edit-mode .add-blocks-bar{display:flex}',
+    '.add-sec-btn,.add-clip-btn{flex:1;background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:9px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}',
+    '.add-sec-btn:hover,.add-clip-btn:hover{border-color:var(--red);color:var(--red)}',
+    '.story-sec{background:#fff;border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden}',
+    '.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--red);margin-bottom:8px}',
+    '.story-sec h2{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:12px;line-height:1.25}',
+    '.story-sec p,.story-sec li{color:#444;line-height:1.75;font-size:15px;overflow-wrap:break-word;word-break:break-word}',
+    '.story-sec ul{list-style:none;padding-left:0;margin:10px 0}',
+    '.story-sec ul li{padding-left:18px;margin-bottom:8px;position:relative}',
+    '.story-sec ul li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--red)}',
+    '.story-sec ul li b,.story-sec ul li strong{color:var(--dark)}',
+    '.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin-bottom:14px;position:relative}',
+    '.clip-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:9px}',
+    '.clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;font-weight:500;margin-bottom:10px}',
+    '.clip-quote::before{content:"\u201C"}.clip-quote::after{content:"\u201D"}',
+    '.clip-player{display:flex;flex-direction:column;gap:5px}',
+    '.upload-audio-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:5px 11px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s;align-self:flex-start}',
+    '.upload-audio-btn:hover{border-color:var(--red);color:var(--red)}',
+    '.audio-del-x{display:none;margin-left:auto;background:transparent;border:none;cursor:pointer;color:#ccc;font-size:13px;padding:0 4px;line-height:1;flex-shrink:0}',
+    '.audio-del-x:hover{color:var(--red)}',
+    '.edit-mode .audio-del-x{display:inline!important}',
+    '.sidebar{display:flex;flex-direction:column;gap:16px}',
+    '.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px}',
+    '.sidebar-card h3{font-size:13px;font-weight:900;color:var(--dark);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--red);padding-bottom:8px;margin-bottom:12px}',
+    '.who-text{font-size:13px;color:#555;line-height:1.6;margin-bottom:10px}',
+    '.who-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}',
+    '.who-stat-tile{background:var(--light);border-radius:6px;padding:10px;text-align:center}',
+    '.who-stat-n{font-size:18px;font-weight:900;color:var(--red)}',
+    '.who-stat-l{font-size:11px;color:var(--muted);margin-top:3px}',
+    '.apps-display{display:flex;flex-wrap:wrap;gap:5px;min-height:24px;border-radius:5px;padding:3px;transition:all .15s}',
+    '.edit-mode .apps-display{border:2px dashed rgba(239,54,61,.35);cursor:pointer}',
+    '.app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 8px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px}',
+    '.app-icon{width:20px;height:20px;object-fit:contain;flex-shrink:0}',
+    '.results-ul{list-style:none;padding:0}',
+    '.result-item{font-size:13px;color:#555;padding:4px 0;border-bottom:1px solid var(--border);padding-left:12px;position:relative}',
+    '.result-item::before{content:"\u2192 ";color:var(--red);font-weight:700;position:absolute;left:0}',
+    '.page-footer{background:var(--dark);padding:24px 40px;text-align:center;margin-top:0}',
+    '.disclaimer-text{font-size:11px;color:rgba(255,255,255,.4);line-height:1.6}',
+    '.edit-fab{position:fixed;bottom:24px;right:24px;width:46px;height:46px;background:var(--dark);color:#fff;border:none;font-size:17px;border-radius:50%;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:500;transition:background .15s}',
+    '.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}',
+    '.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:rgba(26,26,46,.97);padding:9px 20px;align-items:center;gap:10px;backdrop-filter:blur(4px)}',
+    '.edit-toolbar.visible{display:flex}',
+    '.tb-save{background:var(--red);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}',
+    '.tb-save:hover{background:#c0272d}.tb-cancel{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:var(--font);cursor:pointer}',
+    '.save-status{font-size:12px;color:rgba(255,255,255,.6);margin-left:8px}',
+    '.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center}',
+    '.modal-ov.visible{display:flex}',
+    '.modal-box{background:#fff;border-radius:12px;padding:32px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.2)}',
+    '.modal-box h3{font-size:17px;font-weight:900;color:var(--dark);margin-bottom:6px}',
+    '.modal-box p{font-size:13px;color:var(--muted);margin-bottom:16px}',
+    '.mf{margin-bottom:13px}.mf label{display:block;font-size:11px;font-weight:700;color:var(--dark);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}',
+    '.mf input{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none}',
+    '.mf input:focus{border-color:var(--red)}.merr{font-size:12px;color:var(--red);min-height:16px;margin-bottom:8px}',
+    '.mbtn-p{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}',
+    '.mbtn-p:hover{background:#c0272d}',
+    '.mbtn-g{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:8px}',
+    '.edit-only{display:none!important}',
+    '.edit-mode .edit-only{display:block!important}',
+    '.edit-mode .clip-remove-btn,.edit-mode .sec-delete-btn{display:inline-block!important}',
+    '.edit-mode .lang-btn.remove-lang{display:inline-flex!important}',
+    '#lang-add-wrap{display:none}.edit-mode #lang-add-wrap{display:flex!important}',
+    '[contenteditable]{outline:2px dashed rgba(239,54,61,.35);border-radius:3px}',
+    '[contenteditable]:focus{outline:2px dashed rgba(239,54,61,.7)}',
+    '.edit-mode .sec-body-edit{outline:2px dashed rgba(239,54,61,.35)!important;border-radius:4px;padding:4px 6px!important;min-height:32px}',
+    '.edit-mode .sec-body-edit:focus{outline:2px dashed rgba(239,54,61,.7)!important}',
+    '.inline-products-panel{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:4px}',
+    '.prod-toggle{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;color:var(--dark);transition:all .15s;user-select:none}',
+    '.prod-toggle img{width:22px;height:22px;object-fit:contain;flex-shrink:0}',
+    '.prod-toggle.active{background:#fff5f5;border-color:var(--red);color:var(--red)}',
+    '.prod-toggle:hover{border-color:var(--red)}',
+    '.drag-handle{display:none;position:absolute;top:8px;right:36px;cursor:grab;color:#ccc;font-size:18px;line-height:1;user-select:none;padding:4px;border-radius:4px;z-index:10}',
+    '.drag-handle:hover{color:#888;background:rgba(0,0,0,.04)}.drag-handle:active{cursor:grabbing}',
+    '.edit-mode .drag-handle{display:block!important}',
+    '.story-sec,.clip-card{position:relative}',
+    '.drag-ghost{opacity:.4;background:#f0f0ff!important;border:2px dashed #aab!important}',
+    '.drag-chosen{box-shadow:0 4px 20px rgba(0,0,0,.15)!important}',
+    '.clips-section-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}',
+    '.stat-tile-del,.who-stat-del,.krs-item-del{position:absolute;top:4px;right:4px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;padding:2px 4px}',
+    '.stat-tile-del:hover,.who-stat-del:hover,.krs-item-del:hover{color:var(--red)}',
+    '.sec-delete-btn,.clip-remove-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 5px;display:none}',
+    '.sec-delete-btn:hover,.clip-remove-btn:hover{color:var(--red)}'
+  ].join('');
 }
 
-// ── Add / Remove language ─────────────────────────────────────────────────────
+// ── Render helpers ────────────────────────────────────────────────────────────
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderBody(text) {
+  if (!text) return '';
+  var lines = text.split('\n');
+  var html = ''; var inList = false;
+  lines.forEach(function(line) {
+    var t = line.trim();
+    if (/^[-\u2013]\s/.test(t)) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      var content = t.replace(/^[-\u2013]\s+/,'');
+      var ci = content.indexOf(':');
+      if (ci > 0 && ci < 60) {
+        html += '<li><strong>' + esc(content.substring(0,ci)) + ':</strong>' + esc(content.substring(ci+1)) + '</li>';
+      } else { html += '<li>' + esc(content) + '</li>'; }
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      if (t) html += '<p>' + esc(t) + '</p>';
+    }
+  });
+  if (inList) html += '</ul>';
+  return html || '<p>' + esc(text) + '</p>';
+}
+
+// ── Full page renderer ────────────────────────────────────────────────────────
+function renderPage(data) {
+  var meta = window.STORY_META;
+  var langs = data.langs || ['en'];
+  var addable = Object.keys(LANG_FULL_NAMES).filter(function(l){ return langs.indexOf(l) === -1; });
+
+  // Inject CSS
+  if (!document.getElementById('story-css')) {
+    var style = document.createElement('style');
+    style.id = 'story-css';
+    style.textContent = getCSS();
+    document.head.appendChild(style);
+  }
+
+  // Set page title
+  document.title = esc(data.name) + ' — Prophix Customer Story';
+
+  var body = document.body;
+  body.innerHTML = '';
+
+  // Edit FAB
+  var fab = document.createElement('button');
+  fab.id = 'edit-fab'; fab.className = 'edit-fab'; fab.title = 'Edit this page'; fab.textContent = '✏';
+  body.appendChild(fab);
+
+  // Edit toolbar
+  var toolbar = document.createElement('div');
+  toolbar.id = 'edit-toolbar'; toolbar.className = 'edit-toolbar';
+  toolbar.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><button id="save-btn" class="tb-save">Save</button><button id="cancel-btn" class="tb-cancel">Cancel</button><span id="save-status" class="save-status"></span></div>';
+  body.appendChild(toolbar);
+
+  // Page nav
+  var nav = document.createElement('div');
+  nav.className = 'page-nav';
+  nav.innerHTML = '<a href="/clients/" class="portal-link">← All stories</a>' +
+    '<div style="display:flex;align-items:center;gap:8px">' +
+    '<span class="last-edited" style="font-size:11px;color:rgba(255,255,255,.45)"></span>' +
+    '<button id="story-share-btn" class="share-page-btn">⧉ Share</button></div>' +
+    '<div id="lang-toggle" class="lang-toggle">' +
+    langs.map(function(l) {
+      return '<button class="lang-btn' + (l==='en'?' active':'') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>' +
+        (l !== 'en' ? '<button class="lang-btn remove-lang" data-remove-lang="' + l + '" style="display:none">&times;</button>' : '');
+    }).join('') +
+    '<span id="lang-add-wrap" class="edit-only" style="display:none"><select id="lang-add-select"><option value="">+ Add language</option></select></span>' +
+    '</div>';
+  body.appendChild(nav);
+
+  // Lang blocks
+  var langBlocks = document.createElement('div');
+  langBlocks.id = 'lang-blocks';
+  langs.forEach(function(lc) {
+    langBlocks.appendChild(renderLangBlock(data, lc, lc === 'en', meta));
+  });
+  body.appendChild(langBlocks);
+
+  // Token modal
+  var modal = document.createElement('div');
+  modal.id = 'token-modal'; modal.className = 'modal-ov';
+  modal.innerHTML = '<div class="modal-box"><h3>Edit story</h3><p>Paste your access token to enable edit mode.</p>' +
+    '<div class="mf"><label>Access Token</label><input type="password" id="token-input" placeholder="Paste your token"/></div>' +
+    '<div id="token-error" class="merr"></div>' +
+    '<button id="token-submit" class="mbtn-p">Unlock edit mode</button>' +
+    '<button id="token-cancel" class="mbtn-g">Cancel</button></div>';
+  body.appendChild(modal);
+}
+
+function renderLangBlock(data, lc, isActive, meta) {
+  var pfx = lc === 'en' ? '' : ('[' + (LANG_NAMES[lc]||lc) + '] ');
+  var block = document.createElement('div');
+  block.className = 'lang-block' + (isActive ? ' active' : '');
+  block.id = 'block-' + lc;
+
+  // Hero
+  var hero = document.createElement('div');
+  hero.className = 'hero';
+  var logoHtml = '<div class="logo-row">' +
+    '<div class="logo-pill-hero"><img src="/prophix-logo-1000px.png" alt="Prophix"></div>';
+  if (meta.hasLogo) {
+    logoHtml += '<div class="logo-pill-client" onclick="triggerLogoUpload()" title="Click in edit mode to replace logo">' +
+      '<img class="hero-client-logo" src="logo.png" alt="' + esc(data.name) + ' logo"></div>';
+  } else {
+    logoHtml += '<div class="logo-pill-client edit-only" style="display:none" onclick="triggerLogoUpload()" title="Upload client logo">' +
+      '<div class="hero-logo-ph">+ Upload logo</div></div>';
+  }
+  logoHtml += '</div>';
+
+  var langLabel = data.langLabels && data.langLabels[lc] ? data.langLabels[lc] : (LANG_LABELS[lc] || 'Customer Story');
+  hero.innerHTML = logoHtml +
+    '<div class="hero-body">' +
+    '<div class="hero-tag" data-field="heroTag-' + lc + '">' + esc(pfx + langLabel) + '</div>' +
+    '<h1 data-field="name-' + lc + '">' + esc(pfx + data.name) + '</h1>' +
+    '<div class="hero-desc" data-field="desc-' + lc + '">' + esc(pfx + (data.desc || '')) + '</div>' +
+    (data.ind ? '<div class="hero-ind" data-field="ind-' + lc + '">' + esc(pfx + data.ind) + '</div>' : '') +
+    '</div>';
+  block.appendChild(hero);
+
+  // Content area
+  var contentArea = document.createElement('div');
+  contentArea.className = 'content-area';
+
+  // Stats
+  if (data.stats && data.stats.length > 0) {
+    var statsRow = document.createElement('div');
+    statsRow.className = 'stats-row';
+    data.stats.forEach(function(s) {
+      var tile = document.createElement('div');
+      tile.className = 'stat-tile';
+      tile.innerHTML = '<div class="stat-n">' + esc(pfx + s.v) + '</div><div class="stat-l">' + esc(pfx + s.l) + '</div>';
+      statsRow.appendChild(tile);
+    });
+    contentArea.appendChild(statsRow);
+  }
+
+  // KRS
+  if (data.krs && data.krs.length > 0) {
+    var krsOuter = document.createElement('div'); krsOuter.className = 'krs-outer';
+    var krsCard = document.createElement('div'); krsCard.className = 'krs-card';
+    krsCard.innerHTML = '<div class="krs-heading">Key Results Snapshot</div>';
+    var krsList = document.createElement('ul'); krsList.className = 'krs-list';
+    data.krs.forEach(function(k) {
+      var li = document.createElement('li'); li.className = 'krs-item';
+      var txt = k.bold ? '<strong>' + esc(pfx+k.bold) + ':</strong> ' + esc(pfx+(k.text||'').replace(k.bold+':','').trim()) : esc(pfx+(k.text||''));
+      li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + txt + '</span>';
+      krsList.appendChild(li);
+    });
+    krsCard.appendChild(krsList);
+    krsOuter.appendChild(krsCard);
+    contentArea.appendChild(krsOuter);
+  }
+
+  // Body layout
+  var bodyLayout = document.createElement('div'); bodyLayout.className = 'body-layout';
+  var mainCol = document.createElement('div'); mainCol.className = 'main-col';
+  var mainContent = document.createElement('div'); mainContent.className = 'main-content';
+
+  // Sections + clips interleaved (order preserved from data.content)
+  var content = data.content || [];
+  // If no content array, fall back to sections then clips
+  if (content.length === 0) {
+    (data.sections||[]).forEach(function(s){ content.push({type:'section', data:s}); });
+    (data.clips||[]).forEach(function(c){ content.push({type:'clip', data:c}); });
+  }
+  content.forEach(function(item) {
+    if (item.type === 'section') {
+      var s = item.data;
+      var sec = document.createElement('div'); sec.className = 'story-sec';
+      sec.innerHTML = '<div class="sec-label">' + esc(pfx+(s.label||'')) + '</div>' +
+        '<h2>' + esc(pfx+(s.heading||'')) + '</h2>' +
+        renderBody(pfx ? pfx + (s.body||'') : (s.body||''));
+      mainContent.appendChild(sec);
+    } else if (item.type === 'clip') {
+      var c = item.data;
+      var card = document.createElement('div'); card.className = 'clip-card';
+      card.innerHTML = '<div class="clip-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>' +
+        esc(c.title||'') + (c.ts ? ' · ' + esc(c.ts) : '') + '</div>' +
+        '<div class="clip-quote">' + esc(c.quote||'') + '</div>' +
+        '<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:38px;border-radius:6px;accent-color:#EF363D">' +
+        (c.audio ? '<source src="' + esc(c.audio) + '" type="audio/mpeg">' : '<source type="audio/mpeg">') +
+        '</audio></div>';
+      mainContent.appendChild(card);
+    }
+  });
+
+  var addBar = document.createElement('div'); addBar.className = 'add-blocks-bar edit-only';
+  addBar.innerHTML = '<button class="add-sec-btn" onclick="addSection(this)">+ Add section</button>' +
+    '<button class="add-clip-btn" onclick="addClipInline(this)">+ Add clip</button>';
+  mainCol.appendChild(mainContent);
+  mainCol.appendChild(addBar);
+
+  // Sidebar
+  var sidebar = document.createElement('div'); sidebar.className = 'sidebar';
+
+  // Who card
+  var whoCard = document.createElement('div'); whoCard.className = 'sidebar-card';
+  whoCard.innerHTML = '<h3>Who is ' + esc(data.name) + '?</h3><p class="who-text">' + esc(pfx+(data.whoText||'')) + '</p>';
+  if (data.whoStats && data.whoStats.length > 0) {
+    var wsg = document.createElement('div'); wsg.className = 'who-stats-grid';
+    data.whoStats.forEach(function(ws) {
+      wsg.innerHTML += '<div class="who-stat-tile"><div class="who-stat-n">' + esc(pfx+ws.v) + '</div><div class="who-stat-l">' + esc(pfx+ws.l) + '</div></div>';
+    });
+    whoCard.appendChild(wsg);
+  }
+  sidebar.appendChild(whoCard);
+
+  // Products
+  if (data.products && data.products.length > 0) {
+    var prodCard = document.createElement('div'); prodCard.className = 'sidebar-card';
+    prodCard.innerHTML = '<h3>Applications deployed</h3>';
+    var appsDisplay = document.createElement('div'); appsDisplay.className = 'apps-display';
+    appsDisplay.title = 'Click in edit mode to change';
+    appsDisplay.setAttribute('onclick', "if(document.body.classList.contains('edit-mode'))toggleProductsPanel(this)");
+    data.products.forEach(function(pr) {
+      var prod = PROPHIX_PRODUCTS.find(function(p){ return p.name === pr; });
+      var iconHtml = prod ? '<img class="app-icon" src="' + prod.icon + '" alt="' + esc(pr) + '">' : '<span class="app-dot"></span>';
+      appsDisplay.innerHTML += '<div class="app-tag">' + iconHtml + '<span class="app-name">' + esc(pr) + '</span></div>';
+    });
+    prodCard.appendChild(appsDisplay);
+    sidebar.appendChild(prodCard);
+  }
+
+  // Results
+  if (data.results && data.results.length > 0) {
+    var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
+    resCard.innerHTML = '<h3>Results</h3>';
+    var ul = document.createElement('ul'); ul.className = 'results-ul';
+    data.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc(pfx+r) + '</li>'; });
+    resCard.appendChild(ul);
+    sidebar.appendChild(resCard);
+  }
+
+  // Participants
+  if (data.participants && data.participants.length > 0) {
+    var partCard = document.createElement('div'); partCard.className = 'sidebar-card'; partCard.setAttribute('data-section','participants');
+    partCard.innerHTML = '<h3>Participants</h3>';
+    data.participants.forEach(function(pt) {
+      partCard.innerHTML += '<p style="margin-top:10px"><strong class="participant-name">' + esc(pt.name) + '</strong><br>' +
+        '<span class="participant-title" style="font-size:12px;color:#888">' + esc(pt.title||'') + '</span></p>';
+    });
+    sidebar.appendChild(partCard);
+  }
+
+  bodyLayout.appendChild(mainCol);
+  bodyLayout.appendChild(sidebar);
+  contentArea.appendChild(bodyLayout);
+
+  // Footer
+  var footer = document.createElement('div'); footer.className = 'page-footer';
+  footer.innerHTML = '<p class="disclaimer-text"><strong>Prophix Software Inc.</strong> Copyright &copy; ' + new Date().getFullYear() + '. May only be reproduced with Prophix\'s prior consent.</p>' +
+    '<p class="disclaimer-text">Audio extracts from the original customer interview. Used with permission.</p>';
+  contentArea.appendChild(footer);
+
+  block.appendChild(contentArea);
+  return block;
+}
+
+// ── Read DOM state back to data object (for saving) ───────────────────────────
+function domToData() {
+  var data = JSON.parse(JSON.stringify(storyData)); // start from current data
+  var langs = data.langs || ['en'];
+
+  langs.forEach(function(lc) {
+    var block = document.getElementById('block-' + lc);
+    if (!block) return;
+    var isEN = lc === 'en';
+
+    if (isEN) {
+      // Core fields - only read from EN block
+      var h1 = block.querySelector('h1'); if (h1) data.name = h1.textContent.trim();
+      var desc = block.querySelector('.hero-desc'); if (desc) data.desc = desc.textContent.trim();
+      var ind = block.querySelector('.hero-ind'); if (ind) data.ind = ind.textContent.trim();
+      var whoText = block.querySelector('.who-text'); if (whoText) data.whoText = whoText.textContent.trim();
+
+      // Stats
+      data.stats = Array.from(block.querySelectorAll('.stat-tile')).map(function(t) {
+        return { v: (t.querySelector('.stat-n')||{}).textContent||'', l: (t.querySelector('.stat-l')||{}).textContent||'' };
+      });
+
+      // KRS
+      data.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
+        var text = (item.querySelector('.krs-item-text')||{}).textContent||'';
+        var strong = item.querySelector('.krs-item-text strong');
+        var bold = strong ? strong.textContent.replace(/:$/, '') : '';
+        var body = bold ? text.replace(bold + ':', '').trim() : text;
+        return { bold: bold, text: bold ? bold + ': ' + body : body };
+      });
+
+      // Content (sections + clips in order)
+      data.content = [];
+      block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
+        if (el.classList.contains('story-sec')) {
+          var bodyEdit = el.querySelector('.sec-body-edit');
+          var bodyText = bodyEdit ? bodyEdit.textContent : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent; }).join('\n');
+          data.content.push({ type: 'section', data: {
+            label: (el.querySelector('.sec-label')||{}).textContent||'',
+            heading: (el.querySelector('h2')||{}).textContent||'',
+            body: bodyText.trim()
+          }});
+        } else if (el.classList.contains('clip-card')) {
+          var src = el.querySelector('audio source');
+          var rawSrc = src ? (src.getAttribute('src') || src.src || '') : '';
+          var audioFile = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
+          if (audioFile && audioFile.indexOf('://') > -1) audioFile = '';
+          data.content.push({ type: 'clip', data: {
+            title: (el.querySelector('.clip-label')||{}).textContent||'',
+            ts: '',
+            quote: (el.querySelector('.clip-quote')||{}).textContent||'',
+            audio: audioFile || ''
+          }});
+        }
+      });
+
+      // Sidebar: products
+      data.products = Array.from(block.querySelectorAll('.app-name')).map(function(s){ return s.textContent.trim(); });
+
+      // Results
+      data.results = Array.from(block.querySelectorAll('.result-item')).map(function(r){ return r.textContent.trim(); });
+
+      // Participants
+      data.participants = Array.from(block.querySelectorAll('[data-section="participants"] p')).map(function(p) {
+        return { name: (p.querySelector('.participant-name')||{}).textContent||'', title: (p.querySelector('.participant-title')||{}).textContent||'' };
+      });
+
+      // Who stats
+      data.whoStats = Array.from(block.querySelectorAll('.who-stat-tile')).map(function(t) {
+        return { v: (t.querySelector('.who-stat-n')||{}).textContent||'', l: (t.querySelector('.who-stat-l')||{}).textContent||'' };
+      });
+    }
+
+    // Per-language overrides (translations) - store non-EN text
+    if (!isEN) {
+      if (!data.translations) data.translations = {};
+      if (!data.translations[lc]) data.translations[lc] = {};
+      var t = data.translations[lc];
+      var h1l = block.querySelector('h1'); if (h1l) t.name = h1l.textContent.trim();
+      var descl = block.querySelector('.hero-desc'); if (descl) t.desc = descl.textContent.trim();
+      // Content translations
+      t.content = [];
+      block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
+        if (el.classList.contains('story-sec')) {
+          var bodyEdit = el.querySelector('.sec-body-edit');
+          var bodyText = bodyEdit ? bodyEdit.textContent : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent; }).join('\n');
+          t.content.push({ type:'section', data:{ label:(el.querySelector('.sec-label')||{}).textContent||'', heading:(el.querySelector('h2')||{}).textContent||'', body:bodyText.trim() }});
+        } else if (el.classList.contains('clip-card')) {
+          t.content.push({ type:'clip', data:{ title:(el.querySelector('.clip-label')||{}).textContent||'', quote:(el.querySelector('.clip-quote')||{}).textContent||'' }});
+        }
+      });
+    }
+  });
+
+  // Update langs list (may have changed if languages added/removed)
+  data.langs = Array.from(document.querySelectorAll('.lang-block')).map(function(b){ return b.id.replace('block-',''); });
+
+  return data;
+}
+
+// ── Language functions ────────────────────────────────────────────────────────
+function setLang(code) {
+  currentLang = code;
+  document.querySelectorAll('.lang-block').forEach(function(b){ b.classList.remove('active'); });
+  var block = document.getElementById('block-' + code);
+  if (block) block.classList.add('active');
+  document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-lang') === code);
+  });
+}
+
 function addLanguage(code) {
-  if (!code || activeLangs.indexOf(code) > -1) return;
-  activeLangs.push(code);
+  if (!code || storyData.langs.indexOf(code) > -1) return;
+  // Clone EN block, prefix content
   var enBlock = document.getElementById('block-en');
-  // Strip injected controls from EN before cloning — they carry no listeners in the clone
   stripEditControls();
   var newBlock = enBlock.cloneNode(true);
-  // Re-inject controls back into EN block since we stripped them
   addEditControlsToExisting();
   newBlock.id = 'block-' + code;
   newBlock.classList.remove('active');
-  newBlock.querySelectorAll(EDITABLE_SELECTORS.join(',')).forEach(function(el) {
-    el.removeAttribute('contenteditable');
-    if (el.textContent.indexOf('[' + LANG_NAMES[code] + ']') === -1)
-      el.textContent = '[' + LANG_NAMES[code] + '] ' + el.textContent;
+  // Prefix editable text
+  var pfx = '[' + (LANG_NAMES[code]||code) + '] ';
+  EDITABLE_SELECTORS.forEach(function(sel) {
+    newBlock.querySelectorAll(sel).forEach(function(el) {
+      if (el.textContent.indexOf('[') === -1) el.textContent = pfx + el.textContent;
+    });
   });
   var heroTag = newBlock.querySelector('.hero-tag');
   if (heroTag && LANG_LABELS[code]) heroTag.textContent = LANG_LABELS[code];
   document.getElementById('lang-blocks').appendChild(newBlock);
 
+  // Add toggle button
   var toggle = document.getElementById('lang-toggle');
   var addWrap = document.getElementById('lang-add-wrap');
-
   var btn = document.createElement('button');
-  btn.className = 'lang-btn'; btn.setAttribute('data-lang', code); btn.textContent = LANG_NAMES[code];
-  btn.addEventListener('click', function() { setLang(code); });
+  btn.className = 'lang-btn'; btn.setAttribute('data-lang', code); btn.textContent = LANG_NAMES[code]||code;
+  btn.addEventListener('click', function(){ setLang(code); });
   toggle.insertBefore(btn, addWrap);
-
   var rb = document.createElement('button');
   rb.className = 'lang-btn remove-lang'; rb.setAttribute('data-remove-lang', code); rb.innerHTML = '&times;';
   rb.style.display = document.body.classList.contains('edit-mode') ? 'inline-flex' : 'none';
-  rb.addEventListener('click', function() { removeLanguage(code); });
+  rb.addEventListener('click', function(){ removeLanguage(code); });
   toggle.insertBefore(rb, addWrap);
 
+  // Remove from dropdown
   var opt = document.querySelector('#lang-add-select option[value="' + code + '"]');
   if (opt) opt.remove();
+
+  storyData.langs.push(code);
   setLang(code);
   if (document.body.classList.contains('edit-mode')) makeBlockEditable(newBlock);
 }
 
 function removeLanguage(code) {
   if (code === 'en') return;
-  if (!confirm('Remove ' + LANG_NAMES[code] + '? All content for this language will be lost.')) return;
-  activeLangs = activeLangs.filter(function(l) { return l !== code; });
+  if (!confirm('Remove ' + (LANG_NAMES[code]||code) + '? All content for this language will be lost.')) return;
+  storyData.langs = storyData.langs.filter(function(l){ return l !== code; });
   var block = document.getElementById('block-' + code); if (block) block.remove();
   var btn = document.querySelector('.lang-btn[data-lang="' + code + '"]'); if (btn) btn.remove();
   var rb = document.querySelector('.remove-lang[data-remove-lang="' + code + '"]'); if (rb) rb.remove();
-  if (LANG_FULL_NAMES[code]) {
-    var sel = document.getElementById('lang-add-select');
-    if (sel) { var opt = document.createElement('option'); opt.value = code; opt.textContent = LANG_FULL_NAMES[code]; sel.appendChild(opt); }
+  var sel = document.getElementById('lang-add-select');
+  if (sel && LANG_FULL_NAMES[code]) {
+    var opt = document.createElement('option'); opt.value = code; opt.textContent = LANG_FULL_NAMES[code]; sel.appendChild(opt);
   }
   if (currentLang === code) setLang('en');
 }
 
-var _sortableInstances = [];
-
-// ── Load Sortable.js from CDN (once) ──────────────────────────────────────────
-function loadSortable(cb) {
-  if (window.Sortable) { cb(); return; }
-  var s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js';
-  s.onload = cb;
-  document.head.appendChild(s);
-}
-
-// ── Enable drag-drop on all main-content containers ───────────────────────────
-function enableDragDrop() {
-  loadSortable(function() {
-    document.querySelectorAll('.main-content').forEach(function(container) {
-      var inst = Sortable.create(container, {
-        animation: 150,
-        handle: '.drag-handle',
-        ghostClass: 'drag-ghost',
-        chosenClass: 'drag-chosen',
-        filter: '[contenteditable]', // don't start drag when clicking editable text
-        preventOnFilter: false
-      });
-      _sortableInstances.push(inst);
-    });
-  });
-}
-
-// ── Destroy all drag-drop instances ──────────────────────────────────────────
-function disableDragDrop() {
-  _sortableInstances.forEach(function(inst) { try { inst.destroy(); } catch(e) {} });
-  _sortableInstances = [];
-}
-
 // ── Edit mode ─────────────────────────────────────────────────────────────────
+var EDITABLE_SELECTORS = [
+  '.hero-tag', 'h1', '.hero-desc', '.hero-industry', '.hero-ind',
+  '.sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
+  '.clip-label', '.clip-quote', '.clips-section-title',
+  '.sidebar-card h3', '.result-item',
+  '.stat-n', '.stat-l', '.krs-item-text',
+  '.who-text', '.who-stat-n', '.who-stat-l',
+  '.participant-name', '.participant-title',
+  '.disclaimer-text'
+];
+
 function makeBlockEditable(block) {
-  // Make all standard editable fields contenteditable
-  // except story-sec p/li — those are handled by wrapSectionBody
   EDITABLE_SELECTORS.forEach(function(sel) {
     block.querySelectorAll(sel).forEach(function(el) {
       if ((el.tagName === 'P' || el.tagName === 'LI') && el.closest('.story-sec')) return;
       el.contentEditable = 'true';
     });
   });
-  // Wrap each section's body into a single editable unit
   block.querySelectorAll('.story-sec').forEach(function(sec) { wrapSectionBody(sec); });
 }
 
-// Convert a section's p/ul/li content into one contenteditable div with plain text + "- " syntax
 function wrapSectionBody(sec) {
   if (sec.querySelector('.sec-body-edit')) return;
   var bodyNodes = Array.from(sec.childNodes).filter(function(n) {
@@ -229,33 +629,20 @@ function wrapSectionBody(sec) {
   var lines = [];
   bodyNodes.forEach(function(node) {
     if (node.tagName === 'UL') {
-      node.querySelectorAll('li').forEach(function(li) {
-        var strong = li.querySelector('strong');
-        if (strong) {
-          lines.push('- ' + li.textContent);
-        } else {
-          lines.push('- ' + li.textContent);
-        }
-      });
-    } else if (node.tagName === 'P') {
-      lines.push(node.textContent);
-    }
+      node.querySelectorAll('li').forEach(function(li) { lines.push('- ' + li.textContent); });
+    } else if (node.tagName === 'P') { lines.push(node.textContent); }
   });
   var wrap = document.createElement('div');
   wrap.className = 'sec-body-edit';
   wrap.contentEditable = 'true';
   wrap.style.cssText = 'white-space:pre-wrap;word-break:break-word;outline:none;min-height:24px;font-size:15px;color:#444;line-height:1.75;font-family:Arial,sans-serif;padding:2px 0';
   wrap.textContent = lines.join('\n');
-  // Enter = newline (not new element)
   wrap.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
-      var sel = window.getSelection();
-      var range = sel.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(document.createTextNode('\n'));
-      range.collapse(false);
-      sel.removeAllRanges(); sel.addRange(range);
+      var sel = window.getSelection(); var range = sel.getRangeAt(0);
+      range.deleteContents(); range.insertNode(document.createTextNode('\n'));
+      range.collapse(false); sel.removeAllRanges(); sel.addRange(range);
     }
   });
   bodyNodes.forEach(function(n) { n.remove(); });
@@ -264,36 +651,57 @@ function wrapSectionBody(sec) {
   else { sec.appendChild(wrap); }
 }
 
-// Before save: convert .sec-body-edit divs back to proper p/ul/li HTML
 function unwrapSectionBodies() {
   document.querySelectorAll('.sec-body-edit').forEach(function(wrap) {
     var sec = wrap.closest('.story-sec'); if (!sec) return;
     var text = wrap.textContent || '';
     var lines = text.split('\n');
-    var fragment = document.createDocumentFragment();
-    var currentUl = null;
+    var fragment = document.createDocumentFragment(); var currentUl = null;
     lines.forEach(function(line) {
-      var trimmed = line.trim();
-      if (/^[-\u2013]\s/.test(trimmed)) {
+      var t = line.trim();
+      if (/^[-\u2013]\s/.test(t)) {
         if (!currentUl) { currentUl = document.createElement('ul'); fragment.appendChild(currentUl); }
         var li = document.createElement('li');
-        var content = trimmed.replace(/^[-\u2013]\s+/, '');
-        var colonIdx = content.indexOf(':');
-        if (colonIdx > 0 && colonIdx < 60) {
-          var strong = document.createElement('strong');
-          strong.textContent = content.substring(0, colonIdx) + ':';
-          li.appendChild(strong);
-          li.appendChild(document.createTextNode(content.substring(colonIdx + 1)));
+        var content = t.replace(/^[-\u2013]\s+/,'');
+        var ci = content.indexOf(':');
+        if (ci > 0 && ci < 60) {
+          var strong = document.createElement('strong'); strong.textContent = content.substring(0,ci) + ':';
+          li.appendChild(strong); li.appendChild(document.createTextNode(content.substring(ci+1)));
         } else { li.textContent = content; }
         currentUl.appendChild(li);
       } else {
         currentUl = null;
-        if (trimmed) { var p = document.createElement('p'); p.textContent = trimmed; fragment.appendChild(p); }
+        if (t) { var p = document.createElement('p'); p.textContent = t; fragment.appendChild(p); }
       }
     });
-    wrap.parentNode.insertBefore(fragment, wrap);
-    wrap.remove();
+    wrap.parentNode.insertBefore(fragment, wrap); wrap.remove();
   });
+}
+
+var _sortableInstances = [];
+
+function loadSortable(cb) {
+  if (window.Sortable) { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js';
+  s.onload = cb; document.head.appendChild(s);
+}
+
+function enableDragDrop() {
+  loadSortable(function() {
+    document.querySelectorAll('.main-content').forEach(function(container) {
+      _sortableInstances.push(Sortable.create(container, {
+        animation: 150, handle: '.drag-handle',
+        ghostClass: 'drag-ghost', chosenClass: 'drag-chosen',
+        filter: '[contenteditable]', preventOnFilter: false
+      }));
+    });
+  });
+}
+
+function disableDragDrop() {
+  _sortableInstances.forEach(function(inst) { try { inst.destroy(); } catch(e) {} });
+  _sortableInstances = [];
 }
 
 function enableEditMode() {
@@ -308,9 +716,9 @@ function enableEditMode() {
 }
 
 function disableEditMode() {
-  unwrapSectionBodies(); // convert back to HTML before removing edit mode
+  unwrapSectionBodies();
   document.body.classList.remove('edit-mode');
-  document.querySelectorAll('[contenteditable]').forEach(function(el) { el.removeAttribute('contenteditable'); });
+  document.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
   document.getElementById('edit-fab').classList.remove('hidden');
   document.getElementById('edit-toolbar').classList.remove('visible');
   document.getElementById('save-status').textContent = '';
@@ -320,359 +728,234 @@ function disableEditMode() {
   stripEditControls();
 }
 
-function closeModal() {
-  document.getElementById('token-modal').classList.remove('visible');
-  document.getElementById('token-input').value = '';
-  document.getElementById('token-error').textContent = '';
+// ── Edit controls injection ───────────────────────────────────────────────────
+function stripEditControls() {
+  ['.sec-delete-btn','.drag-handle','.clip-remove-btn','.upload-audio-btn','.audio-del-x',
+   '.delete-audio-btn','.stat-add-btn','.stat-tile-del','.krs-add-btn','.krs-item-del',
+   '.who-stat-add-btn','.who-stat-del','.part-add-btn','.part-del-btn',
+   '.result-add-btn','.result-del-btn','#inline-products-panel']
+  .forEach(function(sel){ document.querySelectorAll(sel).forEach(function(el){ el.remove(); }); });
 }
 
-// ── Add edit controls to existing elements ────────────────────────────────────
-// Called every time edit mode opens. stripEditControls() runs before every save
-// so the page is always clean on load — no guards needed, just inject directly.
 function addEditControlsToExisting() {
-
-  // ── Clips + drag handle ────────────────────────────────────────────────────
+  // Clips
   document.querySelectorAll('.clip-card').forEach(function(card) {
-    // 🗑 delete entire clip — top right
     var rb = document.createElement('button');
-    rb.className = 'clip-remove-btn edit-only';
-    rb.innerHTML = '🗑'; rb.title = 'Delete this clip';
-    rb.addEventListener('click', function() { if (confirm('Delete this clip?')) card.remove(); });
+    rb.className = 'clip-remove-btn edit-only'; rb.innerHTML = '🗑'; rb.title = 'Delete clip';
+    rb.addEventListener('click', function(){ if(confirm('Delete this clip?')) card.remove(); });
     card.insertBefore(rb, card.firstChild);
-    // Drag handle — to the left of delete button
     var handle = document.createElement('div');
-    handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
-    handle.style.right = '36px';
-    card.insertBefore(handle, rb);
-
+    handle.className = 'drag-handle edit-only'; handle.textContent = '⠿'; handle.title = 'Drag';
+    handle.style.right = '36px'; card.insertBefore(handle, rb);
     var player = card.querySelector('.clip-player');
-
-    // Upload MP3 button
     if (player) {
       var upBtn = document.createElement('button');
-      upBtn.className = 'upload-audio-btn edit-only';
-      upBtn.textContent = 'Upload MP3';
-      upBtn.addEventListener('click', function() { uploadAudio(upBtn); });
-      player.appendChild(upBtn);
+      upBtn.className = 'upload-audio-btn edit-only'; upBtn.textContent = 'Upload MP3';
+      upBtn.addEventListener('click', function(){ uploadAudio(upBtn); }); player.appendChild(upBtn);
     }
-
-    // ✕ on clip label — deletes uploaded audio file from GitHub
     var clipLabel = card.querySelector('.clip-label');
     if (clipLabel) {
       var xBtn = document.createElement('button');
-      xBtn.className = 'audio-del-x edit-only';
-      xBtn.title = 'Delete uploaded audio'; xBtn.textContent = '✕';
-      xBtn.addEventListener('click', async function(e) {
-        e.stopPropagation();
-        await deleteAudioFile(player, xBtn);
-      });
+      xBtn.className = 'audio-del-x edit-only'; xBtn.title = 'Delete audio'; xBtn.textContent = '✕';
+      xBtn.addEventListener('click', async function(e){ e.stopPropagation(); await deleteAudioFile(player, xBtn); });
       clipLabel.appendChild(xBtn);
     }
   });
 
-  // ── Sections + drag handle ─────────────────────────────────────────────────
+  // Sections
   document.querySelectorAll('.story-sec').forEach(function(sec) {
     var handle = document.createElement('div');
-    handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
-    handle.style.right = '36px'; // leave room for delete button
-    sec.insertBefore(handle, sec.firstChild);
+    handle.className = 'drag-handle edit-only'; handle.textContent = '⠿'; handle.title = 'Drag';
+    handle.style.right = '36px'; sec.insertBefore(handle, sec.firstChild);
     var btn = document.createElement('button');
-    btn.className = 'sec-delete-btn edit-only';
-    btn.innerHTML = '🗑'; btn.title = 'Delete section';
-    btn.addEventListener('click', function() { if (confirm('Delete this section?')) sec.remove(); });
+    btn.className = 'sec-delete-btn edit-only'; btn.innerHTML = '🗑'; btn.title = 'Delete section';
+    btn.addEventListener('click', function(){ if(confirm('Delete this section?')) sec.remove(); });
     sec.insertBefore(btn, handle);
   });
 
-  // ── Stats row ──────────────────────────────────────────────────────────────
+  // Stats
   document.querySelectorAll('.stats-row').forEach(function(row) {
     row.querySelectorAll('.stat-tile').forEach(addStatDeleteBtn);
     var addBtn = document.createElement('button');
-    addBtn.className = 'stat-add-btn edit-only';
-    addBtn.textContent = '+'; addBtn.title = 'Add stat';
-    addBtn.addEventListener('click', function() { addStatTile(row, addBtn); });
-    row.appendChild(addBtn);
+    addBtn.className = 'stat-add-btn edit-only'; addBtn.textContent = '+'; addBtn.title = 'Add stat';
+    addBtn.addEventListener('click', function(){ addStatTile(row, addBtn); }); row.appendChild(addBtn);
   });
 
-  // ── Who stats ──────────────────────────────────────────────────────────────
+  // Who stats
   document.querySelectorAll('.who-stats-grid').forEach(function(grid) {
     grid.querySelectorAll('.who-stat-tile').forEach(addWhoStatDeleteBtn);
     var addBtn = document.createElement('button');
-    addBtn.className = 'who-stat-add-btn edit-only';
-    addBtn.textContent = '+ Add stat';
-    addBtn.addEventListener('click', function() { addWhoStat(grid, addBtn); });
-    grid.appendChild(addBtn);
+    addBtn.className = 'who-stat-add-btn edit-only'; addBtn.textContent = '+ Add stat';
+    addBtn.addEventListener('click', function(){ addWhoStat(grid, addBtn); }); grid.appendChild(addBtn);
   });
 
-  // ── KRS items ──────────────────────────────────────────────────────────────
+  // KRS
   document.querySelectorAll('.krs-item').forEach(function(item) {
     var btn = document.createElement('button');
-    btn.className = 'krs-item-del edit-only';
-    btn.innerHTML = '✕'; btn.title = 'Delete result';
-    btn.addEventListener('click', function() { item.remove(); });
-    item.appendChild(btn);
+    btn.className = 'krs-item-del edit-only'; btn.innerHTML = '✕'; btn.title = 'Delete';
+    btn.addEventListener('click', function(){ item.remove(); }); item.appendChild(btn);
   });
   var krsList = document.querySelector('.krs-list');
   if (krsList) {
     var krsAdd = document.createElement('button');
-    krsAdd.className = 'krs-add-btn edit-only';
-    krsAdd.textContent = '+ Add result';
-    krsAdd.addEventListener('click', function() { addKrsItem(krsList, krsAdd); });
-    krsList.appendChild(krsAdd);
+    krsAdd.className = 'krs-add-btn edit-only'; krsAdd.textContent = '+ Add result';
+    krsAdd.addEventListener('click', function(){ addKrsItem(krsList, krsAdd); }); krsList.appendChild(krsAdd);
   }
 
-  // ── Participants ───────────────────────────────────────────────────────────
-  document.querySelectorAll('.sidebar-card[data-section="participants"], .sidebar-card:has(.participant-name)').forEach(function(card) {
+  // Participants
+  document.querySelectorAll('.sidebar-card[data-section="participants"],.sidebar-card:has(.participant-name)').forEach(function(card) {
     card.querySelectorAll('p').forEach(function(p) {
       var del = document.createElement('button');
-      del.className = 'part-del-btn edit-only';
-      del.innerHTML = '✕'; del.title = 'Remove participant';
-      del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px;line-height:1';
-      del.addEventListener('click', function() { p.remove(); });
-      p.insertBefore(del, p.firstChild);
+      del.className = 'part-del-btn edit-only'; del.innerHTML = '✕';
+      del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px';
+      del.addEventListener('click', function(){ p.remove(); }); p.insertBefore(del, p.firstChild);
     });
     var addBtn = document.createElement('button');
-    addBtn.className = 'part-add-btn edit-only';
-    addBtn.textContent = '+ Add participant';
-    addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
-    addBtn.addEventListener('click', function() { addParticipantInline(card, addBtn); });
-    card.appendChild(addBtn);
+    addBtn.className = 'part-add-btn edit-only'; addBtn.textContent = '+ Add participant';
+    addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px';
+    addBtn.addEventListener('click', function(){ addParticipantInline(card, addBtn); }); card.appendChild(addBtn);
   });
 
-  // ── Results ────────────────────────────────────────────────────────────────
-  document.querySelectorAll('.sidebar-card[data-section="results"], .sidebar-card:has(.result-item)').forEach(function(card) {
+  // Results
+  document.querySelectorAll('.sidebar-card[data-section="results"],.sidebar-card:has(.result-item)').forEach(function(card) {
     card.querySelectorAll('.result-item').forEach(function(item) {
       var del = document.createElement('button');
-      del.className = 'result-del-btn edit-only';
-      del.innerHTML = '✕'; del.title = 'Remove result';
-      del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px;line-height:1.5';
-      del.addEventListener('click', function() { item.remove(); });
-      item.insertBefore(del, item.firstChild);
+      del.className = 'result-del-btn edit-only'; del.innerHTML = '✕';
+      del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px';
+      del.addEventListener('click', function(){ item.remove(); }); item.insertBefore(del, item.firstChild);
     });
     var addBtn = document.createElement('button');
-    addBtn.className = 'result-add-btn edit-only';
-    addBtn.textContent = '+ Add result';
-    addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
-    addBtn.addEventListener('click', function() { addResultInline(card, addBtn); });
-    card.appendChild(addBtn);
+    addBtn.className = 'result-add-btn edit-only'; addBtn.textContent = '+ Add result';
+    addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px';
+    addBtn.addEventListener('click', function(){ addResultInline(card, addBtn); }); card.appendChild(addBtn);
   });
 }
 
-// ── Section management ────────────────────────────────────────────────────────
-function addSection(btn) {
-  var block = btn.closest('.lang-block') || document.querySelector('.lang-block.active');
-  if (!block) return;
-  var container = block.querySelector('.main-content');
-  if (!container) return;
-  var sec = document.createElement('div');
-  sec.className = 'story-sec';
-  // drag handle
-  var handle = document.createElement('div');
-  handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
-  var delBtn = document.createElement('button');
-  delBtn.className = 'sec-delete-btn edit-only'; delBtn.innerHTML = '🗑'; delBtn.title = 'Delete section';
-  delBtn.addEventListener('click', function() { if (confirm('Delete this section?')) sec.remove(); });
-  var label = document.createElement('div');
-  label.className = 'sec-label'; label.contentEditable = 'true'; label.textContent = 'Section label';
-  var h2 = document.createElement('h2');
-  h2.contentEditable = 'true'; h2.textContent = 'Section heading';
-  var p = document.createElement('p');
-  p.contentEditable = 'true'; p.textContent = 'Write your content here.';
-  sec.appendChild(delBtn); sec.appendChild(handle); sec.appendChild(label); sec.appendChild(h2); sec.appendChild(p);
-  container.appendChild(sec);
-}
-
-// ── Stats ─────────────────────────────────────────────────────────────────────
 function addStatDeleteBtn(tile) {
   var del = document.createElement('button');
   del.className = 'stat-tile-del edit-only'; del.innerHTML = '✕'; del.title = 'Remove stat';
-  del.addEventListener('click', function() { tile.remove(); });
-  tile.appendChild(del);
+  del.addEventListener('click', function(){ tile.remove(); }); tile.appendChild(del);
 }
-
-function addStatTile(row, addBtn) {
-  var tile = document.createElement('div');
-  tile.className = 'stat-tile';
-  tile.innerHTML = '<div class="stat-n" contenteditable="true">—</div><div class="stat-l" contenteditable="true">Label</div>';
-  addStatDeleteBtn(tile);
-  row.insertBefore(tile, addBtn);
-}
-
-// ── KRS items ─────────────────────────────────────────────────────────────────
-function addKrsItem(list, addBtn) {
-  var li = document.createElement('li');
-  li.className = 'krs-item';
-  li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
-    '<span class="krs-item-text" contenteditable="true">New result</span>';
-  var delBtn = document.createElement('button');
-  delBtn.className = 'krs-item-del edit-only'; delBtn.innerHTML = '✕';
-  delBtn.addEventListener('click', function() { li.remove(); });
-  li.appendChild(delBtn);
-  list.insertBefore(li, addBtn);
-}
-
-// ── Delete audio file from GitHub ────────────────────────────────────────────
-async function deleteAudioFile(player, xBtn) {
-  var srcEl = player.querySelector('audio source');
-  var rawSrc = srcEl ? (srcEl.getAttribute('src') || '') : '';
-  if (!rawSrc && srcEl && srcEl.src && srcEl.src.indexOf('.mp3') > -1) rawSrc = srcEl.src;
-  if (!rawSrc) { alert('No audio file on this clip yet.'); return; }
-  var filename = rawSrc.split('?')[0].split('/').pop();
-  if (!filename || !filename.includes('.')) { alert('Could not determine filename.'); return; }
-  if (!confirm('Delete "' + filename + '" from GitHub?\nThis cannot be undone.')) return;
-
-  var orig = xBtn.textContent;
-  xBtn.textContent = '…'; xBtn.disabled = true;
-  var path = (GH_CLIENT_FOLDER + filename).replace(/\/\//g, '/');
-  try {
-    var getRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-    });
-    if (!getRes.ok) { var e=await getRes.json().catch(function(){return{};}); throw new Error('File not found ('+getRes.status+'): '+(e.message||path)); }
-    var fileData = await getRes.json();
-    var delRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-      method:'DELETE',
-      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-      body:JSON.stringify({message:'Delete audio: '+filename, sha:fileData.sha})
-    });
-    if (!delRes.ok) { var e2=await delRes.json().catch(function(){return{};}); throw new Error('Delete failed ('+delRes.status+'): '+(e2.message||'unknown')); }
-    if (srcEl) srcEl.removeAttribute('src');
-    var aud = player.querySelector('audio'); if (aud) aud.load();
-    var upBtn = player.querySelector('.upload-audio-btn'); if (upBtn) upBtn.textContent = 'Upload MP3';
-    xBtn.style.display = 'none'; // hide ✕ since no audio now
-  } catch(err) {
-    xBtn.textContent = orig; xBtn.disabled = false;
-    alert('Delete audio failed:\n\n' + err.message + '\n\nPath: ' + path);
-  }
-}
-
-// ── Clips ─────────────────────────────────────────────────────────────────────
-function addClipInline(btn) {
-  var block = btn.closest('.lang-block') || document.querySelector('.lang-block.active');
-  var container = block ? block.querySelector('.main-content') : btn.parentNode;
-  var card = document.createElement('div');
-  card.className = 'clip-card';
-
-  var handle = document.createElement('div');
-  handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
-
-  var rb = document.createElement('button');
-  rb.className = 'clip-remove-btn edit-only'; rb.innerHTML = '🗑'; rb.title = 'Delete clip';
-  rb.addEventListener('click', function() { if (confirm('Delete this clip?')) card.remove(); });
-
-  var lbl = document.createElement('div');
-  lbl.className = 'clip-label'; lbl.contentEditable = 'true';
-  lbl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg> Clip title';
-
-  var qt = document.createElement('div');
-  qt.className = 'clip-quote'; qt.contentEditable = 'true'; qt.textContent = '"Quote here."';
-
-  var aud = document.createElement('audio');
-  aud.controls = true; aud.preload = 'metadata';
-  aud.style.cssText = 'width:100%;height:40px;border-radius:6px;accent-color:#EF363D';
-  var src = document.createElement('source'); src.type = 'audio/mpeg';
-  aud.appendChild(src);
-
-  var upBtn = document.createElement('button');
-  upBtn.className = 'upload-audio-btn edit-only'; upBtn.textContent = 'Upload MP3';
-  upBtn.addEventListener('click', function() { uploadAudio(upBtn); });
-
-  // ✕ on the label — deletes the uploaded audio file
-  var xBtn = document.createElement('button');
-  xBtn.className = 'audio-del-x edit-only';
-  xBtn.title = 'Delete uploaded audio'; xBtn.textContent = '✕';
-  xBtn.addEventListener('click', async function(e) {
-    e.stopPropagation();
-    await deleteAudioFile(pl, xBtn);
-  });
-  lbl.appendChild(xBtn);
-
-  var pl = document.createElement('div');
-  pl.className = 'clip-player';
-  pl.appendChild(aud); pl.appendChild(upBtn);
-
-  card.appendChild(rb); card.appendChild(handle); card.appendChild(lbl); card.appendChild(qt); card.appendChild(pl);
-  if (container) container.appendChild(card);
-  else btn.parentNode.insertBefore(card, btn);
-}
-
-// ── Who sidebar stats ─────────────────────────────────────────────────────────
 function addWhoStatDeleteBtn(tile) {
   var del = document.createElement('button');
   del.className = 'who-stat-del edit-only'; del.innerHTML = '✕';
-  del.addEventListener('click', function() { tile.remove(); });
-  tile.appendChild(del);
+  del.addEventListener('click', function(){ tile.remove(); }); tile.appendChild(del);
+}
+
+// ── Inline add functions ──────────────────────────────────────────────────────
+function addSection(btn) {
+  var block = btn.closest('.lang-block') || document.querySelector('.lang-block.active');
+  if (!block) return;
+  var container = block.querySelector('.main-content'); if (!container) return;
+  var sec = document.createElement('div'); sec.className = 'story-sec';
+  var handle = document.createElement('div');
+  handle.className = 'drag-handle edit-only'; handle.textContent = '⠿'; handle.style.right = '36px';
+  var delBtn = document.createElement('button');
+  delBtn.className = 'sec-delete-btn edit-only'; delBtn.innerHTML = '🗑';
+  delBtn.addEventListener('click', function(){ if(confirm('Delete?')) sec.remove(); });
+  var label = document.createElement('div'); label.className = 'sec-label'; label.contentEditable = 'true'; label.textContent = 'Section label';
+  var h2 = document.createElement('h2'); h2.contentEditable = 'true'; h2.textContent = 'Section heading';
+  var wrap = document.createElement('div'); wrap.className = 'sec-body-edit'; wrap.contentEditable = 'true';
+  wrap.style.cssText = 'white-space:pre-wrap;word-break:break-word;outline:none;min-height:24px;font-size:15px;color:#444;line-height:1.75;font-family:Arial,sans-serif;padding:2px 0';
+  wrap.textContent = 'Write your content here.';
+  wrap.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){e.preventDefault();var sel=window.getSelection();var range=sel.getRangeAt(0);range.deleteContents();range.insertNode(document.createTextNode('\n'));range.collapse(false);sel.removeAllRanges();sel.addRange(range);}
+  });
+  sec.appendChild(delBtn); sec.appendChild(handle); sec.appendChild(label); sec.appendChild(h2); sec.appendChild(wrap);
+  container.appendChild(sec);
+}
+
+function addClipInline(btn) {
+  var block = btn.closest('.lang-block') || document.querySelector('.lang-block.active');
+  var container = block ? block.querySelector('.main-content') : btn.parentNode;
+  var card = document.createElement('div'); card.className = 'clip-card';
+  var rb = document.createElement('button');
+  rb.className = 'clip-remove-btn edit-only'; rb.innerHTML = '🗑';
+  rb.addEventListener('click', function(){ if(confirm('Delete clip?')) card.remove(); });
+  var handle = document.createElement('div');
+  handle.className = 'drag-handle edit-only'; handle.textContent = '⠿'; handle.style.right = '36px';
+  var lbl = document.createElement('div'); lbl.className = 'clip-label'; lbl.contentEditable = 'true'; lbl.textContent = 'Clip title';
+  var xBtn = document.createElement('button');
+  xBtn.className = 'audio-del-x edit-only'; xBtn.title = 'Delete audio'; xBtn.textContent = '✕';
+  var aud = document.createElement('audio'); aud.controls = true; aud.preload = 'metadata';
+  aud.style.cssText = 'width:100%;height:38px;border-radius:6px;accent-color:#EF363D';
+  var src = document.createElement('source'); src.type = 'audio/mpeg'; aud.appendChild(src);
+  var qt = document.createElement('div'); qt.className = 'clip-quote'; qt.contentEditable = 'true'; qt.textContent = 'Pull quote';
+  var pl = document.createElement('div'); pl.className = 'clip-player';
+  var upBtn = document.createElement('button');
+  upBtn.className = 'upload-audio-btn edit-only'; upBtn.textContent = 'Upload MP3';
+  upBtn.addEventListener('click', function(){ uploadAudio(upBtn); });
+  lbl.appendChild(xBtn);
+  xBtn.addEventListener('click', async function(e){ e.stopPropagation(); await deleteAudioFile(pl, xBtn); });
+  pl.appendChild(aud); pl.appendChild(upBtn);
+  card.appendChild(rb); card.appendChild(handle); card.appendChild(lbl); card.appendChild(qt); card.appendChild(pl);
+  if (container) container.appendChild(card); else btn.parentNode.insertBefore(card, btn);
+}
+
+function addKrsItem(list, addBtn) {
+  var li = document.createElement('li'); li.className = 'krs-item';
+  li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text" contenteditable="true">New result</span>';
+  var del = document.createElement('button');
+  del.className = 'krs-item-del edit-only'; del.innerHTML = '✕';
+  del.addEventListener('click', function(){ li.remove(); }); li.appendChild(del);
+  list.insertBefore(li, addBtn);
+}
+
+function addStatTile(row, addBtn) {
+  var tile = document.createElement('div'); tile.className = 'stat-tile';
+  tile.innerHTML = '<div class="stat-n" contenteditable="true">0</div><div class="stat-l" contenteditable="true">Label</div>';
+  addStatDeleteBtn(tile); row.insertBefore(tile, addBtn);
 }
 
 function addWhoStat(grid, addBtn) {
-  var tile = document.createElement('div');
-  tile.className = 'who-stat-tile';
-  tile.innerHTML = '<div class="who-stat-n" contenteditable="true">—</div><div class="who-stat-l" contenteditable="true">Label</div>';
-  addWhoStatDeleteBtn(tile);
-  grid.insertBefore(tile, addBtn);
+  var tile = document.createElement('div'); tile.className = 'who-stat-tile';
+  tile.innerHTML = '<div class="who-stat-n" contenteditable="true">0</div><div class="who-stat-l" contenteditable="true">Label</div>';
+  addWhoStatDeleteBtn(tile); grid.insertBefore(tile, addBtn);
 }
 
-// ── Participant inline add ────────────────────────────────────────────────────
 function addParticipantInline(card, addBtn) {
-  var p = document.createElement('p');
-  p.style.marginTop = '10px';
+  var p = document.createElement('p'); p.style.marginTop = '10px';
   var del = document.createElement('button');
-  del.className = 'part-del-btn edit-only';
-  del.innerHTML = '✕';
-  del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px;line-height:1';
-  del.addEventListener('click', function() { p.remove(); });
-  var strong = document.createElement('strong');
-  strong.className = 'participant-name'; strong.contentEditable = 'true'; strong.textContent = 'Full name';
+  del.className = 'part-del-btn edit-only'; del.innerHTML = '✕';
+  del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px';
+  del.addEventListener('click', function(){ p.remove(); });
+  var strong = document.createElement('strong'); strong.className = 'participant-name'; strong.contentEditable = 'true'; strong.textContent = 'Full name';
   var br = document.createElement('br');
-  var span = document.createElement('span');
-  span.className = 'participant-title'; span.contentEditable = 'true';
+  var span = document.createElement('span'); span.className = 'participant-title'; span.contentEditable = 'true';
   span.style.cssText = 'font-size:12px;color:#888'; span.textContent = 'Title, Company';
   p.appendChild(del); p.appendChild(strong); p.appendChild(br); p.appendChild(span);
   card.insertBefore(p, addBtn);
 }
 
-// ── Result inline add ─────────────────────────────────────────────────────────
 function addResultInline(card, addBtn) {
-  var item = document.createElement('li');
-  item.className = 'result-item'; item.contentEditable = 'true'; item.textContent = 'New result';
-  var del = document.createElement('button');
-  del.className = 'result-del-btn edit-only'; del.innerHTML = '✕';
-  del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px;line-height:1.5';
-  del.addEventListener('click', function() { item.remove(); });
-  item.insertBefore(del, item.firstChild);
-  // Find or create the ul
   var ul = card.querySelector('.results-ul');
   if (!ul) { ul = document.createElement('ul'); ul.className = 'results-ul'; card.insertBefore(ul, addBtn); }
-  ul.insertBefore(item, addBtn.parentNode === ul ? addBtn : null);
+  var li = document.createElement('li'); li.className = 'result-item'; li.contentEditable = 'true'; li.textContent = 'New result';
+  var del = document.createElement('button');
+  del.className = 'result-del-btn edit-only'; del.innerHTML = '✕';
+  del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px';
+  del.addEventListener('click', function(){ li.remove(); }); li.insertBefore(del, li.firstChild);
+  ul.appendChild(li);
 }
 
-// ── Products inline panel ─────────────────────────────────────────────────────
+// ── Products panel ────────────────────────────────────────────────────────────
 function toggleProductsPanel(triggerEl) {
   var existing = document.getElementById('inline-products-panel');
   if (existing) { existing.remove(); return; }
-  var panel = document.createElement('div');
-  panel.id = 'inline-products-panel';
-  panel.className = 'inline-products-panel';
+  var panel = document.createElement('div'); panel.id = 'inline-products-panel'; panel.className = 'inline-products-panel';
   var currentApps = [];
-  document.querySelectorAll('.app-tag .app-name').forEach(function(s) { currentApps.push(s.textContent.trim()); });
+  document.querySelectorAll('.app-name').forEach(function(s){ currentApps.push(s.textContent.trim()); });
   PROPHIX_PRODUCTS.forEach(function(prod) {
     var lbl = document.createElement('label');
     lbl.className = 'prod-toggle' + (currentApps.indexOf(prod.name) > -1 ? ' active' : '');
-    var cb = document.createElement('input');
-    cb.type = 'checkbox'; cb.value = prod.name; cb.checked = currentApps.indexOf(prod.name) > -1; cb.style.display = 'none';
-    var img = document.createElement('img');
-    img.src = prod.icon; img.style.cssText = 'width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px';
+    var cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = prod.name; cb.checked = currentApps.indexOf(prod.name) > -1; cb.style.display = 'none';
+    var img = document.createElement('img'); img.src = prod.icon; img.style.cssText = 'width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px';
     lbl.appendChild(cb); lbl.appendChild(img); lbl.appendChild(document.createTextNode(prod.name));
     lbl.addEventListener('click', function(e) {
       e.preventDefault(); cb.checked = !cb.checked; lbl.classList.toggle('active', cb.checked);
-      var sel = [];
-      panel.querySelectorAll('input:checked').forEach(function(c) {
-        var p = PROPHIX_PRODUCTS.find(function(x){ return x.name === c.value; });
-        if (p) sel.push(p);
-      });
-      document.querySelectorAll('.apps-display').forEach(function(d) {
-        d.innerHTML = sel.map(function(p) {
-          return '<div class="app-tag"><img class="app-icon" src="'+p.icon+'" alt="'+p.name+'"><span class="app-name">'+p.name+'</span></div>';
-        }).join('');
+      var sel = []; panel.querySelectorAll('input:checked').forEach(function(c){ var p = PROPHIX_PRODUCTS.find(function(x){ return x.name===c.value; }); if(p) sel.push(p); });
+      document.querySelectorAll('.apps-display').forEach(function(d){
+        d.innerHTML = sel.map(function(p){ return '<div class="app-tag"><img class="app-icon" src="'+p.icon+'" alt="'+p.name+'"><span class="app-name">'+p.name+'</span></div>'; }).join('');
       });
     });
     panel.appendChild(lbl);
@@ -684,32 +967,23 @@ function toggleProductsPanel(triggerEl) {
 // ── Logo upload ───────────────────────────────────────────────────────────────
 function triggerLogoUpload() {
   if (!document.body.classList.contains('edit-mode')) return;
-  var input = document.createElement('input');
-  input.type = 'file'; input.accept = 'image/png,image/jpeg,image/svg+xml,image/webp';
+  var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/png,image/jpeg,image/svg+xml,image/webp';
   input.onchange = function() {
     var file = input.files[0]; if (!file) return;
     var img2 = document.querySelector('.hero-client-logo');
     if (img2) img2.style.opacity = '0.4';
-
-    // Convert any format to PNG via canvas so we always save logo.png
     var objectUrl = URL.createObjectURL(file);
     var tempImg = new Image();
     tempImg.onload = function() {
       var canvas = document.createElement('canvas');
-      canvas.width = tempImg.naturalWidth || 400;
-      canvas.height = tempImg.naturalHeight || 200;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(tempImg, 0, 0);
+      canvas.width = tempImg.naturalWidth || 400; canvas.height = tempImg.naturalHeight || 200;
+      canvas.getContext('2d').drawImage(tempImg, 0, 0);
       URL.revokeObjectURL(objectUrl);
-      var b64 = canvas.toDataURL('image/png').split(',')[1];
-      uploadLogoB64(b64, img2);
+      uploadLogoB64(canvas.toDataURL('image/png').split(',')[1], img2);
     };
     tempImg.onerror = function() {
-      // Canvas failed (e.g. SVG with external resources) — fall back to raw file read
       URL.revokeObjectURL(objectUrl);
-      var reader = new FileReader();
-      reader.onload = function(e) { uploadLogoB64(e.target.result.split(',')[1], img2); };
-      reader.readAsDataURL(file);
+      var fr = new FileReader(); fr.onload = function(e){ uploadLogoB64(e.target.result.split(',')[1], img2); }; fr.readAsDataURL(file);
     };
     tempImg.src = objectUrl;
   };
@@ -717,75 +991,45 @@ function triggerLogoUpload() {
 }
 
 async function uploadLogoB64(b64, img2) {
-  var path = GH_CLIENT_FOLDER + 'logo.png'; // always logo.png
+  var path = GH_CLIENT_FOLDER + 'logo.png';
   try {
-    var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-    });
+    var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
     var body = {message:'Logo: logo.png', content:b64};
-    if (shaRes.ok) { var existing = await shaRes.json(); if (existing.sha) body.sha = existing.sha; }
-
-    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-      method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
+    if (shaRes.ok) { var ex = await shaRes.json(); if (ex.sha) body.sha = ex.sha; }
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(body) });
     var d = await r.json();
     if (r.ok && d.content) {
       if (img2) { img2.src='logo.png?v='+Date.now(); img2.style.display='block'; img2.style.opacity='1'; }
-      var pill = document.querySelector('.logo-pill-client');
-      if (pill) { pill.style.display=''; pill.style.visibility='visible'; }
+      var pill = document.querySelector('.logo-pill-client'); if (pill) { pill.style.display=''; pill.style.visibility='visible'; }
       var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display='none';
-    } else {
-      if (img2) img2.style.opacity='1';
-      alert('Logo upload failed: '+(d.message||'Unknown error')+'\n\nCheck your access token has write permission.');
-    }
-  } catch(err) {
-    if (img2) img2.style.opacity='1';
-    alert('Logo upload error: '+err.message);
-  }
+      // Update storyData
+      storyData.hasLogo = true; STORY_META.hasLogo = true;
+    } else { if (img2) img2.style.opacity='1'; alert('Logo upload failed: '+(d.message||'Unknown error')); }
+  } catch(err) { if (img2) img2.style.opacity='1'; alert('Logo upload error: '+err.message); }
 }
 
-// ── Audio upload ──────────────────────────────────────────────────────────────
+// ── Audio upload / delete ─────────────────────────────────────────────────────
 function uploadAudio(btn) {
-  var input = document.createElement('input');
-  input.type = 'file'; input.accept = 'audio/mpeg,.mp3';
+  var input = document.createElement('input'); input.type = 'file'; input.accept = 'audio/mpeg,.mp3';
   input.onchange = function() {
     var file = input.files[0]; if (!file) return;
     var reader = new FileReader();
     reader.onload = async function(e) {
       var b64 = e.target.result.split(',')[1];
-      btn.textContent = 'Uploading…';
-      btn.disabled = true;
+      btn.textContent = 'Uploading…'; btn.disabled = true;
       try {
         var path = GH_CLIENT_FOLDER + file.name;
-        // Fetch existing SHA in case file already exists
-        var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-          headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-        });
+        var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
         var body = {message:'Audio: '+file.name, content:b64};
-        if (shaRes.ok) { var existing = await shaRes.json(); if (existing.sha) body.sha = existing.sha; }
-
-        var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
-          method:'PUT',
-          headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-          body:JSON.stringify(body)
-        });
+        if (shaRes.ok) { var ex = await shaRes.json(); if (ex.sha) body.sha = ex.sha; }
+        var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(body) });
         var d = await r.json();
         if (r.ok && d.content) {
-          var srcEl2 = btn.closest('.clip-player').querySelector('audio source');
-          if (srcEl2) {
-            srcEl2.setAttribute('src', file.name); // set as attribute so delete can find it
-            srcEl2.parentNode.load();
-          }
+          var srcEl = btn.closest('.clip-player').querySelector('audio source');
+          if (srcEl) { srcEl.setAttribute('src', file.name); srcEl.parentNode.load(); }
           btn.textContent = '✓ '+file.name;
-        } else {
-          btn.textContent = 'Upload MP3';
-          alert('Upload failed: ' + (d.message || 'Unknown error') + '\n\nCheck your access token has write permission.');
-        }
-      } catch(err) {
-        btn.textContent = 'Upload MP3';
-        alert('Upload error: ' + err.message);
-      }
+        } else { btn.textContent = 'Upload MP3'; alert('Upload failed: '+(d.message||'Unknown')+'\nCheck token permissions.'); }
+      } catch(err) { btn.textContent = 'Upload MP3'; alert('Upload error: '+err.message); }
       btn.disabled = false;
     };
     reader.readAsDataURL(file);
@@ -793,188 +1037,139 @@ function uploadAudio(btn) {
   input.click();
 }
 
-// ── Strip all dynamically injected edit controls before save snapshot ─────────
-// These are re-injected fresh by addEditControlsToExisting() on every edit-mode
-// open. Saving them into the HTML causes dead buttons (no event listeners) after
-// reload, which is why add/remove features break intermittently over time.
-function stripEditControls() {
-  var selectors = [
-    '.sec-delete-btn',
-    '.drag-handle',
-    '.clip-remove-btn',
-    '.upload-audio-btn',
-    '.audio-del-x',
-    '.delete-audio-btn',      // old style, may exist on pages from earlier versions
-    '.stat-add-btn',
-    '.stat-tile-del',         // was wrongly listed as .stat-del-btn
-    '.krs-add-btn',
-    '.krs-item-del',
-    '.who-stat-add-btn',
-    '.who-stat-del',
-    '.part-add-btn',
-    '.part-del-btn',
-    '.result-add-btn',
-    '.result-del-btn',
-    '#inline-products-panel'
-  ];
-  selectors.forEach(function(sel) {
-    document.querySelectorAll(sel).forEach(function(el) { el.remove(); });
-  });
+async function deleteAudioFile(player, xBtn) {
+  if (!player) return;
+  var srcEl = player.querySelector('audio source');
+  var rawSrc = srcEl ? (srcEl.getAttribute('src') || '') : '';
+  if (!rawSrc && srcEl && srcEl.src && srcEl.src.indexOf('.mp3') > -1) rawSrc = srcEl.src;
+  if (!rawSrc) { alert('No audio file on this clip yet.'); return; }
+  var filename = rawSrc.split('?')[0].split('/').pop();
+  if (!filename || !filename.includes('.')) { alert('Could not determine filename.'); return; }
+  if (!confirm('Delete "' + filename + '" from GitHub?\nThis cannot be undone.')) return;
+  var orig = xBtn.textContent; xBtn.textContent = '…'; xBtn.disabled = true;
+  var path = (GH_CLIENT_FOLDER + filename).replace(/\/\//g, '/');
+  try {
+    var getRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
+    if (!getRes.ok) { var e=await getRes.json().catch(function(){return{};}); throw new Error('File not found ('+getRes.status+'): '+(e.message||path)); }
+    var fileData = await getRes.json();
+    var delRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { method:'DELETE', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify({message:'Delete audio: '+filename, sha:fileData.sha}) });
+    if (!delRes.ok) { var e2=await delRes.json().catch(function(){return{};}); throw new Error('Delete failed ('+delRes.status+'): '+(e2.message||'unknown')); }
+    if (srcEl) srcEl.removeAttribute('src');
+    var aud = player.querySelector('audio'); if (aud) aud.load();
+    var upBtn = player.querySelector('.upload-audio-btn'); if (upBtn) upBtn.textContent = 'Upload MP3';
+    xBtn.style.display = 'none';
+  } catch(err) { xBtn.textContent = orig; xBtn.disabled = false; alert('Delete audio failed:\n\n' + err.message + '\n\nPath: ' + path); }
 }
 
-// ── Save ──────────────────────────────────────────────────────────────────────
+// ── Save to GitHub (data.json — NOT outerHTML) ────────────────────────────────
 async function saveToGitHub() {
-  var statusEl = document.getElementById('save-status');
   var saveBtn = document.getElementById('save-btn');
-  statusEl.textContent = 'Saving…'; saveBtn.disabled = true;
+  var statusEl = document.getElementById('save-status');
+  saveBtn.disabled = true; statusEl.textContent = 'Saving…';
+
   try {
-    var sha = cachedSha;
-    if (!sha) {
-      var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE, {
-        headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-      });
-      if (!r.ok) throw new Error('Token invalid or expired');
-      sha = (await r.json()).sha;
-    }
-    document.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
-    document.body.classList.remove('edit-mode');
-    document.getElementById('edit-fab').classList.remove('hidden');
-    document.getElementById('edit-toolbar').classList.remove('visible');
-    document.querySelectorAll('.remove-lang').forEach(function(b){ b.style.display='none'; });
-    var panel = document.getElementById('inline-products-panel'); if (panel) panel.remove();
-    disableDragDrop();
-    stripEditControls();
-
-    // Convert sec-body-edit divs back to p/ul/li and parse "- " bullets
+    // 1. Read current DOM state into data object
     unwrapSectionBodies();
+    var newData = domToData();
 
-    var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    // 2. Save stripEditControls state
+    disableDragDrop();
+    document.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
 
-    // Restore edit mode visually while the API call runs so the user can see the saving indicator
+    // 3. Write data.json
+    var dataJson = JSON.stringify(newData, null, 2);
+    var enc = btoa(unescape(encodeURIComponent(dataJson)));
+
+    // Get current SHA
+    var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
+    var body = {message:'Update story data: '+newData.name, content:enc};
+    if (shaRes.ok) { var d = await shaRes.json(); if (d.sha) body.sha = d.sha; }
+
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(body) });
+
+    if (!r.ok) { var err = await r.json(); throw new Error(err.message || 'Save failed'); }
+
+    // 4. Update local storyData
+    storyData = newData;
+
+    // 5. Update last-edited timestamp in stories.json (background)
+    _updateEditedTimestamp();
+
+    statusEl.textContent = 'Saved ✓';
+
+    // 6. Re-render the page from fresh data (ensures DOM matches data.json)
+    setTimeout(function() {
+      renderPage(storyData);
+      wireEvents();
+      disableEditMode();
+    }, 1200);
+
+  } catch(err) {
+    saveBtn.disabled = false;
+    statusEl.textContent = 'Error: ' + err.message;
+    // Re-enable editing
     document.body.classList.add('edit-mode');
     document.getElementById('edit-fab').classList.add('hidden');
     document.getElementById('edit-toolbar').classList.add('visible');
-    statusEl.textContent = 'Saving…'; saveBtn.disabled = true;
-
-    var enc = btoa(unescape(encodeURIComponent(html)));
-    var pr = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE, {
-      method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-      body:JSON.stringify({message:'Live edit', content:enc, sha:sha})
-    });
-    if (pr.ok) {
-      cachedSha = (await pr.json()).content.sha;
-      // Update last-edited timestamp on page
-      document.querySelectorAll('.last-edited').forEach(function(el) {
-        el.textContent = 'Last edited ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      });
-      statusEl.textContent = 'Saved ✓';
-      setTimeout(disableEditMode, 1500);
-      // Update edited timestamp in stories.json quietly in background
-      _updateEditedTimestamp();
-    } else {
-      var err = await pr.json();
-      if ((err.message||'').indexOf('conflict')>-1) { cachedSha=''; statusEl.textContent='Conflict — retry'; }
-      else statusEl.textContent = 'Error: '+(err.message||'Failed');
-      saveBtn.disabled = false;
-    }
-  } catch(e) { statusEl.textContent='Error: '+e.message; saveBtn.disabled=false; }
+    document.querySelectorAll('.lang-block').forEach(makeBlockEditable);
+    addEditControlsToExisting();
+    enableDragDrop();
+  }
 }
 
-// ── Update edited timestamp in stories.json (background, best-effort) ────────
 async function _updateEditedTimestamp() {
   try {
-    var slug = GH_FILE.split('/')[1]; // clients/<slug>/index.html → slug
-    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
-      headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
-    });
+    var slug = STORY_META.slug;
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
     if (!r.ok) return;
     var d = await r.json();
-    var stories;
-    try { stories = JSON.parse(atob(d.content.replace(/\n/g,''))); } catch(e) { return; }
-    var entry = stories.find(function(s) { return s.slug === slug; });
+    var stories; try { stories = JSON.parse(atob(d.content.replace(/\n/g,''))); } catch(e){ return; }
+    var entry = stories.find(function(s){ return s.slug === slug; });
     if (!entry) return;
     entry.edited = new Date().toISOString();
     var enc = btoa(unescape(encodeURIComponent(JSON.stringify(stories, null, 2))));
-    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
-      method: 'PUT',
-      headers: {'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
-      body: JSON.stringify({message: 'Update edited: '+slug, content: enc, sha: d.sha})
-    });
-  } catch(e) { /* silent — non-critical */ }
+    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify({message:'Update edited: '+slug, content:enc, sha:d.sha}) });
+  } catch(e) { /* silent */ }
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
+function closeModal() {
+  document.getElementById('token-modal').classList.remove('visible');
+  document.getElementById('token-input').value = '';
+  document.getElementById('token-error').textContent = '';
+}
 
-  // Inject styles needed for features added after a page was first published.
-  // This guarantees they work on old pages without re-publishing.
-  var runtimeStyle = document.createElement('style');
-  runtimeStyle.textContent = [
-    '.audio-del-x{display:none;margin-left:auto;background:transparent;border:none;cursor:pointer;color:#ccc;font-size:13px;padding:0 4px;line-height:1;flex-shrink:0}',
-    '.audio-del-x:hover{color:#EF363D}',
-    '.edit-mode .audio-del-x{display:inline!important}',
-    '.clips-section-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #E0DFF0}',
-    '.edit-only{display:none!important}',
-    '.edit-mode .edit-only{display:block!important}',
-    '.edit-mode .clip-remove-btn,.edit-mode .sec-delete-btn{display:inline-block!important}',
-    '.edit-mode .lang-btn.remove-lang{display:inline-flex!important}',
-    /* clip style — Eaglestone reference */
-    '.clip-card{border-left:4px solid #EF363D!important}',
-    '.clip-label{font-size:11px!important;font-weight:700!important;letter-spacing:1.5px!important;text-transform:uppercase!important;color:#EF363D!important}',
-    '.clip-quote{font-size:15px!important;font-style:italic!important;color:#1A1A2E!important;font-weight:500!important;border-left:none!important;padding-left:0!important}',
-    '.clip-quote::before{content:"\u201C"}',
-    '.clip-quote::after{content:"\u201D"}',
-    '.edit-mode .sec-body-edit{outline:2px dashed rgba(239,54,61,.35)!important;border-radius:4px;padding:4px 6px!important;min-height:32px}',
-    '.edit-mode .sec-body-edit:focus{outline:2px dashed rgba(239,54,61,.7)!important}',
-    '.inline-products-panel{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #E0DFF0;border-radius:8px;padding:8px;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:4px}',
-    '.prod-toggle{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;border:1px solid #E0DFF0;cursor:pointer;font-size:13px;font-weight:600;color:#1A1A2E;transition:all .15s;user-select:none}',
-    '.prod-toggle img{width:22px;height:22px;object-fit:contain;flex-shrink:0}',
-    '.prod-toggle.active{background:#fff5f5;border-color:#EF363D;color:#EF363D}',
-    '.prod-toggle:hover{border-color:#EF363D}',
-    /* story-sec bullet lists */
-    '.story-sec ul{list-style:none!important;padding-left:0!important;margin:10px 0!important}',
-    '.story-sec ul li{padding-left:18px!important;margin-bottom:8px!important;position:relative!important;font-size:15px!important;color:#444!important;line-height:1.75!important}',
-    '.story-sec ul li::before{content:""!important;position:absolute!important;left:0!important;top:9px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#EF363D!important}',
-    '.story-sec p{overflow-wrap:break-word;word-break:break-word}',
-    /* drag handle */
-    '.drag-handle{display:none;position:absolute;top:8px;right:8px;cursor:grab;color:#ccc;font-size:18px;line-height:1;user-select:none;padding:4px;border-radius:4px;z-index:10}',
-    '.drag-handle:hover{color:#888;background:rgba(0,0,0,.04)}',
-    '.drag-handle:active{cursor:grabbing}',
-    '.edit-mode .drag-handle{display:block!important}',
-    '.story-sec,.clip-card{position:relative}',
-    /* sortable feedback */
-    '.drag-ghost{opacity:0.4;background:#f0f0ff!important;border:2px dashed #aab!important}',
-    '.drag-chosen{box-shadow:0 4px 20px rgba(0,0,0,.15)!important}'
-  ].join('');
-  document.head.appendChild(runtimeStyle);
+// ── Wire all events ───────────────────────────────────────────────────────────
+function wireEvents() {
+  // Lang toggle
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
-    btn.addEventListener('click', function() { setLang(btn.getAttribute('data-lang')); });
+    btn.addEventListener('click', function(){ setLang(btn.getAttribute('data-lang')); });
   });
   document.querySelectorAll('.remove-lang').forEach(function(btn) {
     var code = btn.getAttribute('data-remove-lang');
-    btn.addEventListener('click', function() { removeLanguage(code); });
+    btn.addEventListener('click', function(){ removeLanguage(code); });
   });
+
+  // Lang add dropdown — populate dynamically
   var langSel = document.getElementById('lang-add-select');
   if (langSel) {
-    // Rebuild the dropdown dynamically from LANG_FULL_NAMES registry
-    // so any new language added to the registry appears automatically
     langSel.innerHTML = '<option value="">+ Add language</option>';
     Object.keys(LANG_FULL_NAMES).forEach(function(code) {
-      if (activeLangs.indexOf(code) === -1) {
-        var opt = document.createElement('option');
-        opt.value = code; opt.textContent = LANG_FULL_NAMES[code];
-        langSel.appendChild(opt);
+      if ((storyData.langs||['en']).indexOf(code) === -1) {
+        var opt = document.createElement('option'); opt.value = code; opt.textContent = LANG_FULL_NAMES[code]; langSel.appendChild(opt);
       }
     });
-    langSel.addEventListener('change', function() { if (this.value) { addLanguage(this.value); this.value=''; } });
+    langSel.addEventListener('change', function(){ if (this.value) { addLanguage(this.value); this.value=''; } });
   }
 
   setLang('en');
 
+  // Edit FAB
   document.getElementById('edit-fab').addEventListener('click', function() {
     document.getElementById('token-modal').classList.add('visible');
     setTimeout(function(){ document.getElementById('token-input').focus(); }, 50);
   });
+
+  // Token submit
   document.getElementById('token-submit').addEventListener('click', function() {
     var token = document.getElementById('token-input').value.trim().replace(/[^\x20-\x7E]/g,'');
     document.getElementById('token-error').textContent = '';
@@ -984,52 +1179,48 @@ document.addEventListener('DOMContentLoaded', function() {
     enableEditMode();
   });
   document.getElementById('token-cancel').addEventListener('click', closeModal);
-  document.getElementById('token-input').addEventListener('keydown', function(e) {
+  document.getElementById('token-input').addEventListener('keydown', function(e){
     if (e.key==='Enter') document.getElementById('token-submit').click();
     if (e.key==='Escape') closeModal();
   });
-  // ── Inject product icons into existing app tags (old pages published without icons) ──
-  document.querySelectorAll('.app-tag').forEach(function(tag) {
-    if (tag.querySelector('img.app-icon')) return; // already has icon
-    var nameEl = tag.querySelector('span:last-child') || tag.querySelector('span');
-    if (!nameEl) return;
-    var productName = nameEl.textContent.trim();
-    var prod = PROPHIX_PRODUCTS.find(function(p) { return p.name === productName; });
-    if (!prod) return;
-    var img = document.createElement('img');
-    img.className = 'app-icon';
-    img.src = prod.icon; img.alt = productName;
-    img.style.cssText = 'width:20px;height:20px;object-fit:contain;flex-shrink:0';
-    tag.insertBefore(img, tag.firstChild);
-    var dot = tag.querySelector('.app-dot'); if (dot) dot.remove();
-    nameEl.className = 'app-name';
-  });
-
   document.getElementById('save-btn').addEventListener('click', saveToGitHub);
   document.getElementById('cancel-btn').addEventListener('click', disableEditMode);
 
-  // ── UX #1: ?edit=1 param — auto-open token modal on load ─────────────────
-  if (new URLSearchParams(window.location.search).get('edit') === '1') {
-    setTimeout(function() {
-      document.getElementById('token-modal').classList.add('visible');
-      setTimeout(function(){ document.getElementById('token-input').focus(); }, 80);
-    }, 300);
-  }
-
-  // ── UX #2: Share button on story page — copy current URL to clipboard ─────
+  // Share button
   var shareBtn = document.getElementById('story-share-btn');
   if (shareBtn) {
     shareBtn.addEventListener('click', function() {
       var url = window.location.href.split('?')[0];
       navigator.clipboard.writeText(url).then(function() {
-        var orig = shareBtn.textContent;
-        shareBtn.textContent = '✓ Copied!';
-        shareBtn.classList.add('share-copied');
-        setTimeout(function() {
-          shareBtn.textContent = orig;
-          shareBtn.classList.remove('share-copied');
-        }, 2000);
-      }).catch(function() { prompt('Copy this link:', url); });
+        var orig = shareBtn.textContent; shareBtn.textContent = '✓ Copied!'; shareBtn.classList.add('share-copied');
+        setTimeout(function(){ shareBtn.textContent = orig; shareBtn.classList.remove('share-copied'); }, 2000);
+      }).catch(function(){ prompt('Copy this link:', url); });
     });
   }
+
+  // ?edit=1 auto-open
+  if (new URLSearchParams(window.location.search).get('edit') === '1') {
+    setTimeout(function(){
+      document.getElementById('token-modal').classList.add('visible');
+      setTimeout(function(){ document.getElementById('token-input').focus(); }, 80);
+    }, 300);
+  }
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async function() {
+  // Fetch data.json
+  try {
+    var r = await fetch(GH_DATA_URL + '?v=' + Date.now());
+    if (!r.ok) throw new Error('Could not load story data');
+    storyData = await r.json();
+    // Merge meta
+    storyData.hasLogo = STORY_META.hasLogo;
+  } catch(err) {
+    document.body.innerHTML = '<div style="padding:40px;font-family:Arial;color:#c0272d"><h2>Could not load story</h2><p>' + err.message + '</p></div>';
+    return;
+  }
+
+  renderPage(storyData);
+  wireEvents();
 });
