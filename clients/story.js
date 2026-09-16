@@ -145,7 +145,9 @@ function getCSS() {
     '.edit-mode .edit-only{display:block!important}',
     '.edit-mode .clip-remove-btn,.edit-mode .sec-delete-btn{display:inline-block!important}',
     '.edit-mode .lang-btn.remove-lang{display:inline-flex!important}',
-    '#lang-add-wrap{display:none}.edit-mode #lang-add-wrap{display:flex!important}',
+    '.edit-mode .logo-pill-client.edit-only{display:inline-flex!important}',
+    '.edit-mode .add-blocks-bar.edit-only{display:flex!important}',
+    '#lang-add-wrap{display:none!important}.edit-mode #lang-add-wrap{display:inline-flex!important}',
     '[contenteditable]{outline:2px dashed rgba(239,54,61,.35);border-radius:3px}',
     '[contenteditable]:focus{outline:2px dashed rgba(239,54,61,.7)}',
     '.edit-mode .sec-body-edit{outline:2px dashed rgba(239,54,61,.35)!important;border-radius:4px;padding:4px 6px!important;min-height:32px}',
@@ -275,7 +277,7 @@ function renderLangBlock(data, lc, isActive, meta) {
     logoHtml += '<div class="logo-pill-client" onclick="triggerLogoUpload()" title="Click in edit mode to replace logo">' +
       '<img class="hero-client-logo" src="logo.png" alt="' + esc(data.name) + ' logo"></div>';
   } else {
-    logoHtml += '<div class="logo-pill-client edit-only" style="display:none" onclick="triggerLogoUpload()" title="Upload client logo">' +
+    logoHtml += '<div class="logo-pill-client edit-only" onclick="triggerLogoUpload()" title="Upload client logo">' +
       '<div class="hero-logo-ph">+ Upload logo</div></div>';
   }
   logoHtml += '</div>';
@@ -1004,11 +1006,27 @@ async function uploadLogoB64(b64, img2) {
     var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(body) });
     var d = await r.json();
     if (r.ok && d.content) {
-      if (img2) { img2.src='logo.png?v='+Date.now(); img2.style.display='block'; img2.style.opacity='1'; }
-      var pill = document.querySelector('.logo-pill-client'); if (pill) { pill.style.display=''; pill.style.visibility='visible'; }
-      var ph = document.querySelector('.hero-logo-ph'); if (ph) ph.style.display='none';
-      // Update storyData
+      // Update storyData and meta
       storyData.hasLogo = true; STORY_META.hasLogo = true;
+      // Re-render the logo area cleanly instead of fighting inline styles
+      var logoRow = document.querySelector('.logo-row');
+      if (logoRow) {
+        var clientPill = logoRow.querySelector('.logo-pill-client');
+        if (clientPill) {
+          // Replace placeholder with real logo
+          clientPill.classList.remove('edit-only');
+          clientPill.innerHTML = '<img class="hero-client-logo" src="logo.png?v=' + Date.now() + '" alt="logo" style="max-height:30px;max-width:140px;object-fit:contain;display:block">';
+        }
+      }
+      // Save hasLogo to data.json so it persists
+      storyData.hasLogo = true;
+      var dataEnc = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
+      var dataShaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
+      var dataBody = {message:'Update hasLogo', content:dataEnc};
+      if (dataShaRes.ok) { var dd = await dataShaRes.json(); if (dd.sha) dataBody.sha = dd.sha; }
+      await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(dataBody) });
+      // Update stories.json logo flag so directory shows logo
+      _updateLogoFlag();
     } else { if (img2) img2.style.opacity='1'; alert('Logo upload failed: '+(d.message||'Unknown error')); }
   } catch(err) { if (img2) img2.style.opacity='1'; alert('Logo upload error: '+err.message); }
 }
@@ -1120,6 +1138,21 @@ async function saveToGitHub() {
     addEditControlsToExisting();
     enableDragDrop();
   }
+}
+
+async function _updateLogoFlag() {
+  try {
+    var slug = STORY_META.slug;
+    var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
+    if (!r.ok) return;
+    var d = await r.json();
+    var stories; try { stories = JSON.parse(atob(d.content.replace(/\n/g,''))); } catch(e){ return; }
+    var entry = stories.find(function(s){ return s.slug === slug; });
+    if (!entry) return;
+    entry.logo = true;
+    var enc = btoa(unescape(encodeURIComponent(JSON.stringify(stories, null, 2))));
+    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify({message:'Update logo flag: '+slug, content:enc, sha:d.sha}) });
+  } catch(e) { /* silent */ }
 }
 
 async function _updateEditedTimestamp() {
