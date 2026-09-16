@@ -205,7 +205,95 @@ function disableDragDrop() {
 
 // ── Edit mode ─────────────────────────────────────────────────────────────────
 function makeBlockEditable(block) {
-  block.querySelectorAll(EDITABLE_SELECTORS.join(',')).forEach(function(el) { el.contentEditable = 'true'; });
+  // Make all standard editable fields contenteditable
+  // except story-sec p/li — those are handled by wrapSectionBody
+  EDITABLE_SELECTORS.forEach(function(sel) {
+    block.querySelectorAll(sel).forEach(function(el) {
+      if ((el.tagName === 'P' || el.tagName === 'LI') && el.closest('.story-sec')) return;
+      el.contentEditable = 'true';
+    });
+  });
+  // Wrap each section's body into a single editable unit
+  block.querySelectorAll('.story-sec').forEach(function(sec) { wrapSectionBody(sec); });
+}
+
+// Convert a section's p/ul/li content into one contenteditable div with plain text + "- " syntax
+function wrapSectionBody(sec) {
+  if (sec.querySelector('.sec-body-edit')) return;
+  var bodyNodes = Array.from(sec.childNodes).filter(function(n) {
+    if (n.nodeType !== 1) return false;
+    var tag = n.tagName; var cls = n.className || '';
+    return tag !== 'H2' && !cls.includes('sec-label') && !cls.includes('sec-delete') &&
+           !cls.includes('drag-handle') && !cls.includes('add-') && tag !== 'BUTTON' && tag !== 'DIV';
+  });
+  var lines = [];
+  bodyNodes.forEach(function(node) {
+    if (node.tagName === 'UL') {
+      node.querySelectorAll('li').forEach(function(li) {
+        var strong = li.querySelector('strong');
+        if (strong) {
+          lines.push('- ' + li.textContent);
+        } else {
+          lines.push('- ' + li.textContent);
+        }
+      });
+    } else if (node.tagName === 'P') {
+      lines.push(node.textContent);
+    }
+  });
+  var wrap = document.createElement('div');
+  wrap.className = 'sec-body-edit';
+  wrap.contentEditable = 'true';
+  wrap.style.cssText = 'white-space:pre-wrap;word-break:break-word;outline:none;min-height:24px;font-size:15px;color:#444;line-height:1.75;font-family:Arial,sans-serif;padding:2px 0';
+  wrap.textContent = lines.join('\n');
+  // Enter = newline (not new element)
+  wrap.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var sel = window.getSelection();
+      var range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(document.createTextNode('\n'));
+      range.collapse(false);
+      sel.removeAllRanges(); sel.addRange(range);
+    }
+  });
+  bodyNodes.forEach(function(n) { n.remove(); });
+  var h2 = sec.querySelector('h2');
+  if (h2 && h2.nextSibling) { sec.insertBefore(wrap, h2.nextSibling); }
+  else { sec.appendChild(wrap); }
+}
+
+// Before save: convert .sec-body-edit divs back to proper p/ul/li HTML
+function unwrapSectionBodies() {
+  document.querySelectorAll('.sec-body-edit').forEach(function(wrap) {
+    var sec = wrap.closest('.story-sec'); if (!sec) return;
+    var text = wrap.textContent || '';
+    var lines = text.split('\n');
+    var fragment = document.createDocumentFragment();
+    var currentUl = null;
+    lines.forEach(function(line) {
+      var trimmed = line.trim();
+      if (/^[-\u2013]\s/.test(trimmed)) {
+        if (!currentUl) { currentUl = document.createElement('ul'); fragment.appendChild(currentUl); }
+        var li = document.createElement('li');
+        var content = trimmed.replace(/^[-\u2013]\s+/, '');
+        var colonIdx = content.indexOf(':');
+        if (colonIdx > 0 && colonIdx < 60) {
+          var strong = document.createElement('strong');
+          strong.textContent = content.substring(0, colonIdx) + ':';
+          li.appendChild(strong);
+          li.appendChild(document.createTextNode(content.substring(colonIdx + 1)));
+        } else { li.textContent = content; }
+        currentUl.appendChild(li);
+      } else {
+        currentUl = null;
+        if (trimmed) { var p = document.createElement('p'); p.textContent = trimmed; fragment.appendChild(p); }
+      }
+    });
+    wrap.parentNode.insertBefore(fragment, wrap);
+    wrap.remove();
+  });
 }
 
 function enableEditMode() {
@@ -220,6 +308,7 @@ function enableEditMode() {
 }
 
 function disableEditMode() {
+  unwrapSectionBodies(); // convert back to HTML before removing edit mode
   document.body.classList.remove('edit-mode');
   document.querySelectorAll('[contenteditable]').forEach(function(el) { el.removeAttribute('contenteditable'); });
   document.getElementById('edit-fab').classList.remove('hidden');
@@ -756,8 +845,8 @@ async function saveToGitHub() {
     disableDragDrop();
     stripEditControls();
 
-    // Convert any "- " bullet lines typed in edit mode to proper <ul><li> elements
-    parseBulletsInSections();
+    // Convert sec-body-edit divs back to p/ul/li and parse "- " bullets
+    unwrapSectionBodies();
 
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
