@@ -758,6 +758,8 @@ document.addEventListener('DOMContentLoaded', function() {
     '.clip-card{border-left:4px solid #EF363D!important}',
     '.clip-label{font-size:11px!important;font-weight:700!important;letter-spacing:1.5px!important;text-transform:uppercase!important;color:#EF363D!important}',
     '.clip-quote{font-size:15px!important;font-style:italic!important;color:#1A1A2E!important;font-weight:500!important;border-left:none!important;padding-left:0!important}',
+    '.clip-quote::before{content:"\u201C"}',
+    '.clip-quote::after{content:"\u201D"}',
     /* story-sec bullet lists */
     '.story-sec ul{list-style:none!important;padding-left:0!important;margin:10px 0!important}',
     '.story-sec ul li{padding-left:18px!important;margin-bottom:8px!important;position:relative!important;font-size:15px!important;color:#444!important;line-height:1.75!important}',
