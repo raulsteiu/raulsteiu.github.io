@@ -127,6 +127,7 @@ function getCSS() {
     '.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}',
     '.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:rgba(26,26,46,.97);padding:9px 20px;align-items:center;gap:10px;backdrop-filter:blur(4px)}',
     '.edit-toolbar.visible{display:flex}',
+    '.edit-mode .page-nav{margin-top:46px}',
     '.tb-save{background:var(--red);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}',
     '.tb-save:hover{background:#c0272d}.tb-cancel{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:var(--font);cursor:pointer}',
     '.save-status{font-size:12px;color:rgba(255,255,255,.6);margin-left:8px}',
@@ -243,7 +244,11 @@ function renderPage(data) {
     '</div>';
   body.appendChild(nav);
 
-  // Lang blocks
+  // Wire lang buttons immediately — don't wait for wireEvents
+  nav.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
+    var code = btn.getAttribute('data-lang');
+    btn.onclick = function(){ setLang(code); };
+  });
   var langBlocks = document.createElement('div');
   langBlocks.id = 'lang-blocks';
   langs.forEach(function(lc) {
@@ -1178,13 +1183,14 @@ function closeModal() {
 
 // ── Wire all events ───────────────────────────────────────────────────────────
 function wireEvents() {
-  // Lang toggle
+  // Lang toggle — wire directly on elements, not via innerHTML string
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
-    btn.addEventListener('click', function(){ setLang(btn.getAttribute('data-lang')); });
+    var code = btn.getAttribute('data-lang');
+    btn.onclick = function(){ setLang(code); };
   });
   document.querySelectorAll('.remove-lang').forEach(function(btn) {
     var code = btn.getAttribute('data-remove-lang');
-    btn.addEventListener('click', function(){ removeLanguage(code); });
+    btn.onclick = function(){ removeLanguage(code); };
   });
 
   // Lang add dropdown — populate dynamically
@@ -1260,8 +1266,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     var r = await fetch(GH_DATA_URL + '?v=' + Date.now());
     if (!r.ok) throw new Error('Could not load story data (HTTP ' + r.status + ')');
     storyData = await r.json();
-    // Merge meta
-    storyData.hasLogo = STORY_META.hasLogo;
+    // Only use STORY_META.hasLogo as fallback if data.json doesn't have it
+    if (typeof storyData.hasLogo === 'undefined') {
+      storyData.hasLogo = STORY_META.hasLogo;
+    }
+    // Sync STORY_META with data.json truth
+    STORY_META.hasLogo = storyData.hasLogo;
   } catch(err) {
     document.body.innerHTML = '<div style="padding:40px;font-family:Arial;color:#c0272d"><h2>Could not load story</h2><p>' + err.message + '</p></div>';
     return;
