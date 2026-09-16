@@ -56,9 +56,9 @@
     }
   ],
   "results": [
-    "✕✕Reduced close cycle from ~3 weeks to under 1 week",
-    "✕✕Improved cross-entity consolidation accuracy",
-    "✕✕Board pack preparation time cut by more than half"
+    "✕✕✕Reduced close cycle from ~3 weeks to under 1 week",
+    "✕✕✕Improved cross-entity consolidation accuracy",
+    "✕✕✕Board pack preparation time cut by more than half"
   ],
   "participants": [
     {
@@ -87,7 +87,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Sarah Thompson, Head of Finance✕✕",
+        "title": "Sarah Thompson, Head of Finance✕✕✕",
         "ts": "",
         "quote": "Before Prophix, month-end was a scramble across dozens of spreadsheets. Now we close with confidence, and leadership can see exactly where we are — in real time.",
         "audio": ""
@@ -118,7 +118,7 @@
         {
           "type": "clip",
           "data": {
-            "title": "Sarah Thompson, Head of Finance✕✕",
+            "title": "Sarah Thompson, Head of Finance✕✕✕",
             "quote": "Before Prophix, month-end was a scramble across dozens of spreadsheets. Now we close with confidence, and leadership can see exactly where we are — in real time."
           }
         },
