@@ -8,6 +8,76 @@ var sessionToken = '';
 var cachedSha = '';
 var currentLang = 'en';
 
+// ── Language registry — add new languages here, they appear everywhere automatically ──
+var LANG_NAMES = {en:'EN', fr:'FR', nl:'NL', de:'DE', it:'IT', es:'ES', pt:'PT', pl:'PL', sv:'SV', da:'DA', fi:'FI', no:'NO', ja:'JA', zh:'ZH', ko:'KO'};
+var LANG_LABELS = {
+  en:'Customer Story', fr:'En français', nl:'In het Nederlands',
+  de:'Auf Deutsch', it:'In italiano', es:'En español',
+  pt:'Em português', pl:'Po polsku', sv:'På svenska',
+  da:'På dansk', fi:'Suomeksi', no:'På norsk',
+  ja:'カスタマーストーリー', zh:'客户案例', ko:'고객 사례'
+};
+var LANG_FULL_NAMES = {
+  fr:'French', nl:'Dutch', de:'German', it:'Italian', es:'Spanish',
+  pt:'Portuguese', pl:'Polish', sv:'Swedish', da:'Danish',
+  fi:'Finnish', no:'Norwegian', ja:'Japanese', zh:'Chinese', ko:'Korean'
+};
+
+// ── Live bullet parser — converts "- text" lines to <ul><li> on save ────────
+// Runs on all .story-sec content blocks before the HTML snapshot
+function parseBulletsInSections() {
+  document.querySelectorAll('.story-sec').forEach(function(sec) {
+    // Process each direct child p element
+    var children = Array.from(sec.childNodes);
+    var i = 0;
+    while (i < children.length) {
+      var node = children[i];
+      if (node.nodeType === 1 && node.tagName === 'P') {
+        var text = node.textContent || '';
+        var lines = text.split('\n');
+        // Check if ANY line starts with - or –
+        var hasBullets = lines.some(function(l) { return /^[-–]\s/.test(l.trim()); });
+        if (hasBullets) {
+          var fragment = document.createDocumentFragment();
+          var currentUl = null;
+          lines.forEach(function(line) {
+            var trimmed = line.trim();
+            if (/^[-–]\s/.test(trimmed)) {
+              if (!currentUl) { currentUl = document.createElement('ul'); fragment.appendChild(currentUl); }
+              var li = document.createElement('li');
+              var content = trimmed.replace(/^[-–]\s+/, '');
+              // Bold prefix: "Bold text: rest"
+              var colonIdx = content.indexOf(':');
+              if (colonIdx > 0 && colonIdx < 60) {
+                var strong = document.createElement('strong');
+                strong.textContent = content.substring(0, colonIdx) + ':';
+                li.appendChild(strong);
+                li.appendChild(document.createTextNode(content.substring(colonIdx + 1)));
+              } else {
+                li.textContent = content;
+              }
+              currentUl.appendChild(li);
+            } else {
+              currentUl = null;
+              if (trimmed) {
+                var p = document.createElement('p');
+                p.textContent = trimmed;
+                fragment.appendChild(p);
+              }
+            }
+          });
+          node.parentNode.insertBefore(fragment, node);
+          node.remove();
+          // Refresh children list after DOM change
+          children = Array.from(sec.childNodes);
+          i = 0; continue;
+        }
+      }
+      i++;
+    }
+  });
+}
+
 var EDITABLE_SELECTORS = [
   '.hero-tag', 'h1', '.hero-desc', '.hero-industry', '.hero-ind',
   '.sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
@@ -686,6 +756,9 @@ async function saveToGitHub() {
     disableDragDrop();
     stripEditControls();
 
+    // Convert any "- " bullet lines typed in edit mode to proper <ul><li> elements
+    parseBulletsInSections();
+
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
     // Restore edit mode visually while the API call runs so the user can see the saving indicator
@@ -792,7 +865,19 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() { removeLanguage(code); });
   });
   var langSel = document.getElementById('lang-add-select');
-  if (langSel) langSel.addEventListener('change', function() { if (this.value) { addLanguage(this.value); this.value=''; } });
+  if (langSel) {
+    // Rebuild the dropdown dynamically from LANG_FULL_NAMES registry
+    // so any new language added to the registry appears automatically
+    langSel.innerHTML = '<option value="">+ Add language</option>';
+    Object.keys(LANG_FULL_NAMES).forEach(function(code) {
+      if (activeLangs.indexOf(code) === -1) {
+        var opt = document.createElement('option');
+        opt.value = code; opt.textContent = LANG_FULL_NAMES[code];
+        langSel.appendChild(opt);
+      }
+    });
+    langSel.addEventListener('change', function() { if (this.value) { addLanguage(this.value); this.value=''; } });
+  }
 
   setLang('en');
 
