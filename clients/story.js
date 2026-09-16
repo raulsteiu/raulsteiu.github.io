@@ -1247,10 +1247,18 @@ function wireEvents() {
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function() {
+  // Detect old v8 pages (they have activeLangs but not GH_DATA_URL)
+  if (typeof GH_DATA_URL === 'undefined') {
+    document.body.innerHTML = '<div style="padding:40px;font-family:Arial,sans-serif;background:#fff5f5;border:2px solid #EF363D;border-radius:12px;margin:40px;color:#c0272d">' +
+      '<h2 style="margin-bottom:12px">⚠ This story needs to be re-published</h2>' +
+      '<p style="line-height:1.6;color:#555">This story was created with an older version of the platform. Please re-publish it from the <a href="/new/" style="color:#EF363D">story creator</a> to upgrade it to the current architecture.</p></div>';
+    return;
+  }
+
   // Fetch data.json
   try {
     var r = await fetch(GH_DATA_URL + '?v=' + Date.now());
-    if (!r.ok) throw new Error('Could not load story data');
+    if (!r.ok) throw new Error('Could not load story data (HTTP ' + r.status + ')');
     storyData = await r.json();
     // Merge meta
     storyData.hasLogo = STORY_META.hasLogo;
