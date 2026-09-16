@@ -235,9 +235,9 @@ function renderPage(data) {
     '<div id="lang-toggle" class="lang-toggle">' +
     langs.map(function(l) {
       return '<button class="lang-btn' + (l==='en'?' active':'') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>' +
-        (l !== 'en' ? '<button class="lang-btn remove-lang" data-remove-lang="' + l + '" style="display:none">&times;</button>' : '');
+        (l !== 'en' ? '<button class="lang-btn remove-lang edit-only" data-remove-lang="' + l + '">&times;</button>' : '');
     }).join('') +
-    '<span id="lang-add-wrap" class="edit-only" style="display:none"><select id="lang-add-select"><option value="">+ Add language</option></select></span>' +
+    '<span id="lang-add-wrap" class="edit-only"><select id="lang-add-select"><option value="">+ Add language</option></select></span>' +
     '</div>';
   body.appendChild(nav);
 
@@ -534,7 +534,13 @@ function setLang(code) {
   currentLang = code;
   document.querySelectorAll('.lang-block').forEach(function(b){ b.classList.remove('active'); });
   var block = document.getElementById('block-' + code);
-  if (block) block.classList.add('active');
+  if (block) {
+    block.classList.add('active');
+    // Re-apply edit mode to newly visible block if we're in edit mode
+    if (document.body.classList.contains('edit-mode')) {
+      makeBlockEditable(block);
+    }
+  }
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(b){
     b.classList.toggle('active', b.getAttribute('data-lang') === code);
   });
@@ -568,8 +574,7 @@ function addLanguage(code) {
   btn.addEventListener('click', function(){ setLang(code); });
   toggle.insertBefore(btn, addWrap);
   var rb = document.createElement('button');
-  rb.className = 'lang-btn remove-lang'; rb.setAttribute('data-remove-lang', code); rb.innerHTML = '&times;';
-  rb.style.display = document.body.classList.contains('edit-mode') ? 'inline-flex' : 'none';
+  rb.className = 'lang-btn remove-lang edit-only'; rb.setAttribute('data-remove-lang', code); rb.innerHTML = '&times;';
   rb.addEventListener('click', function(){ removeLanguage(code); });
   toggle.insertBefore(rb, addWrap);
 
