@@ -811,6 +811,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key==='Enter') document.getElementById('token-submit').click();
     if (e.key==='Escape') closeModal();
   });
+  // ── Inject product icons into existing app tags (old pages published without icons) ──
+  document.querySelectorAll('.app-tag').forEach(function(tag) {
+    if (tag.querySelector('img.app-icon')) return; // already has icon
+    var nameEl = tag.querySelector('span:last-child') || tag.querySelector('span');
+    if (!nameEl) return;
+    var productName = nameEl.textContent.trim();
+    var prod = PROPHIX_PRODUCTS.find(function(p) { return p.name === productName; });
+    if (!prod) return;
+    var img = document.createElement('img');
+    img.className = 'app-icon';
+    img.src = prod.icon; img.alt = productName;
+    img.style.cssText = 'width:20px;height:20px;object-fit:contain;flex-shrink:0';
+    tag.insertBefore(img, tag.firstChild);
+    var dot = tag.querySelector('.app-dot'); if (dot) dot.remove();
+    nameEl.className = 'app-name';
+  });
+
   document.getElementById('save-btn').addEventListener('click', saveToGitHub);
   document.getElementById('cancel-btn').addEventListener('click', disableEditMode);
 
