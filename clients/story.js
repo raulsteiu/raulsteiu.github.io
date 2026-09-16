@@ -174,16 +174,17 @@ function addEditControlsToExisting() {
 
   // ── Clips + drag handle ────────────────────────────────────────────────────
   document.querySelectorAll('.clip-card').forEach(function(card) {
-    // Drag handle
-    var handle = document.createElement('div');
-    handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
-    card.insertBefore(handle, card.firstChild);
-    // 🗑 delete entire clip
+    // 🗑 delete entire clip — top right
     var rb = document.createElement('button');
     rb.className = 'clip-remove-btn edit-only';
     rb.innerHTML = '🗑'; rb.title = 'Delete this clip';
     rb.addEventListener('click', function() { if (confirm('Delete this clip?')) card.remove(); });
-    card.insertBefore(rb, handle);
+    card.insertBefore(rb, card.firstChild);
+    // Drag handle — to the left of delete button
+    var handle = document.createElement('div');
+    handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
+    handle.style.right = '36px';
+    card.insertBefore(handle, rb);
 
     var player = card.querySelector('.clip-player');
 
@@ -214,6 +215,7 @@ function addEditControlsToExisting() {
   document.querySelectorAll('.story-sec').forEach(function(sec) {
     var handle = document.createElement('div');
     handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
+    handle.style.right = '36px'; // leave room for delete button
     sec.insertBefore(handle, sec.firstChild);
     var btn = document.createElement('button');
     btn.className = 'sec-delete-btn edit-only';
@@ -772,8 +774,8 @@ document.addEventListener('DOMContentLoaded', function() {
     '.story-sec ul li::before{content:""!important;position:absolute!important;left:0!important;top:9px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#EF363D!important}',
     '.story-sec p{overflow-wrap:break-word;word-break:break-word}',
     /* drag handle */
-    '.drag-handle{display:none;position:absolute;left:-22px;top:50%;transform:translateY(-50%);cursor:grab;color:#ccc;font-size:18px;line-height:1;user-select:none;padding:4px 2px}',
-    '.drag-handle:hover{color:#888}',
+    '.drag-handle{display:none;position:absolute;top:8px;right:8px;cursor:grab;color:#ccc;font-size:18px;line-height:1;user-select:none;padding:4px;border-radius:4px;z-index:10}',
+    '.drag-handle:hover{color:#888;background:rgba(0,0,0,.04)}',
     '.drag-handle:active{cursor:grabbing}',
     '.edit-mode .drag-handle{display:block!important}',
     '.story-sec,.clip-card{position:relative}',
