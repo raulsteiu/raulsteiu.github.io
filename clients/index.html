@@ -281,7 +281,7 @@ function renderGrid(filter) {
         (editedStr ? '<div class="story-edited">' + editedStr + '</div>' : '') +
       '</div>' +
       '<div class="card-actions">' +
-        '<a class="open-btn" href="/clients/' + s.slug + '/" target="_blank">Open &#x2192;</a>' +
+        '<a class="open-btn" href="/clients/' + s.slug + '/">Open &#x2192;</a>' +
         '<button class="share-btn" onclick="shareStory(\'' + s.slug + '\')" title="Copy link">⧉</button>' +
         '<button class="share-btn" onclick="copyEditLink(\'' + editUrl + '\')" title="Copy edit link" style="font-size:12px">✏</button>' +
         '<button class="delete-btn" onclick="confirmDelete(\'' + s.slug + '\',\'' + s.name.replace(/'/g,'\\x27') + '\')" title="Delete story">🗑</button>' +
