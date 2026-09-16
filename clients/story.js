@@ -149,7 +149,7 @@ function getCSS() {
     '.edit-mode .lang-btn.remove-lang{display:inline-flex!important}',
     '.edit-mode .logo-pill-client.edit-only{display:inline-flex!important}',
     '.edit-mode .add-blocks-bar.edit-only{display:flex!important}',
-    '#lang-add-wrap{display:none!important}.edit-mode #lang-add-wrap{display:inline-flex!important}',
+    '#lang-add-wrap{display:none!important;position:relative}.edit-mode #lang-add-wrap{display:inline-flex!important}',
     '[contenteditable]{outline:2px dashed rgba(239,54,61,.35);border-radius:3px}',
     '[contenteditable]:focus{outline:2px dashed rgba(239,54,61,.7)}',
     '.edit-mode .sec-body-edit{outline:2px dashed rgba(239,54,61,.35)!important;border-radius:4px;padding:4px 6px!important;min-height:32px}',
@@ -241,7 +241,10 @@ function renderPage(data) {
       return '<button class="lang-btn' + (l==='en'?' active':'') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>' +
         (l !== 'en' ? '<button class="lang-btn remove-lang edit-only" data-remove-lang="' + l + '">&times;</button>' : '');
     }).join('') +
-    '<span id="lang-add-wrap" class="edit-only"><select id="lang-add-select"><option value="">+ Add language</option></select></span>' +
+    '<span id="lang-add-wrap" class="edit-only">' +
+    '<button id="lang-add-btn" onclick="toggleLangPicker(this)" style="background:transparent;border:1px dashed rgba(255,255,255,.4);color:rgba(255,255,255,.7);border-radius:20px;padding:4px 12px;font-size:11px;font-family:var(--font);cursor:pointer">+ Add language</button>' +
+    '<div id="lang-picker" style="display:none;position:absolute;top:100%;right:0;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:6px;z-index:500;min-width:160px;margin-top:4px"></div>' +
+    '</span>' +
     '</div>';
   body.appendChild(nav);
 
@@ -538,6 +541,38 @@ function domToData() {
 }
 
 // ── Language functions ────────────────────────────────────────────────────────
+function toggleLangPicker(btn) {
+  var picker = document.getElementById('lang-picker');
+  if (!picker) return;
+  if (picker.style.display !== 'none') { picker.style.display = 'none'; return; }
+  // Populate picker with available languages
+  picker.innerHTML = '';
+  Object.keys(LANG_FULL_NAMES).forEach(function(code) {
+    if ((storyData.langs||['en']).indexOf(code) === -1) {
+      var item = document.createElement('button');
+      item.textContent = LANG_NAMES[code] + ' — ' + LANG_FULL_NAMES[code];
+      item.style.cssText = 'display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;color:#1A1A2E;border-radius:5px;font-family:Arial,sans-serif';
+      item.onmouseover = function(){ this.style.background='#f5f5f5'; };
+      item.onmouseout = function(){ this.style.background='transparent'; };
+      item.onclick = function(){ picker.style.display='none'; addLanguage(code); };
+      picker.appendChild(item);
+    }
+  });
+  if (!picker.children.length) {
+    picker.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:#888">All languages added</div>';
+  }
+  picker.style.display = 'block';
+  // Close on outside click
+  setTimeout(function() {
+    document.addEventListener('click', function closePicker(e) {
+      if (!picker.contains(e.target) && e.target !== btn) {
+        picker.style.display = 'none';
+        document.removeEventListener('click', closePicker);
+      }
+    });
+  }, 10);
+}
+
 function setLang(code) {
   currentLang = code;
   document.querySelectorAll('.lang-block').forEach(function(b){ b.classList.remove('active'); });
@@ -602,10 +637,7 @@ function removeLanguage(code) {
   var block = document.getElementById('block-' + code); if (block) block.remove();
   var btn = document.querySelector('.lang-btn[data-lang="' + code + '"]'); if (btn) btn.remove();
   var rb = document.querySelector('.remove-lang[data-remove-lang="' + code + '"]'); if (rb) rb.remove();
-  var sel = document.getElementById('lang-add-select');
-  if (sel && LANG_FULL_NAMES[code]) {
-    var opt = document.createElement('option'); opt.value = code; opt.textContent = LANG_FULL_NAMES[code]; sel.appendChild(opt);
-  }
+  // Picker repopulates dynamically from LANG_FULL_NAMES on open — nothing to update here
   if (currentLang === code) setLang('en');
 }
 
@@ -1194,17 +1226,8 @@ function wireEvents() {
     btn.onclick = function(){ removeLanguage(code); };
   });
 
-  // Lang add dropdown — populate dynamically
-  var langSel = document.getElementById('lang-add-select');
-  if (langSel) {
-    langSel.innerHTML = '<option value="">+ Add language</option>';
-    Object.keys(LANG_FULL_NAMES).forEach(function(code) {
-      if ((storyData.langs||['en']).indexOf(code) === -1) {
-        var opt = document.createElement('option'); opt.value = code; opt.textContent = LANG_FULL_NAMES[code]; langSel.appendChild(opt);
-      }
-    });
-    langSel.addEventListener('change', function(){ if (this.value) { addLanguage(this.value); this.value=''; } });
-  }
+  // Lang add dropdown — handled by toggleLangPicker() directly
+  // (custom button picker, no native select needed)
 
   setLang('en');
 
