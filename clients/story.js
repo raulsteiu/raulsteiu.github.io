@@ -21,7 +21,14 @@ var EDITABLE_SELECTORS = [
   '.disclaimer-text'
 ];
 
-var PROPHIX_PRODUCTS = ['Financial Consolidation','FPA+','Account Reconciliation','Cashflow Management'];
+var PROPHIX_PRODUCTS = [
+  {name:'Financial Consolidation', icon:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJsSURBVHgBpZU/iBNBFMa/iSuJiEs8TKEEXb1CSKNgc4VgQDkEERRS2BkEbe+28rjC7FmIhZizFiRiY3HggdpYnaCQRmNjutOAQQ8CGiJoAnrje28za7K3m1y4DybZ+fN++d6byazCCJUdL43N7hwUioBqQ+tVJPDYbdxtxMWouIn7zuKc0toDdDo01aCoJYJWtgUsOwt5aJToMY/RInDistu48yESSCAHWpXJ0SVMIo0KlWHJlCHBH5wewWoTw3xLRYJ+Lh9eKEmXnJVowBsVk8kdlGbUaf5Aq/4NvU43BFeuRbDiKFjh6XVkZ45Fzj2/8QTrr+r/B6j2Fn05UYuTdkocsJvao7fSZ/U6v2Fnp+TbjA0Q07vOp097YdjsvQKOXzyBv70/2Kh9wdT0AezN2NT2SfvV+ilAK7m7X4J2EGuFYTPzZ5ErnEJ95R2lehSvb7+U8TO3LpCjPfKcyR0K3DWrnyR1U88hoJ3dT8BzkiY/V5ffSyCDOYA3wnfkz7PC9bXC7ljsjl0y5Nqbm5KeX3wtLhnGY636BmXwYmi3rUF3DGnVv2J6NicLk3aSQB8FEt4AHmtW17ccnQDIEHO+TKHZcaf5PXBlZNYNbsYWIC/gAvMBXrnyMKiN2QAO5jR9R1qOUpQsuZbo/DCM02VxEDc7mw76DOU+u2WH0VJt/utV6AevxqwQkDkuJt04KYUKOUzNQ3WPEDQftci4HSeCrWmk3MHrq9i/Bx1MpqELN+qC9frgcZ7aUPoBZbjsNrxguyNfAXLZAl5cbZVSqxrajXq3xL5TfPDiSejNZ+iXwa+TpLeGnYgd912P1T90CR2NibOEsgAAAABJRU5ErkJggg=='},
+  {name:'Cash Management', icon:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAWCAYAAADAQbwGAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAK/SURBVHgBlZVNaBNREMfnZdva0kYLpWBrUleqFVuFYluonnITQbAe/AIPQonYU1vEHk3Wo6JpbkJEPHgQFcxBkXoxFdRgVYQ0FVpKliRqUMSY9CMmJs+ZlyYku9skHUg2772d3878Z3bCoIJ9GZblbDbrAA4jYoOBV5Ik5YBfVTfzYUabIZvcuraWG+c5PoF3tOqcGHP2vQ8rNQGDQ9aLHMCBP2WobCo6K31zkfuGwMCwbGOUHoANtmT8syTVnSrIYKKv+aEuF8JelcLazo1C64nTNQBZP+ocmh+yusQqOGhxcNSk9Ja286Owc9IBme/RMtc0ruPPHouPYayMKQzJIdDo1djTB9abHlj96BdrqWW7uDZ0WvCsF1KLQQhPXYLMt4iWGScg1+7Kdx4h7B2klhbEdfcNj4ju18N7ApiPPgLLF47rojRpN0i35sPDxXT3e99SKmAy7wArgindyJRdZNFun9QB67QbVIzVT37huOvaLfi3koCv16+UpUdR04ce/LNahJQS3Uz2w4OFQ0F6vG9Q07uwDaMqGMnRPHAEqqZMJpnzRaC0l0aOgjp2FnLJP7D3wYsiJJtMGLnqgRRd477eYvpm2zHhnHj9Mu+wUXECpxYXdECdhvHnT4R2BMrEogJKWq1jq8RuK5CcnSkWjrTVmmHbdGNq9R1WiLkUURyCphGe9M2IypIkVGX18hkjYNdvVL5sopADtQilRTquY2oFzeisCQsXvmoXDV5OY6o01mluwnFkK93n6b8idYJR/zV04Bsid4s3pb6tHaO3wIp/FtLqchkP+9Utpk1gwDLNTGwcajDSjx5UaK0SnPvgXHSiOL7y0zn3FA/6YWvm45wrhz5EfbQwHrCM4djnckUM6sUQtOmA1Vpg0OJkBNaT4pzn3C0tddN7fGpcdwoVjGTIZLNOE7CT+R1e9U/qPwWPL/KFHhi3AAAAAElFTkSuQmCC'},
+  {name:'Account Reconciliation', icon:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJnSURBVHgBrZW/UxNREMd3L5cYRDCOM6GxiM5YqoUNWDGjzughY2wstCD+BYiVFk6SGQs7SUsDNrQGFVJoQacUNuBo4Y+ksJBCk0mCkcvdrbvvuMtPAki+M5nMe2/3s7vfN/MOoYfoRTxSDZvTRJBAwggCZANaMD1wPVvYLQd3O6jkjCQ4eJ+xkbaEgo2UOW7kZvcFrORujCM589xVDHpIwA5AenhiZaErsJaLxyyqzwPROBxACLjQbIPmdmUkLcfMHxQmIqCE5CqLpIDrFaSgP0pryDcI/dO07pmP+iCQtQXa8BkInrqsTq2f78H+vdGSIXEYPAZUr6r4NkV0P5CDjlx4AMCBdvk7hM7ehWAsDvX8Emx/nlMgOddHRv1s68db2P401wLWm/Ha0GmoF5a4q4+w9eY2aAMjDL6jwNK1dO9wMQ8i8PDFx1Bbe9hg+GROEJh2NMpJ39SeU9uEv+vPGrA/vP7wRNkgYPPLom9DB1BEVpVHfAktXXOXAhOZXxdVEbeBKzteuXZ1AO1fG6BHL/kJHiw8+tTtljvSo2Nqz4PJP4ajLTlYWTbIW4TPz6hurM13XHWQE66qcdSoa4+ULYGT53gU5LHX2cMxZYkU6wr0qoZiN13PuLLcpNy0d5OyL0WCHGeX8+x7tjldgBPF9hflECqxh5SBPkneS80yQ7NE9BwOK8TVuhma8Z+v8rKR0BCSe72DXboqkKPdG5p8vbqzblXllZHCAEztDcYSOJQZmlxJtRXoVDF3LRawMYWIU11ZDmQsK5Q6cStb6igDPSRgnQKNV5x9AhvT3nj/rSJ//eS3n9h/SJwWkc1vV48AAAAASUVORK5CYII='},
+  {name:'FP&A Plus', icon:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJsSURBVHgBlZXPaxNBFMefzO4GbJOY4KFaK0ShNodGAyroRdIgQhFpeqggJehVL61/QRLw0pu9eLQRWz3GKlW8aCp4q1DqD1IPNuAPPBibJrE/srudzpskNLvd3SRfCNl9M/PZ976z+4ZACw0+eRkhEhnBa6az+c/x61mn+cRuIPzsdUDT9Rl+GTEsICQtUZpavjmcbwsYzmR82qZrguyySUbAB7apkKRM6WMz2AAcnFtAUNIRZFyc5+DUp/FraQMQfeIDCTCV10peRYGSqgqwJElDmC0JPX0RY7s0Ax1q5FQf3L90FsZevYfcerkWZGyIcliiVRZWKqsaTH38ug9D8Sop/wvbwaInjsKHG1ch6PcY4se7D0Hu3wbM5tbMSyLUDhb0e+FXZRMernyDAf9hAWnofM8RqFQ1iPb1HFgnmwPoDSq3XoLV+g/l4aW/iUXh7Y8/otQ7oX64e+a00UMualVmPBgQIMzS66p5WOa7Of/9J/z+v2WY73G5nDOcWFwS2VzgZT26chGmlr7A7GpejGH5rWTpIWazn4HCS+sX5Tay7QiIHk5fPmeIHevugl6+KW5F7hyIO4g+2gkfiN62DXQSlo9fx/jASUdg1mqgXFUPxCpN3uKXYqGs1DsWX2SMxfiNr/Hy4jtY2K4K6EqhCIWtHRFDSHNsrVThr9cG/OVzCYOiLEvDottgM9V1PelWlFueNnbSXElF09JSV/Xe8uho0dAP6+B3DCDQJi/LO0yq+ViwPAJCcwu3+cSEHdiqsToCRbYz/CiQ5cl6461N5j4xYNOyW3uA5dk8zFnCBk0NA5V83KfndqCG9gCf1v1ZXKqgQAAAAABJRU5ErkJggg=='},
+  {name:'Intercompany Management', icon:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJcSURBVHgBnVXPSxRhGH5mHYIVzaVAUBcayouRpITYqexgedzoVJfM/gCnQ8fSJejSofHQpUPurUtQ1/LQ5imsqDASosMc3AKjbVZlp6TJnvdzd5nZvhnXHhjm/b73/Z7v/TXvGNgFby177A8wJnIKKAy7jptkbyQQWSSaoTjZpCqQOB9HbGiIMnxNk8zmOwM9PJI6JM0nEr627Bw37lK00BpcPvkTrlOIEC5Z9pBJou1arvYKkhT5XJE0GELWBjxHfHgtg2k6YzIX82Synulz6J46jWDdx/dHS9iXPYD00T4VSvVjCf5KiTYTynbtwQt8nXvaIKRjMyYNh+obBy+MoMeeUIYwDCV/ungPm9cfKn1m/BgO379K/SJ+b/jopX6rVObFr5ReUpYKu9xxsh/es2XlVVCpwqdHnaNHGnrxdGu1TO+raB/oxebLz+gY7Y+EHSGU2zpJWllYVmRC8Kv0o6EXWV3GdJRr6aiufIkQmuGFhNI1PohDdy6ptYQiB+sQWTzL3jyv1uJhWC8w3lj2NprQdXZQeSEHdJDUtO1Po8L0NCOlOyBEUm1B99QpHH9/Wz31PSmeXKiDqdsUY2/hA7I3cqqFwlUN+A7Wf8Z6r/VQ8I2tI8Sqqhs7VZUOSA/0YfXW47hj8YSCRlUrvspXO6seF2od0tjFuG9YV9W1+cVYMvVNt/ItSz8KpDcTICNtWE0bGaYBMMvFZfwHItMmrNjrPKTtOzpybcR1iqG9f8Fmn8TO+LdiuDyOqjyJHM0lesSlgQWcY85nGZ4HvdfJqP2ksiIz6U92++v9BeuFBZm4sc7RAAAAAElFTkSuQmCC'},
+  {name:'Lease Accounting', icon:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK8AAAC8CAYAAAAO0P5AAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAIABJREFUeJztnXd4FNX6xz+zfUNJQhFpIihNBKSoIIoIIgiCCkizg149+erN2w5ybkJEPHgQFcxBkXoxFdRgVYQ0FVpKliRqUMSY9CMmJs+ZlyYku9skHUg2772d3878Z3bCoIJ9GZblbDbrAA4jYoOBV5Ik5YBfVTfzYUabIZvcuraWG+c5PoF3tOqcGHP2vQ8rNQGDQ9aLHMCBP2WobCo6K31zkfuGwMCwbGOUHoANtmT8syTVnSrIYKKv+aEuF8JelcLazo1C64nTNQBZP+ocmh+yusQqOGhxcNSk9Ja286Owc9IBme/RMtc0ruPPHouPYayMKQzJIdDo1djTB9abHlj96BdrqWW7uDZ0WvCsF1KLQQhPXYLMt4iWGScg1+7Kdx4h7B2klhbEdfcNj4ju18N7ApiPPgLLF47rojRpN0i35sPDxXT3e99SKmAy7wArgindyJRdZNFun9QB67QbVIzVT37huOvaLfi3koCv16+UpUdR04ce/LNahJQS3Uz2w4OFQ0F6vG9Q07uwDaMqGMnRPHAEqqZMJpnzRaC0l0aOgjp2FnLJP7D3wYsiJJtMGLnqgRRd477eYvpm2zHhnHj9Mu+wUXECpxYXdECdhvHnT4R2BMrEogJKWq1jq8RuK5CcnSkWjrTVmmHbdGNq9R1WiLkUURyCphGe9M2IypIkVGX18hkjYNdvVL5sopADtQilRTquY2oFzeisCQsXvmoXDV5OY6o01mluwnFkK93n6b8idYJR/zV04Bsid4s3pb6tHaO3wIp/FtLqchkP+9Utpk1gwDLNTGwcajDSjx5UaK0SnPvgXHSiOL7y0zn3FA/6YWvm45wrhz5EfbQwHrCM4djnckUM6sUQtOmA1Vpg0OJkBNaT4pzn3C0tddN7fGpcdwoVjGTIZLNOE7CT+R1e9U/qPwWPL/KFHhi3AAAAAElFTkSuQmCC'}
+];
 
 // ── Language toggle ───────────────────────────────────────────────────────────
 function setLang(code) {
@@ -42,7 +49,11 @@ function addLanguage(code) {
   if (!code || activeLangs.indexOf(code) > -1) return;
   activeLangs.push(code);
   var enBlock = document.getElementById('block-en');
+  // Strip injected controls from EN before cloning — they carry no listeners in the clone
+  stripEditControls();
   var newBlock = enBlock.cloneNode(true);
+  // Re-inject controls back into EN block since we stripped them
+  addEditControlsToExisting();
   newBlock.id = 'block-' + code;
   newBlock.classList.remove('active');
   newBlock.querySelectorAll(EDITABLE_SELECTORS.join(',')).forEach(function(el) {
@@ -88,6 +99,40 @@ function removeLanguage(code) {
   if (currentLang === code) setLang('en');
 }
 
+var _sortableInstances = [];
+
+// ── Load Sortable.js from CDN (once) ──────────────────────────────────────────
+function loadSortable(cb) {
+  if (window.Sortable) { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js';
+  s.onload = cb;
+  document.head.appendChild(s);
+}
+
+// ── Enable drag-drop on all main-content containers ───────────────────────────
+function enableDragDrop() {
+  loadSortable(function() {
+    document.querySelectorAll('.main-content').forEach(function(container) {
+      var inst = Sortable.create(container, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'drag-ghost',
+        chosenClass: 'drag-chosen',
+        filter: '[contenteditable]', // don't start drag when clicking editable text
+        preventOnFilter: false
+      });
+      _sortableInstances.push(inst);
+    });
+  });
+}
+
+// ── Destroy all drag-drop instances ──────────────────────────────────────────
+function disableDragDrop() {
+  _sortableInstances.forEach(function(inst) { try { inst.destroy(); } catch(e) {} });
+  _sortableInstances = [];
+}
+
 // ── Edit mode ─────────────────────────────────────────────────────────────────
 function makeBlockEditable(block) {
   block.querySelectorAll(EDITABLE_SELECTORS.join(',')).forEach(function(el) { el.contentEditable = 'true'; });
@@ -100,8 +145,8 @@ function enableEditMode() {
   document.getElementById('edit-toolbar').classList.add('visible');
   document.getElementById('save-btn').disabled = false;
   document.getElementById('save-status').textContent = 'Editing: ' + currentLang.toUpperCase();
-  // CSS handles .edit-only visibility via .edit-mode .edit-only rule
   addEditControlsToExisting();
+  enableDragDrop();
 }
 
 function disableEditMode() {
@@ -111,8 +156,9 @@ function disableEditMode() {
   document.getElementById('edit-toolbar').classList.remove('visible');
   document.getElementById('save-status').textContent = '';
   document.getElementById('save-btn').disabled = false;
-  // CSS hides .edit-only when body doesn't have .edit-mode
   var panel = document.getElementById('inline-products-panel'); if (panel) panel.remove();
+  disableDragDrop();
+  stripEditControls();
 }
 
 function closeModal() {
@@ -122,36 +168,40 @@ function closeModal() {
 }
 
 // ── Add edit controls to existing elements ────────────────────────────────────
+// Called every time edit mode opens. stripEditControls() runs before every save
+// so the page is always clean on load — no guards needed, just inject directly.
 function addEditControlsToExisting() {
-  // Clips: delete clip button + upload btn + ✕ on label to delete audio
+
+  // ── Clips + drag handle ────────────────────────────────────────────────────
   document.querySelectorAll('.clip-card').forEach(function(card) {
-    if (!card.querySelector('.clip-remove-btn')) {
-      var rb = document.createElement('button');
-      rb.className = 'clip-remove-btn edit-only';
-      rb.innerHTML = '🗑'; rb.title = 'Delete this clip';
-      rb.addEventListener('click', function() { if (confirm('Delete this clip?')) card.remove(); });
-      card.insertBefore(rb, card.firstChild);
-    }
+    // Drag handle
+    var handle = document.createElement('div');
+    handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
+    card.insertBefore(handle, card.firstChild);
+    // 🗑 delete entire clip
+    var rb = document.createElement('button');
+    rb.className = 'clip-remove-btn edit-only';
+    rb.innerHTML = '🗑'; rb.title = 'Delete this clip';
+    rb.addEventListener('click', function() { if (confirm('Delete this clip?')) card.remove(); });
+    card.insertBefore(rb, handle);
+
     var player = card.querySelector('.clip-player');
-    // Remove old-style "Delete audio" button (replaced by ✕ on the clip label)
+
+    // Upload MP3 button
     if (player) {
-      var oldDelBtn = player.querySelector('.delete-audio-btn');
-      if (oldDelBtn) oldDelBtn.remove();
-    }
-    if (player && !player.querySelector('.upload-audio-btn')) {
       var upBtn = document.createElement('button');
       upBtn.className = 'upload-audio-btn edit-only';
       upBtn.textContent = 'Upload MP3';
       upBtn.addEventListener('click', function() { uploadAudio(upBtn); });
       player.appendChild(upBtn);
     }
-    // ✕ on the clip label — removes uploaded audio file
+
+    // ✕ on clip label — deletes uploaded audio file from GitHub
     var clipLabel = card.querySelector('.clip-label');
-    if (clipLabel && !clipLabel.querySelector('.audio-del-x')) {
+    if (clipLabel) {
       var xBtn = document.createElement('button');
       xBtn.className = 'audio-del-x edit-only';
-      xBtn.title = 'Delete uploaded audio file';
-      xBtn.textContent = '✕';
+      xBtn.title = 'Delete uploaded audio'; xBtn.textContent = '✕';
       xBtn.addEventListener('click', async function(e) {
         e.stopPropagation();
         await deleteAudioFile(player, xBtn);
@@ -160,32 +210,30 @@ function addEditControlsToExisting() {
     }
   });
 
-  // Sections: add delete btn
+  // ── Sections + drag handle ─────────────────────────────────────────────────
   document.querySelectorAll('.story-sec').forEach(function(sec) {
-    if (!sec.querySelector('.sec-delete-btn')) {
-      var btn = document.createElement('button');
-      btn.className = 'sec-delete-btn edit-only';
-      btn.innerHTML = '🗑'; btn.title = 'Delete section';
-      btn.addEventListener('click', function() { if (confirm('Delete this section?')) sec.remove(); });
-      sec.insertBefore(btn, sec.firstChild);
-    }
+    var handle = document.createElement('div');
+    handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
+    sec.insertBefore(handle, sec.firstChild);
+    var btn = document.createElement('button');
+    btn.className = 'sec-delete-btn edit-only';
+    btn.innerHTML = '🗑'; btn.title = 'Delete section';
+    btn.addEventListener('click', function() { if (confirm('Delete this section?')) sec.remove(); });
+    sec.insertBefore(btn, handle);
   });
 
-  // Stats: add +/- controls
+  // ── Stats row ──────────────────────────────────────────────────────────────
   document.querySelectorAll('.stats-row').forEach(function(row) {
-    if (row.querySelector('.stat-add-btn')) return;
     row.querySelectorAll('.stat-tile').forEach(addStatDeleteBtn);
     var addBtn = document.createElement('button');
     addBtn.className = 'stat-add-btn edit-only';
-    addBtn.textContent = '+';
-    addBtn.title = 'Add stat';
+    addBtn.textContent = '+'; addBtn.title = 'Add stat';
     addBtn.addEventListener('click', function() { addStatTile(row, addBtn); });
     row.appendChild(addBtn);
   });
 
-  // Who stats: add +/- controls
+  // ── Who stats ──────────────────────────────────────────────────────────────
   document.querySelectorAll('.who-stats-grid').forEach(function(grid) {
-    if (grid.querySelector('.who-stat-add-btn')) return;
     grid.querySelectorAll('.who-stat-tile').forEach(addWhoStatDeleteBtn);
     var addBtn = document.createElement('button');
     addBtn.className = 'who-stat-add-btn edit-only';
@@ -194,20 +242,16 @@ function addEditControlsToExisting() {
     grid.appendChild(addBtn);
   });
 
-  // KRS items: add delete btns
+  // ── KRS items ──────────────────────────────────────────────────────────────
   document.querySelectorAll('.krs-item').forEach(function(item) {
-    if (!item.querySelector('.krs-item-del')) {
-      var btn = document.createElement('button');
-      btn.className = 'krs-item-del edit-only';
-      btn.innerHTML = '✕'; btn.title = 'Delete result';
-      btn.addEventListener('click', function() { item.remove(); });
-      item.appendChild(btn);
-    }
+    var btn = document.createElement('button');
+    btn.className = 'krs-item-del edit-only';
+    btn.innerHTML = '✕'; btn.title = 'Delete result';
+    btn.addEventListener('click', function() { item.remove(); });
+    item.appendChild(btn);
   });
-
-  // KRS: add "Add result" button
   var krsList = document.querySelector('.krs-list');
-  if (krsList && !krsList.querySelector('.krs-add-btn')) {
+  if (krsList) {
     var krsAdd = document.createElement('button');
     krsAdd.className = 'krs-add-btn edit-only';
     krsAdd.textContent = '+ Add result';
@@ -215,87 +259,69 @@ function addEditControlsToExisting() {
     krsList.appendChild(krsAdd);
   }
 
-  // Participants: add delete btns + "Add participant" button
-  document.querySelectorAll('.sidebar-card').forEach(function(card) {
-    if (!card.querySelector('h3')) return;
-    if (card.querySelector('h3').textContent.toLowerCase().indexOf('participant') === -1) return;
-    // Delete buttons on existing participants
+  // ── Participants ───────────────────────────────────────────────────────────
+  document.querySelectorAll('.sidebar-card[data-section="participants"], .sidebar-card:has(.participant-name)').forEach(function(card) {
     card.querySelectorAll('p').forEach(function(p) {
-      if (!p.querySelector('.part-del-btn')) {
-        var del = document.createElement('button');
-        del.className = 'part-del-btn edit-only';
-        del.innerHTML = '✕'; del.title = 'Remove participant';
-        del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px;line-height:1';
-        del.addEventListener('click', function() { p.remove(); });
-        p.insertBefore(del, p.firstChild);
-        // Make name and title editable
-        var strong = p.querySelector('strong'); if (strong) strong.contentEditable = 'true';
-        var span = p.querySelector('span'); if (span) span.contentEditable = 'true';
-      }
+      var del = document.createElement('button');
+      del.className = 'part-del-btn edit-only';
+      del.innerHTML = '✕'; del.title = 'Remove participant';
+      del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:13px;float:right;padding:0 2px;line-height:1';
+      del.addEventListener('click', function() { p.remove(); });
+      p.insertBefore(del, p.firstChild);
     });
-    // "Add participant" button
-    if (!card.querySelector('.part-add-btn')) {
-      var addBtn = document.createElement('button');
-      addBtn.className = 'part-add-btn edit-only';
-      addBtn.textContent = '+ Add participant';
-      addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
-      addBtn.addEventListener('click', function() { addParticipantInline(card, addBtn); });
-      card.appendChild(addBtn);
-    }
+    var addBtn = document.createElement('button');
+    addBtn.className = 'part-add-btn edit-only';
+    addBtn.textContent = '+ Add participant';
+    addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
+    addBtn.addEventListener('click', function() { addParticipantInline(card, addBtn); });
+    card.appendChild(addBtn);
   });
 
-  // Results sidebar: add delete btns + "Add result" button
-  document.querySelectorAll('.sidebar-card').forEach(function(card) {
-    if (!card.querySelector('h3')) return;
-    var h3text = card.querySelector('h3').textContent.toLowerCase();
-    if (h3text.indexOf('result') === -1) return;
+  // ── Results ────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.sidebar-card[data-section="results"], .sidebar-card:has(.result-item)').forEach(function(card) {
     card.querySelectorAll('.result-item').forEach(function(item) {
-      if (!item.querySelector('.result-del-btn')) {
-        var del = document.createElement('button');
-        del.className = 'result-del-btn edit-only';
-        del.innerHTML = '✕'; del.title = 'Remove result';
-        del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px;line-height:1.5';
-        del.addEventListener('click', function() { item.remove(); });
-        item.insertBefore(del, item.firstChild);
-      }
+      var del = document.createElement('button');
+      del.className = 'result-del-btn edit-only';
+      del.innerHTML = '✕'; del.title = 'Remove result';
+      del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px;line-height:1.5';
+      del.addEventListener('click', function() { item.remove(); });
+      item.insertBefore(del, item.firstChild);
     });
-    if (!card.querySelector('.result-add-btn')) {
-      var addBtn = document.createElement('button');
-      addBtn.className = 'result-add-btn edit-only';
-      addBtn.textContent = '+ Add result';
-      addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
-      addBtn.addEventListener('click', function() { addResultInline(card, addBtn); });
-      card.appendChild(addBtn);
-    }
+    var addBtn = document.createElement('button');
+    addBtn.className = 'result-add-btn edit-only';
+    addBtn.textContent = '+ Add result';
+    addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px;transition:all .15s';
+    addBtn.addEventListener('click', function() { addResultInline(card, addBtn); });
+    card.appendChild(addBtn);
   });
 }
 
 // ── Section management ────────────────────────────────────────────────────────
 function addSection(btn) {
-  var block = btn.closest('.lang-block');
+  var block = btn.closest('.lang-block') || document.querySelector('.lang-block.active');
   if (!block) return;
-  var container = block.querySelector('.sections-container');
+  var container = block.querySelector('.main-content');
   if (!container) return;
   var sec = document.createElement('div');
   sec.className = 'story-sec';
+  // drag handle
+  var handle = document.createElement('div');
+  handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
   var delBtn = document.createElement('button');
   delBtn.className = 'sec-delete-btn edit-only'; delBtn.innerHTML = '🗑'; delBtn.title = 'Delete section';
   delBtn.addEventListener('click', function() { if (confirm('Delete this section?')) sec.remove(); });
-  sec.appendChild(delBtn);
-  // Use innerHTML += after appending delBtn to avoid losing the event listener
   var label = document.createElement('div');
   label.className = 'sec-label'; label.contentEditable = 'true'; label.textContent = 'Section label';
   var h2 = document.createElement('h2');
   h2.contentEditable = 'true'; h2.textContent = 'Section heading';
   var p = document.createElement('p');
   p.contentEditable = 'true'; p.textContent = 'Write your content here.';
-  sec.appendChild(label); sec.appendChild(h2); sec.appendChild(p);
-  container.appendChild(sec); // append to end of container, not before the button (which is outside container)
+  sec.appendChild(delBtn); sec.appendChild(handle); sec.appendChild(label); sec.appendChild(h2); sec.appendChild(p);
+  container.appendChild(sec);
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 function addStatDeleteBtn(tile) {
-  if (tile.querySelector('.stat-tile-del')) return;
   var del = document.createElement('button');
   del.className = 'stat-tile-del edit-only'; del.innerHTML = '✕'; del.title = 'Remove stat';
   del.addEventListener('click', function() { tile.remove(); });
@@ -360,8 +386,13 @@ async function deleteAudioFile(player, xBtn) {
 
 // ── Clips ─────────────────────────────────────────────────────────────────────
 function addClipInline(btn) {
+  var block = btn.closest('.lang-block') || document.querySelector('.lang-block.active');
+  var container = block ? block.querySelector('.main-content') : btn.parentNode;
   var card = document.createElement('div');
   card.className = 'clip-card';
+
+  var handle = document.createElement('div');
+  handle.className = 'drag-handle edit-only'; handle.title = 'Drag to reorder'; handle.textContent = '⠿';
 
   var rb = document.createElement('button');
   rb.className = 'clip-remove-btn edit-only'; rb.innerHTML = '🗑'; rb.title = 'Delete clip';
@@ -398,13 +429,13 @@ function addClipInline(btn) {
   pl.className = 'clip-player';
   pl.appendChild(aud); pl.appendChild(upBtn);
 
-  card.appendChild(rb); card.appendChild(lbl); card.appendChild(qt); card.appendChild(pl);
-  btn.parentNode.insertBefore(card, btn);
+  card.appendChild(rb); card.appendChild(handle); card.appendChild(lbl); card.appendChild(qt); card.appendChild(pl);
+  if (container) container.appendChild(card);
+  else btn.parentNode.insertBefore(card, btn);
 }
 
 // ── Who sidebar stats ─────────────────────────────────────────────────────────
 function addWhoStatDeleteBtn(tile) {
-  if (tile.querySelector('.who-stat-del')) return;
   var del = document.createElement('button');
   del.className = 'who-stat-del edit-only'; del.innerHTML = '✕';
   del.addEventListener('click', function() { tile.remove(); });
@@ -461,19 +492,26 @@ function toggleProductsPanel(triggerEl) {
   panel.id = 'inline-products-panel';
   panel.className = 'inline-products-panel';
   var currentApps = [];
-  document.querySelectorAll('.app-tag span:last-child').forEach(function(s) { currentApps.push(s.textContent.trim()); });
-  PROPHIX_PRODUCTS.forEach(function(p) {
+  document.querySelectorAll('.app-tag .app-name').forEach(function(s) { currentApps.push(s.textContent.trim()); });
+  PROPHIX_PRODUCTS.forEach(function(prod) {
     var lbl = document.createElement('label');
-    lbl.className = 'prod-toggle' + (currentApps.indexOf(p) > -1 ? ' active' : '');
+    lbl.className = 'prod-toggle' + (currentApps.indexOf(prod.name) > -1 ? ' active' : '');
     var cb = document.createElement('input');
-    cb.type = 'checkbox'; cb.value = p; cb.checked = currentApps.indexOf(p) > -1; cb.style.display = 'none';
-    lbl.appendChild(cb);
-    lbl.appendChild(document.createTextNode(p));
+    cb.type = 'checkbox'; cb.value = prod.name; cb.checked = currentApps.indexOf(prod.name) > -1; cb.style.display = 'none';
+    var img = document.createElement('img');
+    img.src = prod.icon; img.style.cssText = 'width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px';
+    lbl.appendChild(cb); lbl.appendChild(img); lbl.appendChild(document.createTextNode(prod.name));
     lbl.addEventListener('click', function(e) {
       e.preventDefault(); cb.checked = !cb.checked; lbl.classList.toggle('active', cb.checked);
-      var sel = []; panel.querySelectorAll('input:checked').forEach(function(c) { sel.push(c.value); });
+      var sel = [];
+      panel.querySelectorAll('input:checked').forEach(function(c) {
+        var p = PROPHIX_PRODUCTS.find(function(x){ return x.name === c.value; });
+        if (p) sel.push(p);
+      });
       document.querySelectorAll('.apps-display').forEach(function(d) {
-        d.innerHTML = sel.map(function(x) { return '<div class="app-tag"><span class="app-dot"></span><span>'+x+'</span></div>'; }).join('');
+        d.innerHTML = sel.map(function(p) {
+          return '<div class="app-tag"><img class="app-icon" src="'+p.icon+'" alt="'+p.name+'"><span class="app-name">'+p.name+'</span></div>';
+        }).join('');
       });
     });
     panel.appendChild(lbl);
@@ -594,6 +632,35 @@ function uploadAudio(btn) {
   input.click();
 }
 
+// ── Strip all dynamically injected edit controls before save snapshot ─────────
+// These are re-injected fresh by addEditControlsToExisting() on every edit-mode
+// open. Saving them into the HTML causes dead buttons (no event listeners) after
+// reload, which is why add/remove features break intermittently over time.
+function stripEditControls() {
+  var selectors = [
+    '.sec-delete-btn',
+    '.drag-handle',
+    '.clip-remove-btn',
+    '.upload-audio-btn',
+    '.audio-del-x',
+    '.delete-audio-btn',      // old style, may exist on pages from earlier versions
+    '.stat-add-btn',
+    '.stat-tile-del',         // was wrongly listed as .stat-del-btn
+    '.krs-add-btn',
+    '.krs-item-del',
+    '.who-stat-add-btn',
+    '.who-stat-del',
+    '.part-add-btn',
+    '.part-del-btn',
+    '.result-add-btn',
+    '.result-del-btn',
+    '#inline-products-panel'
+  ];
+  selectors.forEach(function(sel) {
+    document.querySelectorAll(sel).forEach(function(el) { el.remove(); });
+  });
+}
+
 // ── Save ──────────────────────────────────────────────────────────────────────
 async function saveToGitHub() {
   var statusEl = document.getElementById('save-status');
@@ -614,14 +681,15 @@ async function saveToGitHub() {
     document.getElementById('edit-toolbar').classList.remove('visible');
     document.querySelectorAll('.remove-lang').forEach(function(b){ b.style.display='none'; });
     var panel = document.getElementById('inline-products-panel'); if (panel) panel.remove();
+    disableDragDrop();
+    stripEditControls();
 
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
+    // Restore edit mode visually while the API call runs so the user can see the saving indicator
     document.body.classList.add('edit-mode');
     document.getElementById('edit-fab').classList.add('hidden');
     document.getElementById('edit-toolbar').classList.add('visible');
-    document.querySelectorAll('.lang-block').forEach(makeBlockEditable);
-    document.querySelectorAll('.remove-lang').forEach(function(b){ b.style.display='inline-flex'; });
     statusEl.textContent = 'Saving…'; saveBtn.disabled = true;
 
     var enc = btoa(unescape(encodeURIComponent(html)));
@@ -685,7 +753,25 @@ document.addEventListener('DOMContentLoaded', function() {
     '.edit-only{display:none!important}',
     '.edit-mode .edit-only{display:block!important}',
     '.edit-mode .clip-remove-btn,.edit-mode .sec-delete-btn{display:inline-block!important}',
-    '.edit-mode .lang-btn.remove-lang{display:inline-flex!important}'
+    '.edit-mode .lang-btn.remove-lang{display:inline-flex!important}',
+    /* clip style — Eaglestone reference */
+    '.clip-card{border-left:4px solid #EF363D!important}',
+    '.clip-label{font-size:11px!important;font-weight:700!important;letter-spacing:1.5px!important;text-transform:uppercase!important;color:#EF363D!important}',
+    '.clip-quote{font-size:15px!important;font-style:italic!important;color:#1A1A2E!important;font-weight:500!important;border-left:none!important;padding-left:0!important}',
+    /* story-sec bullet lists */
+    '.story-sec ul{list-style:none!important;padding-left:0!important;margin:10px 0!important}',
+    '.story-sec ul li{padding-left:18px!important;margin-bottom:8px!important;position:relative!important;font-size:15px!important;color:#444!important;line-height:1.75!important}',
+    '.story-sec ul li::before{content:""!important;position:absolute!important;left:0!important;top:9px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#EF363D!important}',
+    '.story-sec p{overflow-wrap:break-word;word-break:break-word}',
+    /* drag handle */
+    '.drag-handle{display:none;position:absolute;left:-22px;top:50%;transform:translateY(-50%);cursor:grab;color:#ccc;font-size:18px;line-height:1;user-select:none;padding:4px 2px}',
+    '.drag-handle:hover{color:#888}',
+    '.drag-handle:active{cursor:grabbing}',
+    '.edit-mode .drag-handle{display:block!important}',
+    '.story-sec,.clip-card{position:relative}',
+    /* sortable feedback */
+    '.drag-ghost{opacity:0.4;background:#f0f0ff!important;border:2px dashed #aab!important}',
+    '.drag-chosen{box-shadow:0 4px 20px rgba(0,0,0,.15)!important}'
   ].join('');
   document.head.appendChild(runtimeStyle);
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
