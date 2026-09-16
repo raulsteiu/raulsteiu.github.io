@@ -924,7 +924,8 @@ document.addEventListener('DOMContentLoaded', function() {
     '.clip-quote{font-size:15px!important;font-style:italic!important;color:#1A1A2E!important;font-weight:500!important;border-left:none!important;padding-left:0!important}',
     '.clip-quote::before{content:"\u201C"}',
     '.clip-quote::after{content:"\u201D"}',
-    /* product panel */
+    '.edit-mode .sec-body-edit{outline:2px dashed rgba(239,54,61,.35)!important;border-radius:4px;padding:4px 6px!important;min-height:32px}',
+    '.edit-mode .sec-body-edit:focus{outline:2px dashed rgba(239,54,61,.7)!important}',
     '.inline-products-panel{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #E0DFF0;border-radius:8px;padding:8px;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:4px}',
     '.prod-toggle{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;border:1px solid #E0DFF0;cursor:pointer;font-size:13px;font-weight:600;color:#1A1A2E;transition:all .15s;user-select:none}',
     '.prod-toggle img{width:22px;height:22px;object-fit:contain;flex-shrink:0}',
