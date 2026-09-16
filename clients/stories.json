@@ -1,5 +1,11 @@
 [
   {
+    "slug": "acme-corp",
+    "name": "Acme Corp",
+    "created": "2026-09-16T12:48:38.592Z",
+    "logo": false
+  },
+  {
     "slug": "manchester-city-fc",
     "name": "Manchester City FC",
     "created": "2026-09-16T12:44:36.231Z",
