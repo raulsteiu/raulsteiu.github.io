@@ -1,16 +1,15 @@
 [
   {
+    "slug": "manchester-city-fc",
+    "name": "Manchester City FC",
+    "created": "2026-09-16T12:44:36.231Z",
+    "logo": false
+  },
+  {
     "slug": "eaglestone",
     "name": "Eaglestone",
     "created": "2026-09-16T07:16:46.888Z",
     "logo": true,
     "edited": "2026-09-16T11:40:08.449Z"
-  },
-  {
-    "slug": "manchester-city-fc",
-    "name": "Manchester City FC",
-    "created": "2026-09-15T16:54:32.781Z",
-    "logo": true,
-    "edited": "2026-09-15T16:57:19.522Z"
   }
 ]
