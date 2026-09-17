@@ -388,10 +388,6 @@
         {
           "name": "Alexandre Azaar",
           "title": "Manager, Product Adoption, Prophix"
-        },
-        {
-          "name": "Full name",
-          "title": "Title, Company"
         }
       ]
     },
@@ -419,20 +415,20 @@
       "whoText": "[NL] Eaglestone is a real estate promotion and development group headquartered in Belgium, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.\n As disclosed in Eaglestone's press release of 11 June 2026, the Group's active development portfolio spans:",
       "whoStats": [
         {
-          "v": "[NL] 69",
-          "l": "[NL] Active Projects"
+          "v": "69",
+          "l": "Active Projects"
         },
         {
-          "v": "[NL] €447M",
-          "l": "[NL] Total Book Value"
+          "v": "€447M",
+          "l": "Total Book Value"
         },
         {
-          "v": "[NL] 600,000+ m²",
-          "l": "[NL] Under Development"
+          "v": "600,000+ m²",
+          "l": "Under Development"
         },
         {
-          "v": "[NL] 3",
-          "l": "[NL] Countries (BE,FR,LU)"
+          "v": "3",
+          "l": "Countries (BE,FR,LU)"
         }
       ],
       "results": [
@@ -440,16 +436,16 @@
       ],
       "participants": [
         {
-          "name": "[NL] Quentin Falisse",
-          "title": "[NL] Group Consolidation Manager, Eaglestone"
+          "name": "Quentin Falisse",
+          "title": "Group Consolidation Manager, Eaglestone"
         },
         {
-          "name": "[NL] Yassine Fenniche",
-          "title": "[NL] Customer Success Manager, Prophix"
+          "name": "Yassine Fenniche",
+          "title": "Customer Success Manager, Prophix"
         },
         {
-          "name": "[NL] Alexandre Azaar",
-          "title": "[NL] Manager, Product Adoption, Prophix"
+          "name": "Alexandre Azaar",
+          "title": "Manager, Product Adoption, Prophix"
         }
       ],
       "content": [
