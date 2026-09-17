@@ -1,16 +1,5 @@
 [
   {
-    "slug": "1234",
-    "name": "1234",
-    "ind": "Hotels",
-    "langs": [
-      "en",
-      "pl"
-    ],
-    "created": "2026-09-17T12:15:46.451Z",
-    "logo": false
-  },
-  {
     "slug": "eaglestone",
     "name": "Eaglestone",
     "ind": "Real Estate Development",
