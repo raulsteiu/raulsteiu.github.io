@@ -99,6 +99,7 @@ function getCSS() {
     '.story-sec ul li b,.story-sec ul li strong{color:var(--dark)}',
     '.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin-bottom:14px;position:relative}',
     '.clip-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:9px}',
+    '.clip-title-text{flex:1;min-width:0}',
     '.clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;font-weight:500;margin-bottom:10px}',
     '.clip-quote::before{content:"\u201C"}.clip-quote::after{content:"\u201D"}',
     '.clip-player{display:flex;flex-direction:column;gap:5px}',
@@ -274,7 +275,23 @@ function renderPage(data) {
 }
 
 function renderLangBlock(data, lc, isActive, meta) {
-  var pfx = lc === 'en' ? '' : ('[' + (LANG_NAMES[lc]||lc) + '] ');
+  var isEN = lc === 'en';
+  var pfx = isEN ? '' : ('[' + (LANG_NAMES[lc]||lc) + '] ');
+  // For non-EN, use translated content if available, fall back to EN with prefix
+  var tr = (!isEN && data.translations && data.translations[lc]) ? data.translations[lc] : null;
+  var blockData = {
+    name:     (tr && tr.name)    ? tr.name    : (pfx + (data.name||'')),
+    desc:     (tr && tr.desc)    ? tr.desc    : (pfx + (data.desc||'')),
+    ind:      data.ind,
+    whoText:  (tr && tr.whoText) ? tr.whoText : (pfx + (data.whoText||'')),
+    stats:    data.stats,
+    krs:      (tr && tr.krs)     ? tr.krs     : data.krs,
+    content:  (tr && tr.content && tr.content.length > 0) ? tr.content : data.content,
+    whoStats: data.whoStats,
+    products: data.products,
+    results:  (tr && tr.results) ? tr.results : data.results,
+    participants: data.participants
+  };
   var block = document.createElement('div');
   block.className = 'lang-block' + (isActive ? ' active' : '');
   block.id = 'block-' + lc;
@@ -296,10 +313,10 @@ function renderLangBlock(data, lc, isActive, meta) {
   var langLabel = data.langLabels && data.langLabels[lc] ? data.langLabels[lc] : (LANG_LABELS[lc] || 'Customer Story');
   hero.innerHTML = logoHtml +
     '<div class="hero-body">' +
-    '<div class="hero-tag" data-field="heroTag-' + lc + '">' + esc(pfx + langLabel) + '</div>' +
-    '<h1 data-field="name-' + lc + '">' + esc(pfx + data.name) + '</h1>' +
-    '<div class="hero-desc" data-field="desc-' + lc + '">' + esc(pfx + (data.desc || '')) + '</div>' +
-    (data.ind ? '<div class="hero-ind" data-field="ind-' + lc + '">' + esc(pfx + data.ind) + '</div>' : '') +
+    '<div class="hero-tag">' + esc(langLabel) + '</div>' +
+    '<h1>' + esc(blockData.name) + '</h1>' +
+    '<div class="hero-desc">' + esc(blockData.desc) + '</div>' +
+    (blockData.ind ? '<div class="hero-ind">' + esc(blockData.ind) + '</div>' : '') +
     '</div>';
   block.appendChild(hero);
 
@@ -308,27 +325,27 @@ function renderLangBlock(data, lc, isActive, meta) {
   contentArea.className = 'content-area';
 
   // Stats
-  if (data.stats && data.stats.length > 0) {
+  if (blockData.stats && blockData.stats.length > 0) {
     var statsRow = document.createElement('div');
     statsRow.className = 'stats-row';
-    data.stats.forEach(function(s) {
+    blockData.stats.forEach(function(s) {
       var tile = document.createElement('div');
       tile.className = 'stat-tile';
-      tile.innerHTML = '<div class="stat-n">' + esc(pfx + s.v) + '</div><div class="stat-l">' + esc(pfx + s.l) + '</div>';
+      tile.innerHTML = '<div class="stat-n">' + esc(s.v) + '</div><div class="stat-l">' + esc(s.l) + '</div>';
       statsRow.appendChild(tile);
     });
     contentArea.appendChild(statsRow);
   }
 
   // KRS
-  if (data.krs && data.krs.length > 0) {
+  if (blockData.krs && blockData.krs.length > 0) {
     var krsOuter = document.createElement('div'); krsOuter.className = 'krs-outer';
     var krsCard = document.createElement('div'); krsCard.className = 'krs-card';
     krsCard.innerHTML = '<div class="krs-heading">Key Results Snapshot</div>';
     var krsList = document.createElement('ul'); krsList.className = 'krs-list';
-    data.krs.forEach(function(k) {
+    blockData.krs.forEach(function(k) {
       var li = document.createElement('li'); li.className = 'krs-item';
-      var txt = k.bold ? '<strong>' + esc(pfx+k.bold) + ':</strong> ' + esc(pfx+(k.text||'').replace(k.bold+':','').trim()) : esc(pfx+(k.text||''));
+      var txt = k.bold ? '<strong>' + esc(k.bold) + ':</strong> ' + esc((k.text||'').replace(k.bold+':','').trim()) : esc(k.text||'');
       li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + txt + '</span>';
       krsList.appendChild(li);
     });
@@ -342,9 +359,8 @@ function renderLangBlock(data, lc, isActive, meta) {
   var mainCol = document.createElement('div'); mainCol.className = 'main-col';
   var mainContent = document.createElement('div'); mainContent.className = 'main-content';
 
-  // Sections + clips interleaved (order preserved from data.content)
-  var content = data.content || [];
-  // If no content array, fall back to sections then clips
+  // Sections + clips
+  var content = blockData.content || [];
   if (content.length === 0) {
     (data.sections||[]).forEach(function(s){ content.push({type:'section', data:s}); });
     (data.clips||[]).forEach(function(c){ content.push({type:'clip', data:c}); });
@@ -353,15 +369,17 @@ function renderLangBlock(data, lc, isActive, meta) {
     if (item.type === 'section') {
       var s = item.data;
       var sec = document.createElement('div'); sec.className = 'story-sec';
-      sec.innerHTML = '<div class="sec-label">' + esc(pfx+(s.label||'')) + '</div>' +
-        '<h2>' + esc(pfx+(s.heading||'')) + '</h2>' +
-        renderBody(pfx ? pfx + (s.body||'') : (s.body||''));
+      // Bug 3 fix: always render section, even if heading is empty
+      sec.innerHTML = '<div class="sec-label">' + esc(s.label||'') + '</div>' +
+        '<h2>' + esc(s.heading||'') + '</h2>' +
+        renderBody(s.body||'');
       mainContent.appendChild(sec);
     } else if (item.type === 'clip') {
       var c = item.data;
       var card = document.createElement('div'); card.className = 'clip-card';
       card.innerHTML = '<div class="clip-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>' +
-        esc((c.title||'').replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + (c.ts ? ' · ' + esc(c.ts) : '') + '</div>' +
+        '<span class="clip-title-text">' + esc((c.title||'').replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</span>' +
+        (c.ts ? '<span class="clip-ts"> · ' + esc(c.ts) + '</span>' : '') + '</div>' +
         '<div class="clip-quote">' + esc(c.quote||'') + '</div>' +
         '<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:38px;border-radius:6px;accent-color:#EF363D">' +
         (c.audio ? '<source src="' + esc(c.audio) + '" type="audio/mpeg">' : '<source type="audio/mpeg">') +
@@ -381,24 +399,24 @@ function renderLangBlock(data, lc, isActive, meta) {
 
   // Who card
   var whoCard = document.createElement('div'); whoCard.className = 'sidebar-card';
-  whoCard.innerHTML = '<h3>Who is ' + esc(data.name) + '?</h3><p class="who-text">' + esc(pfx+(data.whoText||'')) + '</p>';
-  if (data.whoStats && data.whoStats.length > 0) {
+  whoCard.innerHTML = '<h3>Who is ' + esc(data.name) + '?</h3><p class="who-text">' + esc(blockData.whoText||'') + '</p>';
+  if (blockData.whoStats && blockData.whoStats.length > 0) {
     var wsg = document.createElement('div'); wsg.className = 'who-stats-grid';
-    data.whoStats.forEach(function(ws) {
-      wsg.innerHTML += '<div class="who-stat-tile"><div class="who-stat-n">' + esc(pfx+ws.v) + '</div><div class="who-stat-l">' + esc(pfx+ws.l) + '</div></div>';
+    blockData.whoStats.forEach(function(ws) {
+      wsg.innerHTML += '<div class="who-stat-tile"><div class="who-stat-n">' + esc(ws.v) + '</div><div class="who-stat-l">' + esc(ws.l) + '</div></div>';
     });
     whoCard.appendChild(wsg);
   }
   sidebar.appendChild(whoCard);
 
   // Products
-  if (data.products && data.products.length > 0) {
+  if (blockData.products && blockData.products.length > 0) {
     var prodCard = document.createElement('div'); prodCard.className = 'sidebar-card';
     prodCard.innerHTML = '<h3>Applications deployed</h3>';
     var appsDisplay = document.createElement('div'); appsDisplay.className = 'apps-display';
     appsDisplay.title = 'Click in edit mode to change';
     appsDisplay.setAttribute('onclick', "if(document.body.classList.contains('edit-mode'))toggleProductsPanel(this)");
-    data.products.forEach(function(pr) {
+    blockData.products.forEach(function(pr) {
       var prod = PROPHIX_PRODUCTS.find(function(p){ return p.name === pr; });
       var iconHtml = prod ? '<img class="app-icon" src="' + prod.icon + '" alt="' + esc(pr) + '">' : '<span class="app-dot"></span>';
       appsDisplay.innerHTML += '<div class="app-tag">' + iconHtml + '<span class="app-name">' + esc(pr) + '</span></div>';
@@ -408,20 +426,20 @@ function renderLangBlock(data, lc, isActive, meta) {
   }
 
   // Results
-  if (data.results && data.results.length > 0) {
+  if (blockData.results && blockData.results.length > 0) {
     var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
     resCard.innerHTML = '<h3>Results</h3>';
     var ul = document.createElement('ul'); ul.className = 'results-ul';
-    data.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc((pfx+r).replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</li>'; });
+    blockData.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc(r.replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</li>'; });
     resCard.appendChild(ul);
     sidebar.appendChild(resCard);
   }
 
   // Participants
-  if (data.participants && data.participants.length > 0) {
+  if (blockData.participants && blockData.participants.length > 0) {
     var partCard = document.createElement('div'); partCard.className = 'sidebar-card'; partCard.setAttribute('data-section','participants');
     partCard.innerHTML = '<h3>Participants</h3>';
-    data.participants.forEach(function(pt) {
+    blockData.participants.forEach(function(pt) {
       partCard.innerHTML += '<p style="margin-top:10px"><strong class="participant-name">' + esc(pt.name) + '</strong><br>' +
         '<span class="participant-title" style="font-size:12px;color:#888">' + esc(pt.title||'') + '</span></p>';
     });
@@ -489,8 +507,8 @@ function domToData() {
           var rawSrc = src ? (src.getAttribute('src') || src.src || '') : '';
           var audioFile = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
           if (audioFile && audioFile.indexOf('://') > -1) audioFile = '';
-          var clipLabelEl = el.querySelector('.clip-label');
-          var clipLabelClone = clipLabelEl ? clipLabelEl.cloneNode(true) : null;
+          var clipTitleEl = el.querySelector('.clip-title-text') || el.querySelector('.clip-label');
+          var clipLabelClone = clipTitleEl ? clipTitleEl.cloneNode(true) : null;
           if (clipLabelClone) clipLabelClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
           data.content.push({ type: 'clip', data: {
             title: clipLabelClone ? clipLabelClone.textContent.trim() : '',
@@ -538,7 +556,10 @@ function domToData() {
           var bodyText = bodyEdit ? bodyEdit.textContent : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent; }).join('\n');
           t.content.push({ type:'section', data:{ label:(el.querySelector('.sec-label')||{}).textContent||'', heading:(el.querySelector('h2')||{}).textContent||'', body:bodyText.trim() }});
         } else if (el.classList.contains('clip-card')) {
-          t.content.push({ type:'clip', data:{ title:(el.querySelector('.clip-label')||{}).textContent||'', quote:(el.querySelector('.clip-quote')||{}).textContent||'' }});
+          var ctEl = el.querySelector('.clip-title-text') || el.querySelector('.clip-label');
+          var ctClone = ctEl ? ctEl.cloneNode(true) : null;
+          if (ctClone) ctClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+          t.content.push({ type:'clip', data:{ title: ctClone ? ctClone.textContent.trim() : '', quote:(el.querySelector('.clip-quote')||{}).textContent||'' }});
         }
       });
     }
@@ -655,7 +676,7 @@ function removeLanguage(code) {
 var EDITABLE_SELECTORS = [
   '.hero-tag', 'h1', '.hero-desc', '.hero-industry', '.hero-ind',
   '.sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
-  '.clip-label', '.clip-quote', '.clips-section-title',
+  '.clip-title-text', '.clip-quote', '.clips-section-title',
   '.sidebar-card h3', '.result-item',
   '.stat-n', '.stat-l', '.krs-item-text',
   '.who-text', '.who-stat-n', '.who-stat-l',
@@ -709,7 +730,11 @@ function wrapSectionBody(sec) {
 function unwrapSectionBodies() {
   document.querySelectorAll('.sec-body-edit').forEach(function(wrap) {
     var sec = wrap.closest('.story-sec'); if (!sec) return;
-    var text = wrap.textContent || '';
+    // Normalize innerHTML: replace <br> and </div><div> with \n, then get textContent
+    var temp = wrap.cloneNode(true);
+    temp.querySelectorAll('br').forEach(function(br){ br.replaceWith('\n'); });
+    temp.querySelectorAll('div').forEach(function(d){ d.insertAdjacentText('beforebegin', '\n'); d.replaceWith(d.textContent); });
+    var text = temp.textContent || '';
     var lines = text.split('\n');
     var fragment = document.createDocumentFragment(); var currentUl = null;
     lines.forEach(function(line) {
