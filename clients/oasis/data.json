@@ -37,7 +37,7 @@
   "krs": [
     {
       "bold": "",
-      "text": "Consolidated multi-entity financials across City Football Group within a single platform"
+      "text": "Consolidated multi-entity financials across City Football Group within a single platform TBD"
     },
     {
       "bold": "",
@@ -132,6 +132,46 @@
             "body": "[DE] With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
           }
         }
+      ],
+      "krs": [
+        {
+          "bold": "",
+          "text": "Consolidated multi-entity financials across City Football Group within a single platform, jets in deutch"
+        },
+        {
+          "bold": "",
+          "text": "Replaced manual spreadsheet-based forecasting with automated, scenario-driven planning"
+        },
+        {
+          "bold": "",
+          "text": "Gave management real-time visibility into P&L across all revenue entities"
+        }
+      ],
+      "whoText": "[DE] Oasis is a British rock band formed in Manchester in 1991, fronted by brothers Liam and Noel Gallagher. With over 75 million records sold worldwide, they are one of the best-selling music acts in history. After a 15-year hiatus, the band announced a highly anticipated reunion tour in 2024.",
+      "whoStats": [
+        {
+          "v": "75M+",
+          "l": "Records sold"
+        },
+        {
+          "v": "1991",
+          "l": "Founded"
+        }
+      ],
+      "results": [
+        "Month-end close time cut by over 60%",
+        "Full consolidation across touring, catalogue, and licensing entities",
+        "Scenario planning now supports multi-tour and multi-territory forecasting"
+      ],
+      "participants": [
+        {
+          "name": "James Whitfield",
+          "title": "CFO, Oasis Touring Ltd."
+        },
+        {
+          "name": "Raul Steiu",
+          "title": "Data Integration Engineer, Prophix"
+        }
       ]
     },
     "pt": {
@@ -142,7 +182,7 @@
           "type": "section",
           "data": {
             "label": "[PT] ",
-            "heading": "[PT] Managing the finances behind a global comeback",
+            "heading": "[PT] Managing the finances behind a global comeback Vamos",
             "body": "[PT] When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
           }
         },
@@ -160,6 +200,46 @@
             "heading": "[PT] One version of the truth — across every revenue stream",
             "body": "[PT] With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
           }
+        }
+      ],
+      "krs": [
+        {
+          "bold": "",
+          "text": "Consolidated multi-entity financials across City Football Group within a single platform Vamos!"
+        },
+        {
+          "bold": "",
+          "text": "Replaced manual spreadsheet-based forecasting with automated, scenario-driven planning"
+        },
+        {
+          "bold": "",
+          "text": "Gave management real-time visibility into P&L across all revenue entities"
+        }
+      ],
+      "whoText": "[PT] Oasis is a British rock band formed in Manchester in 1991, fronted by brothers Liam and Noel Gallagher. With over 75 million records sold worldwide, they are one of the best-selling music acts in history. After a 15-year hiatus, the band announced a highly anticipated reunion tour in 2024.",
+      "whoStats": [
+        {
+          "v": "75M+",
+          "l": "Records sold"
+        },
+        {
+          "v": "1991",
+          "l": "Founded"
+        }
+      ],
+      "results": [
+        "Month-end close time cut by over 60%",
+        "Full consolidation across touring, catalogue, and licensing entities",
+        "Scenario planning now supports multi-tour and multi-territory forecasting"
+      ],
+      "participants": [
+        {
+          "name": "James Whitfield",
+          "title": "CFO, Oasis Touring Ltd."
+        },
+        {
+          "name": "Raul Steiu",
+          "title": "Data Integration Engineer, Prophix"
         }
       ]
     }
