@@ -1,5 +1,11 @@
 [
   {
+    "slug": "oasis",
+    "name": "Oasis",
+    "created": "2026-09-17T07:48:49.941Z",
+    "logo": true
+  },
+  {
     "slug": "manchester-city-fc",
     "name": "Manchester City FC",
     "created": "2026-09-16T16:49:30.816Z",
