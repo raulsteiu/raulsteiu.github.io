@@ -506,7 +506,7 @@ function domToData() {
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
           var bodyEdit = el.querySelector('.sec-body-edit');
-          var bodyText = bodyEdit ? bodyEdit.textContent : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent; }).join('\n');
+          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,''); }).join('\n');
           data.content.push({ type: 'section', data: {
             label: (el.querySelector('.sec-label')||{}).textContent||'',
             heading: (el.querySelector('h2')||{}).textContent||'',
@@ -598,7 +598,7 @@ function domToData() {
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
           var bodyEdit = el.querySelector('.sec-body-edit');
-          var bodyText = bodyEdit ? bodyEdit.textContent : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent; }).join('\n');
+          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,''); }).join('\n');
           t.content.push({ type:'section', data:{ label:(el.querySelector('.sec-label')||{}).textContent||'', heading:(el.querySelector('h2')||{}).textContent||'', body:bodyText.trim() }});
         } else if (el.classList.contains('clip-card')) {
           var ctEl = el.querySelector('.clip-title-text') || el.querySelector('.clip-label');
@@ -751,7 +751,11 @@ function wrapSectionBody(sec) {
   bodyNodes.forEach(function(node) {
     if (node.tagName === 'UL') {
       node.querySelectorAll('li').forEach(function(li) { lines.push('- ' + li.textContent); });
-    } else if (node.tagName === 'P') { lines.push(node.textContent); }
+    } else if (node.tagName === 'P') {
+      // Normalize &nbsp; blank paragraphs to empty lines
+      var txt = node.textContent.replace(/\u00a0/g, '').trim();
+      lines.push(txt);
+    }
   });
   var wrap = document.createElement('div');
   wrap.className = 'sec-body-edit';
@@ -796,7 +800,9 @@ function unwrapSectionBodies() {
         currentUl.appendChild(li);
       } else {
         currentUl = null;
-        if (t) { var p = document.createElement('p'); p.textContent = t; fragment.appendChild(p); }
+        var clean = t.replace(/\u00a0/g, '').trim();
+        if (clean) { var p = document.createElement('p'); p.textContent = clean; fragment.appendChild(p); }
+        else { var bp = document.createElement('p'); bp.innerHTML = '&nbsp;'; fragment.appendChild(bp); }
       }
     });
     wrap.parentNode.insertBefore(fragment, wrap); wrap.remove();
@@ -920,12 +926,11 @@ function addEditControlsToExisting() {
     btn.className = 'krs-item-del edit-only'; btn.innerHTML = '✕'; btn.title = 'Delete';
     btn.addEventListener('click', function(){ item.remove(); }); item.appendChild(btn);
   });
-  var krsList = document.querySelector('.krs-list');
-  if (krsList) {
+  document.querySelectorAll('.krs-list').forEach(function(krsList) {
     var krsAdd = document.createElement('button');
     krsAdd.className = 'krs-add-btn edit-only'; krsAdd.textContent = '+ Add result';
     krsAdd.addEventListener('click', function(){ addKrsItem(krsList, krsAdd); }); krsList.appendChild(krsAdd);
-  }
+  });
 
   // Participants
   document.querySelectorAll('.sidebar-card[data-section="participants"],.sidebar-card:has(.participant-name)').forEach(function(card) {
