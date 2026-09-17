@@ -311,7 +311,9 @@ function renderGrid(filter) {
       ? new Date(s.created).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})
       : '';
 
-    var metaLine = [s.ind, editedStr || (createdStr ? 'Published ' + createdStr : '')].filter(Boolean).join(' · ');
+    var metaLine = s.ind ? '<div class="story-meta">' + s.ind + '</div>' : '';
+    var dateLine = editedStr ? '<div class="story-edited">' + editedStr + '</div>'
+      : (createdStr ? '<div class="story-edited">Published ' + createdStr + '</div>' : '');
     var langPills = (s.langs && s.langs.length > 0)
       ? '<div class="lang-pills">' + s.langs.map(function(l){ return '<span class="lang-pill">' + l.toUpperCase() + '</span>'; }).join('') + '</div>'
       : '';
@@ -323,7 +325,8 @@ function renderGrid(filter) {
       '</div>' +
       '<div class="card-body">' +
         '<div class="story-name">' + s.name + '</div>' +
-        (metaLine ? '<div class="story-meta">' + metaLine + '</div>' : '') +
+        metaLine +
+        dateLine +
         langPills +
       '</div>' +
       '<div class="card-actions">' +
