@@ -1238,6 +1238,9 @@ async function _updateEditedTimestamp() {
     var entry = stories.find(function(s){ return s.slug === slug; });
     if (!entry) return;
     entry.edited = new Date().toISOString();
+    if (storyData.ind) entry.ind = storyData.ind;
+    entry.langs = storyData.langs || ['en'];
+    entry.logo = storyData.hasLogo || entry.logo || false;
     var enc = btoa(unescape(encodeURIComponent(JSON.stringify(stories, null, 2))));
     await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify({message:'Update edited: '+slug, content:enc, sha:d.sha}) });
   } catch(e) { /* silent */ }
