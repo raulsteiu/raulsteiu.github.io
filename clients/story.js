@@ -502,7 +502,12 @@ function domToData() {
       data.products = Array.from(block.querySelectorAll('.app-name')).map(function(s){ return s.textContent.trim(); });
 
       // Results
-      data.results = Array.from(block.querySelectorAll('.result-item')).map(function(r){ return r.textContent.trim(); });
+      data.results = Array.from(block.querySelectorAll('.result-item')).map(function(r){
+        // Clone and remove any injected edit buttons before reading text
+        var clone = r.cloneNode(true);
+        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+        return clone.textContent.trim();
+      }).filter(function(r){ return r.length > 0; });
 
       // Participants
       data.participants = Array.from(block.querySelectorAll('[data-section="participants"] p')).map(function(p) {
