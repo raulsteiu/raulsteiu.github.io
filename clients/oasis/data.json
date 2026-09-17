@@ -74,7 +74,7 @@
       "data": {
         "label": "",
         "heading": "Managing the finances behind a global comeback",
-        "body": "When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
+        "body": "[EN] When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
       }
     },
     {
@@ -91,7 +91,7 @@
       "data": {
         "label": "",
         "heading": "One version of the truth — across every revenue stream",
-        "body": "With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
+        "body": "[EN] With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
       }
     },
     {
@@ -172,7 +172,8 @@
           "name": "Raul Steiu",
           "title": "Data Integration Engineer, Prophix"
         }
-      ]
+      ],
+      "krsHeading": "Key Results Snapshot"
     },
     "pt": {
       "name": "[PT] Oasis",
@@ -248,7 +249,9 @@
           "name": "Raul Steiu",
           "title": "Data Integration Engineer, Prophix"
         }
-      ]
+      ],
+      "krsHeading": "Key Results Snapshot"
     }
-  }
+  },
+  "krsHeading": "Key Results Snapshot"
 }
