@@ -107,7 +107,7 @@
   "translations": {
     "de": {
       "name": "[DE] Oasis",
-      "desc": "[DE] Oasis is one of Britain's most iconic rock bands, formed in Manchester in 1991. The Gallagher brothers-led group manages a vast global catalogue, touring operations, merchandise revenue, and licensing across multiple entities — with financial complexity that scales with their legendary status.",
+      "desc": "Oasis ist eine der kultigsten britischen Rockbands, die 1991 in Manchester gegründet wurde. Die von den Gallagher-Brüdern geleitete Gruppe verwaltet einen riesigen weltweiten Katalog, Tourneebetriebe, Merchandising-Einnahmen und Lizenzierungen über mehrere Unternehmen hinweg – mit einer finanziellen Komplexität, die ihrem legendären Status entspricht.",
       "content": [
         {
           "type": "section",
@@ -120,7 +120,7 @@
         {
           "type": "clip",
           "data": {
-            "title": "One Song For AUTONOMOUS FINANCE✕✕✕✕✕✕",
+            "title": "One Song For AUTONOMOUS FINANCE",
             "quote": "Whats the story Prophix Glory"
           }
         },
@@ -149,7 +149,7 @@
         {
           "type": "clip",
           "data": {
-            "title": "One Song For AUTONOMOUS FINANCE✕✕✕✕✕✕",
+            "title": "One Song For AUTONOMOUS FINANCE",
             "quote": "Whats the story Prophix Glory"
           }
         },
