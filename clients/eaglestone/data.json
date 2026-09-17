@@ -212,6 +212,15 @@
         "quote": "Here is the quote",
         "audio": ""
       }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "",
+        "ts": "",
+        "quote": "Pull quote",
+        "audio": ""
+      }
     }
   ],
   "translations": {
