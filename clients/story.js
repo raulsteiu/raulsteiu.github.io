@@ -361,7 +361,7 @@ function renderLangBlock(data, lc, isActive, meta) {
       var c = item.data;
       var card = document.createElement('div'); card.className = 'clip-card';
       card.innerHTML = '<div class="clip-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>' +
-        esc(c.title||'') + (c.ts ? ' · ' + esc(c.ts) : '') + '</div>' +
+        esc((c.title||'').replace(/^[✕✗×\s]+/,'')) + (c.ts ? ' · ' + esc(c.ts) : '') + '</div>' +
         '<div class="clip-quote">' + esc(c.quote||'') + '</div>' +
         '<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:38px;border-radius:6px;accent-color:#EF363D">' +
         (c.audio ? '<source src="' + esc(c.audio) + '" type="audio/mpeg">' : '<source type="audio/mpeg">') +
@@ -489,8 +489,11 @@ function domToData() {
           var rawSrc = src ? (src.getAttribute('src') || src.src || '') : '';
           var audioFile = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
           if (audioFile && audioFile.indexOf('://') > -1) audioFile = '';
+          var clipLabelEl = el.querySelector('.clip-label');
+          var clipLabelClone = clipLabelEl ? clipLabelEl.cloneNode(true) : null;
+          if (clipLabelClone) clipLabelClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
           data.content.push({ type: 'clip', data: {
-            title: (el.querySelector('.clip-label')||{}).textContent||'',
+            title: clipLabelClone ? clipLabelClone.textContent.trim() : '',
             ts: '',
             quote: (el.querySelector('.clip-quote')||{}).textContent||'',
             audio: audioFile || ''
