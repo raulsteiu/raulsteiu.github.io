@@ -255,7 +255,7 @@ function renderGrid(filter) {
   var countEl = document.getElementById('story-count');
   var q = (filter || '').toLowerCase().trim();
   var sort = (document.getElementById('sort-select') || {value:'edited'}).value || 'edited';
-  var favs = JSON.parse(localStorage.getItem('prophix-favs') || '[]');
+  var favs = getFavs();
 
   var list = STORIES.filter(function(s) {
     return !q || s.name.toLowerCase().indexOf(q) > -1 || (s.ind||'').toLowerCase().indexOf(q) > -1 || s.slug.toLowerCase().indexOf(q) > -1;
@@ -297,7 +297,7 @@ function renderGrid(filter) {
   }
 
   noResults.style.display = 'none';
-  var favs = JSON.parse(localStorage.getItem('prophix-favs') || '[]');
+  var favs = getFavs();
   grid.innerHTML = list.map(function(s) {
     var logoHtml = s.logo
       ? '<img src="/clients/' + s.slug + '/logo.png?v=' + (s.created||'') + '" alt="' + s.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">' +
@@ -461,11 +461,20 @@ async function pushStoriesJSON() {
 }
 
 // ── Favourites ────────────────────────────────────────────────────────────────
+// ── Favourites (cookie-based for persistence) ─────────────────────────────────
+function getFavs() {
+  var match = document.cookie.match(/(?:^|;\s*)prophix-favs=([^;]*)/);
+  try { return match ? JSON.parse(decodeURIComponent(match[1])) : []; } catch(e) { return []; }
+}
+function setFavs(favs) {
+  var exp = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
+  document.cookie = 'prophix-favs=' + encodeURIComponent(JSON.stringify(favs)) + '; expires=' + exp + '; path=/';
+}
 function toggleFav(slug) {
-  var favs = JSON.parse(localStorage.getItem('prophix-favs') || '[]');
+  var favs = getFavs();
   var idx = favs.indexOf(slug);
   if (idx > -1) { favs.splice(idx, 1); } else { favs.push(slug); }
-  localStorage.setItem('prophix-favs', JSON.stringify(favs));
+  setFavs(favs);
   renderGrid(document.getElementById('search-input').value);
 }
 
