@@ -56,6 +56,12 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
 .search-input:focus { border-color: var(--red); }
 .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #aaa; pointer-events: none; }
 .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #aaa; cursor: pointer; font-size: 16px; display: none; padding: 4px; }
+.sort-wrap { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.sort-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; white-space: nowrap; }
+.sort-select-wrap { position: relative; }
+.sort-select { appearance: none; background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 9px 28px 9px 11px; font-size: 13px; color: var(--dark); cursor: pointer; outline: none; font-family: var(--font); transition: border-color .15s; }
+.sort-select:focus { border-color: var(--red); }
+.sort-chev { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #aaa; font-size: 11px; }
 .results-count { font-size: 13px; color: var(--muted); margin-bottom: 18px; min-height: 18px; }
 
 /* ── Grid ── */
@@ -87,8 +93,14 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
 .card-body { padding: 14px 16px 10px; flex: 1; }
 .story-name { font-size: 15px; font-weight: 900; color: var(--dark); margin-bottom: 3px; }
 .story-url { font-size: 11px; color: #aaa; margin-bottom: 4px; word-break: break-all; }
+.story-meta { font-size: 11px; color: #999; margin-bottom: 6px; }
 .story-date { font-size: 11px; color: #bbb; }
 .story-edited { font-size: 11px; color: #ccc; font-style: italic; margin-top: 2px; }
+.lang-pills { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.lang-pill { background: #1A1A2E; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; letter-spacing: .3px; }
+.fav-btn { position: absolute; top: 8px; right: 8px; background: transparent; border: none; cursor: pointer; font-size: 17px; line-height: 1; padding: 3px; color: #D8D6E8; transition: transform .15s, color .15s; z-index: 2; }
+.fav-btn:hover { transform: scale(1.2); }
+.fav-btn.fav-on { color: #F5C842; }
 .card-actions {
   display: flex; align-items: center; gap: 6px;
   padding: 10px 12px; border-top: 1px solid var(--border);
@@ -169,6 +181,18 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
       <input type="text" class="search-input" id="search-input" placeholder="Search stories…"/>
       <button class="search-clear" id="search-clear">✕</button>
     </div>
+    <div class="sort-wrap">
+      <span class="sort-label">Sort</span>
+      <div class="sort-select-wrap">
+        <select class="sort-select" id="sort-select">
+          <option value="edited">Last edited</option>
+          <option value="created">Date created</option>
+          <option value="fav">Favourites first</option>
+          <option value="name">Name A–Z</option>
+        </select>
+        <span class="sort-chev">▾</span>
+      </div>
+    </div>
   </div>
   <div class="results-count" id="results-count"></div>
   <div class="grid" id="stories-grid">
@@ -230,10 +254,27 @@ function renderGrid(filter) {
   var noResults = document.getElementById('no-results');
   var countEl = document.getElementById('story-count');
   var q = (filter || '').toLowerCase().trim();
+  var sort = (document.getElementById('sort-select') || {value:'edited'}).value || 'edited';
+  var favs = JSON.parse(localStorage.getItem('prophix-favs') || '[]');
 
   var list = STORIES.filter(function(s) {
-    return !q || s.name.toLowerCase().indexOf(q) > -1 || s.slug.toLowerCase().indexOf(q) > -1;
+    return !q || s.name.toLowerCase().indexOf(q) > -1 || (s.ind||'').toLowerCase().indexOf(q) > -1 || s.slug.toLowerCase().indexOf(q) > -1;
   });
+
+  // Sort
+  if (sort === 'edited') {
+    list.sort(function(a,b){ return new Date(b.edited||b.created||0) - new Date(a.edited||a.created||0); });
+  } else if (sort === 'created') {
+    list.sort(function(a,b){ return new Date(b.created||0) - new Date(a.created||0); });
+  } else if (sort === 'name') {
+    list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+  } else if (sort === 'fav') {
+    list.sort(function(a,b){
+      var af = favs.indexOf(a.slug) > -1 ? 1 : 0;
+      var bf = favs.indexOf(b.slug) > -1 ? 1 : 0;
+      return (bf - af) || (new Date(b.edited||b.created||0) - new Date(a.edited||a.created||0));
+    });
+  }
 
   var total = STORIES.length;
   countEl.textContent = total + ' published stor' + (total === 1 ? 'y' : 'ies');
@@ -256,34 +297,38 @@ function renderGrid(filter) {
   }
 
   noResults.style.display = 'none';
+  var favs = JSON.parse(localStorage.getItem('prophix-favs') || '[]');
   grid.innerHTML = list.map(function(s) {
     var logoHtml = s.logo
       ? '<img src="/clients/' + s.slug + '/logo.png?v=' + (s.created||'') + '" alt="' + s.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">' +
         '<div class="card-logo-fallback" style="display:none">📄</div>'
       : '<div class="card-logo-fallback">📄</div>';
 
-    var createdStr = s.created
-      ? new Date(s.created).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})
-      : '';
     var editedStr = s.edited
       ? 'Edited ' + new Date(s.edited).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
       : '';
+    var createdStr = s.created
+      ? new Date(s.created).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})
+      : '';
 
-    // Bookmarkable edit link
-    var editUrl = '/clients/' + s.slug + '/?edit=1';
+    var metaLine = [s.ind, editedStr || (createdStr ? 'Published ' + createdStr : '')].filter(Boolean).join(' · ');
+    var langPills = (s.langs && s.langs.length > 0)
+      ? '<div class="lang-pills">' + s.langs.map(function(l){ return '<span class="lang-pill">' + l.toUpperCase() + '</span>'; }).join('') + '</div>'
+      : '';
+    var isFav = favs.indexOf(s.slug) > -1;
 
     return '<div class="story-card" id="card-' + s.slug + '">' +
-      '<div class="card-logo-wrap">' + logoHtml + '</div>' +
+      '<div class="card-logo-wrap">' + logoHtml +
+        '<button class="fav-btn' + (isFav ? ' fav-on' : '') + '" onclick="toggleFav(\'' + s.slug + '\')" title="' + (isFav ? 'Remove from favourites' : 'Add to favourites') + '">★</button>' +
+      '</div>' +
       '<div class="card-body">' +
         '<div class="story-name">' + s.name + '</div>' +
-        '<div class="story-url">raulsteiu.github.io/clients/' + s.slug + '</div>' +
-        (createdStr ? '<div class="story-date">Published ' + createdStr + '</div>' : '') +
-        (editedStr ? '<div class="story-edited">' + editedStr + '</div>' : '') +
+        (metaLine ? '<div class="story-meta">' + metaLine + '</div>' : '') +
+        langPills +
       '</div>' +
       '<div class="card-actions">' +
         '<a class="open-btn" href="/clients/' + s.slug + '/">Open &#x2192;</a>' +
         '<button class="share-btn" onclick="shareStory(\'' + s.slug + '\')" title="Copy link">⧉</button>' +
-        '<button class="share-btn" onclick="copyEditLink(\'' + editUrl + '\')" title="Copy edit link" style="font-size:12px">✏</button>' +
         '<button class="delete-btn" onclick="confirmDelete(\'' + s.slug + '\',\'' + s.name.replace(/'/g,'\\x27') + '\')" title="Delete story">🗑</button>' +
       '</div>' +
     '</div>';
@@ -412,10 +457,20 @@ async function pushStoriesJSON() {
   if (!res.ok) throw new Error('Failed to update stories index');
 }
 
+// ── Favourites ────────────────────────────────────────────────────────────────
+function toggleFav(slug) {
+  var favs = JSON.parse(localStorage.getItem('prophix-favs') || '[]');
+  var idx = favs.indexOf(slug);
+  if (idx > -1) { favs.splice(idx, 1); } else { favs.push(slug); }
+  localStorage.setItem('prophix-favs', JSON.stringify(favs));
+  renderGrid(document.getElementById('search-input').value);
+}
+
 // ── Search wiring ─────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   var input = document.getElementById('search-input');
   var clear = document.getElementById('search-clear');
+  var sortSel = document.getElementById('sort-select');
   input.addEventListener('input', function() {
     clear.style.display = this.value ? 'block' : 'none';
     renderGrid(this.value);
@@ -423,6 +478,9 @@ document.addEventListener('DOMContentLoaded', function() {
   clear.addEventListener('click', function() {
     input.value = ''; this.style.display = 'none';
     renderGrid(''); input.focus();
+  });
+  sortSel.addEventListener('change', function() {
+    renderGrid(input.value);
   });
 });
 </script>
