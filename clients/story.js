@@ -548,7 +548,37 @@ function domToData() {
       var t = data.translations[lc];
       var h1l = block.querySelector('h1'); if (h1l) t.name = h1l.textContent.trim();
       var descl = block.querySelector('.hero-desc'); if (descl) t.desc = descl.textContent.trim();
-      // Content translations
+
+      // KRS
+      t.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
+        var text = (item.querySelector('.krs-item-text')||{}).textContent||'';
+        var strong = item.querySelector('.krs-item-text strong');
+        var bold = strong ? strong.textContent.replace(/:$/, '') : '';
+        var body = bold ? text.replace(bold + ':', '').trim() : text;
+        return { bold: bold, text: bold ? bold + ': ' + body : body };
+      });
+
+      // Who text
+      var whoTxtEl = block.querySelector('.who-text'); if (whoTxtEl) t.whoText = whoTxtEl.textContent.trim();
+
+      // Who stats
+      t.whoStats = Array.from(block.querySelectorAll('.who-stat-tile')).map(function(tile) {
+        return { v: (tile.querySelector('.who-stat-n')||{}).textContent||'', l: (tile.querySelector('.who-stat-l')||{}).textContent||'' };
+      });
+
+      // Results
+      t.results = Array.from(block.querySelectorAll('.result-item')).map(function(r) {
+        var clone = r.cloneNode(true);
+        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+        return clone.textContent.trim();
+      }).filter(function(r){ return r.length > 0; });
+
+      // Participants
+      t.participants = Array.from(block.querySelectorAll('[data-section="participants"] p')).map(function(p) {
+        return { name: (p.querySelector('.participant-name')||{}).textContent||'', title: (p.querySelector('.participant-title')||{}).textContent||'' };
+      });
+
+      // Content (sections + clips)
       t.content = [];
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
