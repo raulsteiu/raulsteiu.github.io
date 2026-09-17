@@ -42,7 +42,7 @@ function getCSS() {
     ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}',
     '*{box-sizing:border-box;margin:0;padding:0}',
     'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}',
-    '.page-nav{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:10px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}',
+    '.page-nav{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:10px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:300}',
     '.portal-link{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;transition:all .15s;white-space:nowrap;flex-shrink:0}',
     '.portal-link:hover{color:#fff;border-color:rgba(255,255,255,.5)}',
     '.share-page-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}',
@@ -129,7 +129,7 @@ function getCSS() {
     '.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}',
     '.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:rgba(26,26,46,.97);padding:9px 20px;align-items:center;gap:10px;backdrop-filter:blur(4px)}',
     '.edit-toolbar.visible{display:flex}',
-    '.edit-mode .page-nav{margin-top:46px}',
+    '.edit-mode .page-nav{top:46px}',
     '.tb-save{background:var(--red);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}',
     '.tb-save:hover{background:#c0272d}.tb-cancel{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:var(--font);cursor:pointer}',
     '.save-status{font-size:12px;color:rgba(255,255,255,.6);margin-left:8px}',
@@ -194,7 +194,8 @@ function renderBody(text) {
       } else { html += '<li>' + esc(content) + '</li>'; }
     } else {
       if (inList) { html += '</ul>'; inList = false; }
-      if (t) html += '<p>' + esc(t) + '</p>';
+      if (t) { html += '<p>' + esc(t) + '</p>'; }
+      else { html += '<p>&nbsp;</p>'; }
     }
   });
   if (inList) html += '</ul>';
@@ -285,8 +286,12 @@ function renderLangBlock(data, lc, isActive, meta) {
     ind:      data.ind,
     whoText:  (tr && tr.whoText) ? tr.whoText : (pfx + (data.whoText||'')),
     stats:    data.stats,
-    krs:      (tr && tr.krs)     ? tr.krs     : data.krs,
-    content:  (tr && tr.content && tr.content.length > 0) ? tr.content : data.content,
+    krs:      (tr && tr.krs && tr.krs.length > 0) ? tr.krs : (isEN ? data.krs : data.krs.map(function(k){ return {bold:'', text:'['+( LANG_NAMES[lc]||lc)+'] '+k.text}; })),
+    krsHeading: (tr && tr.krsHeading) ? tr.krsHeading : (data.krsHeading || 'Key Results Snapshot'),
+    content:  (tr && tr.content && tr.content.length > 0) ? tr.content : data.content.map(function(item){
+      if (item.type === 'section') { return {type:'section', data:{label:item.data.label, heading:item.data.heading, body:'['+(LANG_NAMES[lc]||lc)+'] '+item.data.body}}; }
+      return item;
+    }),
     whoStats: data.whoStats,
     products: data.products,
     results:  (tr && tr.results) ? tr.results : data.results,
@@ -341,7 +346,7 @@ function renderLangBlock(data, lc, isActive, meta) {
   if (blockData.krs && blockData.krs.length > 0) {
     var krsOuter = document.createElement('div'); krsOuter.className = 'krs-outer';
     var krsCard = document.createElement('div'); krsCard.className = 'krs-card';
-    krsCard.innerHTML = '<div class="krs-heading">Key Results Snapshot</div>';
+    krsCard.innerHTML = '<div class="krs-heading">' + esc(blockData.krsHeading || 'Key Results Snapshot') + '</div>';
     var krsList = document.createElement('ul'); krsList.className = 'krs-list';
     blockData.krs.forEach(function(k) {
       var li = document.createElement('li'); li.className = 'krs-item';
@@ -425,15 +430,15 @@ function renderLangBlock(data, lc, isActive, meta) {
     sidebar.appendChild(prodCard);
   }
 
-  // Results
+  // Results — always render card so Add result button works in edit mode
+  var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
+  resCard.innerHTML = '<h3>Results</h3>';
+  var ul = document.createElement('ul'); ul.className = 'results-ul';
   if (blockData.results && blockData.results.length > 0) {
-    var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
-    resCard.innerHTML = '<h3>Results</h3>';
-    var ul = document.createElement('ul'); ul.className = 'results-ul';
     blockData.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc(r.replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</li>'; });
-    resCard.appendChild(ul);
-    sidebar.appendChild(resCard);
   }
+  resCard.appendChild(ul);
+  sidebar.appendChild(resCard);
 
   // Participants
   if (blockData.participants && blockData.participants.length > 0) {
@@ -481,6 +486,8 @@ function domToData() {
       data.stats = Array.from(block.querySelectorAll('.stat-tile')).map(function(t) {
         return { v: (t.querySelector('.stat-n')||{}).textContent||'', l: (t.querySelector('.stat-l')||{}).textContent||'' };
       });
+
+      var krsHeading = block.querySelector('.krs-heading'); if (krsHeading) data.krsHeading = krsHeading.textContent.trim();
 
       // KRS
       data.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
@@ -551,6 +558,8 @@ function domToData() {
       var t = data.translations[lc];
       var h1l = block.querySelector('h1'); if (h1l) t.name = h1l.textContent.trim();
       var descl = block.querySelector('.hero-desc'); if (descl) t.desc = descl.textContent.trim();
+
+      var krsHeadingEl = block.querySelector('.krs-heading'); if (krsHeadingEl) t.krsHeading = krsHeadingEl.textContent.trim();
 
       // KRS — clone items to strip any injected buttons before reading
       t.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
@@ -713,7 +722,7 @@ var EDITABLE_SELECTORS = [
   '.hero-tag', 'h1', '.hero-desc', '.hero-industry', '.hero-ind',
   '.sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
   '.clip-title-text', '.clip-quote', '.clips-section-title',
-  '.sidebar-card h3', '.result-item',
+  '.sidebar-card h3', '.result-item', '.krs-heading',
   '.stat-n', '.stat-l', '.krs-item-text',
   '.who-text', '.who-stat-n', '.who-stat-l',
   '.participant-name', '.participant-title',
