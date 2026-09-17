@@ -49,7 +49,7 @@
     }
   ],
   "results": [
-    "✕Month-end close time cut by over 60%",
+    "Month-end close time cut by over 60%",
     "✕Full consolidation across touring, catalogue, and licensing entities",
     "✕Scenario planning now supports multi-tour and multi-territory forecasting"
   ],
@@ -80,7 +80,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "One Song For AUTONOMOUS FINANCE✕",
+        "title": "One Song For AUTONOMOUS FINANCE✕✕",
         "ts": "",
         "quote": "Whats the story Prophix Glory",
         "audio": ""
@@ -109,6 +109,13 @@
           }
         },
         {
+          "type": "clip",
+          "data": {
+            "title": "One Song For AUTONOMOUS FINANCE✕✕",
+            "quote": "Whats the story Prophix Glory"
+          }
+        },
+        {
           "type": "section",
           "data": {
             "label": "[DE] ",
@@ -128,6 +135,13 @@
             "label": "[PT] ",
             "heading": "[PT] Managing the finances behind a global comeback",
             "body": "[PT] When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "One Song For AUTONOMOUS FINANCE✕✕",
+            "quote": "Whats the story Prophix Glory"
           }
         },
         {
