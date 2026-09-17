@@ -225,7 +225,7 @@
   ],
   "translations": {
     "fr": {
-      "name": "[FR] Eaglestone",
+      "name": "Eaglestone en français",
       "desc": "Écoutez Quentin, Group Consolidation Manager chez Eaglestone, partager comment la consolidation financière Prophix et le Continuous Success Package l'ont aidé à restructurer une configuration héritée complexe, intégrer la France dans la consolidation groupe, et construire une visibilité en temps réel sur trois marchés.",
       "content": [
         {
@@ -330,20 +330,6 @@
             "label": "[FR] With Prophix, Eaglestone Services SA was able to:",
             "heading": "[FR] ",
             "body": "[FR] - Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
-          }
-        },
-        {
-          "type": "clip",
-          "data": {
-            "title": "More transparency",
-            "quote": "Here is the quote"
-          }
-        },
-        {
-          "type": "clip",
-          "data": {
-            "title": "",
-            "quote": "Pull quote"
           }
         }
       ]
