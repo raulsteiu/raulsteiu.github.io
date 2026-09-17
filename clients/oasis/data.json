@@ -36,22 +36,22 @@
   "whoText": "Oasis is a British rock band formed in Manchester in 1991, fronted by brothers Liam and Noel Gallagher. With over 75 million records sold worldwide, they are one of the best-selling music acts in history. After a 15-year hiatus, the band announced a highly anticipated reunion tour in 2024.",
   "krs": [
     {
-      "text": "Unified touring, catalogue, and licensing financials into a single consolidated view",
-      "bold": ""
+      "bold": "",
+      "text": "Unified touring, catalogue, and licensing financials into a single consolidated view"
     },
     {
-      "text": "Replaced manual spreadsheet-based forecasting with automated, scenario-driven planning",
-      "bold": ""
+      "bold": "",
+      "text": "Replaced manual spreadsheet-based forecasting with automated, scenario-driven planning"
     },
     {
-      "text": "Gave management real-time visibility into P&L across all revenue entities",
-      "bold": ""
+      "bold": "",
+      "text": "Gave management real-time visibility into P&L across all revenue entities"
     }
   ],
   "results": [
-    "Month-end close time cut by over 60%",
-    "Full consolidation across touring, catalogue, and licensing entities",
-    "Scenario planning now supports multi-tour and multi-territory forecasting"
+    "✕Month-end close time cut by over 60%",
+    "✕Full consolidation across touring, catalogue, and licensing entities",
+    "✕Scenario planning now supports multi-tour and multi-territory forecasting"
   ],
   "participants": [
     {
@@ -66,7 +66,7 @@
   "products": [
     "Financial Consolidation",
     "FP&A Plus",
-    "Intercompany Management"
+    "Lease Accounting"
   ],
   "content": [
     {
@@ -74,7 +74,16 @@
       "data": {
         "label": "",
         "heading": "Managing the finances behind a global comeback",
-        "body": "When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\n\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
+        "body": "When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "One Song For AUTONOMOUS FINANCE✕",
+        "ts": "",
+        "quote": "Whats the story Prophix Glory",
+        "audio": ""
       }
     },
     {
@@ -82,8 +91,54 @@
       "data": {
         "label": "",
         "heading": "One version of the truth — across every revenue stream",
-        "body": "With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\n\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
+        "body": "With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
       }
     }
-  ]
+  ],
+  "translations": {
+    "de": {
+      "name": "[DE] Oasis",
+      "desc": "[DE] Oasis is one of Britain's most iconic rock bands, formed in Manchester in 1991. The Gallagher brothers-led group manages a vast global catalogue, touring operations, merchandise revenue, and licensing across multiple entities — with financial complexity that scales with their legendary status.",
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "[DE] ",
+            "heading": "[DE] Managing the finances behind a global comeback",
+            "body": "[DE] When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[DE] ",
+            "heading": "[DE] One version of the truth — across every revenue stream",
+            "body": "[DE] With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
+          }
+        }
+      ]
+    },
+    "pt": {
+      "name": "[PT] Oasis",
+      "desc": "[PT] Oasis is one of Britain's most iconic rock bands, formed in Manchester in 1991. The Gallagher brothers-led group manages a vast global catalogue, touring operations, merchandise revenue, and licensing across multiple entities — with financial complexity that scales with their legendary status.",
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "[PT] ",
+            "heading": "[PT] Managing the finances behind a global comeback",
+            "body": "[PT] When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[PT] ",
+            "heading": "[PT] One version of the truth — across every revenue stream",
+            "body": "[PT] With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
+          }
+        }
+      ]
+    }
+  }
 }
