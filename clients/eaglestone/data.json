@@ -5,7 +5,8 @@
   "ind": "Real Estate Development",
   "langs": [
     "en",
-    "fr"
+    "fr",
+    "nl"
   ],
   "hasLogo": true,
   "stats": [
@@ -81,7 +82,8 @@
     }
   ],
   "products": [
-    "Financial Consolidation"
+    "Financial Consolidation",
+    "Cash Management"
   ],
   "content": [
     {
@@ -371,7 +373,8 @@
         }
       ],
       "results": [
-        "Reduced Close from 10 days to 2"
+        "Reduced Close from 10 days to 2",
+        "New result"
       ],
       "participants": [
         {
@@ -385,6 +388,188 @@
         {
           "name": "Alexandre Azaar",
           "title": "Manager, Product Adoption, Prophix"
+        },
+        {
+          "name": "Full name",
+          "title": "Title, Company"
+        }
+      ]
+    },
+    "nl": {
+      "name": "[NL] Eaglestone",
+      "desc": "[NL] Listen to Quentin, Group Consolidation Manager at Eaglestone, share how Prophix Financial Consolidation and the Continuous Success Package helped him restructure a complex inherited setup, integrate France into the group consolidation, and build real-time visibility across three markets.",
+      "krs": [
+        {
+          "bold": "",
+          "text": "[NL] Full transparency, faster close:: consolidated data, local figures, and intercompany eliminations are now visible in one system, removing the back and forth with France that used to slow every close."
+        },
+        {
+          "bold": "",
+          "text": "[NL] On-time investor reporting:: IFRS reporting to shareholders now meets strict deadlines consistently, replacing a process that was regularly late."
+        },
+        {
+          "bold": "",
+          "text": "[NL] About a week saved per closing cycle:: restructuring the consolidation top-down freed up roughly one week per closing period, by Quentin's own estimate."
+        },
+        {
+          "bold": "",
+          "text": "[NL] Full consolidation independence:: through the CSP coaching model, the team now manages and evolves the Prophix configuration entirely on its own."
+        }
+      ],
+      "whoText": "[NL] Eaglestone is a real estate promotion and development group headquartered in Belgium, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.\n As disclosed in Eaglestone's press release of 11 June 2026, the Group's active development portfolio spans:",
+      "whoStats": [
+        {
+          "v": "[NL] 69",
+          "l": "[NL] Active Projects"
+        },
+        {
+          "v": "[NL] €447M",
+          "l": "[NL] Total Book Value"
+        },
+        {
+          "v": "[NL] 600,000+ m²",
+          "l": "[NL] Under Development"
+        },
+        {
+          "v": "[NL] 3",
+          "l": "[NL] Countries (BE,FR,LU)"
+        }
+      ],
+      "results": [
+        "[NL] Reduced Close from 10 days to 2"
+      ],
+      "participants": [
+        {
+          "name": "[NL] Quentin Falisse",
+          "title": "[NL] Group Consolidation Manager, Eaglestone"
+        },
+        {
+          "name": "[NL] Yassine Fenniche",
+          "title": "[NL] Customer Success Manager, Prophix"
+        },
+        {
+          "name": "[NL] Alexandre Azaar",
+          "title": "[NL] Manager, Product Adoption, Prophix"
+        }
+      ],
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] Business Challenges",
+            "heading": "[NL] A complex, inherited setup across three decentralized markets",
+            "body": "When Quentin joined Eaglestone as Group Consolidation Manager in July 2025, he inherited a Prophix environment configured by a predecessor without formal consolidation training. The structure was built bottom-up rather than top-down, sub-consolidations were not linked to the group consolidation, and France, a key activity cluster, ran its own consolidation in SAP BFC, sending only pre-aggregated contributions to the group level.\nThis created real visibility problems. Quentin had no access to the underlying intercompany eliminations, local data, or console adjustments for France. When questions arose from management or from IFRS-reporting shareholders, he had to go back to France for every detail. Deadlines were regularly missed. The group operates across Belgium, France, and Luxembourg with differing accounting systems and a dual reporting requirement: local Luxembourgian standards alongside IFRS."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] More transparency, faster information",
+            "quote": "[NL] The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] Why Prophix",
+            "heading": "[NL] The right platform to restructure and scale the consolidation",
+            "body": "Prophix Financial Consolidation was already deployed at Eaglestone when Quentin arrived. What changed was how it was used. Through the Continuous Success Package, Quentin worked alongside a Prophix consultant to audit the existing setup, identify structural weaknesses, and rebuild the consolidation architecture from scratch: top-down, with all sub-consolidations linked to the group level in real time.\n- A platform for top-down multi-country consolidation with real-time visibility across all entity and subgroup levels simultaneously.\n- Full integration of France (local figures, console adjustments, and intercompany eliminations) replacing pre-aggregated SAP BFC contributions with entity-level detail.\n- Dual reporting support (Luxembourgian statutory and IFRS) with segment-level consolidation, analytical dimensions, and full traceability of adjustments."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] Meeting investor deadlineS",
+            "quote": "[NL] Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] Learning by doing with the CSP",
+            "quote": "[NL] The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] Standout Features",
+            "heading": "[NL] What Quentin and his team rely on most",
+            "body": "Asked what he and his team use most, Quentin pointed to a handful of capabilities he now relies on daily rather than a single headline feature.\n- Intercompany reconciliation module: his preferred way to reconcile positions between entities, which he described as far more user friendly than the tool he used previously.\n- Custom reporting layer (DynProfit): lets him build detailed reports that go well beyond the standard consolidated contributions his predecessor relied on.\n- Analytical dimensions: used to answer specific management requests, such as pulling bank debt by banking establishment directly out of the consolidation.\n- Coherence controls in the liasses: validation rules, including some Quentin added himself, that catch errors such as assets not matching liabilities before consolidation runs.\n- Segment-level consolidation: the ability to release a consolidated view by business segment, not just by country, something the previous setup could not produce.\n- Scenario simulation: modeling the consolidated impact of a deal structure or an investor's dilution before it happens, to compare options before committing."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] A next-generation consolidation tool",
+            "quote": "[NL] Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] Key Results",
+            "heading": "[NL] From inherited complexity to full consolidation independence",
+            "body": "With the restructured Prophix setup, Eaglestone now runs a top-down group consolidation with sub-consolidations for Belgium, France, and Luxembourg linked in real time. Quentin has full visibility into intercompany eliminations, local data, and console adjustments for every entity, detail that was simply unavailable before.\nThe quality and traceability of consolidated figures improved significantly. Quentin builds detailed reporting using Prophix's DynProfit layer, analyses segment-level contributions, and reconciles consolidated accounts against treasury and business plan data, work that previously had no time allocated to it because consolidation itself was too slow and opaque.\nFrance was fully migrated from SAP BFC into Prophix during 2024. Investor-facing IFRS reporting now meets strict deadlines consistently. The team moved from spending most of its energy keeping consolidation running to spending that energy on analysis."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] Time freed for strategic analysis",
+            "quote": "[NL] We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] Team support during France integration",
+            "quote": "[NL] I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] The ROI, in days",
+            "heading": "[NL] The time savings, in numbers",
+            "body": "Asked directly to quantify the impact, Quentin was careful not to overstate it. Eaglestone's consolidation process takes about a month at each closing, and the group closes its books four times a year: an interim consolidation in June, the annual consolidation in December, and quarterly stops on March 31 and September 30.\nBy restructuring the setup top-down with Alexandre, Quentin estimated the team now saves about a week per closing cycle. That work used to depend on unlinked sub-consolidations and now runs through a single group consolidation with real-time visibility into each entity."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] Estimating the time saved",
+            "quote": "[NL] I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] 9/10, already referring peers",
+            "quote": "[NL] I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] With Prophix, Eaglestone Services SA was able to:",
+            "heading": "[NL] ",
+            "body": "- Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] More transparency",
+            "quote": "[NL] Here is the quote"
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL]",
+            "quote": "[NL] Pull quote"
+          }
         }
       ]
     }
