@@ -95,7 +95,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "More transparency, faster information✕✕✕✕✕✕✕",
+        "title": "More transparency, faster information",
         "ts": "",
         "quote": "The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
         "audio": "clip1_transparency.mp3"
@@ -112,7 +112,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Meeting investor deadlines✕✕✕✕✕✕✕",
+        "title": "Meeting investor deadlineS",
         "ts": "",
         "quote": "Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines.",
         "audio": "clip2_deadlines.mp3"
@@ -121,7 +121,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Learning by doing with the CSP✕✕✕✕✕✕✕",
+        "title": "Learning by doing with the CSP✕✕✕✕✕✕",
         "ts": "",
         "quote": "The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool.",
         "audio": "clip3_csp_coaching.mp3"
@@ -138,7 +138,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "A next-generation consolidation tool✕✕✕✕✕✕✕",
+        "title": "A next-generation consolidation tool✕✕✕✕✕✕",
         "ts": "",
         "quote": "Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC.",
         "audio": "clip4_new_generation.mp3"
@@ -155,7 +155,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Time freed for strategic analysis✕✕✕✕✕✕✕",
+        "title": "Time freed for strategic analysis✕✕✕✕✕✕",
         "ts": "",
         "quote": "We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data.",
         "audio": "clip6_time_saved.mp3"
@@ -164,7 +164,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Team support during France integration✕✕✕✕✕✕✕",
+        "title": "Team support during France integration✕✕✕✕✕✕",
         "ts": "",
         "quote": "I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success.",
         "audio": "clip7_team_support.mp3"
@@ -181,7 +181,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Estimating the time saved✕✕✕✕✕✕✕",
+        "title": "Estimating the time saved✕✕✕✕✕✕",
         "ts": "",
         "quote": "I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end.",
         "audio": "clip8_roi_week.mp3"
@@ -190,7 +190,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "9/10, already referring peers✕✕✕✕✕✕✕",
+        "title": "9/10, already referring peers✕✕✕✕✕✕",
         "ts": "",
         "quote": "I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues.",
         "audio": "clip5_nps_recommendation.mp3"
@@ -208,7 +208,7 @@
   "translations": {
     "fr": {
       "name": "[FR] Eaglestone",
-      "desc": "Écoutez Quentin, Group Consolidation Manager chez Eaglestone, partager comment la consolidation financière Prophix et le Continuous Success Package l'ont aidé à restructurer une configuration héritée complexe, intégrer la France dans la consolidation groupe, et construire une visibilité en temps réel sur trois marchés.",
+      "desc": "[FR] Listen to Quentin, Group Consolidation Manager at Eaglestone, share how Prophix Financial Consolidation and the Continuous Success Package helped him restructure a complex inherited setup, integrate France into the group consolidation, and build real-time visibility across three markets.",
       "content": [
         {
           "type": "section",
