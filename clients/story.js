@@ -532,10 +532,10 @@ function domToData() {
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
           var bodyEdit = el.querySelector('.sec-body-edit');
-          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,''); }).join('\n');
+          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'').replace(/^\[[A-Z]{2}\]\s*/gm,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,'').replace(/^\[[A-Z]{2}\]\s*/,''); }).join('\n');
           data.content.push({ type: 'section', data: {
-            label: (el.querySelector('.sec-label')||{}).textContent||'',
-            heading: (el.querySelector('h2')||{}).textContent||'',
+            label: (el.querySelector('.sec-label')||{}).textContent.replace(/^\[[A-Z]{2}\]\s*/,'')||'',
+            heading: (el.querySelector('h2')||{}).textContent.replace(/^\[[A-Z]{2}\]\s*/,'')||'',
             body: bodyText.trim()
           }});
         } else if (el.classList.contains('clip-card')) {
@@ -624,8 +624,8 @@ function domToData() {
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
           var bodyEdit = el.querySelector('.sec-body-edit');
-          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,''); }).join('\n');
-          t.content.push({ type:'section', data:{ label:(el.querySelector('.sec-label')||{}).textContent||'', heading:(el.querySelector('h2')||{}).textContent||'', body:bodyText.trim() }});
+          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'').replace(/^\[EN\]\s*/gm,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,'').replace(/^\[EN\]\s*/,''); }).join('\n');
+          t.content.push({ type:'section', data:{ label:(el.querySelector('.sec-label')||{}).textContent.replace(/^\[EN\]\s*/,'')||'', heading:(el.querySelector('h2')||{}).textContent.replace(/^\[EN\]\s*/,'')||'', body:bodyText.trim() }});
         } else if (el.classList.contains('clip-card')) {
           var ctEl = el.querySelector('.clip-title-text') || el.querySelector('.clip-label');
           var ctClone = ctEl ? ctEl.cloneNode(true) : null;
