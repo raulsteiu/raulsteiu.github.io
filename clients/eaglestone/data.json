@@ -332,6 +332,60 @@
             "body": "[FR] - Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
           }
         }
+      ],
+      "krs": [
+        {
+          "bold": "Full transparency, faster close:",
+          "text": "Full transparency, faster close:: consolidated data, local figures, and intercompany eliminations are now visible in one system, removing the back and forth with France that used to slow every close."
+        },
+        {
+          "bold": "On-time investor reporting:",
+          "text": "On-time investor reporting:: IFRS reporting to shareholders now meets strict deadlines consistently, replacing a process that was regularly late."
+        },
+        {
+          "bold": "About a week saved per closing cycle:",
+          "text": "About a week saved per closing cycle:: restructuring the consolidation top-down freed up roughly one week per closing period, by Quentin's own estimate."
+        },
+        {
+          "bold": "Full consolidation independence:",
+          "text": "Full consolidation independence:: through the CSP coaching model, the team now manages and evolves the Prophix configuration entirely on its own."
+        }
+      ],
+      "whoText": "[FR] Eaglestone is a real estate promotion and development group headquartered in Belgium, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.\n As disclosed in Eaglestone's press release of 11 June 2026, the Group's active development portfolio spans:",
+      "whoStats": [
+        {
+          "v": "69",
+          "l": "Active Projects"
+        },
+        {
+          "v": "€447M",
+          "l": "Total Book Value"
+        },
+        {
+          "v": "600,000+ m²",
+          "l": "Under Development"
+        },
+        {
+          "v": "3",
+          "l": "Countries (BE,FR,LU)"
+        }
+      ],
+      "results": [
+        "Reduced Close from 10 days to 2"
+      ],
+      "participants": [
+        {
+          "name": "Quentin Falisse",
+          "title": "Group Consolidation Manager, Eaglestone"
+        },
+        {
+          "name": "Yassine Fenniche",
+          "title": "Customer Success Manager, Prophix"
+        },
+        {
+          "name": "Alexandre Azaar",
+          "title": "Manager, Product Adoption, Prophix"
+        }
       ]
     }
   }
