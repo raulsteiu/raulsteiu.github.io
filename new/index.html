@@ -316,7 +316,7 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
   var stats=Array.from(document.querySelectorAll('#stats-b .stat-row')).map(function(r){return{v:r.querySelector('.sv').value.trim()||'—',l:r.querySelector('.sl').value.trim()||'—'};}).filter(function(s){return s.v!=='—'||s.l!=='—';});
   var whoStats=Array.from(document.querySelectorAll('#who-b .stat-row')).map(function(r){return{v:r.querySelector('.wv').value.trim(),l:r.querySelector('.wl').value.trim()};}).filter(function(s){return s.v||s.l;});
   var krs=Array.from(document.querySelectorAll('#krs-b .dyn')).map(function(el){return{text:el.querySelector('.kt').value.trim(),bold:el.querySelector('.kb').value.trim()};}).filter(function(k){return k.text;});
-  var secs=Array.from(document.querySelectorAll('#secs-b .dyn')).map(function(el){return{label:el.querySelector('.sl2').value.trim(),heading:el.querySelector('.sh').value.trim(),body:el.querySelector('.sb').value.trim()};}).filter(function(s){return s.heading;});
+  var secs=Array.from(document.querySelectorAll('#secs-b .dyn')).map(function(el){return{label:el.querySelector('.sl2').value.trim(),heading:el.querySelector('.sh').value.trim(),body:el.querySelector('.sb').value.trim()};}).filter(function(s){return s.label||s.heading||s.body;});
   var clips=Array.from(document.querySelectorAll('#clips-b .dyn')).map(function(el){return{title:el.querySelector('.ct').value.trim(),ts:el.querySelector('.cts').value.trim(),quote:el.querySelector('.cq').value.trim()};}).filter(function(c){return c.title;});
   var results=Array.from(document.querySelectorAll('.rt')).map(function(i){return i.value.trim();}).filter(Boolean);
   var parts=Array.from(document.querySelectorAll('#part-b .dyn')).map(function(el){return{name:el.querySelector('.pn').value.trim(),title:el.querySelector('.pt').value.trim()};}).filter(function(p){return p.name;});
@@ -460,7 +460,11 @@ function renderBody(text, pfx) {
       html += '<li>' + content + '</li>';
     } else {
       if (inList) { html += '</ul>'; inList = false; }
-      if (trimmed) html += '<p>' + pfx + esc(trimmed) + '</p>';
+      if (trimmed) {
+        html += '<p>' + pfx + esc(trimmed) + '</p>';
+      } else {
+        html += '<p>&nbsp;</p>';
+      }
     }
   });
   if (inList) html += '</ul>';
