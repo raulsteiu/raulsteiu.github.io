@@ -277,24 +277,50 @@ function renderPage(data) {
 
 function renderLangBlock(data, lc, isActive, meta) {
   var isEN = lc === 'en';
-  var pfx = isEN ? '' : ('[' + (LANG_NAMES[lc]||lc) + '] ');
   // For non-EN, use translated content if available, fall back to EN with prefix
   var tr = (!isEN && data.translations && data.translations[lc]) ? data.translations[lc] : null;
+  var p = isEN ? '' : ('[' + (LANG_NAMES[lc]||lc) + '] ');
   var blockData = {
-    name:     (tr && tr.name)    ? tr.name    : (pfx + (data.name||'')),
-    desc:     (tr && tr.desc)    ? tr.desc    : (pfx + (data.desc||'')),
-    ind:      data.ind,
-    whoText:  (tr && tr.whoText) ? tr.whoText : (pfx + (data.whoText||'')),
-    stats:    data.stats,
-    krs:      (tr && tr.krs && tr.krs.length > 0) ? tr.krs : (isEN ? data.krs : data.krs.map(function(k){ return {bold:'', text:'['+( LANG_NAMES[lc]||lc)+'] '+k.text}; })),
-    krsHeading: (tr && tr.krsHeading) ? tr.krsHeading : (data.krsHeading || 'Key Results Snapshot'),
-    content:  (tr && tr.content && tr.content.length > 0) ? tr.content : data.content.map(function(item){
-      if (item.type === 'section') { return {type:'section', data:{label:item.data.label, heading:item.data.heading, body:'['+(LANG_NAMES[lc]||lc)+'] '+item.data.body}}; }
-      return item;
-    }),
-    whoStats: data.whoStats,
-    products: data.products,
-    results:  (tr && tr.results) ? tr.results : data.results,
+    name:       (tr && tr.name)    ? tr.name    : (p + (data.name||'')),
+    desc:       (tr && tr.desc)    ? tr.desc    : (p + (data.desc||'')),
+    ind:        data.ind,
+    whoText:    (tr && tr.whoText) ? tr.whoText : (p + (data.whoText||'')),
+    // Stats — prefix labels so user knows to translate
+    stats:      (tr && tr.stats && tr.stats.length > 0) ? tr.stats
+                : data.stats.map(function(s){ return isEN ? s : {v: p+s.v, l: p+s.l}; }),
+    // KRS — preserve bold, prefix text
+    krs:        (tr && tr.krs && tr.krs.length > 0) ? tr.krs
+                : (isEN ? data.krs : data.krs.map(function(k){
+                    return {bold: k.bold||'', text: p+(k.bold ? k.bold+': '+k.text.replace(k.bold+':','').trim() : k.text)};
+                  })),
+    krsHeading: (tr && tr.krsHeading) ? tr.krsHeading : (p + (data.krsHeading || 'Key Results Snapshot')),
+    // Content — prefix all text fields in sections and clips
+    content:    (tr && tr.content && tr.content.length > 0) ? tr.content
+                : data.content.map(function(item){
+                    if (item.type === 'section') {
+                      return {type:'section', data:{
+                        label:   p + item.data.label,
+                        heading: p + item.data.heading,
+                        body:    p + item.data.body
+                      }};
+                    }
+                    if (item.type === 'clip') {
+                      return {type:'clip', data:{
+                        title: p + (item.data.title||''),
+                        ts:    item.data.ts||'',
+                        quote: p + (item.data.quote||''),
+                        audio: item.data.audio||''
+                      }};
+                    }
+                    return item;
+                  }),
+    // Who stats — prefix labels
+    whoStats:   (tr && tr.whoStats && tr.whoStats.length > 0) ? tr.whoStats
+                : data.whoStats.map(function(s){ return isEN ? s : {v: p+s.v, l: p+s.l}; }),
+    products:     data.products,
+    // Results — prefix each item
+    results:    (tr && tr.results && tr.results.length > 0) ? tr.results
+                : (isEN ? data.results : (data.results||[]).map(function(r){ return p+r; })),
     participants: data.participants
   };
   var block = document.createElement('div');
