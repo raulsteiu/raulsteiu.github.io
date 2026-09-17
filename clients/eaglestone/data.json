@@ -329,56 +329,64 @@
           "type": "clip",
           "data": {
             "title": "[FR] More transparency, faster information",
-            "quote": "[FR] The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out."
+            "quote": "[FR] The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
+            "audio": "clip1_transparency.mp3"
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[FR] Meeting investors deadlines",
-            "quote": "[FR] Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines."
+            "quote": "[FR] Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[FR] Learning by doing with the CSP",
-            "quote": "[FR] The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool."
+            "quote": "[FR] The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[FR] A next-generation consolidation tool",
-            "quote": "[FR] Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC."
+            "quote": "[FR] Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[FR] Time freed for strategic analysis",
-            "quote": "[FR] We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data."
+            "quote": "[FR] We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[FR] Team support during France integration",
-            "quote": "[FR] I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success."
+            "quote": "[FR] I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[FR] Estimating the time saved",
-            "quote": "[FR] I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end."
+            "quote": "[FR] I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[FR] 9/10, already referring peers",
-            "quote": "[FR] I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues."
+            "quote": "[FR] I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues.",
+            "audio": ""
           }
         }
       ]
@@ -494,56 +502,64 @@
           "type": "clip",
           "data": {
             "title": "[NL] More transparency, faster information",
-            "quote": "[NL] The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out."
+            "quote": "[NL] The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[NL] Meeting investors deadlines",
-            "quote": "[NL] Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines."
+            "quote": "[NL] Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[NL] Learning by doing with the CSP",
-            "quote": "[NL] The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool."
+            "quote": "[NL] The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[NL] A next-generation consolidation tool",
-            "quote": "[NL] Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC."
+            "quote": "[NL] Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[NL] Time freed for strategic analysis",
-            "quote": "[NL] We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data."
+            "quote": "[NL] We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[NL] Team support during France integration",
-            "quote": "[NL] I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success."
+            "quote": "[NL] I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[NL] Estimating the time saved",
-            "quote": "[NL] I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end."
+            "quote": "[NL] I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end.",
+            "audio": ""
           }
         },
         {
           "type": "clip",
           "data": {
             "title": "[NL] 9/10, already referring peers",
-            "quote": "[NL] I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues."
+            "quote": "[NL] I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues.",
+            "audio": ""
           }
         }
       ]
