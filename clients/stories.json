@@ -1,18 +1,5 @@
 [
   {
-    "slug": "eaglestone",
-    "name": "Eaglestone",
-    "ind": "Real Estate Development",
-    "langs": [
-      "en",
-      "fr",
-      "nl"
-    ],
-    "created": "2026-09-17T08:12:33.825Z",
-    "logo": true,
-    "edited": "2026-09-17T10:17:57.334Z"
-  },
-  {
     "slug": "oasis",
     "name": "Oasis",
     "ind": "Music, Manchester",
