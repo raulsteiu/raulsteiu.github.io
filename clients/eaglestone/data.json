@@ -140,7 +140,7 @@
         "title": "More transparency, faster information",
         "ts": "",
         "quote": "The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
-        "audio": ""
+        "audio": "clip1_transparency.mp3"
       }
     },
     {
@@ -274,10 +274,6 @@
         {
           "name": "Yassine Fenniche",
           "title": "Customer Success Manager, Prophix"
-        },
-        {
-          "name": "Full name",
-          "title": "Title, Company"
         }
       ],
       "content": [
@@ -310,7 +306,7 @@
           "data": {
             "label": "[FR] Key Results",
             "heading": "[FR] From inherited complexity to full consolidation independence",
-            "body": "[FR] With the restructured Prophix setup, Eaglestone now runs a top-down group consolidation with sub-consolidations for Belgium, France, and Luxembourg linked in real time. Quentin has full visibility into intercompany eliminations, local data, and console adjustments for every entity, detail that was simply unavailable before.\n\nThe quality and traceability of consolidated figures improved significantly. Quentin builds detailed reporting using Prophix's DynProfit layer, analyses segment-level contributions, and reconciles consolidated accounts against treasury and business plan data, work that previously had no time allocated to it because consolidation itself was too slow and opaque.\nFrance was fully migrated from SAP BFC into Prophix during 2024. Investor-facing IFRS reporting now meets strict deadlines consistently. The team moved from spending most of its energy keeping consolidation running to spending that energy on analysis."
+            "body": "[FR] With the restructured Prophix setup, Eaglestone now runs a top-down group consolidation with sub-consolidations for Belgium, France, and Luxembourg linked in real time. Quentin has full visibility into intercompany eliminations, local data, and console adjustments for every entity, detail that was simply unavailable before.\n\nThe quality and traceability of consolidated figures improved significantly. Quentin builds detailed reporting using Prophix's DynProfit layer, analyses segment-level contributions, and reconciles consolidated accounts against treasury and business plan data, work that previously had no time allocated to it because consolidation itself was too slow and opaque.\n\nFrance was fully migrated from SAP BFC into Prophix during 2024. Investor-facing IFRS reporting now meets strict deadlines consistently. The team moved from spending most of its energy keeping consolidation running to spending that energy on analysis."
           }
         },
         {
