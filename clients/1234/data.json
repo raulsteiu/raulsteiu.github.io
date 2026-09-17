@@ -1,0 +1,59 @@
+{
+  "slug": "1234",
+  "name": "1234",
+  "desc": "Nothing new",
+  "ind": "Hotels",
+  "langs": [
+    "en",
+    "pl"
+  ],
+  "hasLogo": false,
+  "stats": [
+    {
+      "v": "23",
+      "l": "story"
+    },
+    {
+      "v": "3",
+      "l": "rate"
+    }
+  ],
+  "whoStats": [],
+  "whoText": "Nothing",
+  "krs": [
+    {
+      "text": "Cool story",
+      "bold": "Something bold"
+    }
+  ],
+  "results": [
+    "Ok go on"
+  ],
+  "participants": [
+    {
+      "name": "Raul",
+      "title": "Steiu"
+    }
+  ],
+  "products": [
+    "Financial Consolidation"
+  ],
+  "content": [
+    {
+      "type": "section",
+      "data": {
+        "label": "Nothing New",
+        "heading": "",
+        "body": "Is this working now?\n- what about this?\nand this?\n-this?\n\nand this?\n- yes is working\n- he he"
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "Nothing",
+        "ts": "",
+        "quote": "super cool"
+      }
+    }
+  ]
+}
