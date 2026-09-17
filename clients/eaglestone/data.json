@@ -95,7 +95,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "More transparency, faster information✕✕✕✕✕✕",
+        "title": "More transparency, faster information✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
         "audio": "clip1_transparency.mp3"
@@ -112,7 +112,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Meeting investor deadlines✕✕✕✕✕✕",
+        "title": "Meeting investor deadlines✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines.",
         "audio": "clip2_deadlines.mp3"
@@ -121,7 +121,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Learning by doing with the CSP✕✕✕✕✕✕",
+        "title": "Learning by doing with the CSP✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool.",
         "audio": "clip3_csp_coaching.mp3"
@@ -138,7 +138,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "A next-generation consolidation tool✕✕✕✕✕✕",
+        "title": "A next-generation consolidation tool✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC.",
         "audio": "clip4_new_generation.mp3"
@@ -155,7 +155,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Time freed for strategic analysis✕✕✕✕✕✕",
+        "title": "Time freed for strategic analysis✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data.",
         "audio": "clip6_time_saved.mp3"
@@ -164,7 +164,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Team support during France integration✕✕✕✕✕✕",
+        "title": "Team support during France integration✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success.",
         "audio": "clip7_team_support.mp3"
@@ -181,7 +181,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "Estimating the time saved✕✕✕✕✕✕",
+        "title": "Estimating the time saved✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end.",
         "audio": "clip8_roi_week.mp3"
@@ -190,7 +190,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "9/10, already referring peers✕✕✕✕✕✕",
+        "title": "9/10, already referring peers✕✕✕✕✕✕✕",
         "ts": "",
         "quote": "I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues.",
         "audio": "clip5_nps_recommendation.mp3"
@@ -207,21 +207,21 @@
   ],
   "translations": {
     "fr": {
-      "name": "Comment Eaglestone Services SA a transformé sa consolidation financière avec Prophix",
+      "name": "[FR] Eaglestone",
       "desc": "Écoutez Quentin, Group Consolidation Manager chez Eaglestone, partager comment la consolidation financière Prophix et le Continuous Success Package l'ont aidé à restructurer une configuration héritée complexe, intégrer la France dans la consolidation groupe, et construire une visibilité en temps réel sur trois marchés.",
       "content": [
         {
           "type": "section",
           "data": {
-            "label": "Défis Business",
-            "heading": "Une configuration héritée complexe sur trois marchés décentralisés",
-            "body": "Quand Quentin a rejoint Eaglestone en tant que Group Consolidation Manager en juillet 2025, il a hérité d'un environnement Prophix configuré par un prédécesseur sans formation formelle en consolidation. La structure était construite en bottom-up plutôt qu'en top-down, les sous-consolidations n'étaient pas liées à la consolidation groupe, et la France, un pôle d'activité clé, gérait sa propre consolidation dans SAP BFC, en envoyant uniquement des contributions pré-agrégées au niveau groupe.\nCela créait de vrais problèmes de visibilité. Quentin n'avait pas accès aux éliminations intercos sous-jacentes, aux données locales, ni aux ajustements de consolidation pour la France. Lorsque des questions émergeaient de la direction ou des actionnaires soumis à l'IFRS, il devait systématiquement retourner vers la France. Les délais étaient régulièrement dépassés. Le groupe opère en Belgique, France et Luxembourg avec des systèmes comptables différents et une double obligation de reporting : référentiel luxembourgeois et IFRS."
+            "label": "[FR] Business Challenges",
+            "heading": "[FR] A complex, inherited setup across three decentralized markets",
+            "body": "[FR] When Quentin joined Eaglestone as Group Consolidation Manager in July 2025, he inherited a Prophix environment configured by a predecessor without formal consolidation training. The structure was built bottom-up rather than top-down, sub-consolidations were not linked to the group consolidation, and France, a key activity cluster, ran its own consolidation in SAP BFC, sending only pre-aggregated contributions to the group level.\nThis created real visibility problems. Quentin had no access to the underlying intercompany eliminations, local data, or console adjustments for France. When questions arose from management or from IFRS-reporting shareholders, he had to go back to France for every detail. Deadlines were regularly missed. The group operates across Belgium, France, and Luxembourg with differing accounting systems and a dual reporting requirement: local Luxembourgian standards alongside IFRS."
           }
         },
         {
           "type": "clip",
           "data": {
-            "title": "More transparency, faster information✕✕✕✕✕✕",
+            "title": "More transparency, faster information✕✕✕✕✕✕✕",
             "quote": "The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out."
           }
         },
@@ -236,14 +236,14 @@
         {
           "type": "clip",
           "data": {
-            "title": "Meeting investor deadlines✕✕✕✕✕✕",
+            "title": "Meeting investor deadlines✕✕✕✕✕✕✕",
             "quote": "Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines."
           }
         },
         {
           "type": "clip",
           "data": {
-            "title": "Learning by doing with the CSP✕✕✕✕✕✕",
+            "title": "Learning by doing with the CSP✕✕✕✕✕✕✕",
             "quote": "The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool."
           }
         },
@@ -258,7 +258,7 @@
         {
           "type": "clip",
           "data": {
-            "title": "A next-generation consolidation tool✕✕✕✕✕✕",
+            "title": "A next-generation consolidation tool✕✕✕✕✕✕✕",
             "quote": "Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC."
           }
         },
@@ -273,14 +273,14 @@
         {
           "type": "clip",
           "data": {
-            "title": "Time freed for strategic analysis✕✕✕✕✕✕",
+            "title": "Time freed for strategic analysis✕✕✕✕✕✕✕",
             "quote": "We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data."
           }
         },
         {
           "type": "clip",
           "data": {
-            "title": "Team support during France integration✕✕✕✕✕✕",
+            "title": "Team support during France integration✕✕✕✕✕✕✕",
             "quote": "I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success."
           }
         },
@@ -295,14 +295,14 @@
         {
           "type": "clip",
           "data": {
-            "title": "Estimating the time saved✕✕✕✕✕✕",
+            "title": "Estimating the time saved✕✕✕✕✕✕✕",
             "quote": "I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end."
           }
         },
         {
           "type": "clip",
           "data": {
-            "title": "9/10, already referring peers✕✕✕✕✕✕",
+            "title": "9/10, already referring peers✕✕✕✕✕✕✕",
             "quote": "I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues."
           }
         },
