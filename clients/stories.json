@@ -1,5 +1,11 @@
 [
   {
+    "slug": "eaglestone",
+    "name": "Eaglestone",
+    "created": "2026-09-17T08:12:33.825Z",
+    "logo": true
+  },
+  {
     "slug": "oasis",
     "name": "Oasis",
     "created": "2026-09-17T07:48:49.941Z",
