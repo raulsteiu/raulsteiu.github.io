@@ -5,8 +5,7 @@
   "ind": "Music, Manchester",
   "langs": [
     "en",
-    "de",
-    "pt"
+    "de"
   ],
   "hasLogo": true,
   "stats": [
@@ -121,7 +120,8 @@
           "type": "clip",
           "data": {
             "title": "One Song For AUTONOMOUS FINANCE",
-            "quote": "Whats the story Prophix Glory"
+            "quote": "Whats the story Prophix Glory",
+            "audio": ""
           }
         },
         {
