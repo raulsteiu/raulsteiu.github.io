@@ -3,7 +3,10 @@
     "slug": "eaglestone",
     "name": "Eaglestone",
     "ind": "Real Estate Development",
-    "langs": ["en", "fr"],
+    "langs": [
+      "en",
+      "fr"
+    ],
     "created": "2026-09-17T08:12:33.825Z",
     "logo": true,
     "edited": "2026-09-17T08:55:32.452Z"
@@ -12,16 +15,23 @@
     "slug": "oasis",
     "name": "Oasis",
     "ind": "Music, Manchester",
-    "langs": ["en", "de", "pt"],
+    "langs": [
+      "en",
+      "de",
+      "pt"
+    ],
     "created": "2026-09-17T07:48:49.941Z",
     "logo": true,
-    "edited": "2026-09-17T08:49:48.981Z"
+    "edited": "2026-09-17T09:21:43.740Z"
   },
   {
     "slug": "manchester-city-fc",
     "name": "Manchester City FC",
     "ind": "Football, Manchester",
-    "langs": ["en", "fr"],
+    "langs": [
+      "en",
+      "fr"
+    ],
     "created": "2026-09-16T16:49:30.816Z",
     "logo": true,
     "edited": "2026-09-17T08:29:29.869Z"
