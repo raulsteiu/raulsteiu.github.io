@@ -121,7 +121,7 @@ function getCSS() {
     '.app-icon{width:20px;height:20px;object-fit:contain;flex-shrink:0}',
     '.results-ul{list-style:none;padding:0}',
     '.result-item{font-size:13px;color:#555;padding:4px 0 4px 16px;border-bottom:1px solid var(--border);position:relative}',
-    '.result-item::before{content:"\u2192 ";color:var(--red);font-weight:700;position:absolute;left:0}',
+    '.result-item::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:var(--red)}',
     '.page-footer{background:var(--dark);padding:24px 40px;text-align:center;margin-top:0}',
     '.disclaimer-text{font-size:11px;color:rgba(255,255,255,.4);line-height:1.6}',
     '.edit-fab{position:fixed;bottom:24px;right:24px;width:46px;height:46px;background:var(--dark);color:#fff;border:none;font-size:17px;border-radius:50%;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:500;transition:background .15s}',
@@ -412,7 +412,7 @@ function renderLangBlock(data, lc, isActive, meta) {
     var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
     resCard.innerHTML = '<h3>Results</h3>';
     var ul = document.createElement('ul'); ul.className = 'results-ul';
-    data.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc(pfx+r) + '</li>'; });
+    data.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc((pfx+r).replace(/^[✕✗×\s]+/,'')) + '</li>'; });
     resCard.appendChild(ul);
     sidebar.appendChild(resCard);
   }
