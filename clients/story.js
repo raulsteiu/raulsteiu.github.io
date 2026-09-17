@@ -361,7 +361,7 @@ function renderLangBlock(data, lc, isActive, meta) {
       var c = item.data;
       var card = document.createElement('div'); card.className = 'clip-card';
       card.innerHTML = '<div class="clip-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>' +
-        esc((c.title||'').replace(/^[✕✗×\s]+/,'')) + (c.ts ? ' · ' + esc(c.ts) : '') + '</div>' +
+        esc((c.title||'').replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + (c.ts ? ' · ' + esc(c.ts) : '') + '</div>' +
         '<div class="clip-quote">' + esc(c.quote||'') + '</div>' +
         '<div class="clip-player"><audio controls preload="metadata" style="width:100%;height:38px;border-radius:6px;accent-color:#EF363D">' +
         (c.audio ? '<source src="' + esc(c.audio) + '" type="audio/mpeg">' : '<source type="audio/mpeg">') +
@@ -412,7 +412,7 @@ function renderLangBlock(data, lc, isActive, meta) {
     var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
     resCard.innerHTML = '<h3>Results</h3>';
     var ul = document.createElement('ul'); ul.className = 'results-ul';
-    data.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc((pfx+r).replace(/^[✕✗×\s]+/,'')) + '</li>'; });
+    data.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc((pfx+r).replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</li>'; });
     resCard.appendChild(ul);
     sidebar.appendChild(resCard);
   }
