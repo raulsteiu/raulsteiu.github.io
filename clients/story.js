@@ -630,7 +630,11 @@ function domToData() {
           var ctEl = el.querySelector('.clip-title-text') || el.querySelector('.clip-label');
           var ctClone = ctEl ? ctEl.cloneNode(true) : null;
           if (ctClone) ctClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-          t.content.push({ type:'clip', data:{ title: ctClone ? ctClone.textContent.trim() : '', quote:(el.querySelector('.clip-quote')||{}).textContent||'' }});
+          var srcEl = el.querySelector('audio source');
+          var rawSrc = srcEl ? (srcEl.getAttribute('src') || srcEl.src || '') : '';
+          var audioFile = rawSrc ? rawSrc.split('?')[0].split('/').pop() : '';
+          if (audioFile && audioFile.indexOf('://') > -1) audioFile = '';
+          t.content.push({ type:'clip', data:{ title: ctClone ? ctClone.textContent.trim() : '', quote:(el.querySelector('.clip-quote')||{}).textContent||'', audio: audioFile||'' }});
         }
       });
     }
