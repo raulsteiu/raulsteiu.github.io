@@ -484,12 +484,15 @@ function domToData() {
 
       // KRS
       data.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
-        var text = (item.querySelector('.krs-item-text')||{}).textContent||'';
-        var strong = item.querySelector('.krs-item-text strong');
-        var bold = strong ? strong.textContent.replace(/:$/, '') : '';
+        var clone = item.querySelector('.krs-item-text') ? item.querySelector('.krs-item-text').cloneNode(true) : null;
+        if (!clone) return null;
+        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+        var text = clone.textContent.trim();
+        var strong = clone.querySelector('strong');
+        var bold = strong ? strong.textContent.replace(/:$/, '').trim() : '';
         var body = bold ? text.replace(bold + ':', '').trim() : text;
         return { bold: bold, text: bold ? bold + ': ' + body : body };
-      });
+      }).filter(Boolean);
 
       // Content (sections + clips in order)
       data.content = [];
@@ -549,14 +552,17 @@ function domToData() {
       var h1l = block.querySelector('h1'); if (h1l) t.name = h1l.textContent.trim();
       var descl = block.querySelector('.hero-desc'); if (descl) t.desc = descl.textContent.trim();
 
-      // KRS
+      // KRS — clone items to strip any injected buttons before reading
       t.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
-        var text = (item.querySelector('.krs-item-text')||{}).textContent||'';
-        var strong = item.querySelector('.krs-item-text strong');
-        var bold = strong ? strong.textContent.replace(/:$/, '') : '';
+        var clone = item.querySelector('.krs-item-text') ? item.querySelector('.krs-item-text').cloneNode(true) : null;
+        if (!clone) return null;
+        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+        var text = clone.textContent.trim();
+        var strong = clone.querySelector('strong');
+        var bold = strong ? strong.textContent.replace(/:$/, '').trim() : '';
         var body = bold ? text.replace(bold + ':', '').trim() : text;
         return { bold: bold, text: bold ? bold + ': ' + body : body };
-      });
+      }).filter(Boolean);
 
       // Who text
       var whoTxtEl = block.querySelector('.who-text'); if (whoTxtEl) t.whoText = whoTxtEl.textContent.trim();
