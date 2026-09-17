@@ -120,7 +120,7 @@ function getCSS() {
     '.app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 8px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px}',
     '.app-icon{width:20px;height:20px;object-fit:contain;flex-shrink:0}',
     '.results-ul{list-style:none;padding:0}',
-    '.result-item{font-size:13px;color:#555;padding:4px 0;border-bottom:1px solid var(--border);padding-left:12px;position:relative}',
+    '.result-item{font-size:13px;color:#555;padding:4px 0 4px 16px;border-bottom:1px solid var(--border);position:relative}',
     '.result-item::before{content:"\u2192 ";color:var(--red);font-weight:700;position:absolute;left:0}',
     '.page-footer{background:var(--dark);padding:24px 40px;text-align:center;margin-top:0}',
     '.disclaimer-text{font-size:11px;color:rgba(255,255,255,.4);line-height:1.6}',
