@@ -230,7 +230,18 @@ function renderPage(data) {
   // Edit toolbar
   var toolbar = document.createElement('div');
   toolbar.id = 'edit-toolbar'; toolbar.className = 'edit-toolbar';
-  toolbar.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><button id="save-btn" class="tb-save">Save</button><button id="cancel-btn" class="tb-cancel">Cancel</button><span id="save-status" class="save-status"></span></div>';
+  toolbar.innerHTML = '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+    '<button id="save-btn" class="tb-save">Save</button>' +
+    '<button id="cancel-btn" class="tb-cancel">Cancel</button>' +
+    '<span id="save-status" class="save-status"></span>' +
+    '<select id="status-select" onchange="changeStatus(this.value)" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.8);border-radius:6px;padding:6px 10px;font-size:12px;font-family:var(--font);cursor:pointer;outline:none">' +
+    '<option value="draft">◑ Draft</option>' +
+    '<option value="approved">✓ Approved</option>' +
+    '<option value="rejected">✗ Rejected</option>' +
+    '<option value="published">● Published</option>' +
+    '</select>' +
+    '<button onclick="showPreviewLinkModal()" style="background:transparent;border:1px solid rgba(255,200,0,.4);color:#F5C842;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">⧉ Preview link</button>' +
+    '</div>';
   body.appendChild(toolbar);
 
   // Page nav
@@ -872,6 +883,9 @@ function enableEditMode() {
   document.getElementById('edit-toolbar').classList.add('visible');
   document.getElementById('save-btn').disabled = false;
   document.getElementById('save-status').textContent = 'Editing: ' + currentLang.toUpperCase();
+  // Set status dropdown to current story status
+  var statusSel = document.getElementById('status-select');
+  if (statusSel) statusSel.value = storyData.status || 'published';
   addEditControlsToExisting();
   enableDragDrop();
 }
@@ -1321,6 +1335,7 @@ async function _updateEditedTimestamp() {
     if (storyData.ind) entry.ind = storyData.ind;
     entry.langs = storyData.langs || ['en'];
     entry.logo = storyData.hasLogo || entry.logo || false;
+    entry.status = storyData.status || 'published';
     var enc = btoa(unescape(encodeURIComponent(JSON.stringify(stories, null, 2))));
     await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify({message:'Update edited: '+slug, content:enc, sha:d.sha}) });
   } catch(e) { /* silent */ }
@@ -1420,5 +1435,143 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   renderPage(storyData);
+  if (!checkPreviewMode(storyData)) return;
   wireEvents();
 });
+
+// ── Client Preview & Approval System (simplified) ────────────────────────────
+
+function _genToken(len) {
+  var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  var out = '';
+  for (var i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
+
+function _genPassword() {
+  var adj = ['blue','red','swift','bright','calm','gold','iron','bold','clear','deep'];
+  var noun = ['sky','wave','rock','star','leaf','fire','tide','dawn','peak','mist'];
+  var num = Math.floor(Math.random() * 90) + 10;
+  return adj[Math.floor(Math.random()*adj.length)] + '-' + noun[Math.floor(Math.random()*noun.length)] + '-' + num;
+}
+
+function checkPreviewMode(data) {
+  var params = new URLSearchParams(window.location.search);
+  var previewToken = params.get('preview');
+  var status = data.status || 'published';
+  if (!previewToken) {
+    if (status !== 'published') {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x1F512;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Story not available</h2><p style="color:#888;font-size:14px">This story has not been published yet.</p></div></div>';
+      return false;
+    }
+    return true;
+  }
+  var preview = data.preview || {};
+  if (preview.token !== previewToken) {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x274C;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Invalid preview link</h2><p style="color:#888;font-size:14px">This link is invalid or has expired.</p></div></div>';
+    return false;
+  }
+  if (preview.expiresAt && new Date() > new Date(preview.expiresAt)) {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x23F0;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Preview link expired</h2><p style="color:#888;font-size:14px">This preview link has expired (3 days). Please request a new one.</p></div></div>';
+    return false;
+  }
+  showPasswordGate(data, preview);
+  return false;
+}
+
+function showPasswordGate(data, preview) {
+  function tryUnlock() {
+    var pw = document.getElementById('preview-pw').value.trim();
+    var err = document.getElementById('preview-err');
+    if (!pw) { err.textContent = 'Enter the preview password.'; return; }
+    if (pw !== preview.password) { err.textContent = 'Incorrect password. Please try again.'; return; }
+    var style = document.createElement('style');
+    style.textContent = getCSS();
+    document.head.appendChild(style);
+    document.body.innerHTML = '';
+    renderPage(data);
+    var fab = document.getElementById('edit-fab'); if (fab) fab.remove();
+    var nav = document.querySelector('.page-nav');
+    if (nav) {
+      var portal = nav.querySelector('.portal-link'); if (portal) portal.remove();
+      var badge = document.createElement('div');
+      badge.style.cssText = 'font-size:11px;font-weight:700;color:#F5C842;letter-spacing:1px;padding:3px 10px;border:1px solid rgba(245,200,66,.4);border-radius:20px;flex-shrink:0';
+      badge.textContent = 'Preview';
+      nav.insertBefore(badge, nav.firstChild);
+    }
+  }
+  document.body.style.cssText = 'font-family:Arial,sans-serif;background:#1A1A2E;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px';
+  document.body.innerHTML =
+    '<div style="background:#fff;border-radius:14px;padding:40px;width:100%;max-width:420px">' +
+    '<div style="text-align:center;margin-bottom:24px">' +
+    '<img src="/prophix-logo-1000px.png" style="height:26px;margin-bottom:14px" alt="Prophix">' +
+    '<h2 style="font-size:19px;font-weight:900;color:#1A1A2E;margin-bottom:6px">Story preview</h2>' +
+    '<p style="font-size:13px;color:#888;line-height:1.5">Enter the password shared with you to view this draft story.</p></div>' +
+    '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;font-weight:700;color:#1A1A2E;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Preview password</label>' +
+    '<input type="password" id="preview-pw" style="width:100%;padding:10px 13px;border:1px solid #E0DFF0;border-radius:6px;font-size:14px;font-family:Arial,sans-serif;outline:none" placeholder="Enter password"/></div>' +
+    '<div id="preview-err" style="font-size:12px;color:#EF363D;min-height:16px;margin-bottom:10px"></div>' +
+    '<button id="preview-unlock" style="width:100%;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:12px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">View story</button></div>';
+  document.getElementById('preview-unlock').onclick = tryUnlock;
+  document.getElementById('preview-pw').addEventListener('keydown', function(e){ if(e.key==='Enter') tryUnlock(); });
+  setTimeout(function(){ document.getElementById('preview-pw').focus(); }, 100);
+}
+
+function showPreviewLinkModal() {
+  var pw = _genPassword();
+  var token = _genToken(10);
+  var expiry = new Date(Date.now() + 3*24*60*60*1000);
+  var expiryStr = expiry.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  var url = 'https://raulsteiu.github.io/clients/' + STORY_META.slug + '/?preview=' + token;
+  var modal = document.createElement('div');
+  modal.id = 'preview-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML =
+    '<div style="background:#fff;border-radius:12px;padding:32px;width:100%;max-width:460px">' +
+    '<h3 style="font-size:17px;font-weight:900;color:#1A1A2E;margin-bottom:6px">Generate preview link</h3>' +
+    '<p style="font-size:13px;color:#888;margin-bottom:20px;line-height:1.5">Share this password-protected link with your client. It expires in 3 days. The client sees only this story — no access to other stories.</p>' +
+    '<div style="background:#F4F4F8;border-radius:8px;padding:16px;margin-bottom:16px">' +
+    '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Preview link</div>' +
+    '<div style="font-size:12px;color:#1A1A2E;word-break:break-all;line-height:1.6;margin-bottom:12px">' + url + '</div>' +
+    '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Password</div>' +
+    '<div style="font-size:18px;font-weight:700;color:#1A1A2E;letter-spacing:2px;margin-bottom:8px">' + pw + '</div>' +
+    '<div style="font-size:11px;color:#aaa">Expires: ' + expiryStr + '</div></div>' +
+    '<div id="prev-err" style="font-size:12px;color:#EF363D;min-height:16px;margin-bottom:8px"></div>' +
+    '<div style="display:flex;gap:10px">' +
+    '<button id="prev-save" style="flex:1;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">Save & copy link</button>' +
+    '<button onclick="document.getElementById(\'preview-modal\').remove()" style="background:transparent;border:1px solid #E0DFF0;border-radius:6px;padding:10px 16px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer;color:#888">Cancel</button>' +
+    '</div></div>';
+  document.body.appendChild(modal);
+  document.getElementById('prev-save').onclick = async function() {
+    var btn = document.getElementById('prev-save');
+    btn.disabled = true; btn.textContent = 'Saving...';
+    try {
+      storyData.preview = {token:token, password:pw, expiresAt:expiry.toISOString(), createdAt:new Date().toISOString()};
+      storyData.status = storyData.status === 'published' ? 'draft' : storyData.status;
+      var enc = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
+      var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
+      var body = {message:'Preview link: '+storyData.name, content:enc};
+      if (shaRes.ok) { var d = await shaRes.json(); if (d.sha) body.sha = d.sha; }
+      var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+      if (!r.ok) throw new Error('Could not save');
+      _updateEditedTimestamp();
+      navigator.clipboard.writeText(url).catch(function(){});
+      btn.textContent = 'Saved & copied!'; btn.style.background = '#2a7a2a';
+      setTimeout(function(){ modal.remove(); }, 1500);
+    } catch(e) {
+      btn.disabled = false; btn.textContent = 'Save & copy link';
+      document.getElementById('prev-err').textContent = 'Error: ' + e.message;
+    }
+  };
+}
+
+async function changeStatus(newStatus) {
+  if (!confirm('Change story status to "' + newStatus + '"?')) return;
+  storyData.status = newStatus;
+  var enc = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
+  var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
+  var body = {message:'Status: '+newStatus+' — '+storyData.name, content:enc};
+  if (shaRes.ok) { var d = await shaRes.json(); if (d.sha) body.sha = d.sha; }
+  await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  _updateEditedTimestamp();
+  alert('Status updated to: ' + newStatus);
+}
