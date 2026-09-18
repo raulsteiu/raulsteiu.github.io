@@ -7,9 +7,10 @@
       "en",
       "fr"
     ],
-    "status": "published",
+    "status": "draft",
     "created": "2026-09-18T15:53:49.183Z",
-    "logo": false
+    "logo": false,
+    "edited": "2026-09-18T16:01:04.062Z"
   },
   {
     "slug": "meridian-logistic-group",
