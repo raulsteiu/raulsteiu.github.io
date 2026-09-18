@@ -172,7 +172,10 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
     </div>
   </div>
   <a href="/new/" class="new-btn">+ New Story</a>
-  <button onclick="toggleManageMode()" id="manage-btn" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer" title="Enter token to see drafts">🔑</button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button onclick="toggleManageMode()" id="manage-btn" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer" title="Enter token to see drafts">🔑</button>
+    <button onclick="exitManageMode()" id="exit-btn" style="display:none;background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer">Exit</button>
+  </div>
 </div>
 
 <div class="content">
@@ -375,18 +378,25 @@ function copyEditLink(url) {
 }
 
 // ── Auth — token only ─────────────────────────────────────────────────────────
+function exitManageMode() {
+  sessionToken = '';
+  var btn = document.getElementById('manage-btn');
+  var exit = document.getElementById('exit-btn');
+  btn.textContent = '🔑'; btn.style.borderColor = 'rgba(255,255,255,.3)'; btn.style.color = 'rgba(255,255,255,.7)';
+  if (exit) exit.style.display = 'none';
+  renderGrid(document.getElementById('search-input').value);
+}
+
 function toggleManageMode() {
   if (sessionToken) {
-    // Logout — clear token and re-render
-    sessionToken = '';
-    var btn = document.getElementById('manage-btn');
-    btn.textContent = '🔑'; btn.style.borderColor = 'rgba(255,255,255,.3)'; btn.style.color = 'rgba(255,255,255,.7)';
-    renderGrid(document.getElementById('search-input').value);
+    exitManageMode();
   } else {
     showAuth(function(){
       renderGrid(document.getElementById('search-input').value);
       var btn = document.getElementById('manage-btn');
+      var exit = document.getElementById('exit-btn');
       btn.textContent = '🔑 ✓'; btn.style.borderColor = 'rgba(42,200,42,.5)'; btn.style.color = '#5cc85c';
+      if (exit) exit.style.display = 'block';
     });
   }
 }
