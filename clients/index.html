@@ -258,6 +258,7 @@ function renderGrid(filter) {
   var favs = getFavs();
 
   var list = STORIES.filter(function(s) {
+    if (!sessionToken && s.status && s.status !== 'published') return false;
     return !q || s.name.toLowerCase().indexOf(q) > -1 || (s.ind||'').toLowerCase().indexOf(q) > -1 || s.slug.toLowerCase().indexOf(q) > -1;
   });
 
@@ -276,8 +277,9 @@ function renderGrid(filter) {
     });
   }
 
-  var total = STORIES.length;
-  countEl.textContent = total + ' published stor' + (total === 1 ? 'y' : 'ies');
+  var publishedCount = STORIES.filter(function(s){ return !s.status || s.status === 'published'; }).length;
+  var total = sessionToken ? STORIES.length : publishedCount;
+  countEl.textContent = total + ' stor' + (total === 1 ? 'y' : 'ies') + (sessionToken && STORIES.length !== publishedCount ? ' (' + publishedCount + ' published)' : ' published');
 
   document.getElementById('results-count').textContent = q
     ? list.length + ' result' + (list.length===1?'':'s') + ' for "' + q + '"'
@@ -318,12 +320,23 @@ function renderGrid(filter) {
       ? '<div class="lang-pills">' + s.langs.map(function(l){ return '<span class="lang-pill">' + l.toUpperCase() + '</span>'; }).join('') + '</div>'
       : '';
     var isFav = favs.indexOf(s.slug) > -1;
+    var statusBadge = '';
+    if (sessionToken && s.status && s.status !== 'published') {
+      var badgeMap = {
+        'draft':    {bg:'#E8E8F0',color:'#555',label:'◑ Draft'},
+        'approved': {bg:'#E8F5E9',color:'#2a7a2a',label:'✓ Approved'},
+        'rejected': {bg:'#FFF0F0',color:'#c0272d',label:'✗ Changes requested'}
+      };
+      var b = badgeMap[s.status];
+      if (b) statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;background:'+b.bg+';color:'+b.color+'">'+b.label+'</div>';
+    }
 
     return '<div class="story-card" id="card-' + s.slug + '">' +
       '<div class="card-logo-wrap">' + logoHtml +
         '<button class="fav-btn' + (isFav ? ' fav-on' : '') + '" onclick="toggleFav(\'' + s.slug + '\')" title="' + (isFav ? 'Remove from favourites' : 'Add to favourites') + '">★</button>' +
       '</div>' +
       '<div class="card-body">' +
+        statusBadge +
         '<div class="story-name">' + s.name + '</div>' +
         metaLine +
         dateLine +
