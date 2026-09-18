@@ -1458,9 +1458,10 @@ function _genPassword() {
 function checkPreviewMode(data) {
   var params = new URLSearchParams(window.location.search);
   var previewToken = params.get('preview');
+  var isEditMode = params.get('edit') === '1';
   var status = data.status || 'published';
   if (!previewToken) {
-    if (status !== 'published') {
+    if (status !== 'published' && !isEditMode) {
       document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x1F512;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Story not available</h2><p style="color:#888;font-size:14px">This story has not been published yet.</p></div></div>';
       return false;
     }
