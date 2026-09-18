@@ -31,20 +31,20 @@
   "whoText": "Meridian Logistic Group is a global logistics leader specializing in warehousing, freight, and last-mile delivery. With 3,400 employees and a lean finance team of 28, they rely on Prophix to maintain operational agility across 14 countries.",
   "krs": [
     {
-      "text": "Reduced quarterly close cycle from 21 days to just 6 days.",
-      "bold": "Automated Efficiency:"
+      "bold": "Automated Efficiency:",
+      "text": "Automated Efficiency:: Reduced quarterly close cycle from 21 days to just 6 days."
     },
     {
-      "text": "Eliminated manual mapping errors and audit risks associated with 47 disparate spreadsheet templates.",
-      "bold": "Risk Mitigation:"
+      "bold": "Risk Mitigation:",
+      "text": "Risk Mitigation:: Eliminated manual mapping errors and audit risks associated with 47 disparate spreadsheet templates."
     },
     {
-      "text": "Transitioned finance staff from manual data entry to high-value FP&A and analytical roles.",
-      "bold": "Strategic Redeployment:"
+      "bold": "Strategic Redeployment:",
+      "text": "Strategic Redeployment:: Transitioned finance staff from manual data entry to high-value FP&A and analytical roles."
     },
     {
-      "text": "Achieved real-time visibility into global cash positions across 12 currencies.",
-      "bold": "Enhanced Liquidity:"
+      "bold": "Enhanced Liquidity:",
+      "text": "Enhanced Liquidity:: Achieved real-time visibility into global cash positions across 12 currencies."
     }
   ],
   "results": [],
@@ -84,17 +84,91 @@
       "type": "clip",
       "data": {
         "title": "THE FIRST CLOSE",
-        "ts": "05:12",
-        "quote": "The first close on Prophix felt like cheating. And I mean that in the best possible way."
+        "ts": "",
+        "quote": "The first close on Prophix felt like cheating. And I mean that in the best possible way.",
+        "audio": ""
       }
     },
     {
       "type": "clip",
       "data": {
         "title": "THE COST OF MANUAL WORK",
-        "ts": "05:01",
-        "quote": "You are spending human capital on work that software should be doing, and that cost is invisible until you stop doing it."
+        "ts": "",
+        "quote": "You are spending human capital on work that software should be doing, and that cost is invisible until you stop doing it.",
+        "audio": ""
       }
     }
-  ]
+  ],
+  "krsHeading": "Key Results Snapshot",
+  "translations": {
+    "nl": {
+      "name": "[NL] Meridian Logistic Group",
+      "desc": "[NL] Meridian Logistic Group transformed its global financial operations by replacing manual, error-prone Excel processes with Prophix. The transition enabled the logistics leader to slash close times by 71% and unlock millions in trapped cash through automated, real-time financial visibility.",
+      "krsHeading": "[NL] Key Results Snapshot",
+      "krs": [
+        {
+          "bold": "Automated Efficiency:",
+          "text": "Automated Efficiency:: [NL]  Reduced quarterly close cycle from 21 days to just 6 days."
+        },
+        {
+          "bold": "Risk Mitigation:",
+          "text": "Risk Mitigation:: [NL]  Eliminated manual mapping errors and audit risks associated with 47 disparate spreadsheet templates."
+        },
+        {
+          "bold": "Strategic Redeployment:",
+          "text": "Strategic Redeployment:: [NL]  Transitioned finance staff from manual data entry to high-value FP&A and analytical roles."
+        },
+        {
+          "bold": "Enhanced Liquidity:",
+          "text": "Enhanced Liquidity:: [NL]  Achieved real-time visibility into global cash positions across 12 currencies."
+        }
+      ],
+      "whoText": "[NL] Meridian Logistic Group is a global logistics leader specializing in warehousing, freight, and last-mile delivery. With 3,400 employees and a lean finance team of 28, they rely on Prophix to maintain operational agility across 14 countries.",
+      "whoStats": [],
+      "results": [],
+      "participants": [],
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] THE CHALLENGE",
+            "heading": "[NL] Breaking Free from the 'Heroic' Excel Close",
+            "body": "[NL] Operating across 14 countries with 47 different spreadsheet templates, Meridian’s finance team was trapped in a cycle of manual labor. The process required six staff members to work fourteen-hour days for three weeks every quarter just to complete a consolidation.\n\nBeyond the unsustainable workload, the reliance on manual Excel processes led to significant errors, including a material restatement that caused major friction with auditors and the board. The team was losing top talent to burnout and lacked the visibility needed to manage global cash effectively."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] THE SOLUTION",
+            "heading": "[NL] Automating Global Financial Consolidation",
+            "body": "[NL] Meridian selected Prophix for its robust Financial Consolidation and Intercompany Management capabilities. The implementation team worked closely with Meridian to standardize their chart of accounts, moving them from fragmented spreadsheets to a unified, automated platform.\n\nBy automating intercompany reconciliations—which dropped from eight days to four hours—the team was able to focus on higher-level financial strategy. The integration of Cash Management also provided the treasury team with the real-time visibility required to optimize liquidity across their global entities."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[NL] THE RESULTS",
+            "heading": "[NL] Driving Transparency and Strategic Growth",
+            "body": "[NL] The impact was immediate: the first close on Prophix was completed in six days, a 71% improvement. This newfound efficiency allowed the company to redeploy two finance team members to focus on FP&A Plus and scenario planning, shifting the department from a data-processing unit to a strategic partner.\n\nThe board and PE sponsors have noted a significant increase in financial transparency, with reporting packs arriving weeks earlier than before. Furthermore, the team successfully identified €4.2 million in trapped cash within the first month of using the system, directly impacting the company's bottom line."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] THE FIRST CLOSE",
+            "quote": "[NL] The first close on Prophix felt like cheating. And I mean that in the best possible way.",
+            "audio": ""
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[NL] THE COST OF MANUAL WORK",
+            "quote": "[NL] You are spending human capital on work that software should be doing, and that cost is invisible until you stop doing it.",
+            "audio": ""
+          }
+        }
+      ]
+    }
+  }
 }
