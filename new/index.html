@@ -129,8 +129,8 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
   <!-- ── Choice screen (shown after token unlock) ──────────────────── -->
   <div class="choice-wrap" id="choice-wrap">
     <div class="choice-card featured" onclick="showAI()">
-      <div class="choice-badge">✦ NEW</div>
-      <div class="choice-icon">🤖</div>
+      <div class="choice-badge">✦ BETA</div>
+      <div class="choice-icon">✦</div>
       <div class="choice-title">Generate with AI</div>
       <div class="choice-desc">Paste a call transcript or meeting notes — AI builds the whole story for you automatically</div>
     </div>
@@ -401,10 +401,17 @@ function generateStory(){
     document.getElementById('ai-loading').style.display='none';
     document.getElementById('gen-btn').disabled=false;
     if(d.error){errEl.textContent='API error: '+d.error.message;return;}
-    var text=d.candidates[0].content.parts[0].text;
-    var clean=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    // Handle both standard and thinking model response formats
+    var part = d.candidates[0].content.parts;
+    var text = '';
+    // Find the text part (thinking models have multiple parts)
+    for(var i=0;i<part.length;i++){ if(part[i].text){ text = part[i].text; } }
+    // Strip think tags, markdown fences, and find JSON
+    var clean = text.replace(/<think>[\s\S]*?<\/think>/g,'').replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
     var start=clean.indexOf('{'); var end=clean.lastIndexOf('}');
     if(start>-1&&end>-1) clean=clean.substring(start,end+1);
+    console.log('Gemini raw response:', text.substring(0,500));
+    console.log('Cleaned JSON:', clean.substring(0,300));
     try{
       var story=JSON.parse(clean);
       prefillForm(story);
@@ -414,7 +421,7 @@ function generateStory(){
       document.getElementById('sub-btn').disabled=false;
       setTimeout(function(){window.scrollTo({top:document.getElementById('form').offsetTop-20,behavior:'smooth'});},300);
     }catch(e){
-      errEl.textContent='Could not parse AI response. Try again with a longer transcript.';
+      errEl.textContent='Could not parse AI response. Open browser console (F12) to see what Gemini returned.';
     }
   })
   .catch(function(e){
