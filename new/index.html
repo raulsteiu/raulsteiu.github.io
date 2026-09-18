@@ -61,6 +61,31 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 .sub-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;border:none;border-radius:8px;padding:13px 34px;font-size:15px;font-weight:900;font-family:var(--font);cursor:pointer;transition:background .15s}
 .sub-btn:hover{background:#c0272d}
 .sub-btn:disabled{opacity:.5;cursor:not-allowed}
+.choice-wrap{display:none;gap:16px;margin-bottom:20px}
+.choice-wrap.visible{display:grid;grid-template-columns:1fr 1fr}
+@media(max-width:580px){.choice-wrap{grid-template-columns:1fr!important}}
+.choice-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;cursor:pointer;text-align:center;transition:border-color .15s}
+.choice-card:hover{border-color:var(--red)}
+.choice-card.featured{border:2px solid var(--red)}
+.choice-badge{background:#fff5f5;color:var(--red);font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.5px;margin-bottom:10px;display:inline-block}
+.choice-icon{font-size:24px;margin-bottom:10px}
+.choice-title{font-size:15px;font-weight:700;color:var(--dark);margin-bottom:6px}
+.choice-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.ai-screen{display:none;background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px}
+.ai-screen.visible{display:block}
+.ai-actions{display:flex;gap:10px;margin-top:14px;align-items:center;flex-wrap:wrap}
+.gen-btn{background:var(--red);color:#fff;border:none;border-radius:6px;padding:9px 20px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;transition:background .15s}
+.gen-btn:hover{background:#c0272d}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed}
+.ai-back{background:transparent;border:1px solid var(--border);border-radius:6px;padding:8px 15px;font-size:13px;font-family:var(--font);cursor:pointer;color:var(--muted)}
+.ai-back:hover{border-color:var(--dark);color:var(--dark)}
+.ai-err{font-size:12px;color:var(--red);margin-top:8px;min-height:16px}
+.ai-loading{text-align:center;padding:2rem 0;display:none}
+.ai-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-loading p{font-size:13px;color:var(--muted)}
+.ai-loading .ai-sub{font-size:12px;color:#bbb;margin-top:4px}
+.ai-success{display:none;background:#f0faf5;border:1px solid #b3dfc9;border-radius:6px;padding:12px 14px;font-size:13px;color:#1a6b3e;margin-top:12px}
 #prog-wrap{display:none;position:fixed;inset:0;background:rgba(20,20,40,.92);z-index:2000;align-items:center;justify-content:center;flex-direction:column}
 #prog-wrap.vis{display:flex}
 #prog-inner{background:#fff;border-radius:14px;padding:0;width:100%;max-width:680px;min-height:300px;overflow:hidden;display:flex;flex-direction:column}
@@ -99,6 +124,40 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
     </div>
     <div class="tok-err" id="tok-err"></div>
     <div class="tok-ok" id="tok-ok">✓ Accepted — fill in the form below and publish</div>
+  </div>
+
+  <!-- ── Choice screen (shown after token unlock) ──────────────────── -->
+  <div class="choice-wrap" id="choice-wrap">
+    <div class="choice-card featured" onclick="showAI()">
+      <div class="choice-badge">✦ NEW</div>
+      <div class="choice-icon">🤖</div>
+      <div class="choice-title">Generate with AI</div>
+      <div class="choice-desc">Paste a call transcript or meeting notes — AI builds the whole story for you automatically</div>
+    </div>
+    <div class="choice-card" onclick="showManual()">
+      <div class="choice-icon">✏</div>
+      <div class="choice-title">Fill manually</div>
+      <div class="choice-desc">Use the step-by-step form to build your story field by field</div>
+    </div>
+  </div>
+
+  <!-- ── AI generation screen ───────────────────────────────────────── -->
+  <div class="ai-screen" id="ai-screen">
+    <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:4px">✦ Generate with AI</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Paste your Gong, Teams, or any meeting transcript. AI extracts the full story automatically.</div>
+    <div class="f"><label>Gemini API key</label><input type="password" id="gemini-key" placeholder="AIzaSy…" autocomplete="off"/><div class="hint">Free at aistudio.google.com — entered once per session, never stored</div></div>
+    <div class="f"><label>Transcript or meeting notes</label><textarea id="ai-transcript" style="min-height:180px" placeholder="Paste your Gong export, Teams transcript, or any call notes here…&#10;&#10;The AI will extract: client info, stats, key results, story sections, quotes, participants and products."></textarea></div>
+    <div class="ai-err" id="ai-err"></div>
+    <div class="ai-loading" id="ai-loading">
+      <div class="ai-spinner"></div>
+      <p>Analysing transcript…</p>
+      <div class="ai-sub" id="ai-sub">Extracting client details and story content</div>
+    </div>
+    <div class="ai-success" id="ai-success">✓ Story generated — form pre-filled below. Review and publish when ready.</div>
+    <div class="ai-actions">
+      <button class="gen-btn" id="gen-btn" onclick="generateStory()">✦ Generate story</button>
+      <button class="ai-back" onclick="backToChoice()">← Back</button>
+    </div>
   </div>
 
   <div id="form" style="opacity:.3;pointer-events:none;transition:opacity .3s">
@@ -269,11 +328,173 @@ document.getElementById('tok-btn').addEventListener('click',function(){
     document.getElementById('tok-ok').style.display='block';
     document.getElementById('tok-btn').textContent='✓ Unlocked';
     document.getElementById('tok-btn').style.background='#2a7a2a';
-    var f=document.getElementById('form');f.style.opacity='1';f.style.pointerEvents='';
-    document.getElementById('sub-btn').disabled=false;
+    // Show choice screen instead of form directly
+    document.getElementById('choice-wrap').classList.add('visible');
   }).catch(function(){document.getElementById('tok-err').textContent='Could not verify token.';});
 });
 document.getElementById('tok').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('tok-btn').click();});
+
+function showAI(){
+  document.getElementById('choice-wrap').classList.remove('visible');
+  document.getElementById('ai-screen').classList.add('visible');
+}
+function showManual(){
+  document.getElementById('choice-wrap').classList.remove('visible');
+  var f=document.getElementById('form');f.style.opacity='1';f.style.pointerEvents='';
+  document.getElementById('sub-btn').disabled=false;
+  window.scrollTo({top:document.getElementById('form').offsetTop-20,behavior:'smooth'});
+}
+function backToChoice(){
+  document.getElementById('ai-screen').classList.remove('visible');
+  document.getElementById('ai-err').textContent='';
+  document.getElementById('ai-loading').style.display='none';
+  document.getElementById('ai-success').style.display='none';
+  document.getElementById('gen-btn').disabled=false;
+  document.getElementById('choice-wrap').classList.add('visible');
+}
+
+var aiLoadingMsgs=['Identifying client and industry…','Extracting key results and stats…','Building story sections from the call…','Finding participant names and quotes…','Selecting relevant Prophix products…'];
+
+function generateStory(){
+  var key=document.getElementById('gemini-key').value.trim();
+  var transcript=document.getElementById('ai-transcript').value.trim();
+  var errEl=document.getElementById('ai-err');
+  errEl.textContent='';
+  if(!key){errEl.textContent='Enter your Gemini API key.';return;}
+  if(transcript.length<100){errEl.textContent='Transcript is too short — paste more content for better results.';return;}
+
+  document.getElementById('gen-btn').disabled=true;
+  document.getElementById('ai-loading').style.display='block';
+  document.getElementById('ai-success').style.display='none';
+
+  var step=0;
+  var interval=setInterval(function(){
+    if(step<aiLoadingMsgs.length) document.getElementById('ai-sub').textContent=aiLoadingMsgs[step++];
+  },1800);
+
+  var prompt='You are a B2B content writer for Prophix, a corporate performance management software company.\n\nAnalyse this customer call transcript and extract a structured client success story.\n\nReturn ONLY valid JSON with this exact structure (no markdown, no explanation):\n{\n  "name": "client company name",\n  "desc": "2-3 sentence hero description",\n  "ind": "Industry, Location",\n  "stats": [{"v": "metric value", "l": "short label"}],\n  "krs": [{"bold": "optional bold prefix", "text": "full KRS item text"}],\n  "secs": [{"label": "SECTION LABEL IN CAPS", "heading": "Section heading", "body": "2-3 paragraph body"}],\n  "clips": [{"title": "CLIP LABEL IN CAPS", "ts": "", "quote": "exact client quote"}],\n  "whoTxt": "2-3 sentences about this client for sidebar",\n  "whoStats": [{"v": "value", "l": "label"}],\n  "prods": ["Financial Consolidation"],\n  "results": ["short result bullet"],\n  "parts": [{"name": "Full Name", "title": "Title, Company"}]\n}\n\nAvailable Prophix products (only include ones mentioned or clearly implied):\nFinancial Consolidation, Cash Management, Account Reconciliation, FP&A Plus, Intercompany Management, Lease Accounting\n\nRules:\n- stats: 2-4 concrete numbers from the transcript\n- krs: 3-5 most impactful outcomes\n- secs: 2-4 sections covering challenge, solution, results\n- clips: 1-3 best direct client quotes\n- results: 3-5 short outcome bullets\n- parts: anyone mentioned by name in the call\n\nTRANSCRIPT:\n'+transcript.substring(0,12000);
+
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:2048}})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    clearInterval(interval);
+    document.getElementById('ai-loading').style.display='none';
+    document.getElementById('gen-btn').disabled=false;
+    if(d.error){errEl.textContent='API error: '+d.error.message;return;}
+    var text=d.candidates[0].content.parts[0].text;
+    var clean=text.replace(/```json\n?/g,'').replace(/```/g,'').trim();
+    try{
+      var story=JSON.parse(clean);
+      prefillForm(story);
+      document.getElementById('ai-success').style.display='block';
+      // Show form and scroll to it
+      var f=document.getElementById('form');f.style.opacity='1';f.style.pointerEvents='';
+      document.getElementById('sub-btn').disabled=false;
+      setTimeout(function(){window.scrollTo({top:document.getElementById('form').offsetTop-20,behavior:'smooth'});},300);
+    }catch(e){
+      errEl.textContent='Could not parse AI response. Try again with a longer transcript.';
+    }
+  })
+  .catch(function(e){
+    clearInterval(interval);
+    document.getElementById('ai-loading').style.display='none';
+    document.getElementById('gen-btn').disabled=false;
+    errEl.textContent='Request failed: '+e.message;
+  });
+}
+
+function prefillForm(s){
+  // Core fields
+  if(s.name) document.getElementById('c-name').value=s.name;
+  if(s.ind)  document.getElementById('c-ind').value=s.ind;
+  if(s.desc) document.getElementById('c-desc').value=s.desc;
+  if(s.whoTxt) document.getElementById('who-txt').value=s.whoTxt;
+
+  // Stats
+  if(s.stats && s.stats.length){
+    var sb=document.getElementById('stats-b'); sb.innerHTML='';
+    s.stats.forEach(function(st){
+      var row=document.createElement('div'); row.className='stat-row';
+      row.innerHTML='<input type="text" class="sv" value="'+esc(st.v)+'"/><input type="text" class="sl" value="'+esc(st.l)+'"/><button class="rm-sm" onclick="this.closest(\'.stat-row\').remove()">✕</button>';
+      sb.appendChild(row);
+    });
+  }
+
+  // KRS
+  if(s.krs && s.krs.length){
+    var kb=document.getElementById('krs-b'); kb.innerHTML='';
+    s.krs.forEach(function(k){
+      var row=document.createElement('div'); row.className='dyn';
+      row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="f"><label>Bold prefix (optional)</label><input type="text" class="kb" value="'+esc(k.bold||'')+'"/></div><div class="f"><label>Result text</label><input type="text" class="kt" value="'+esc(k.text||'')+'"/></div>';
+      kb.appendChild(row);
+    });
+  }
+
+  // Sections
+  if(s.secs && s.secs.length){
+    var secb=document.getElementById('secs-b'); secb.innerHTML='';
+    s.secs.forEach(function(sec){
+      var row=document.createElement('div'); row.className='dyn';
+      row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="f"><label>Section label</label><input type="text" class="sl2" value="'+esc(sec.label||'')+'"/></div><div class="f"><label>Heading</label><input type="text" class="sh" value="'+esc(sec.heading||'')+'"/></div><div class="f"><label>Body</label><textarea class="sb" style="min-height:90px">'+esc(sec.body||'')+'</textarea></div>';
+      secb.appendChild(row);
+    });
+  }
+
+  // Clips
+  if(s.clips && s.clips.length){
+    var clb=document.getElementById('clips-b'); clb.innerHTML='';
+    s.clips.forEach(function(c){
+      var row=document.createElement('div'); row.className='dyn';
+      row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="row"><div class="f"><label>Title</label><input type="text" class="ct" value="'+esc(c.title||'')+'"/></div><div class="f"><label>Timestamp</label><input type="text" class="cts" value="'+esc(c.ts||'')+'"/></div></div><div class="f"><label>Pull quote</label><textarea class="cq" style="min-height:60px">'+esc(c.quote||'')+'</textarea></div><div class="f"><label>Audio file</label><div style="font-size:11px;color:#aaa">Upload MP3 after publishing via edit mode</div></div>';
+      clb.appendChild(row);
+    });
+  }
+
+  // Who stats
+  if(s.whoStats && s.whoStats.length){
+    var wb=document.getElementById('who-stats-b'); if(wb){ wb.innerHTML='';
+      s.whoStats.forEach(function(ws){
+        var row=document.createElement('div'); row.className='stat-row';
+        row.innerHTML='<input type="text" class="wsv" value="'+esc(ws.v)+'"/><input type="text" class="wsl" value="'+esc(ws.l)+'"/><button class="rm-sm" onclick="this.closest(\'.stat-row\').remove()">✕</button>';
+        wb.appendChild(row);
+      });
+    }
+  }
+
+  // Results
+  if(s.results && s.results.length){
+    var rb=document.getElementById('results-b'); if(rb){ rb.innerHTML='';
+      s.results.forEach(function(r){
+        var row=document.createElement('div'); row.className='dyn';
+        row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><input type="text" class="ri" style="width:calc(100% - 30px)" value="'+esc(r)+'"/>';
+        rb.appendChild(row);
+      });
+    }
+  }
+
+  // Participants
+  if(s.parts && s.parts.length){
+    var pb=document.getElementById('parts-b'); if(pb){ pb.innerHTML='';
+      s.parts.forEach(function(pt){
+        var row=document.createElement('div'); row.className='dyn';
+        row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="row"><div class="f"><label>Name</label><input type="text" class="pn" value="'+esc(pt.name||'')+'"/></div><div class="f"><label>Title</label><input type="text" class="pt2" value="'+esc(pt.title||'')+'"/></div></div>';
+        pb.appendChild(row);
+      });
+    }
+  }
+
+  // Products
+  if(s.prods && s.prods.length){
+    document.querySelectorAll('.plbl input').forEach(function(cb){
+      cb.checked=s.prods.indexOf(cb.value)>-1;
+      cb.closest('.plbl').classList.toggle('on',cb.checked);
+    });
+  }
+}
 
 document.querySelectorAll('.plbl').forEach(function(l){l.addEventListener('click',function(){var c=l.querySelector('input');c.checked=!c.checked;l.classList.toggle('on',c.checked);});});
 document.querySelectorAll('.llbl:not(.locked)').forEach(function(l){l.addEventListener('click',function(){var c=l.querySelector('input');c.checked=!c.checked;l.classList.toggle('on',c.checked);});});
