@@ -234,11 +234,11 @@ function renderPage(data) {
     '<button id="save-btn" class="tb-save">Save</button>' +
     '<button id="cancel-btn" class="tb-cancel">Cancel</button>' +
     '<span id="save-status" class="save-status"></span>' +
-    '<select id="status-select" onchange="changeStatus(this.value)" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.8);border-radius:6px;padding:6px 10px;font-size:12px;font-family:var(--font);cursor:pointer;outline:none">' +
-    '<option value="draft">◑ Draft</option>' +
-    '<option value="approved">✓ Approved</option>' +
-    '<option value="rejected">✗ Rejected</option>' +
-    '<option value="published">● Published</option>' +
+    '<select id="status-select" onchange="changeStatus(this.value)" style="background:#2C2C4A;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.9);border-radius:6px;padding:6px 10px;font-size:12px;font-family:var(--font);cursor:pointer;outline:none">' +
+    '<option value="draft" style="background:#fff;color:#1A1A2E">◑ Draft</option>' +
+    '<option value="approved" style="background:#fff;color:#1A1A2E">✓ Approved</option>' +
+    '<option value="rejected" style="background:#fff;color:#1A1A2E">✗ Rejected</option>' +
+    '<option value="published" style="background:#fff;color:#1A1A2E">● Published</option>' +
     '</select>' +
     '<button onclick="showPreviewLinkModal()" style="background:transparent;border:1px solid rgba(255,200,0,.4);color:#F5C842;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">⧉ Preview link</button>' +
     '</div>';
