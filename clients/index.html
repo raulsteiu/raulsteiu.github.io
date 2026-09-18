@@ -172,7 +172,7 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
     </div>
   </div>
   <a href="/new/" class="new-btn">+ New Story</a>
-  <button onclick="showAuth(function(){ renderGrid(document.getElementById('search-input').value); })" id="manage-btn" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer" title="Enter token to see drafts">🔑</button>
+  <button onclick="toggleManageMode()" id="manage-btn" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer" title="Enter token to see drafts">🔑</button>
 </div>
 
 <div class="content">
@@ -344,7 +344,7 @@ function renderGrid(filter) {
         langPills +
       '</div>' +
       '<div class="card-actions">' +
-        '<a class="open-btn" href="/clients/' + s.slug + '/">Open &#x2192;</a>' +
+        '<a class="open-btn" href="/clients/' + s.slug + '/' + (sessionToken && s.status && s.status !== 'published' ? '?edit=1' : '') + '">Open &#x2192;</a>' +
         '<button class="share-btn" onclick="shareStory(\'' + s.slug + '\')" title="Copy link">⧉</button>' +
         '<button class="delete-btn" onclick="confirmDelete(\'' + s.slug + '\',\'' + s.name.replace(/'/g,'\\x27') + '\')" title="Delete story">🗑</button>' +
       '</div>' +
@@ -375,6 +375,21 @@ function copyEditLink(url) {
 }
 
 // ── Auth — token only ─────────────────────────────────────────────────────────
+function toggleManageMode() {
+  if (sessionToken) {
+    // Logout — clear token and re-render
+    sessionToken = '';
+    var btn = document.getElementById('manage-btn');
+    btn.textContent = '🔑'; btn.style.borderColor = 'rgba(255,255,255,.3)'; btn.style.color = 'rgba(255,255,255,.7)';
+    renderGrid(document.getElementById('search-input').value);
+  } else {
+    showAuth(function(){
+      renderGrid(document.getElementById('search-input').value);
+      var btn = document.getElementById('manage-btn');
+      btn.textContent = '🔑 ✓'; btn.style.borderColor = 'rgba(42,200,42,.5)'; btn.style.color = '#5cc85c';
+    });
+  }
+}
 function showAuth(onSuccess) {
   var modal = document.getElementById('auth-modal');
   modal._cb = onSuccess;
@@ -391,9 +406,6 @@ document.getElementById('auth-submit').addEventListener('click', function() {
   document.getElementById('auth-error').textContent = '';
   if (!tok) { document.getElementById('auth-error').textContent = 'Please paste your access token.'; return; }
   sessionToken = tok;
-  renderGrid(document.getElementById('search-input').value);
-  var manageBtn = document.getElementById('manage-btn');
-  if (manageBtn) { manageBtn.textContent = '🔑 ✓'; manageBtn.style.borderColor = 'rgba(42,200,42,.5)'; manageBtn.style.color = '#5cc85c'; }
   var cb = document.getElementById('auth-modal')._cb;
   hideAuth();
   if (cb) cb();
