@@ -617,6 +617,7 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
     // Build data.json — all story content lives here
     var data = {
       slug:slug, name:name, desc:desc, ind:ind,
+      status:'published',
       langs:langs, hasLogo:hasLogo,
       stats:stats, whoStats:whoStats, whoText:whoTxt,
       krs:krs, results:results, participants:parts, products:prods,
@@ -640,7 +641,7 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
     var cur=[];
     if(sRes.ok){try{cur=JSON.parse(atob((await sRes.json()).content.replace(/\n/g,'')));}catch(e){}}
     cur=cur.filter(function(s){return s.slug!==slug;});
-    cur.unshift({slug:slug,name:name,ind:ind,langs:langs,created:new Date().toISOString(),logo:hasLogo});
+    cur.unshift({slug:slug,name:name,ind:ind,langs:langs,status:'published',created:new Date().toISOString(),logo:hasLogo});
     await ghPut('clients/stories.json',JSON.stringify(cur,null,2),'Add story: '+name,sSha);
     setP('Done!',100);
 
