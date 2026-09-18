@@ -1528,41 +1528,59 @@ function showPreviewLinkModal() {
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML =
     '<div style="background:#fff;border-radius:12px;padding:32px;width:100%;max-width:460px">' +
-    '<h3 style="font-size:17px;font-weight:900;color:#1A1A2E;margin-bottom:6px">Generate preview link</h3>' +
-    '<p style="font-size:13px;color:#888;margin-bottom:20px;line-height:1.5">Share this password-protected link with your client. It expires in 3 days. The client sees only this story — no access to other stories.</p>' +
-    '<div style="background:#F4F4F8;border-radius:8px;padding:16px;margin-bottom:16px">' +
-    '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Preview link</div>' +
-    '<div style="font-size:12px;color:#1A1A2E;word-break:break-all;line-height:1.6;margin-bottom:12px">' + url + '</div>' +
-    '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Password</div>' +
-    '<div style="font-size:18px;font-weight:700;color:#1A1A2E;letter-spacing:2px;margin-bottom:8px">' + pw + '</div>' +
-    '<div style="font-size:11px;color:#aaa">Expires: ' + expiryStr + '</div></div>' +
-    '<div id="prev-err" style="font-size:12px;color:#EF363D;min-height:16px;margin-bottom:8px"></div>' +
+    '<h3 style="font-size:17px;font-weight:900;color:#1A1A2E;margin-bottom:6px">Preview link</h3>' +
+    '<p style="font-size:13px;color:#888;margin-bottom:16px;line-height:1.5">Saving to server and generating link…</p>' +
+    '<div id="prev-loading" style="text-align:center;padding:20px;color:#888;font-size:13px">Saving…</div>' +
+    '<div id="prev-content" style="display:none">' +
+    '<div style="background:#F4F4F8;border-radius:8px;padding:16px;margin-bottom:14px">' +
+    '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Preview link</div>' +
+    '<div style="font-size:12px;color:#1A1A2E;word-break:break-all;line-height:1.6;margin-bottom:10px" id="prev-url-text"></div>' +
+    '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Password</div>' +
+    '<div style="font-size:20px;font-weight:700;color:#1A1A2E;letter-spacing:2px;margin-bottom:6px" id="prev-pw-text"></div>' +
+    '<div style="font-size:11px;color:#aaa">Expires: <span id="prev-exp"></span></div></div>' +
+    '<div id="prev-err" style="font-size:12px;color:#EF363D;min-height:14px;margin-bottom:10px"></div>' +
     '<div style="display:flex;gap:10px">' +
-    '<button id="prev-save" style="flex:1;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">Save & copy link</button>' +
-    '<button onclick="document.getElementById(\'preview-modal\').remove()" style="background:transparent;border:1px solid #E0DFF0;border-radius:6px;padding:10px 16px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer;color:#888">Cancel</button>' +
-    '</div></div>';
+    '<button id="prev-copy" style="flex:1;background:#1A1A2E;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">⧉ Copy link + password</button>' +
+    '<button id="prev-done" style="flex:1;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">Done &#x2192; Stories</button>' +
+    '</div></div></div>';
   document.body.appendChild(modal);
-  document.getElementById('prev-save').onclick = async function() {
-    var btn = document.getElementById('prev-save');
-    btn.disabled = true; btn.textContent = 'Saving...';
+
+  // Save immediately on open
+  (async function() {
     try {
       storyData.preview = {token:token, password:pw, expiresAt:expiry.toISOString(), createdAt:new Date().toISOString()};
-      storyData.status = storyData.status === 'published' ? 'draft' : storyData.status;
+      if (storyData.status === 'published') storyData.status = 'draft';
       var enc = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
       var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
       var body = {message:'Preview link: '+storyData.name, content:enc};
       if (shaRes.ok) { var d = await shaRes.json(); if (d.sha) body.sha = d.sha; }
       var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
-      if (!r.ok) throw new Error('Could not save');
+      if (!r.ok) throw new Error('Could not save to server');
       _updateEditedTimestamp();
-      navigator.clipboard.writeText(url).catch(function(){});
-      btn.textContent = 'Saved & copied!'; btn.style.background = '#2a7a2a';
-      setTimeout(function(){ modal.remove(); }, 1500);
+      // Show link details
+      document.getElementById('prev-loading').style.display = 'none';
+      document.getElementById('prev-content').style.display = 'block';
+      document.getElementById('prev-url-text').textContent = url;
+      document.getElementById('prev-pw-text').textContent = pw;
+      document.getElementById('prev-exp').textContent = expiryStr;
+      // Wire buttons
+      document.getElementById('prev-copy').onclick = function() {
+        var txt = 'Story preview link: ' + url + '\nPassword: ' + pw + '\nExpires: ' + expiryStr;
+        navigator.clipboard.writeText(txt).then(function(){
+          document.getElementById('prev-copy').textContent = '✓ Copied!';
+          document.getElementById('prev-copy').style.background = '#2a7a2a';
+          setTimeout(function(){ document.getElementById('prev-copy').textContent = '⧉ Copy link + password'; document.getElementById('prev-copy').style.background = '#1A1A2E'; }, 2000);
+        }).catch(function(){ alert('Link: ' + url + '\nPassword: ' + pw); });
+      };
+      document.getElementById('prev-done').onclick = function() {
+        window.location.href = '/clients/';
+      };
     } catch(e) {
-      btn.disabled = false; btn.textContent = 'Save & copy link';
-      document.getElementById('prev-err').textContent = 'Error: ' + e.message;
+      document.getElementById('prev-loading').style.display = 'none';
+      document.getElementById('prev-content').style.display = 'block';
+      document.getElementById('prev-err').textContent = 'Error saving: ' + e.message;
     }
-  };
+  })();
 }
 
 async function changeStatus(newStatus) {
