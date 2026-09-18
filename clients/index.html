@@ -172,6 +172,7 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
     </div>
   </div>
   <a href="/new/" class="new-btn">+ New Story</a>
+  <button onclick="showAuth(function(){ renderGrid(document.getElementById('search-input').value); })" id="manage-btn" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer" title="Enter token to see drafts">🔑</button>
 </div>
 
 <div class="content">
@@ -390,6 +391,9 @@ document.getElementById('auth-submit').addEventListener('click', function() {
   document.getElementById('auth-error').textContent = '';
   if (!tok) { document.getElementById('auth-error').textContent = 'Please paste your access token.'; return; }
   sessionToken = tok;
+  renderGrid(document.getElementById('search-input').value);
+  var manageBtn = document.getElementById('manage-btn');
+  if (manageBtn) { manageBtn.textContent = '🔑 ✓'; manageBtn.style.borderColor = 'rgba(42,200,42,.5)'; manageBtn.style.color = '#5cc85c'; }
   var cb = document.getElementById('auth-modal')._cb;
   hideAuth();
   if (cb) cb();
