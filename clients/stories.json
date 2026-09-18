@@ -7,9 +7,10 @@
       "en",
       "fr"
     ],
-    "status": "published",
+    "status": "draft",
     "created": "2026-09-18T15:29:19.937Z",
-    "logo": false
+    "logo": false,
+    "edited": "2026-09-18T15:33:43.782Z"
   },
   {
     "slug": "eaglestone",
