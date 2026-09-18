@@ -66,7 +66,7 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 @media(max-width:580px){.choice-wrap{grid-template-columns:1fr!important}}
 .choice-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;cursor:pointer;text-align:center;transition:border-color .15s}
 .choice-card:hover{border-color:var(--red)}
-.choice-card.featured{border:2px solid var(--red)}
+.choice-card.featured{border:2px solid var(--red);background:#fff9f9}
 .choice-badge{background:#fff5f5;color:var(--red);font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.5px;margin-bottom:10px;display:inline-block}
 .choice-icon{font-size:24px;margin-bottom:10px}
 .choice-title{font-size:15px;font-weight:700;color:var(--dark);margin-bottom:6px}
@@ -130,7 +130,7 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
   <div class="choice-wrap" id="choice-wrap">
     <div class="choice-card featured" onclick="showAI()">
       <div class="choice-badge">✦ BETA</div>
-      <div class="choice-icon">✦</div>
+      <div class="choice-icon" style="font-size:28px;color:var(--red)">✦</div>
       <div class="choice-title">Generate with AI</div>
       <div class="choice-desc">Paste a call transcript or meeting notes — AI builds the whole story for you automatically</div>
     </div>
@@ -364,7 +364,7 @@ function callGemini(key, prompt, attempt) {
   return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key='+key,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:2048}})
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:8192}})
   })
   .then(function(r){return r.json();})
   .then(function(d){
