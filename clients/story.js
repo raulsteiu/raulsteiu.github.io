@@ -237,7 +237,6 @@ function renderPage(data) {
     '<select id="status-select" onchange="changeStatus(this.value)" style="background:#2C2C4A;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.9);border-radius:6px;padding:6px 10px;font-size:12px;font-family:var(--font);cursor:pointer;outline:none">' +
     '<option value="draft" style="background:#fff;color:#1A1A2E">◑ Draft</option>' +
     '<option value="approved" style="background:#fff;color:#1A1A2E">✓ Approved</option>' +
-    '<option value="rejected" style="background:#fff;color:#1A1A2E">✗ Rejected</option>' +
     '<option value="published" style="background:#fff;color:#1A1A2E">● Published</option>' +
     '</select>' +
     '<button onclick="showPreviewLinkModal()" style="background:transparent;border:1px solid rgba(255,200,0,.4);color:#F5C842;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">⧉ Preview link</button>' +
@@ -1584,13 +1583,20 @@ function showPreviewLinkModal() {
 }
 
 async function changeStatus(newStatus) {
-  if (!confirm('Change story status to "' + newStatus + '"?')) return;
   storyData.status = newStatus;
-  var enc = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
-  var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
-  var body = {message:'Status: '+newStatus+' — '+storyData.name, content:enc};
-  if (shaRes.ok) { var d = await shaRes.json(); if (d.sha) body.sha = d.sha; }
-  await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
-  _updateEditedTimestamp();
-  alert('Status updated to: ' + newStatus);
+  var statusSel = document.getElementById('status-select');
+  if (statusSel) statusSel.value = newStatus;
+  var statusEl = document.getElementById('save-status');
+  if (statusEl) statusEl.textContent = 'Saving status…';
+  try {
+    var enc = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
+    var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});
+    var body = {message:'Status: '+newStatus+' — '+storyData.name, content:enc};
+    if (shaRes.ok) { var d = await shaRes.json(); if (d.sha) body.sha = d.sha; }
+    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    _updateEditedTimestamp();
+    if (statusEl) { statusEl.textContent = 'Status: ' + newStatus + ' ✓'; setTimeout(function(){ statusEl.textContent = 'Editing: ' + currentLang.toUpperCase(); }, 2000); }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Status save failed';
+  }
 }
