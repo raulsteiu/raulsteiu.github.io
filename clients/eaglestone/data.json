@@ -565,5 +565,11 @@
       ]
     }
   },
-  "status": "draft"
+  "status": "draft",
+  "preview": {
+    "token": "oceofggtn1",
+    "password": "iron-peak-76",
+    "expiresAt": "2026-09-24T13:48:12.597Z",
+    "createdAt": "2026-09-21T13:48:12.598Z"
+  }
 }
