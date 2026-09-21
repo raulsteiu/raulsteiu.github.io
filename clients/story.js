@@ -1033,7 +1033,7 @@ function disableEditMode() {
 
 // ── Edit controls injection ───────────────────────────────────────────────────
 function stripEditControls() {
-  ['.sec-delete-btn','.drag-handle','.clip-remove-btn','.upload-audio-btn','.audio-del-x','.upload-media-btn','.media-del-x',
+  ['.sec-delete-btn','.drag-handle','.clip-remove-btn','.upload-audio-btn','.audio-del-x','.upload-media-btn','.media-del-x','.media-url-hint','.media-url-input.edit-only',
    '.delete-audio-btn','.stat-add-btn','.stat-tile-del','.krs-add-btn','.krs-item-del',
    '.who-stat-add-btn','.who-stat-del','.part-add-btn','.part-del-btn',
    '.result-add-btn','.result-del-btn','#inline-products-panel']
@@ -1041,6 +1041,30 @@ function stripEditControls() {
 }
 
 function addEditControlsToExisting() {
+  // Legacy clip-cards (audio only — backwards compat with pre-v9.2 stories)
+  document.querySelectorAll('.clip-card').forEach(function(card) {
+    var rb = document.createElement('button');
+    rb.className = 'clip-remove-btn edit-only'; rb.innerHTML = '🗑'; rb.title = 'Delete clip';
+    rb.addEventListener('click', function(){ if(confirm('Delete this clip?')) card.remove(); });
+    card.insertBefore(rb, card.firstChild);
+    var handle = document.createElement('div');
+    handle.className = 'drag-handle edit-only'; handle.textContent = '⠿'; handle.title = 'Drag';
+    handle.style.right = '36px'; card.insertBefore(handle, rb);
+    var player = card.querySelector('.clip-player');
+    if (player) {
+      var upBtn = document.createElement('button');
+      upBtn.className = 'upload-audio-btn edit-only'; upBtn.textContent = 'Upload MP3';
+      upBtn.addEventListener('click', function(){ uploadAudio(upBtn); }); player.appendChild(upBtn);
+    }
+    var clipLabel = card.querySelector('.clip-label');
+    if (clipLabel) {
+      var xBtn = document.createElement('button');
+      xBtn.className = 'audio-del-x edit-only'; xBtn.title = 'Delete audio'; xBtn.textContent = '✕';
+      xBtn.addEventListener('click', async function(e){ e.stopPropagation(); await deleteAudioFile(player, xBtn); });
+      clipLabel.appendChild(xBtn);
+    }
+  });
+
   // Media cards (audio / video / image)
   document.querySelectorAll('.media-card').forEach(function(card) {
     var rb = document.createElement('button');
@@ -1051,9 +1075,10 @@ function addEditControlsToExisting() {
     handle.className = 'drag-handle edit-only'; handle.textContent = '⠿'; handle.title = 'Drag';
     handle.style.right = '36px'; card.insertBefore(handle, rb);
     var player = card.querySelector('.media-player');
-    if (player) {
+    var mt_up = card.getAttribute('data-media-type');
+    if (player && mt_up !== 'video') {
       var upBtn = document.createElement('button');
-      upBtn.className = 'upload-media-btn edit-only'; upBtn.textContent = 'Upload media';
+      upBtn.className = 'upload-media-btn edit-only'; upBtn.textContent = mt_up === 'image' ? 'Upload image' : 'Upload MP3';
       upBtn.addEventListener('click', function(){ uploadMedia(upBtn, card); }); player.appendChild(upBtn);
     }
     var mediaLabel = card.querySelector('.media-label');
