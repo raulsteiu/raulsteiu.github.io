@@ -120,6 +120,15 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
   text-align: center; transition: background .15s;
 }
 .open-btn:hover { background: var(--mid); }
+.pdf-tile-btn {
+  width: 30px; height: 30px; border-radius: 6px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; flex-shrink: 0; color: var(--muted);
+  text-decoration: none;
+}
+.pdf-tile-btn:hover { background: #fff0f0; border-color: var(--red); color: var(--red); }
 /* share-btn and delete-btn removed from tile — v2.2 */
 
 /* ── Empty / no-results ── */
@@ -369,6 +378,7 @@ function renderGrid(filter) {
       '</div>' +
       '<div class="card-actions">' +
         '<a class="open-btn" href="/clients/' + s.slug + '/">Open &#x2192;</a>' +
+        '<button class="pdf-tile-btn" onclick="downloadBrochureTile('' + s.slug + '')" title="Download PDF brochure">&#x2913;</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -481,6 +491,112 @@ document.getElementById('delete-confirm-btn').addEventListener('click', async fu
 });
 
 // ── Push stories.json ─────────────────────────────────────────────────────────
+// ── PDF Brochure from directory tile ─────────────────────────────────────────
+function loadJsPDFDir(cb) {
+  if (window.jspdf) { cb(window.jspdf.jsPDF); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  s.onload = function() { cb(window.jspdf.jsPDF); };
+  s.onerror = function() { alert('Could not load PDF library.'); };
+  document.head.appendChild(s);
+}
+
+function downloadBrochureTile(slug) {
+  // Fetch data.json for this story, then generate PDF
+  var btn = event.target;
+  btn.textContent = '⏳'; btn.disabled = true;
+  fetch('/clients/' + slug + '/data.json?v=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      loadJsPDFDir(function(jsPDF) {
+        try {
+          _buildBrochurePDFDir(jsPDF, data, slug);
+        } catch(e) {
+          alert('PDF error: ' + e.message);
+        } finally {
+          btn.textContent = '⬇'; btn.disabled = false;
+        }
+      });
+    })
+    .catch(function(e) {
+      alert('Could not load story data: ' + e.message);
+      btn.textContent = '⬇'; btn.disabled = false;
+    });
+}
+
+// Shared brochure builder — same logic as story.js version
+// (Inline here so directory works without loading story.js)
+function _buildBrochurePDFDir(jsPDF, data, slug) {
+  // Delegate to window._buildBrochurePDF if story.js is loaded (same page)
+  // Otherwise do a minimal inline build
+  var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  var W = 210, H = 297;
+  var RED = [239, 54, 61], DARK_BLUE = [26, 26, 46], MID_BLUE = [44, 44, 74];
+  var MUTED = [136, 136, 136], WHITE = [255, 255, 255], BLACK = [51, 51, 51];
+  var margin = 14, colRight = 138, colMainW = 118, colRightW = 56;
+
+  function sf(style, size){ doc.setFont('helvetica', style); doc.setFontSize(size); }
+  function sc(rgb, type){ if(type==='fill') doc.setFillColor(rgb[0],rgb[1],rgb[2]); else doc.setTextColor(rgb[0],rgb[1],rgb[2]); }
+  function wt(text, x, y, mw, lh){ var lines = doc.splitTextToSize(text||'', mw); lines.forEach(function(l){ doc.text(l,x,y); y+=lh; }); return y; }
+
+  function build(logoUrl) {
+    // Header
+    sf('bold',14); sc(RED,'text'); doc.text('Prophix', margin, 12);
+    sf('bold',8); sc(MUTED,'text'); doc.text('CUSTOMER STORY', margin, 18);
+    if (logoUrl) {
+      try { doc.addImage(logoUrl,'PNG',W-50,6,36,14,undefined,'FAST'); } catch(e) {
+        sf('bold',11); sc(RED,'text'); doc.text(data.name||'', W-margin, 12, {align:'right'});
+      }
+    } else { sf('bold',11); sc(RED,'text'); doc.text(data.name||'', W-margin, 12, {align:'right'}); }
+
+    var y = 26;
+    sc(RED,'fill'); doc.rect(margin, y, W-margin*2, 0.4,'F'); y+=5;
+
+    // Title from first section or desc
+    var title = data.name ? 'How ' + data.name + ' improved with Prophix' : '';
+    if (data.content) { var fs = data.content.find(function(c){ return c.type==='section'&&c.data&&c.data.heading; }); if(fs) title = fs.data.heading; }
+    sf('bold',18); sc(RED,'text');
+    var tl = doc.splitTextToSize(title, W-margin*2).slice(0,3);
+    tl.forEach(function(l){ doc.text(l,margin,y); y+=8; }); y+=2;
+
+    var mainY = y, sideY = y;
+
+    // Right sidebar
+    sf('bold',9); sc(RED,'text'); doc.text('Who is '+(data.name||'Client')+'?', colRight, sideY); sideY+=4;
+    sc(RED,'fill'); doc.rect(colRight,sideY,colRightW,0.5,'F'); sideY+=4;
+    sf('normal',8); sc(BLACK,'text'); sideY=wt(data.whoText||data.desc||'',colRight,sideY,colRightW,4.5); sideY+=4;
+    if(data.whoStats&&data.whoStats.length){ data.whoStats.slice(0,4).forEach(function(ws){ sf('bold',11);sc(RED,'text');doc.text(ws.v||'',colRight,sideY);sideY+=4;sf('normal',7);sc(MUTED,'text');var ll=doc.splitTextToSize(ws.l||'',colRightW).slice(0,2);ll.forEach(function(l){doc.text(l,colRight,sideY);sideY+=3.5;});sideY+=1;}); sideY+=3; }
+    sf('bold',9); sc(RED,'text'); doc.text('Applications deployed', colRight, sideY); sideY+=3;
+    sc(RED,'fill'); doc.rect(colRight,sideY,colRightW,0.5,'F'); sideY+=4;
+    (data.products||[]).forEach(function(pr){ sc(RED,'fill');doc.circle(colRight+1.5,sideY-1.5,1.2,'F');sf('normal',8);sc(BLACK,'text');doc.text(pr,colRight+5,sideY);sideY+=5; });
+
+    // KRS
+    var krs = data.krs||[];
+    if(krs.length){ var krsH=12+krs.length*9; sc(DARK_BLUE,'fill'); doc.roundedRect(margin,mainY,colMainW,krsH,3,3,'F'); sf('bold',9);sc(WHITE,'text');doc.text(data.krsHeading||'Key Results Snapshot',margin+4,mainY+7); var ky=mainY+13; krs.forEach(function(k){ sc(RED,'fill');doc.circle(margin+5,ky-1.5,2.5,'F');doc.setDrawColor(255,255,255);doc.setLineWidth(0.4);doc.line(margin+3.8,ky-1.5,margin+4.8,ky-0.4);doc.line(margin+4.8,ky-0.4,margin+6.2,ky-2.5); var kt=k.bold?k.bold+': '+(k.text||'').replace(k.bold+':','').replace(k.bold+': ','').trim():k.text||''; sf('normal',7.5);sc(WHITE,'text');var kl=doc.splitTextToSize(kt,colMainW-16).slice(0,2);kl.forEach(function(l,i){doc.text(l,margin+10,ky+(i*3.8));});ky+=kl.length>1?9:7;}); mainY+=krsH+6; }
+
+    // Stats
+    var stats=data.stats||[]; if(stats.length){ var sw=colMainW/Math.min(stats.length,4); stats.slice(0,4).forEach(function(s,i){ var sx=margin+i*sw; sf('bold',14);sc(RED,'text');doc.text(s.v||'',sx,mainY+6);sf('normal',7);sc(MUTED,'text');doc.splitTextToSize(s.l||'',sw-2).slice(0,2).forEach(function(l,j){doc.text(l,sx,mainY+10+j*3.5);}); }); mainY+=18; sc([224,223,240],'fill');doc.rect(margin,mainY,colMainW,0.3,'F');mainY+=5; }
+
+    // Sections
+    (data.content||[]).forEach(function(item){ if(item.type!=='section'||!item.data||mainY>H-30) return; var s=item.data; if(s.label){sf('bold',7.5);sc(RED,'text');doc.text(s.label.toUpperCase(),margin,mainY);mainY+=4;} if(s.heading){sf('bold',11);sc(RED,'text');doc.splitTextToSize(s.heading,colMainW).slice(0,2).forEach(function(l){doc.text(l,margin,mainY);mainY+=5.5;});mainY+=1;} if(s.body){sf('normal',8.5);sc(BLACK,'text');s.body.split('
+').forEach(function(line){ if(mainY>H-25) return; var t=line.trim(); if(!t){mainY+=2;return;} if(/^[-–]\s/.test(t)){var bt=t.replace(/^[-–]\s+/,'');sc(RED,'fill');doc.circle(margin+1.5,mainY-1.5,1,'F');sf('normal',8);sc(BLACK,'text');doc.splitTextToSize(bt,colMainW-7).slice(0,2).forEach(function(bl){doc.text(bl,margin+5,mainY);mainY+=4;});}else{doc.splitTextToSize(t,colMainW).slice(0,4).forEach(function(pl){doc.text(pl,margin,mainY);mainY+=4;});} });mainY+=4;} });
+
+    // Footer
+    var fy=H-12; sc([230,230,240],'fill'); doc.rect(0,fy-4,W,16,'F'); sf('bold',9);sc(RED,'text');doc.text('Prophix',margin,fy+2); sf('normal',6);sc(MUTED,'text');doc.text('Copyright © '+new Date().getFullYear()+' Prophix Software Inc. All rights reserved.',margin,fy+6);
+    sc(RED,'fill'); doc.roundedRect(W-38,H-30,32,22,8,8,'F'); sc(MID_BLUE,'fill'); doc.roundedRect(W-46,H-16,14,14,3,3,'F');
+
+    var fn = (data.name||'Client').replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_')+'_Customer_Story.pdf';
+    doc.save(fn);
+  }
+
+  if(data.hasLogo && slug) {
+    var img=new Image(); img.crossOrigin='anonymous';
+    img.onload=function(){ try{ var c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext('2d').drawImage(img,0,0);build(c.toDataURL('image/png')); }catch(e){build(null);} };
+    img.onerror=function(){ build(null); };
+    img.src='/clients/'+slug+'/logo.png?v='+Date.now();
+  } else { build(null); }
+}
+
 async function pushStoriesJSON() {
   var content = btoa(unescape(encodeURIComponent(JSON.stringify(STORIES, null, 2))));
   var ex = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
