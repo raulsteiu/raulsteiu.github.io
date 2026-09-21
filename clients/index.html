@@ -91,10 +91,11 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
 .card-logo-wrap {
   height: 80px; background: #f9f9fc;
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center; justify-content: flex-start;
+  padding-left: 16px;
   overflow: hidden; flex-shrink: 0;
 }
-.card-logo-wrap img { max-height: 52px; max-width: 80%; object-fit: contain; }
+.card-logo-wrap img { max-height: 44px; max-width: 70%; object-fit: contain; }
 .card-logo-fallback { font-size: 32px; color: #ccc; }
 .card-body { padding: 14px 16px 10px; flex: 1; }
 .story-name { font-size: 15px; font-weight: 900; color: var(--dark); margin-bottom: 3px; }
@@ -119,17 +120,7 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
   text-align: center; transition: background .15s;
 }
 .open-btn:hover { background: var(--mid); }
-.share-btn, .delete-btn {
-  width: 30px; height: 30px; border-radius: 6px;
-  border: 1px solid var(--border); background: transparent;
-  cursor: pointer; font-size: 14px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s; flex-shrink: 0;
-}
-.share-btn:hover { background: #f0f0ff; border-color: #aab; }
-.delete-btn { opacity: 0; transition: opacity .15s, background .15s; }
-.story-card:hover .delete-btn { opacity: 1; }
-.delete-btn:hover { background: #fff0f0; border-color: #f5c6c6; }
+/* share-btn and delete-btn removed from tile — v2.2 */
 
 /* ── Empty / no-results ── */
 .empty { text-align: center; padding: 60px 20px; color: #999; grid-column: 1 / -1; }
@@ -249,6 +240,7 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
 // v1.2  2026-09-16  flexbox card layout; flex:1 on card-body; actions pinned to bottom
 // v2.0  2026-09-21  Status system — draft/approved/published badges and card tints
 // v2.1  2026-09-21  Sort filter by status; story count shows published vs total
+// v2.2  2026-09-21  Tile cleanup: Open only; status capsule redesign; logo left-aligned
 
 var GH_REPO = 'raulsteiu/raulsteiu.github.io';
 var sessionToken = '';
@@ -348,16 +340,20 @@ function renderGrid(filter) {
       : '';
     var isFav = favs.indexOf(s.slug) > -1;
 
-    // Status badge and card tint
+    // Status badge and card tint (v2.2)
+    // Published = faded blue; Draft = faded orange; Approved = faded green
     var cardStyle = '';
     var statusBadge = '';
     var st = s.status || 'published';
     if (st === 'draft') {
-      cardStyle = 'background:#f0f4ff;';
-      statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;background:#dce5ff;color:#3355cc">◑ Draft</div>';
+      cardStyle = 'background:#fff8f0;';
+      statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:6px;display:inline-block;background:#ffe8cc;color:#b35f00">◑ Draft</div>';
     } else if (st === 'approved') {
       cardStyle = 'background:#f0fff4;';
-      statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;background:#c8f0d8;color:#2a7a2a">✓ Approved</div>';
+      statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:6px;display:inline-block;background:#c8f0d8;color:#2a7a2a">✓ Approved</div>';
+    } else {
+      cardStyle = 'background:#f0f4ff;';
+      statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:6px;display:inline-block;background:#dce5ff;color:#3355cc">● Published</div>';
     }
 
     return '<div class="story-card" id="card-' + s.slug + '" style="' + cardStyle + '">' +
@@ -373,8 +369,6 @@ function renderGrid(filter) {
       '</div>' +
       '<div class="card-actions">' +
         '<a class="open-btn" href="/clients/' + s.slug + '/">Open &#x2192;</a>' +
-        '<button class="share-btn" onclick="shareStory(\'' + s.slug + '\')" title="Copy link">⧉</button>' +
-        '<button class="delete-btn" onclick="confirmDelete(\'' + s.slug + '\',\'' + s.name.replace(/'/g,'\\x27') + '\')" title="Delete story">🗑</button>' +
       '</div>' +
     '</div>';
   }).join('');
