@@ -290,7 +290,9 @@ function renderMediaCard(c) {
     }
     var player = document.createElement('div'); player.className = 'media-player';
     if (mt === 'video') {
+      console.log('[VIDEO DEBUG 3] renderMediaCard video — c.media:', c.media, '| c.url:', c.url);
       var embedUrl = getVideoEmbedUrl(c.media || c.url || '');
+      console.log('[VIDEO DEBUG 3] embedUrl result:', embedUrl);
       if (embedUrl) {
         var iframeWrap = document.createElement('div'); iframeWrap.className = 'media-iframe-wrap';
         var iframe = document.createElement('iframe');
@@ -299,8 +301,8 @@ function renderMediaCard(c) {
         iframeWrap.appendChild(iframe); player.appendChild(iframeWrap);
       } else {
         var ph = document.createElement('div');
-        ph.style.cssText = 'padding:24px;text-align:center;color:#aaa;font-size:13px;background:#f5f5f5;border-radius:6px';
-        ph.textContent = 'Paste a YouTube or Vimeo URL in edit mode to embed video';
+        ph.style.cssText = 'padding:32px;text-align:center;color:#aaa;font-size:13px;background:#f5f5f5;border-radius:6px;border:2px dashed #e0dff0';
+        ph.innerHTML = '<div style="font-size:24px;margin-bottom:8px">🎬</div><div>Open in edit mode and paste a YouTube or Vimeo URL</div>';
         player.appendChild(ph);
       }
     } else {
@@ -702,7 +704,7 @@ function domToData() {
           if (titleClone) titleClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
           var mt = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : 'audio'));
           var mediaSrc = '';
-          if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = (vurlEl ? (vurlEl.value.trim() || vurlEl.getAttribute('data-url') || '') : '') || el.getAttribute('data-media-url') || ''; }
+          if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = (vurlEl ? (vurlEl.value.trim() || vurlEl.getAttribute('data-url') || '') : '') || el.getAttribute('data-media-url') || ''; console.log('[VIDEO DEBUG 2] domToData video read — vurlEl found:', !!vurlEl, '| value:', vurlEl?vurlEl.value:'NONE', '| data-url attr:', vurlEl?vurlEl.getAttribute('data-url'):'NONE', '| card data-media-url:', el.getAttribute('data-media-url'), '| FINAL mediaSrc:', mediaSrc); }
           else if (mt === 'image') { var img = el.querySelector('.media-img-wrap img'); mediaSrc = img ? (img.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
           else { var asrc = el.querySelector('audio source'); mediaSrc = asrc ? (asrc.getAttribute('src')||'') : ''; }
           if (mediaSrc && mediaSrc.indexOf('://') > -1) mediaSrc = mediaSrc.split('/').pop();
@@ -1265,6 +1267,7 @@ function addMediaInline(btn, mediaType) {
     urlInput.setAttribute('data-video-url', 'true');
     function applyVideoUrlInline() {
       var url = urlInput.value.trim();
+      console.log('[VIDEO DEBUG 1] applyVideoUrlInline fired, url=', url);
       urlInput.setAttribute('data-url', url);
       card.setAttribute('data-media-url', url);
       card.setAttribute('data-media-type', 'video');
