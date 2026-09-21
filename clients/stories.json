@@ -1,17 +1,5 @@
 [
   {
-    "slug": "eaglepebble",
-    "name": "EaglePebble",
-    "ind": "Real Estate, Luxembourg",
-    "langs": [
-      "en",
-      "fr"
-    ],
-    "status": "published",
-    "created": "2026-09-21T11:56:35.012Z",
-    "logo": false
-  },
-  {
     "slug": "meridian-logistic-group",
     "name": "Meridian Logistic Group",
     "ind": "Logistics & Supply Chain, Brussels",
