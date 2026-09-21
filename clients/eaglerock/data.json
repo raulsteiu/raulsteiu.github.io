@@ -99,22 +99,22 @@
     {
       "type": "clip",
       "data": {
-        "title": "Something Cool",
+        "title": "",
         "ts": "",
         "quote": "",
-        "mediaType": "video",
-        "media": "watch?v=QIsY5LH3E_Q",
+        "mediaType": "image",
+        "media": "",
         "audio": ""
       }
     },
     {
       "type": "clip",
       "data": {
-        "title": "",
+        "title": "New Prophix",
         "ts": "",
         "quote": "",
-        "mediaType": "image",
-        "media": "",
+        "mediaType": "video",
+        "media": "watch?v=QIsY5LH3E_Q",
         "audio": ""
       }
     }
