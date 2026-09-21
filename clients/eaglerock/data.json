@@ -99,18 +99,7 @@
     {
       "type": "clip",
       "data": {
-        "title": "",
-        "ts": "",
-        "quote": "",
-        "mediaType": "image",
-        "media": "",
-        "audio": ""
-      }
-    },
-    {
-      "type": "clip",
-      "data": {
-        "title": "New ProphiX video",
+        "title": "This is a video",
         "ts": "",
         "quote": "",
         "mediaType": "video",
