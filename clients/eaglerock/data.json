@@ -23,20 +23,20 @@
   "whoText": "EagleRock is a real estate promotion group that manages a complex portfolio of projects across Europe. They rely on Prophix to maintain financial integrity and provide clear, consolidated reporting to their shareholders and investors.",
   "krs": [
     {
-      "bold": "Enhanced Transparency:",
-      "text": "Enhanced Transparency:: Transitioned from receiving static consolidated contributions to full visibility into local data, intercompany eliminations, and adjustments."
+      "bold": "Enhanced Transparency",
+      "text": "Enhanced Transparency: Transitioned from receiving static consolidated contributions to full visibility into local data, intercompany eliminations, and adjustments."
     },
     {
-      "bold": "Process Efficiency:",
-      "text": "Process Efficiency:: Restructured consolidation workflows to eliminate manual bottlenecks and ensure strict adherence to reporting deadlines."
+      "bold": "Process Efficiency",
+      "text": "Process Efficiency: Restructured consolidation workflows to eliminate manual bottlenecks and ensure strict adherence to reporting deadlines."
     },
     {
-      "bold": "Strategic Agility:",
-      "text": "Strategic Agility:: Utilized simulation capabilities to model the impact of capital transactions and investor entries on consolidated accounts."
+      "bold": "Strategic Agility",
+      "text": "Strategic Agility: Utilized simulation capabilities to model the impact of capital transactions and investor entries on consolidated accounts."
     },
     {
-      "bold": "Improved Reporting:",
-      "text": "Improved Reporting:: Achieved the ability to generate segment-specific reporting, providing clearer insights into clean funds per country."
+      "bold": "Improved Reporting",
+      "text": "Improved Reporting: Achieved the ability to generate segment-specific reporting, providing clearer insights into clean funds per country."
     }
   ],
   "results": [],
