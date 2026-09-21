@@ -1,0 +1,124 @@
+{
+  "slug": "eaglepebble",
+  "name": "EaglePebble",
+  "desc": "EaglePebble is a decentralized real estate development group that manages complex financial consolidations across multiple European markets. The company leverages Prophix to streamline reporting, improve data transparency, and support strategic decision-making for its investors.",
+  "ind": "Real Estate, Luxembourg",
+  "status": "published",
+  "langs": [
+    "en",
+    "fr"
+  ],
+  "hasLogo": false,
+  "stats": [
+    {
+      "v": "1 month",
+      "l": "Consolidation cycle duration"
+    },
+    {
+      "v": "3",
+      "l": "Active market regions"
+    },
+    {
+      "v": "2",
+      "l": "Reporting frameworks managed"
+    },
+    {
+      "v": "1 year",
+      "l": "Prophix implementation tenure"
+    }
+  ],
+  "whoStats": [
+    {
+      "v": "3",
+      "l": "Active markets"
+    },
+    {
+      "v": "1",
+      "l": "Group consolidation manager"
+    }
+  ],
+  "whoText": "EaglePebble is a decentralized real estate development group headquartered in Luxembourg. The company operates across three primary markets, including Belgium, France, and Luxembourg, managing complex financial consolidations for both statutory and IFRS reporting requirements.",
+  "krs": [
+    {
+      "text": "data is now significantly more transparent and accessible for internal reporting.",
+      "bold": "Faster information retrieval"
+    },
+    {
+      "text": "consolidated contributions are now broken down by local adjustments and intercompany eliminations.",
+      "bold": "Improved data granularity"
+    },
+    {
+      "text": "impacts of dilution operations and investor entries can be modeled before execution.",
+      "bold": "Strategic scenario simulation"
+    },
+    {
+      "text": "deadlines are now consistently met for stakeholders requiring IFRS-compliant accounts.",
+      "bold": "Enhanced reporting efficiency"
+    }
+  ],
+  "results": [
+    "Integrated decentralized data from multiple international markets into a single system",
+    "Improved reporting transparency by eliminating reliance on pre-consolidated contributions",
+    "Enabled strategic scenario modeling for capital dilution and investor entries",
+    "Met strict reporting deadlines for IFRS-compliant stakeholders"
+  ],
+  "participants": [
+    {
+      "name": "Quentin",
+      "title": "Group Consolidation Manager, EaglePebble"
+    }
+  ],
+  "products": [
+    "Financial Consolidation"
+  ],
+  "content": [
+    {
+      "type": "section",
+      "data": {
+        "label": "BUSINESS CHALLENGES",
+        "heading": "Navigating complex, decentralized consolidation",
+        "body": "Before Prophix, the group operated as a decentralized entity where financial data originated from disparate systems across Belgium, France, and Luxembourg. The consolidation process relied on receiving pre-consolidated contributions from subsidiaries, which lacked the necessary detail regarding local adjustments, intercompany eliminations, and specific financial movements. This fragmented approach forced the group consolidation manager to constantly revert to local teams for clarification, creating significant bottlenecks in the reporting workflow.\n\nThis status quo was unsustainable because it prevented the group from achieving a clear, granular view of its financial health, particularly regarding individual activity segments and clean funds. The lack of transparency hindered the ability to respond to investor inquiries and made it difficult to meet strict reporting deadlines. Without a unified system, the team struggled to maintain coherence across statutory local figures and IFRS requirements, necessitating a more robust and integrated solution."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "WHY PROPHIX",
+        "heading": "What made Prophix the right fit",
+        "body": "- Requirement for a unified system to integrate decentralized data from multiple international markets.\n- Need for granular visibility into local adjustments, intercompany eliminations, and consolidation methods.\n- Requirement for a user-friendly interface that supports complex reporting and strategic simulation capabilities."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "KEY RESULTS",
+        "heading": "Driving transparency and strategic agility",
+        "body": "The implementation of Prophix has transformed the group’s consolidation process into a transparent, efficient operation. By integrating France directly into the system, the team has moved away from relying on opaque, pre-consolidated contributions, allowing for a much deeper understanding of the financial data at both the local and group levels.\n\nThis enhanced visibility has significantly improved collaboration between the group consolidator and local country teams. The ability to utilize analytical dimensions and coherence controls has ensured that data is reliable and audit-ready, while the user-friendly interface allows for easier navigation and faster resolution of intercompany positions.\n\nMost importantly, the group has achieved the ability to meet strict reporting deadlines for its investors. By moving from a manual, fragmented process to an automated system, the team now consistently respects its closing timelines while gaining the agility to simulate strategic scenarios, such as capital dilution, which were previously difficult to assess accurately."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "IMPROVED TRANSPARENCY",
+        "ts": "9:02",
+        "quote": "I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "STRATEGIC SIMULATION",
+        "ts": "11:48",
+        "quote": "Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario"
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "USER EXPERIENCE",
+        "ts": "13:25",
+        "quote": "Module that allows us to reconcile inter society positions. I think that to have worked in another system… for the approach, status of inter society positions, I think that here, it is still quite user friendly."
+      }
+    }
+  ]
+}
