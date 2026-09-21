@@ -1103,13 +1103,17 @@ function addEditControlsToExisting() {
         inp_c.placeholder = 'https://www.youtube.com/watch?v=... or https://vimeo.com/...';
         inp_c.setAttribute('data-video-url', 'true');
         inp_c.value = currentUrl;
-        inp_c.addEventListener('change', function() {
-          card.setAttribute('data-media-url', inp_c.value.trim());
-          var embedUrl = getVideoEmbedUrl(inp_c.value.trim());
+        function applyVideoUrlEdit() {
+          var url = inp_c.value.trim();
+          card.setAttribute('data-media-url', url);
+          var embedUrl = getVideoEmbedUrl(url);
           var wrap = pl_c.querySelector('.media-iframe-wrap');
           if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl_c.insertBefore(wrap, hint_c); }
-          if (embedUrl) wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0"></iframe>';
-        });
+          if (embedUrl) { wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0"></iframe>'; wrap.style.display = 'block'; }
+        }
+        inp_c.addEventListener('input', applyVideoUrlEdit);
+        inp_c.addEventListener('paste', function(){ setTimeout(applyVideoUrlEdit, 50); });
+        inp_c.addEventListener('blur', applyVideoUrlEdit);
         pl_c.insertBefore(inp_c, pl_c.firstChild);
         pl_c.insertBefore(hint_c, inp_c);
       }
@@ -1257,15 +1261,17 @@ function addMediaInline(btn, mediaType) {
     var urlInput = document.createElement('input'); urlInput.type = 'text'; urlInput.className = 'media-url-input';
     urlInput.placeholder = 'https://www.youtube.com/watch?v=... or https://vimeo.com/...';
     urlInput.setAttribute('data-video-url', 'true');
-    urlInput.addEventListener('change', function() {
-      card.setAttribute('data-media-url', urlInput.value.trim());
-      var embedUrl = getVideoEmbedUrl(urlInput.value.trim());
+    function applyVideoUrlInline() {
+      var url = urlInput.value.trim();
+      card.setAttribute('data-media-url', url);
+      var embedUrl = getVideoEmbedUrl(url);
       var wrap = pl.querySelector('.media-iframe-wrap');
       if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl.insertBefore(wrap, urlHint); }
-      if (embedUrl && embedUrl !== urlInput.value.trim()) {
-        wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0"></iframe>';
-      }
-    });
+      if (embedUrl) { wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0"></iframe>'; wrap.style.display = 'block'; }
+    }
+    urlInput.addEventListener('input', applyVideoUrlInline);
+    urlInput.addEventListener('paste', function(){ setTimeout(applyVideoUrlInline, 50); });
+    urlInput.addEventListener('blur', applyVideoUrlInline);
     pl.appendChild(qt); pl.appendChild(urlHint); pl.appendChild(urlInput);
   } else {
     var qt2 = document.createElement('div'); qt2.className = 'media-quote'; qt2.contentEditable = 'true'; qt2.textContent = '';
