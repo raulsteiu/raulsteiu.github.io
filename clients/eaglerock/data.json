@@ -89,17 +89,6 @@
       }
     },
     {
-      "type": "clip",
-      "data": {
-        "title": "Ceva Frumos",
-        "ts": "",
-        "quote": "Pull quote (optional)",
-        "mediaType": "audio",
-        "media": "",
-        "audio": ""
-      }
-    },
-    {
       "type": "section",
       "data": {
         "label": "KEY RESULTS",
@@ -110,33 +99,22 @@
     {
       "type": "clip",
       "data": {
-        "title": "IMPROVED TRANSPARENCY",
-        "ts": "9:02",
-        "quote": "I have a lot more transparency, much easier to get the information out too because I learned to use for example, the dynprofix that my predecessor did not use.",
-        "mediaType": "audio",
-        "media": "",
+        "title": "Something Cool",
+        "ts": "",
+        "quote": "",
+        "mediaType": "video",
+        "media": "watch?v=QIsY5LH3E_Q",
         "audio": ""
       }
     },
     {
       "type": "clip",
       "data": {
-        "title": "STRATEGIC MODELING",
-        "ts": "11:48",
-        "quote": "Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario.",
-        "mediaType": "audio",
-        "media": "",
-        "audio": ""
-      }
-    },
-    {
-      "type": "clip",
-      "data": {
-        "title": "USER EXPERIENCE",
-        "ts": "13:25",
-        "quote": "What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures.",
-        "mediaType": "audio",
-        "media": "",
+        "title": "",
+        "ts": "",
+        "quote": "",
+        "mediaType": "image",
+        "media": "brightwell.png?v=1790009122710",
         "audio": ""
       }
     }
