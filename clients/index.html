@@ -233,6 +233,17 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
 </div>
 
 <script>
+// Prophix Client Story Directory — clients/index.html
+// Permanent static shell — never regenerate, only edit in place.
+// Reads stories.json on load; all story content lives in per-story data.json files.
+// Requires a fine-grained GitHub token (Contents: read+write) for delete operations.
+//
+// v1.0  2026-09-15  Initial release — grid, search, sort, delete
+// v1.1  2026-09-16  Favourites (cookie-based); share button; sort by fav
+// v1.2  2026-09-16  flexbox card layout; flex:1 on card-body; actions pinned to bottom
+// v2.0  2026-09-21  Status system — draft/approved/published badges and card tints
+// v2.1  2026-09-21  Sort filter by status; story count shows published vs total
+
 var GH_REPO = 'raulsteiu/raulsteiu.github.io';
 var sessionToken = '';
 var pendingDelete = null;
@@ -375,7 +386,6 @@ function shareStory(slug) {
 function copyEditLink(url) {
   var full = 'https://raulsteiu.github.io' + url;
   navigator.clipboard.writeText(full).then(function() {
-    // brief visual feedback — find the edit copy button
     document.querySelectorAll('.share-btn').forEach(function(b) {
       if (b.title === 'Copy edit link' && b.textContent === '✏') {
         var orig = b.textContent; b.textContent = '✓';
@@ -485,7 +495,6 @@ async function pushStoriesJSON() {
   if (!res.ok) throw new Error('Failed to update stories index');
 }
 
-// ── Favourites ────────────────────────────────────────────────────────────────
 // ── Favourites (cookie-based for persistence) ─────────────────────────────────
 function getFavs() {
   var match = document.cookie.match(/(?:^|;\s*)prophix-favs=([^;]*)/);
