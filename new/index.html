@@ -67,6 +67,7 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 .choice-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;cursor:pointer;text-align:center;transition:border-color .15s}
 .choice-card:hover{border-color:var(--red)}
 .choice-card.featured{border:1px solid var(--border)}
+.choice-card.featured:hover{border-color:var(--red)}
 .choice-badge{background:#fff5f5;color:var(--red);font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.5px;margin-bottom:10px;display:inline-block}
 .choice-icon{font-size:24px;margin-bottom:10px}
 .choice-title{font-size:15px;font-weight:700;color:var(--dark);margin-bottom:6px}
@@ -359,10 +360,10 @@ function callGemini(key, prompt, attempt) {
   attempt = attempt || 1;
   var maxAttempts = 3;
   if(attempt > 1) document.getElementById('ai-sub').textContent = 'Retrying (attempt '+attempt+'/'+maxAttempts+')…';
-  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key='+key,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:8192}})
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:8192}})
   })
   .then(function(r){return r.json();})
   .then(function(d){
