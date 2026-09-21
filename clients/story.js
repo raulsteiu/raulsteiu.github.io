@@ -194,6 +194,11 @@ function getCSS() {
     '.media-del-x{display:none;margin-left:auto;background:transparent;border:none;cursor:pointer;color:#ccc;font-size:13px;padding:0 4px;line-height:1;flex-shrink:0}',
     '.media-del-x:hover{color:var(--red)}',
     '.edit-mode .media-del-x{display:inline!important}',
+    '.media-url-input{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none;margin-bottom:5px;transition:border-color .15s}',
+    '.media-url-input:focus{border-color:var(--red)}',
+    '.media-url-hint{font-size:11px;color:var(--muted);margin-bottom:4px}',
+    '.media-iframe-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:6px;background:#000;margin-bottom:6px}',
+    '.media-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:6px}',
     // Lightbox
     '.lightbox-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;align-items:center;justify-content:center;cursor:zoom-out}',
     '.lightbox-ov.open{display:flex}',
@@ -226,6 +231,22 @@ function getMediaIcon(mediaType) {
 }
 
 
+// ── Video embed URL helper (v9.4) ────────────────────────────────────────────
+// Converts YouTube/Vimeo watch URLs to embed URLs for iframe rendering
+function getVideoEmbedUrl(url) {
+  if (!url) return null;
+  url = url.trim();
+  // YouTube: youtube.com/watch?v=ID or youtu.be/ID or youtube.com/embed/ID
+  var ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
+  if (ytMatch) return 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0';
+  // Vimeo: vimeo.com/ID or player.vimeo.com/video/ID
+  var vmMatch = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/);
+  if (vmMatch) return 'https://player.vimeo.com/video/' + vmMatch[1];
+  // Already an embed URL or direct video file — use as-is
+  return url;
+}
+
+
 // ── renderMediaCard (v9.2) ────────────────────────────────────────────────────
 function renderMediaCard(c) {
   var mt = c.mediaType || 'audio'; // 'audio' | 'video' | 'image'
@@ -253,24 +274,32 @@ function renderMediaCard(c) {
       img.onerror = function(){ wrap.style.display='none'; };
       wrap.appendChild(img); player.appendChild(wrap);
     }
-    if (c.quote) {
+    if (c.quote && c.quote.trim()) {
       var cap = document.createElement('div'); cap.className = 'media-caption'; cap.textContent = c.quote;
       player.appendChild(cap);
     }
     card.appendChild(player);
   } else {
     // Audio or video: show quote then player
-    if (c.quote) {
+    if (c.quote && c.quote.trim()) {
       var qt = document.createElement('div'); qt.className = 'media-quote'; qt.textContent = c.quote;
       card.appendChild(qt);
     }
     var player = document.createElement('div'); player.className = 'media-player';
     if (mt === 'video') {
-      var vid = document.createElement('video');
-      vid.controls = true; vid.preload = 'metadata';
-      vid.style.cssText = 'width:100%;max-height:280px;border-radius:6px;background:#000';
-      if (c.media) { var vs = document.createElement('source'); vs.src = c.media; vs.type = 'video/mp4'; vid.appendChild(vs); }
-      player.appendChild(vid);
+      var embedUrl = getVideoEmbedUrl(c.media || c.url || '');
+      if (embedUrl) {
+        var iframeWrap = document.createElement('div'); iframeWrap.className = 'media-iframe-wrap';
+        var iframe = document.createElement('iframe');
+        iframe.src = embedUrl; iframe.allowFullscreen = true;
+        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframeWrap.appendChild(iframe); player.appendChild(iframeWrap);
+      } else {
+        var ph = document.createElement('div');
+        ph.style.cssText = 'padding:24px;text-align:center;color:#aaa;font-size:13px;background:#f5f5f5;border-radius:6px';
+        ph.textContent = 'Paste a YouTube or Vimeo URL in edit mode to embed video';
+        player.appendChild(ph);
+      }
     } else {
       // audio
       var aud = document.createElement('audio');
@@ -671,7 +700,7 @@ function domToData() {
           var mt = el.getAttribute('data-media-type') || 'audio';
           var mediaSrc = '';
           if (mt === 'audio') { var asrc = el.querySelector('audio source'); mediaSrc = asrc ? (asrc.getAttribute('src')||'') : ''; }
-          else if (mt === 'video') { var vsrc = el.querySelector('video source'); mediaSrc = vsrc ? (vsrc.getAttribute('src')||'') : ''; }
+          else if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = vurlEl ? vurlEl.value.trim() : (function(){ var ifr = el.querySelector('iframe'); return ifr ? ifr.getAttribute('src') || '' : ''; })(); }
           else if (mt === 'image') { var img = el.querySelector('.media-img-wrap img'); mediaSrc = img ? (img.getAttribute('src')||'') : ''; }
           if (mediaSrc && mediaSrc.indexOf('://') > -1) mediaSrc = mediaSrc.split('/').pop();
           var quoteEl = el.querySelector('.media-quote') || el.querySelector('.media-caption');
@@ -751,7 +780,7 @@ function domToData() {
           var mt2 = el.getAttribute('data-media-type') || 'audio';
           var mSrc2 = '';
           if (mt2 === 'audio') { var as2 = el.querySelector('audio source'); mSrc2 = as2 ? (as2.getAttribute('src')||'') : ''; }
-          else if (mt2 === 'video') { var vs2 = el.querySelector('video source'); mSrc2 = vs2 ? (vs2.getAttribute('src')||'') : ''; }
+          else if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = vurlEl2 ? vurlEl2.value.trim() : (function(){ var ifr2 = el.querySelector('iframe'); return ifr2 ? ifr2.getAttribute('src') || '' : ''; })(); }
           else if (mt2 === 'image') { var im2 = el.querySelector('.media-img-wrap img'); mSrc2 = im2 ? (im2.getAttribute('src')||'') : ''; }
           if (mSrc2 && mSrc2.indexOf('://') > -1) mSrc2 = mSrc2.split('/').pop();
           var qEl2 = el.querySelector('.media-quote') || el.querySelector('.media-caption');
@@ -1034,6 +1063,28 @@ function addEditControlsToExisting() {
       xBtn.addEventListener('click', async function(e){ e.stopPropagation(); await deleteMediaFile(card, xBtn); });
       mediaLabel.appendChild(xBtn);
     }
+    // For video cards rendered from saved data, inject URL input in edit mode
+    var mt_c = card.getAttribute('data-media-type');
+    if (mt_c === 'video' && !card.querySelector('[data-video-url]')) {
+      var pl_c = card.querySelector('.media-player');
+      if (pl_c) {
+        var existingIframe = pl_c.querySelector('iframe');
+        var currentUrl = existingIframe ? existingIframe.src.replace('https://www.youtube.com/embed/','https://www.youtube.com/watch?v=').replace('https://player.vimeo.com/video/','https://vimeo.com/') : '';
+        var hint_c = document.createElement('div'); hint_c.className = 'media-url-hint edit-only'; hint_c.textContent = 'YouTube or Vimeo URL:';
+        var inp_c = document.createElement('input'); inp_c.type = 'text'; inp_c.className = 'media-url-input edit-only';
+        inp_c.placeholder = 'https://www.youtube.com/watch?v=... or https://vimeo.com/...';
+        inp_c.setAttribute('data-video-url', 'true');
+        inp_c.value = currentUrl;
+        inp_c.addEventListener('change', function() {
+          var embedUrl = getVideoEmbedUrl(inp_c.value.trim());
+          var wrap = pl_c.querySelector('.media-iframe-wrap');
+          if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl_c.insertBefore(wrap, hint_c); }
+          if (embedUrl) wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:6px"></iframe>';
+        });
+        pl_c.insertBefore(inp_c, pl_c.firstChild);
+        pl_c.insertBefore(hint_c, inp_c);
+      }
+    }
   });
 
   // Sections
@@ -1156,7 +1207,7 @@ function addMediaInline(btn, mediaType) {
   var lbl = document.createElement('div'); lbl.className = 'media-label';
   lbl.innerHTML = getMediaIcon(mediaType);
   var titleSpan = document.createElement('span'); titleSpan.className = 'media-title-text';
-  titleSpan.contentEditable = 'true'; titleSpan.textContent = 'Media title';
+  titleSpan.contentEditable = 'true'; titleSpan.textContent = '';
   var xBtn = document.createElement('button');
   xBtn.className = 'media-del-x edit-only'; xBtn.title = 'Delete media'; xBtn.textContent = '✕';
   lbl.appendChild(titleSpan); lbl.appendChild(xBtn);
@@ -1169,15 +1220,25 @@ function addMediaInline(btn, mediaType) {
   if (mediaType === 'image') {
     var wrap = document.createElement('div'); wrap.className = 'media-img-wrap';
     wrap.innerHTML = '<div style="padding:20px;text-align:center;color:#aaa;font-size:13px">Image will appear here after upload</div>';
-    var cap = document.createElement('div'); cap.className = 'media-caption'; cap.contentEditable = 'true'; cap.textContent = 'Optional caption';
+    var cap = document.createElement('div'); cap.className = 'media-caption'; cap.contentEditable = 'true'; cap.textContent = '';
     pl.appendChild(wrap); pl.appendChild(cap);
   } else if (mediaType === 'video') {
-    var qt = document.createElement('div'); qt.className = 'media-quote'; qt.contentEditable = 'true'; qt.textContent = 'Pull quote (optional)';
-    var vid = document.createElement('video'); vid.controls = true; vid.preload = 'metadata';
-    vid.style.cssText = 'width:100%;max-height:280px;border-radius:6px;background:#000';
-    pl.appendChild(qt); pl.appendChild(vid);
+    var qt = document.createElement('div'); qt.className = 'media-quote'; qt.contentEditable = 'true'; qt.textContent = '';
+    var urlHint = document.createElement('div'); urlHint.className = 'media-url-hint'; urlHint.textContent = 'YouTube or Vimeo URL:';
+    var urlInput = document.createElement('input'); urlInput.type = 'text'; urlInput.className = 'media-url-input';
+    urlInput.placeholder = 'https://www.youtube.com/watch?v=... or https://vimeo.com/...';
+    urlInput.setAttribute('data-video-url', 'true');
+    urlInput.addEventListener('change', function() {
+      var embedUrl = getVideoEmbedUrl(urlInput.value.trim());
+      var wrap = pl.querySelector('.media-iframe-wrap');
+      if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl.insertBefore(wrap, urlHint); }
+      if (embedUrl && embedUrl !== urlInput.value.trim()) {
+        wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:6px"></iframe>';
+      }
+    });
+    pl.appendChild(qt); pl.appendChild(urlHint); pl.appendChild(urlInput);
   } else {
-    var qt2 = document.createElement('div'); qt2.className = 'media-quote'; qt2.contentEditable = 'true'; qt2.textContent = 'Pull quote';
+    var qt2 = document.createElement('div'); qt2.className = 'media-quote'; qt2.contentEditable = 'true'; qt2.textContent = '';
     var aud = document.createElement('audio'); aud.controls = true; aud.preload = 'metadata';
     aud.style.cssText = 'width:100%;height:38px;border-radius:6px;accent-color:#EF363D';
     aud.appendChild(document.createElement('source'));
@@ -1218,7 +1279,8 @@ function showAddMediaMenu(btn) {
 // ── Upload media (audio/video/image) (v9.2) ────────────────────────────────────
 function uploadMedia(btn, card) {
   var mt = card.getAttribute('data-media-type') || 'audio';
-  var accept = mt === 'audio' ? 'audio/mpeg,.mp3' : mt === 'video' ? 'video/mp4,.mp4' : 'image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp';
+  if (mt === 'video') { alert('For video, paste a YouTube or Vimeo URL into the URL field above the video block.'); return; }
+  var accept = mt === 'audio' ? 'audio/mpeg,.mp3' : 'image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp';
   var input = document.createElement('input'); input.type = 'file'; input.accept = accept;
   input.onchange = function() {
     var file = input.files[0]; if (!file) return;
@@ -1258,8 +1320,8 @@ function uploadMedia(btn, card) {
 async function deleteMediaFile(card, xBtn) {
   var mt = card.getAttribute('data-media-type') || 'audio';
   var filename = '';
+  if (mt === 'video') { alert('Video blocks use external URLs — nothing to delete from the repo.'); return; }
   if (mt === 'audio') { var src = card.querySelector('audio source'); filename = src ? (src.getAttribute('src')||'').split('/').pop() : ''; }
-  else if (mt === 'video') { var vs = card.querySelector('video source'); filename = vs ? (vs.getAttribute('src')||'').split('/').pop() : ''; }
   else if (mt === 'image') { var img = card.querySelector('.media-img-wrap img'); filename = img ? (img.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
   if (!filename) { alert('No media file on this block yet.'); return; }
   if (!confirm('Delete "' + filename + '" from GitHub?\nThis cannot be undone.')) return;
