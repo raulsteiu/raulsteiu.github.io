@@ -882,7 +882,6 @@ function enableEditMode() {
   document.getElementById('edit-toolbar').classList.add('visible');
   document.getElementById('save-btn').disabled = false;
   document.getElementById('save-status').textContent = 'Editing: ' + currentLang.toUpperCase();
-  // Set status dropdown to current story status
   var statusSel = document.getElementById('status-select');
   if (statusSel) statusSel.value = storyData.status || 'published';
   addEditControlsToExisting();
@@ -1438,7 +1437,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   wireEvents();
 });
 
-// ── Client Preview & Approval System (simplified) ────────────────────────────
+// ── Client Preview & Approval System ─────────────────────────────────────────
 
 function _genToken(len) {
   var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -1457,26 +1456,83 @@ function _genPassword() {
 function checkPreviewMode(data) {
   var params = new URLSearchParams(window.location.search);
   var previewToken = params.get('preview');
-  var isEditMode = params.get('edit') === '1';
+  var isEdit = params.get('edit') === '1';
   var status = data.status || 'published';
-  if (!previewToken) {
-    if (status !== 'published' && !isEditMode) {
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x1F512;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Story not available</h2><p style="color:#888;font-size:14px">This story has not been published yet.</p></div></div>';
+
+  // Preview link flow — password gate
+  if (previewToken) {
+    var preview = data.preview || {};
+    if (preview.token !== previewToken) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x274C;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Invalid preview link</h2><p style="color:#888;font-size:14px">This link is invalid or has expired.</p></div></div>';
       return false;
     }
-    return true;
-  }
-  var preview = data.preview || {};
-  if (preview.token !== previewToken) {
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x274C;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Invalid preview link</h2><p style="color:#888;font-size:14px">This link is invalid or has expired.</p></div></div>';
+    if (preview.expiresAt && new Date() > new Date(preview.expiresAt)) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x23F0;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Preview link expired</h2><p style="color:#888;font-size:14px">This preview link has expired (3 days). Please request a new one.</p></div></div>';
+      return false;
+    }
+    showPasswordGate(data, preview);
     return false;
   }
-  if (preview.expiresAt && new Date() > new Date(preview.expiresAt)) {
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Arial,sans-serif;background:#F4F4F8"><div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">&#x23F0;</div><h2 style="color:#1A1A2E;margin-bottom:8px">Preview link expired</h2><p style="color:#888;font-size:14px">This preview link has expired (3 days). Please request a new one.</p></div></div>';
+
+  // Draft or approved — show token gate (opens in edit mode)
+  if (status === 'draft' || status === 'approved') {
+    showDraftGate(data, status);
     return false;
   }
-  showPasswordGate(data, preview);
-  return false;
+
+  // Published — normal render
+  return true;
+}
+
+function showDraftGate(data, status) {
+  var label = status === 'approved' ? 'Approved — awaiting publish' : 'Draft story';
+  var sub = status === 'approved'
+    ? 'This story has been approved. Enter your token to open in edit mode and publish.'
+    : 'This story is a draft. Enter your token to open in edit mode.';
+  var badge = status === 'approved'
+    ? '<div style="display:inline-block;background:#E8F5E9;color:#2a7a2a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:14px">✓ Approved</div>'
+    : '<div style="display:inline-block;background:#E8E8F0;color:#555;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:14px">◑ Draft</div>';
+
+  document.body.style.cssText = 'font-family:Arial,sans-serif;background:#1A1A2E;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px';
+  document.body.innerHTML =
+    '<div style="background:#fff;border-radius:14px;padding:40px;width:100%;max-width:420px">' +
+    '<div style="text-align:center;margin-bottom:24px">' +
+    '<img src="/prophix-logo-1000px.png" style="height:26px;margin-bottom:16px" alt="Prophix">' + badge +
+    '<h2 style="font-size:19px;font-weight:900;color:#1A1A2E;margin-bottom:8px">' + esc(data.name) + '</h2>' +
+    '<p style="font-size:13px;color:#888;line-height:1.5">' + sub + '</p></div>' +
+    '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;font-weight:700;color:#1A1A2E;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Access token</label>' +
+    '<input type="password" id="draft-token" style="width:100%;padding:10px 13px;border:1px solid #E0DFF0;border-radius:6px;font-size:14px;font-family:Arial,sans-serif;outline:none" placeholder="Paste your token"/></div>' +
+    '<div id="draft-err" style="font-size:12px;color:#EF363D;min-height:16px;margin-bottom:10px"></div>' +
+    '<button id="draft-unlock" style="width:100%;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:12px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">Open in edit mode &#x2192;</button>' +
+    '<a href="/clients/" style="display:block;text-align:center;margin-top:12px;font-size:12px;color:#aaa;text-decoration:none">&#x2190; Back to stories</a></div>';
+
+  function tryUnlock() {
+    var token = document.getElementById('draft-token').value.trim().replace(/[^\x20-\x7E]/g,'');
+    var err = document.getElementById('draft-err');
+    if (!token) { err.textContent = 'Please paste your access token.'; return; }
+    var btn = document.getElementById('draft-unlock');
+    btn.disabled = true; btn.textContent = 'Verifying…';
+    // Verify token against GitHub
+    fetch('https://api.github.com/repos/' + GH_REPO + '/contents/clients/stories.json', {
+      headers: {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}
+    }).then(function(r) {
+      if (!r.ok) { err.textContent = 'Invalid token — check it and try again.'; btn.disabled = false; btn.textContent = 'Open in edit mode →'; return; }
+      sessionToken = token;
+      // Render page and go straight into edit mode
+      var style = document.createElement('style');
+      style.textContent = getCSS();
+      document.head.appendChild(style);
+      document.body.innerHTML = '';
+      document.body.style.cssText = '';
+      renderPage(data);
+      wireEvents();
+      enableEditMode();
+    }).catch(function() { err.textContent = 'Could not verify token.'; btn.disabled = false; btn.textContent = 'Open in edit mode →'; });
+  }
+
+  document.getElementById('draft-unlock').onclick = tryUnlock;
+  document.getElementById('draft-token').addEventListener('keydown', function(e){ if(e.key==='Enter') tryUnlock(); });
+  setTimeout(function(){ document.getElementById('draft-token').focus(); }, 100);
 }
 
 function showPasswordGate(data, preview) {
@@ -1489,6 +1545,7 @@ function showPasswordGate(data, preview) {
     style.textContent = getCSS();
     document.head.appendChild(style);
     document.body.innerHTML = '';
+    document.body.style.cssText = '';
     renderPage(data);
     var fab = document.getElementById('edit-fab'); if (fab) fab.remove();
     var nav = document.querySelector('.page-nav');
@@ -1510,7 +1567,7 @@ function showPasswordGate(data, preview) {
     '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;font-weight:700;color:#1A1A2E;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Preview password</label>' +
     '<input type="password" id="preview-pw" style="width:100%;padding:10px 13px;border:1px solid #E0DFF0;border-radius:6px;font-size:14px;font-family:Arial,sans-serif;outline:none" placeholder="Enter password"/></div>' +
     '<div id="preview-err" style="font-size:12px;color:#EF363D;min-height:16px;margin-bottom:10px"></div>' +
-    '<button id="preview-unlock" style="width:100%;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:12px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">View story</button></div>';
+    '<button id="preview-unlock" style="width:100%;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:12px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">View story &#x2192;</button></div>';
   document.getElementById('preview-unlock').onclick = tryUnlock;
   document.getElementById('preview-pw').addEventListener('keydown', function(e){ if(e.key==='Enter') tryUnlock(); });
   setTimeout(function(){ document.getElementById('preview-pw').focus(); }, 100);
@@ -1528,8 +1585,8 @@ function showPreviewLinkModal() {
   modal.innerHTML =
     '<div style="background:#fff;border-radius:12px;padding:32px;width:100%;max-width:460px">' +
     '<h3 style="font-size:17px;font-weight:900;color:#1A1A2E;margin-bottom:6px">Preview link</h3>' +
-    '<p style="font-size:13px;color:#888;margin-bottom:16px;line-height:1.5">Saving to server and generating link…</p>' +
-    '<div id="prev-loading" style="text-align:center;padding:20px;color:#888;font-size:13px">Saving…</div>' +
+    '<p style="font-size:13px;color:#888;margin-bottom:16px;line-height:1.5">Saving to server…</p>' +
+    '<div id="prev-loading" style="text-align:center;padding:16px;color:#888;font-size:13px">&#x23F3; Saving…</div>' +
     '<div id="prev-content" style="display:none">' +
     '<div style="background:#F4F4F8;border-radius:8px;padding:16px;margin-bottom:14px">' +
     '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Preview link</div>' +
@@ -1539,12 +1596,10 @@ function showPreviewLinkModal() {
     '<div style="font-size:11px;color:#aaa">Expires: <span id="prev-exp"></span></div></div>' +
     '<div id="prev-err" style="font-size:12px;color:#EF363D;min-height:14px;margin-bottom:10px"></div>' +
     '<div style="display:flex;gap:10px">' +
-    '<button id="prev-copy" style="flex:1;background:#1A1A2E;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">⧉ Copy link + password</button>' +
+    '<button id="prev-copy" style="flex:1;background:#1A1A2E;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">&#x29C9; Copy link + password</button>' +
     '<button id="prev-done" style="flex:1;background:#EF363D;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer">Done &#x2192; Stories</button>' +
     '</div></div></div>';
   document.body.appendChild(modal);
-
-  // Save immediately on open
   (async function() {
     try {
       storyData.preview = {token:token, password:pw, expiresAt:expiry.toISOString(), createdAt:new Date().toISOString()};
@@ -1556,24 +1611,20 @@ function showPreviewLinkModal() {
       var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, {method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
       if (!r.ok) throw new Error('Could not save to server');
       _updateEditedTimestamp();
-      // Show link details
       document.getElementById('prev-loading').style.display = 'none';
       document.getElementById('prev-content').style.display = 'block';
       document.getElementById('prev-url-text').textContent = url;
       document.getElementById('prev-pw-text').textContent = pw;
       document.getElementById('prev-exp').textContent = expiryStr;
-      // Wire buttons
       document.getElementById('prev-copy').onclick = function() {
-        var txt = 'Story preview link: ' + url + '\nPassword: ' + pw + '\nExpires: ' + expiryStr;
+        var txt = 'Story preview link:\n' + url + '\n\nPassword: ' + pw + '\nExpires: ' + expiryStr;
         navigator.clipboard.writeText(txt).then(function(){
           document.getElementById('prev-copy').textContent = '✓ Copied!';
           document.getElementById('prev-copy').style.background = '#2a7a2a';
           setTimeout(function(){ document.getElementById('prev-copy').textContent = '⧉ Copy link + password'; document.getElementById('prev-copy').style.background = '#1A1A2E'; }, 2000);
         }).catch(function(){ alert('Link: ' + url + '\nPassword: ' + pw); });
       };
-      document.getElementById('prev-done').onclick = function() {
-        window.location.href = '/clients/';
-      };
+      document.getElementById('prev-done').onclick = function() { window.location.href = '/clients/'; };
     } catch(e) {
       document.getElementById('prev-loading').style.display = 'none';
       document.getElementById('prev-content').style.display = 'block';
@@ -1584,8 +1635,6 @@ function showPreviewLinkModal() {
 
 async function changeStatus(newStatus) {
   storyData.status = newStatus;
-  var statusSel = document.getElementById('status-select');
-  if (statusSel) statusSel.value = newStatus;
   var statusEl = document.getElementById('save-status');
   if (statusEl) statusEl.textContent = 'Saving status…';
   try {
