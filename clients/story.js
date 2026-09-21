@@ -1,8 +1,9 @@
-// Prophix Client Story — story.js v9.0
+// Prophix Client Story — story.js v9.1 — KRS double-colon fix
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
+// v9.1 fix: KRS double-colon bug — bold prefix stripped from text using regex before render
 
 'use strict';
 
@@ -179,6 +180,14 @@ function getCSS() {
 // ── Render helpers ────────────────────────────────────────────────────────────
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// ── Strip bold prefix from KRS text (fixes double-colon bug) ─────────────────
+function krsBodyText(bold, text) {
+  if (!bold) return esc(text||'');
+  // Strip "Bold:" or "Bold: " from the start of text, case-insensitive
+  var escaped = bold.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return esc((text||'').replace(new RegExp('^'+escaped+':\\s*','i'),'').trim());
+}
+
 function renderBody(text) {
   if (!text) return '';
   var lines = text.split('\n');
@@ -262,7 +271,7 @@ function renderPage(data) {
     '</div>';
   body.appendChild(nav);
 
-  // Wire lang buttons immediately — don't wait for wireEvents
+  // Wire lang buttons immediately
   nav.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
     var code = btn.getAttribute('data-lang');
     btn.onclick = function(){ setLang(code); };
@@ -287,7 +296,6 @@ function renderPage(data) {
 
 function renderLangBlock(data, lc, isActive, meta) {
   var isEN = lc === 'en';
-  // For non-EN, use translated content if available, fall back to EN with prefix
   var tr = (!isEN && data.translations && data.translations[lc]) ? data.translations[lc] : null;
   var p = isEN ? '' : ('[' + (LANG_NAMES[lc]||lc) + '] ');
   var blockData = {
@@ -295,16 +303,13 @@ function renderLangBlock(data, lc, isActive, meta) {
     desc:       (tr && tr.desc)    ? tr.desc    : (p + (data.desc||'')),
     ind:        data.ind,
     whoText:    (tr && tr.whoText) ? tr.whoText : (p + (data.whoText||'')),
-    // Stats — prefix labels so user knows to translate
     stats:      (tr && tr.stats && tr.stats.length > 0) ? tr.stats
                 : data.stats.map(function(s){ return isEN ? s : {v: p+s.v, l: p+s.l}; }),
-    // KRS — preserve bold, prefix text
     krs:        (tr && tr.krs && tr.krs.length > 0) ? tr.krs
                 : (isEN ? data.krs : data.krs.map(function(k){
                     return {bold: k.bold||'', text: p+(k.bold ? k.bold+': '+k.text.replace(k.bold+':','').trim() : k.text)};
                   })),
     krsHeading: (tr && tr.krsHeading) ? tr.krsHeading : (p + (data.krsHeading || 'Key Results Snapshot')),
-    // Content — prefix all text fields in sections and clips
     content:    (tr && tr.content && tr.content.length > 0) ? tr.content
                 : data.content.map(function(item){
                     if (item.type === 'section') {
@@ -324,11 +329,9 @@ function renderLangBlock(data, lc, isActive, meta) {
                     }
                     return item;
                   }),
-    // Who stats — prefix labels
     whoStats:   (tr && tr.whoStats && tr.whoStats.length > 0) ? tr.whoStats
                 : data.whoStats.map(function(s){ return isEN ? s : {v: p+s.v, l: p+s.l}; }),
     products:     data.products,
-    // Results — prefix each item
     results:    (tr && tr.results && tr.results.length > 0) ? tr.results
                 : (isEN ? data.results : (data.results||[]).map(function(r){ return p+r; })),
     participants: data.participants
@@ -386,7 +389,10 @@ function renderLangBlock(data, lc, isActive, meta) {
     var krsList = document.createElement('ul'); krsList.className = 'krs-list';
     blockData.krs.forEach(function(k) {
       var li = document.createElement('li'); li.className = 'krs-item';
-      var txt = k.bold ? '<strong>' + esc(k.bold) + ':</strong> ' + esc((k.text||'').replace(k.bold+':','').trim()) : esc(k.text||'');
+      // v9.1 fix: use krsBodyText() to strip bold prefix from text before rendering
+      var txt = k.bold
+        ? '<strong>' + esc(k.bold) + ':</strong> ' + krsBodyText(k.bold, k.text)
+        : esc(k.text||'');
       li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + txt + '</span>';
       krsList.appendChild(li);
     });
@@ -410,7 +416,6 @@ function renderLangBlock(data, lc, isActive, meta) {
     if (item.type === 'section') {
       var s = item.data;
       var sec = document.createElement('div'); sec.className = 'story-sec';
-      // Bug 3 fix: always render section, even if heading is empty
       sec.innerHTML = '<div class="sec-label">' + esc(s.label||'') + '</div>' +
         '<h2>' + esc(s.heading||'') + '</h2>' +
         renderBody(s.body||'');
@@ -466,7 +471,7 @@ function renderLangBlock(data, lc, isActive, meta) {
     sidebar.appendChild(prodCard);
   }
 
-  // Results — always render card so Add result button works in edit mode
+  // Results
   var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
   resCard.innerHTML = '<h3>Results</h3>';
   var ul = document.createElement('ul'); ul.className = 'results-ul';
@@ -503,7 +508,7 @@ function renderLangBlock(data, lc, isActive, meta) {
 
 // ── Read DOM state back to data object (for saving) ───────────────────────────
 function domToData() {
-  var data = JSON.parse(JSON.stringify(storyData)); // start from current data
+  var data = JSON.parse(JSON.stringify(storyData));
   var langs = data.langs || ['en'];
 
   langs.forEach(function(lc) {
@@ -512,20 +517,17 @@ function domToData() {
     var isEN = lc === 'en';
 
     if (isEN) {
-      // Core fields - only read from EN block
       var h1 = block.querySelector('h1'); if (h1) data.name = h1.textContent.trim();
       var desc = block.querySelector('.hero-desc'); if (desc) data.desc = desc.textContent.trim();
       var ind = block.querySelector('.hero-ind'); if (ind) data.ind = ind.textContent.trim();
       var whoText = block.querySelector('.who-text'); if (whoText) data.whoText = whoText.textContent.trim();
 
-      // Stats
       data.stats = Array.from(block.querySelectorAll('.stat-tile')).map(function(t) {
         return { v: (t.querySelector('.stat-n')||{}).textContent||'', l: (t.querySelector('.stat-l')||{}).textContent||'' };
       });
 
       var krsHeading = block.querySelector('.krs-heading'); if (krsHeading) data.krsHeading = krsHeading.textContent.trim();
 
-      // KRS
       data.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
         var clone = item.querySelector('.krs-item-text') ? item.querySelector('.krs-item-text').cloneNode(true) : null;
         if (!clone) return null;
@@ -537,7 +539,6 @@ function domToData() {
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
-      // Content (sections + clips in order)
       data.content = [];
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
@@ -565,29 +566,23 @@ function domToData() {
         }
       });
 
-      // Sidebar: products
       data.products = Array.from(block.querySelectorAll('.app-name')).map(function(s){ return s.textContent.trim(); });
 
-      // Results
       data.results = Array.from(block.querySelectorAll('.result-item')).map(function(r){
-        // Clone and remove any injected edit buttons before reading text
         var clone = r.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
         return clone.textContent.trim();
       }).filter(function(r){ return r.length > 0; });
 
-      // Participants
       data.participants = Array.from(block.querySelectorAll('[data-section="participants"] p')).map(function(p) {
         return { name: (p.querySelector('.participant-name')||{}).textContent||'', title: (p.querySelector('.participant-title')||{}).textContent||'' };
       });
 
-      // Who stats
       data.whoStats = Array.from(block.querySelectorAll('.who-stat-tile')).map(function(t) {
         return { v: (t.querySelector('.who-stat-n')||{}).textContent||'', l: (t.querySelector('.who-stat-l')||{}).textContent||'' };
       });
     }
 
-    // Per-language overrides (translations) - store non-EN text
     if (!isEN) {
       if (!data.translations) data.translations = {};
       if (!data.translations[lc]) data.translations[lc] = {};
@@ -597,7 +592,6 @@ function domToData() {
 
       var krsHeadingEl = block.querySelector('.krs-heading'); if (krsHeadingEl) t.krsHeading = krsHeadingEl.textContent.trim();
 
-      // KRS — clone items to strip any injected buttons before reading
       t.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
         var clone = item.querySelector('.krs-item-text') ? item.querySelector('.krs-item-text').cloneNode(true) : null;
         if (!clone) return null;
@@ -609,27 +603,22 @@ function domToData() {
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
-      // Who text
       var whoTxtEl = block.querySelector('.who-text'); if (whoTxtEl) t.whoText = whoTxtEl.textContent.trim();
 
-      // Who stats
       t.whoStats = Array.from(block.querySelectorAll('.who-stat-tile')).map(function(tile) {
         return { v: (tile.querySelector('.who-stat-n')||{}).textContent||'', l: (tile.querySelector('.who-stat-l')||{}).textContent||'' };
       });
 
-      // Results
       t.results = Array.from(block.querySelectorAll('.result-item')).map(function(r) {
         var clone = r.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
         return clone.textContent.trim();
       }).filter(function(r){ return r.length > 0; });
 
-      // Participants
       t.participants = Array.from(block.querySelectorAll('[data-section="participants"] p')).map(function(p) {
         return { name: (p.querySelector('.participant-name')||{}).textContent||'', title: (p.querySelector('.participant-title')||{}).textContent||'' };
       });
 
-      // Content (sections + clips)
       t.content = [];
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
@@ -650,7 +639,6 @@ function domToData() {
     }
   });
 
-  // Update langs list (may have changed if languages added/removed)
   data.langs = Array.from(document.querySelectorAll('.lang-block')).map(function(b){ return b.id.replace('block-',''); });
 
   return data;
@@ -661,7 +649,6 @@ function toggleLangPicker(btn) {
   var picker = document.getElementById('lang-picker');
   if (!picker) return;
   if (picker.style.display !== 'none') { picker.style.display = 'none'; return; }
-  // Populate picker with available languages
   picker.innerHTML = '';
   Object.keys(LANG_FULL_NAMES).forEach(function(code) {
     if ((storyData.langs||['en']).indexOf(code) === -1) {
@@ -678,7 +665,6 @@ function toggleLangPicker(btn) {
     picker.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:#888">All languages added</div>';
   }
   picker.style.display = 'block';
-  // Close on outside click
   setTimeout(function() {
     document.addEventListener('click', function closePicker(e) {
       if (!picker.contains(e.target) && e.target !== btn) {
@@ -695,7 +681,6 @@ function setLang(code) {
   var block = document.getElementById('block-' + code);
   if (block) {
     block.classList.add('active');
-    // Re-apply edit mode to newly visible block if we're in edit mode
     if (document.body.classList.contains('edit-mode')) {
       makeBlockEditable(block);
     }
@@ -707,14 +692,12 @@ function setLang(code) {
 
 function addLanguage(code) {
   if (!code || storyData.langs.indexOf(code) > -1) return;
-  // Clone EN block, prefix content
   var enBlock = document.getElementById('block-en');
   stripEditControls();
   var newBlock = enBlock.cloneNode(true);
   addEditControlsToExisting();
   newBlock.id = 'block-' + code;
   newBlock.classList.remove('active');
-  // Prefix editable text
   var pfx = '[' + (LANG_NAMES[code]||code) + '] ';
   EDITABLE_SELECTORS.forEach(function(sel) {
     newBlock.querySelectorAll(sel).forEach(function(el) {
@@ -725,7 +708,6 @@ function addLanguage(code) {
   if (heroTag && LANG_LABELS[code]) heroTag.textContent = LANG_LABELS[code];
   document.getElementById('lang-blocks').appendChild(newBlock);
 
-  // Add toggle button
   var toggle = document.getElementById('lang-toggle');
   var addWrap = document.getElementById('lang-add-wrap');
   var btn = document.createElement('button');
@@ -737,7 +719,6 @@ function addLanguage(code) {
   rb.addEventListener('click', function(){ removeLanguage(code); });
   toggle.insertBefore(rb, addWrap);
 
-  // Remove from dropdown
   var opt = document.querySelector('#lang-add-select option[value="' + code + '"]');
   if (opt) opt.remove();
 
@@ -753,7 +734,6 @@ function removeLanguage(code) {
   var block = document.getElementById('block-' + code); if (block) block.remove();
   var btn = document.querySelector('.lang-btn[data-lang="' + code + '"]'); if (btn) btn.remove();
   var rb = document.querySelector('.remove-lang[data-remove-lang="' + code + '"]'); if (rb) rb.remove();
-  // Picker repopulates dynamically from LANG_FULL_NAMES on open — nothing to update here
   if (currentLang === code) setLang('en');
 }
 
@@ -792,7 +772,6 @@ function wrapSectionBody(sec) {
     if (node.tagName === 'UL') {
       node.querySelectorAll('li').forEach(function(li) { lines.push('- ' + li.textContent); });
     } else if (node.tagName === 'P') {
-      // Normalize &nbsp; blank paragraphs to empty lines
       var txt = node.textContent.replace(/\u00a0/g, '').trim();
       lines.push(txt);
     }
@@ -819,7 +798,6 @@ function wrapSectionBody(sec) {
 function unwrapSectionBodies() {
   document.querySelectorAll('.sec-body-edit').forEach(function(wrap) {
     var sec = wrap.closest('.story-sec'); if (!sec) return;
-    // Normalize innerHTML: replace <br> and </div><div> with \n, then get textContent
     var temp = wrap.cloneNode(true);
     temp.querySelectorAll('br').forEach(function(br){ br.replaceWith('\n'); });
     temp.querySelectorAll('div').forEach(function(d){ d.insertAdjacentText('beforebegin', '\n'); d.replaceWith(d.textContent); });
@@ -1171,26 +1149,21 @@ async function uploadLogoB64(b64, img2) {
     var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(body) });
     var d = await r.json();
     if (r.ok && d.content) {
-      // Update storyData and meta
       storyData.hasLogo = true; STORY_META.hasLogo = true;
-      // Re-render the logo area cleanly instead of fighting inline styles
       var logoRow = document.querySelector('.logo-row');
       if (logoRow) {
         var clientPill = logoRow.querySelector('.logo-pill-client');
         if (clientPill) {
-          // Replace placeholder with real logo
           clientPill.classList.remove('edit-only');
           clientPill.innerHTML = '<img class="hero-client-logo" src="logo.png?v=' + Date.now() + '" alt="logo" style="max-height:30px;max-width:140px;object-fit:contain;display:block">';
         }
       }
-      // Save hasLogo to data.json so it persists
       storyData.hasLogo = true;
       var dataEnc = btoa(unescape(encodeURIComponent(JSON.stringify(storyData, null, 2))));
       var dataShaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
       var dataBody = {message:'Update hasLogo', content:dataEnc};
       if (dataShaRes.ok) { var dd = await dataShaRes.json(); if (dd.sha) dataBody.sha = dd.sha; }
       await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(dataBody) });
-      // Update stories.json logo flag so directory shows logo
       _updateLogoFlag();
     } else { if (img2) img2.style.opacity='1'; alert('Logo upload failed: '+(d.message||'Unknown error')); }
   } catch(err) { if (img2) img2.style.opacity='1'; alert('Logo upload error: '+err.message); }
@@ -1249,26 +1222,22 @@ async function deleteAudioFile(player, xBtn) {
   } catch(err) { xBtn.textContent = orig; xBtn.disabled = false; alert('Delete audio failed:\n\n' + err.message + '\n\nPath: ' + path); }
 }
 
-// ── Save to GitHub (data.json — NOT outerHTML) ────────────────────────────────
+// ── Save to GitHub ────────────────────────────────────────────────────────────
 async function saveToGitHub() {
   var saveBtn = document.getElementById('save-btn');
   var statusEl = document.getElementById('save-status');
   saveBtn.disabled = true; statusEl.textContent = 'Saving…';
 
   try {
-    // 1. Read current DOM state into data object
     unwrapSectionBodies();
     var newData = domToData();
 
-    // 2. Save stripEditControls state
     disableDragDrop();
     document.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
 
-    // 3. Write data.json
     var dataJson = JSON.stringify(newData, null, 2);
     var enc = btoa(unescape(encodeURIComponent(dataJson)));
 
-    // Get current SHA
     var shaRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'} });
     var body = {message:'Update story data: '+newData.name, content:enc};
     if (shaRes.ok) { var d = await shaRes.json(); if (d.sha) body.sha = d.sha; }
@@ -1277,15 +1246,10 @@ async function saveToGitHub() {
 
     if (!r.ok) { var err = await r.json(); throw new Error(err.message || 'Save failed'); }
 
-    // 4. Update local storyData
     storyData = newData;
-
-    // 5. Update last-edited timestamp in stories.json (background)
     _updateEditedTimestamp();
-
     statusEl.textContent = 'Saved ✓';
 
-    // 6. Re-render the page from fresh data (ensures DOM matches data.json)
     setTimeout(function() {
       renderPage(storyData);
       wireEvents();
@@ -1295,7 +1259,6 @@ async function saveToGitHub() {
   } catch(err) {
     saveBtn.disabled = false;
     statusEl.textContent = 'Error: ' + err.message;
-    // Re-enable editing
     document.body.classList.add('edit-mode');
     document.getElementById('edit-fab').classList.add('hidden');
     document.getElementById('edit-toolbar').classList.add('visible');
@@ -1347,7 +1310,6 @@ function closeModal() {
 
 // ── Wire all events ───────────────────────────────────────────────────────────
 function wireEvents() {
-  // Lang toggle — wire directly on elements, not via innerHTML string
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
     var code = btn.getAttribute('data-lang');
     btn.onclick = function(){ setLang(code); };
@@ -1357,18 +1319,13 @@ function wireEvents() {
     btn.onclick = function(){ removeLanguage(code); };
   });
 
-  // Lang add dropdown — handled by toggleLangPicker() directly
-  // (custom button picker, no native select needed)
-
   setLang('en');
 
-  // Edit FAB
   document.getElementById('edit-fab').addEventListener('click', function() {
     document.getElementById('token-modal').classList.add('visible');
     setTimeout(function(){ document.getElementById('token-input').focus(); }, 50);
   });
 
-  // Token submit
   document.getElementById('token-submit').addEventListener('click', function() {
     var token = document.getElementById('token-input').value.trim().replace(/[^\x20-\x7E]/g,'');
     document.getElementById('token-error').textContent = '';
@@ -1385,7 +1342,6 @@ function wireEvents() {
   document.getElementById('save-btn').addEventListener('click', saveToGitHub);
   document.getElementById('cancel-btn').addEventListener('click', disableEditMode);
 
-  // Share button
   var shareBtn = document.getElementById('story-share-btn');
   if (shareBtn) {
     shareBtn.addEventListener('click', function() {
@@ -1397,7 +1353,6 @@ function wireEvents() {
     });
   }
 
-  // ?edit=1 auto-open
   if (new URLSearchParams(window.location.search).get('edit') === '1') {
     setTimeout(function(){
       document.getElementById('token-modal').classList.add('visible');
@@ -1408,7 +1363,6 @@ function wireEvents() {
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function() {
-  // Detect old v8 pages (they have activeLangs but not GH_DATA_URL)
   if (typeof GH_DATA_URL === 'undefined') {
     document.body.innerHTML = '<div style="padding:40px;font-family:Arial,sans-serif;background:#fff5f5;border:2px solid #EF363D;border-radius:12px;margin:40px;color:#c0272d">' +
       '<h2 style="margin-bottom:12px">⚠ This story needs to be re-published</h2>' +
@@ -1416,16 +1370,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     return;
   }
 
-  // Fetch data.json
   try {
     var r = await fetch(GH_DATA_URL + '?v=' + Date.now());
     if (!r.ok) throw new Error('Could not load story data (HTTP ' + r.status + ')');
     storyData = await r.json();
-    // Only use STORY_META.hasLogo as fallback if data.json doesn't have it
     if (typeof storyData.hasLogo === 'undefined') {
       storyData.hasLogo = STORY_META.hasLogo;
     }
-    // Sync STORY_META with data.json truth
     STORY_META.hasLogo = storyData.hasLogo;
   } catch(err) {
     document.body.innerHTML = '<div style="padding:40px;font-family:Arial;color:#c0272d"><h2>Could not load story</h2><p>' + err.message + '</p></div>';
@@ -1456,10 +1407,8 @@ function _genPassword() {
 function checkPreviewMode(data) {
   var params = new URLSearchParams(window.location.search);
   var previewToken = params.get('preview');
-  var isEdit = params.get('edit') === '1';
   var status = data.status || 'published';
 
-  // Preview link flow — password gate
   if (previewToken) {
     var preview = data.preview || {};
     if (preview.token !== previewToken) {
@@ -1474,13 +1423,11 @@ function checkPreviewMode(data) {
     return false;
   }
 
-  // Draft or approved — show token gate (opens in edit mode)
   if (status === 'draft' || status === 'approved') {
     showDraftGate(data, status);
     return false;
   }
 
-  // Published — normal render
   return true;
 }
 
@@ -1512,13 +1459,11 @@ function showDraftGate(data, status) {
     if (!token) { err.textContent = 'Please paste your access token.'; return; }
     var btn = document.getElementById('draft-unlock');
     btn.disabled = true; btn.textContent = 'Verifying…';
-    // Verify token against GitHub
     fetch('https://api.github.com/repos/' + GH_REPO + '/contents/clients/stories.json', {
       headers: {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}
     }).then(function(r) {
       if (!r.ok) { err.textContent = 'Invalid token — check it and try again.'; btn.disabled = false; btn.textContent = 'Open in edit mode →'; return; }
       sessionToken = token;
-      // Render page and go straight into edit mode
       var style = document.createElement('style');
       style.textContent = getCSS();
       document.head.appendChild(style);
