@@ -1,7 +1,7 @@
 # Prophix Client Story App — Maintenance & Usage Guide
 
 **Repository:** `raulsteiu/raulsteiu.github.io`  
-**Last updated:** September 2026 — v2.1
+**Last updated:** September 2026 — v3.0
 
 ---
 
@@ -25,11 +25,27 @@ A self-contained publishing platform on GitHub Pages. No servers, no CMS, no bui
 Each story is two files:
 
 - **`index.html`** — an 8-line shell that loads `story.js`
-- **`data.json`** — all the actual content (sections, clips, stats, products, languages, etc.)
+- **`data.json`** — all the actual content (sections, clips, stats, products, languages, status, etc.)
 
-When someone opens a story, `story.js` fetches `data.json` and builds the full page in the browser. When you edit and save, `story.js` writes the updated content back to `data.json`. The shell `index.html` almost never changes after first publish.
+When someone opens a story, `story.js` fetches `data.json` and builds the full page in the browser. When you edit and save, `story.js` writes the updated content back to `data.json`.
 
 **`data.json` is the source of truth.** The rendered HTML is not.
+
+---
+
+## Story statuses
+
+Every story has a status. This controls how it appears in the directory and how it opens.
+
+| Status | Directory tile | Opening behaviour |
+|---|---|---|
+| **Published** | Normal white card | Opens normally — no token needed |
+| **Draft** | Light blue card + `◑ Draft` badge | Token gate → opens straight in edit mode |
+| **Approved** | Light green card + `✓ Approved` badge | Token gate → opens straight in edit mode |
+
+To change status: open the story → enter token → use the **status dropdown** in the edit toolbar. Saves automatically — no separate save click needed.
+
+**All stories are always visible in the directory regardless of status.**
 
 ---
 
@@ -37,116 +53,139 @@ When someone opens a story, `story.js` fetches `data.json` and builds the full p
 
 1. Go to `https://raulsteiu.github.io/new/`
 2. Paste your access token → **Access Creator**
-3. Fill in the form:
-
-| Field | Notes |
-|---|---|
-| Client name | Generates the URL — `Acme Corp` → `/clients/acme-corp/` |
-| Industry / HQ | Small tag in the hero section |
-| Short description | 1–2 sentences under the heading |
-| Client logo | PNG/JPG/SVG — always converted to PNG |
-| Stats | Flexible value + label pairs (e.g. `~1 week` / `Closing cycle saved`) |
-| Key Results Snapshot | Checkmark list. `Bold text: rest` syntax for bold prefix. |
-| Story sections | Label + heading + body. Lines starting `- ` become red dot bullets. `- Bold: rest` = bold prefix. |
-| Audio clips | Title, timestamp (e.g. 09:02), pull quote. Upload MP3s after publishing via edit mode. |
-| Results | Sidebar bullet list |
-| Who is [Client]? | Freetext description + optional stat tiles |
-| Participants | Names and titles shown in sidebar |
-| Applications deployed | Select from product list — icons load automatically |
-| Languages | EN always included. Others add placeholder blocks for translation. |
-
+3. Choose how to create:
+   - **✦ Generate with AI** — paste a transcript → AI fills all fields (see AI section below)
+   - **✏ Fill manually** — fill the form field by field
 4. Click **Publish client story →**
-5. Creator saves `data.json` + shell `index.html` + updates directory → redirects to `/clients/`
+5. Story publishes immediately with status `published` and appears in `/clients/`
 
 ---
 
 ## How to edit an existing story
 
-1. Open the story at `https://raulsteiu.github.io/clients/[slug]/`
-   - **Shortcut:** add `?edit=1` to the URL to auto-open the token prompt (great for bookmarking)
-2. Click the **✏ pencil** (bottom-right)
-3. Paste your access token → **Unlock edit mode**
+**Published story:**
+1. Open `https://raulsteiu.github.io/clients/[slug]/`
+2. Click **✏** (bottom-right) → enter token → edit mode opens
 
-### What you can edit (click any field to type)
+**Draft or approved story:**
+1. Open the story URL from the directory
+2. Token gate appears — enter your token
+3. Story opens **directly in edit mode** — no extra steps
 
-Hero label, heading, description, industry tag, section labels/headings/body, clip titles/quotes, stat values/labels, KRS items, Who card text and stats, results, participant names/titles, footer disclaimer.
+**Shortcut:** Add `?edit=1` to any published story URL to auto-open the token prompt.
+
+### What you can edit
+
+Hero label, heading, description, industry tag, section labels/headings/body, clip titles/quotes, stat values/labels, KRS heading + items, Who card text and stats, results, participants, products, logo.
 
 ### Section body editing
 
-In edit mode, the section body becomes a single text area. Type freely:
-- Press **Enter** for a new line (stays as one block — no splitting)
-- Start a line with `- ` to make a **red dot bullet point**
-- Use `- Bold text: rest of line` for a **bold prefix**
+In edit mode the section body collapses to a single editable area:
+- Press **Enter** for a new line
+- Start a line with `- ` → red dot bullet
+- Use `- Bold text: rest of line` → bold prefix bullet
 
-Everything converts to proper HTML automatically when you click Save.
+### Edit toolbar
+
+| Control | Action |
+|---|---|
+| **Save** | Saves all changes to data.json |
+| **Cancel** | Discards changes |
+| **Status dropdown** | Change Draft / Approved / Published — saves instantly |
+| **⧉ Preview link** | Generate a client preview link (see below) |
 
 ### Edit mode controls
 
 | Control | How to use |
 |---|---|
-| **Add / delete section** | `+ Add section` button at bottom of main content · 🗑 on each section |
-| **Add / delete clip** | `+ Add clip` button · 🗑 on each clip card |
-| **Reorder sections and clips** | Drag the `⠿` handle (top-right of each card) — freely interleave sections and clips |
-| **Upload MP3** | `Upload MP3` button inside the clip player |
-| **Delete MP3 from GitHub** | `✕` at the right end of the clip title bar |
-| **Add / delete stat** | `+` at the end of the stats row · `✕` on any tile |
-| **Add / delete KRS item** | `+ Add result` in the KRS card · `✕` on any item |
-| **Add / delete participant** | `+ Add participant` · `✕` on any entry |
-| **Add / delete result** | `+ Add result` · `✕` on any item |
-| **Change products** | Click the Applications Deployed card — inline checkbox panel appears |
-| **Replace logo** | Click the client logo in the hero |
-| **Add language** | Edit mode → language dropdown in top nav → select language |
-| **Remove language** | Edit mode → `×` button next to the language tab |
-
-4. Click **Save** — `data.json` updated on GitHub, page re-renders cleanly from fresh data
+| Add / delete section | `+ Add section` at bottom · 🗑 on each section |
+| Add / delete clip | `+ Add clip` · 🗑 on each clip |
+| Reorder | Drag `⠿` handle on any section or clip |
+| Upload MP3 | `Upload MP3` inside clip player |
+| Delete MP3 | `✕` at right of clip title bar |
+| Add / delete stat | `+` at end of stats row · `✕` on tile |
+| Add / delete KRS item | `+ Add result` in KRS card · `✕` on item |
+| Add / delete participant | `+ Add participant` · `✕` on entry |
+| Add / delete result | `+ Add result` · `✕` on item |
+| Change products | Click Applications Deployed card |
+| Replace logo | Click client logo in hero |
+| Add language | Language dropdown in nav → select |
+| Remove language | `×` next to language tab |
 
 ---
 
-## Drag and drop
+## Sending a story for client review (Preview link)
 
-In edit mode, every section and audio clip has a `⠿` drag handle at the top-right. Drag to reorder — sections and clips are interleaved in a single list so a clip can sit immediately after the section it relates to. Order is saved when you click Save.
+1. Open the story in edit mode
+2. Click **⧉ Preview link** in the toolbar
+3. Link and password are **generated and saved automatically**
+4. Click **⧉ Copy link + password** — copies a ready-to-paste block:
+   ```
+   Story preview link: https://raulsteiu.github.io/clients/[slug]/?preview=...
+   Password: blue-sky-42
+   Expires: 24 Sep 2026
+   ```
+5. Paste into your email to the client
+6. Click **Done → Stories** to return to the directory
+
+**The client experience:**
+- Opens the link → clean Prophix-branded password gate
+- Enters password → sees the story in preview mode (read-only, no edit button, no access to other stories)
+- Emails you feedback
+
+**Preview links expire after 3 days.**
+
+After the client responds by email:
+- Open the story (token gate) → make changes → change status dropdown to `Approved` or `Published` as appropriate
+
+---
+
+## AI story generation
+
+1. Go to `/new/` → unlock → choose **✦ Generate with AI**
+2. Enter your **Gemini API key** (free from `aistudio.google.com` — separate from GitHub token)
+3. Enter the **client name**
+4. Paste the full **Gong/Teams/meeting transcript**
+5. Click **✦ Generate story** — wait ~10 seconds
+6. Review the pre-filled form → edit anything needed
+7. Click **Publish client story →**
+
+**Gemini API key:** Free personal key. Get it at `aistudio.google.com` → Get API key. Entered once per session, never stored. Free tier allows 500 story generations per day.
 
 ---
 
 ## Languages
 
-**Available:** English (EN), French (FR), Dutch (NL), German (DE), Italian (IT), Spanish (ES), Portuguese (PT), Polish (PL), Swedish (SV), Danish (DA), Finnish (FI), Norwegian (NO), Japanese (JA), Chinese (ZH), Korean (KO).
+**Available:** EN, FR, NL, DE, IT, ES, PT, PL, SV, DA, FI, NO, JA, ZH, KO
 
-**To add:** Edit mode → language dropdown in nav → select. A new block is created with `[XX]` placeholder prefixes on all text. Translate the placeholders, then Save.
+**To add:** Edit mode → `+ Add language` → select. All fields get `[XX]` prefixes marking content to translate.
 
-**To remove:** Edit mode → click `×` next to the language tab → Save. All content for that language is removed.
+**To remove:** Edit mode → `×` next to language tab → Save.
 
 **EN cannot be removed.**
-
-**Note:** You can add and remove languages on any existing story at any time — language management is always available in edit mode, it is not locked to the original publish.
-
----
-
-## Share a story
-
-- **From the directory:** ⧉ button on a card copies the story URL. ✏ copies the `?edit=1` edit link.
-- **From the story page:** **⧉ Share** button in the top nav copies the clean URL.
 
 ---
 
 ## Delete a story
 
 1. Go to `/clients/`
-2. Hover a story card → 🗑 appears
-3. Click → confirm → story removed from directory, all files deleted from GitHub
+2. Hover a card → 🗑 appears
+3. Click → enter token → confirm
+
+Permanently removes all files from the repository.
 
 ---
 
 ## Access token
 
-Never stored anywhere. Must be entered fresh each session.
+Never stored anywhere. Enter fresh each session.
 
 **Requirements:**
 - Fine-grained personal access token
 - Repository: `raulsteiu/raulsteiu.github.io`
 - Permission: Contents → Read and write
 
-**To generate:** GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → set repo + Contents permission.
+**To generate:** GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
 
 **Distribution:** Teams DM only. Never email. Never paste in chat.
 
@@ -154,35 +193,26 @@ Never stored anywhere. Must be entered fresh each session.
 
 ## Updating story.js — applies to all stories instantly
 
-1. Upload new `story.js` to `clients/story.js` in GitHub (drag-and-drop for large files)
-2. Wait ~30 seconds for GitHub Pages to redeploy
-3. Every story page immediately uses the new version — no re-publishing needed
-
-This is the core advantage of the v2.0 architecture. `story.js` controls all layout, CSS, edit behaviour, and rendering. One deploy updates everything.
+1. Upload new `story.js` to `clients/story.js` in GitHub
+2. Wait ~30 seconds for Pages to deploy
+3. Every story page uses the new version — no re-publishing needed
 
 ---
 
 ## When to re-publish from the creator
 
-Re-publishing regenerates both `data.json` and the shell `index.html`.
-
-Use re-publish only when:
+Only when:
 - **Renaming a story** — changes the slug/URL
 - **Starting over** with completely fresh content
 - The shell `index.html` is missing or corrupted
 
-Re-publishing **does not delete** audio MP3 files.
-
 ---
 
-## Adding a new Prophix product to the list
+## Adding a new Prophix product
 
-1. Upload the product icon PNG to `/assets/icons/[product-name].png` in GitHub
-2. In `story.js`, add to `PROPHIX_PRODUCTS`:
-   ```js
-   {name:'New Product', icon:'/assets/icons/new-product.png'}
-   ```
-3. In `new/index.html`, add a checkbox in the Applications Deployed section
+1. Upload icon PNG to `/assets/icons/[product-name].png`
+2. Add to `PROPHIX_PRODUCTS` in `story.js`
+3. Add checkbox in `new/index.html`
 4. Deploy both files
 
 ---
@@ -191,17 +221,17 @@ Re-publishing **does not delete** audio MP3 files.
 
 | Problem | Fix |
 |---|---|
-| Directory shows no stories | Check `clients/stories.json` is a valid JSON array |
-| Story page shows "Could not load story" | Check `data.json` exists in the story folder |
-| Logo not showing after upload | Re-publish — logo converts to PNG automatically |
-| Save fails with "sha wasn't supplied" | Try again — SHA race on GitHub's side |
-| Token rejected (401) | Expired or wrong permissions — generate a new one |
-| "3 cancelled checks" on GitHub commit | Normal — multiple files committed in sequence, last build won |
+| Directory shows no stories | Check `clients/stories.json` is valid JSON |
+| Story shows "Could not load story" | Check `data.json` exists in story folder |
+| Logo not showing | Hard refresh after upload |
+| Save fails with SHA error | Try again — SHA race on GitHub's side |
+| Token rejected (401) | Expired or wrong permissions — regenerate |
+| Preview link says "Invalid" | Link expired (3 days) — generate a new one |
+| Story status badge not showing | Open story in edit mode and save once to sync stories.json |
 | Page looks wrong after deploy | Hard refresh: Ctrl+Shift+R (Win) / Cmd+Shift+R (Mac) |
-| Colleague sees old version | Browser cache — hard refresh or open in incognito |
 | Story page 404 | Wait up to 2 minutes after first publish |
-| Language add/remove not visible | Make sure you're in edit mode — the controls only appear after unlocking |
-| Can't edit a language block | Switch to that language tab first, then click Save — edit mode re-applies on switch |
+| "3 cancelled checks" on commit | Normal — multiple files, last build wins |
+| AI generation fails | Check Gemini API key is correct; try again if 503 (server busy) |
 
 ---
 
@@ -210,20 +240,23 @@ Re-publishing **does not delete** audio MP3 files.
 ```
 clients/[slug]/
 ├── index.html   ← 8-line shell (set on publish, almost never changes)
-├── data.json    ← all content (updated every save — this is the source of truth)
+├── data.json    ← all content + status + preview token (source of truth)
 ├── logo.png     ← client logo (optional)
 └── *.mp3        ← audio clips (optional)
 ```
 
 ---
 
-## stories.json — directory index only
+## stories.json — directory index
 
 ```json
 [
   {
     "slug": "acme-corp",
     "name": "Acme Corp",
+    "ind": "Manufacturing, Brussels",
+    "langs": ["en", "fr"],
+    "status": "published",
     "created": "2026-09-16T10:00:00.000Z",
     "edited": "2026-09-16T14:30:00.000Z",
     "logo": true
@@ -231,4 +264,4 @@ clients/[slug]/
 ]
 ```
 
-This file only tracks who exists. All story content is in `data.json`.
+Synced automatically on every save. Status, languages and industry tag always stay up to date.
