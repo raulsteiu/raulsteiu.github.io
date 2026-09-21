@@ -1,18 +1,5 @@
 [
   {
-    "slug": "meridian-logistics-group",
-    "name": "Meridian Logistics Group",
-    "ind": "Logistics, Brussels",
-    "langs": [
-      "en",
-      "fr",
-      "de"
-    ],
-    "status": "published",
-    "created": "2026-09-21T13:58:46.475Z",
-    "logo": false
-  },
-  {
     "slug": "eaglerock",
     "name": "EagleRock",
     "ind": "Real Estate, Luxembourg",
