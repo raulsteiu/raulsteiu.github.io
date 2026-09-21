@@ -700,11 +700,11 @@ function domToData() {
         } else if (el.classList.contains('media-card')) {
           var titleEl = el.querySelector('.media-title-text'); var titleClone = titleEl ? titleEl.cloneNode(true) : null;
           if (titleClone) titleClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-          var mt = el.getAttribute('data-media-type') || 'audio';
+          var mt = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : 'audio'));
           var mediaSrc = '';
-          if (mt === 'audio') { var asrc = el.querySelector('audio source'); mediaSrc = asrc ? (asrc.getAttribute('src')||'') : ''; }
-          else if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = vurlEl ? vurlEl.value.trim() : (el.getAttribute('data-media-url') || ''); }
-          else if (mt === 'image') { var img = el.querySelector('.media-img-wrap img'); mediaSrc = img ? (img.getAttribute('src')||'') : ''; }
+          if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = vurlEl ? vurlEl.value.trim() : (el.getAttribute('data-media-url') || ''); }
+          else if (mt === 'image') { var img = el.querySelector('.media-img-wrap img'); mediaSrc = img ? (img.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
+          else { var asrc = el.querySelector('audio source'); mediaSrc = asrc ? (asrc.getAttribute('src')||'') : ''; }
           if (mediaSrc && mediaSrc.indexOf('://') > -1) mediaSrc = mediaSrc.split('/').pop();
           var quoteEl = el.querySelector('.media-quote') || el.querySelector('.media-caption');
           data.content.push({ type: 'clip', data: {
@@ -780,11 +780,11 @@ function domToData() {
         } else if (el.classList.contains('media-card')) {
           var ctEl2 = el.querySelector('.media-title-text'); var ctClone2 = ctEl2 ? ctEl2.cloneNode(true) : null;
           if (ctClone2) ctClone2.querySelectorAll('button').forEach(function(b){ b.remove(); });
-          var mt2 = el.getAttribute('data-media-type') || 'audio';
+          var mt2 = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : 'audio'));
           var mSrc2 = '';
-          if (mt2 === 'audio') { var as2 = el.querySelector('audio source'); mSrc2 = as2 ? (as2.getAttribute('src')||'') : ''; }
-          else if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = vurlEl2 ? vurlEl2.value.trim() : (el.getAttribute('data-media-url') || ''); }
-          else if (mt2 === 'image') { var im2 = el.querySelector('.media-img-wrap img'); mSrc2 = im2 ? (im2.getAttribute('src')||'') : ''; }
+          if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = vurlEl2 ? vurlEl2.value.trim() : (el.getAttribute('data-media-url') || ''); }
+          else if (mt2 === 'image') { var im2 = el.querySelector('.media-img-wrap img'); mSrc2 = im2 ? (im2.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
+          else { var as2 = el.querySelector('audio source'); mSrc2 = as2 ? (as2.getAttribute('src')||'') : ''; }
           if (mSrc2 && mSrc2.indexOf('://') > -1) mSrc2 = mSrc2.split('/').pop();
           var qEl2 = el.querySelector('.media-quote') || el.querySelector('.media-caption');
           t.content.push({ type:'clip', data:{ title: ctClone2 ? ctClone2.textContent.trim() : '', quote: qEl2 ? qEl2.textContent.trim() : '', mediaType: mt2, media: mSrc2, audio: mt2==='audio' ? mSrc2 : '' }});
@@ -1106,6 +1106,7 @@ function addEditControlsToExisting() {
         function applyVideoUrlEdit() {
           var url = inp_c.value.trim();
           card.setAttribute('data-media-url', url);
+          card.setAttribute('data-media-type', 'video');
           var embedUrl = getVideoEmbedUrl(url);
           var wrap = pl_c.querySelector('.media-iframe-wrap');
           if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl_c.insertBefore(wrap, hint_c); }
@@ -1264,6 +1265,7 @@ function addMediaInline(btn, mediaType) {
     function applyVideoUrlInline() {
       var url = urlInput.value.trim();
       card.setAttribute('data-media-url', url);
+      card.setAttribute('data-media-type', 'video');
       var embedUrl = getVideoEmbedUrl(url);
       var wrap = pl.querySelector('.media-iframe-wrap');
       if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl.insertBefore(wrap, urlHint); }
@@ -1279,9 +1281,8 @@ function addMediaInline(btn, mediaType) {
     aud.style.cssText = 'width:100%;height:38px;border-radius:6px;accent-color:#EF363D';
     aud.appendChild(document.createElement('source'));
     pl.appendChild(qt2); pl.appendChild(aud);
+    pl.appendChild(upBtn);
   }
-
-  pl.appendChild(upBtn);
   xBtn.addEventListener('click', async function(e){ e.stopPropagation(); await deleteMediaFile(card, xBtn); });
   card.appendChild(rb); card.appendChild(handle); card.appendChild(lbl); card.appendChild(pl);
   if (container) container.appendChild(card); else btn.parentNode.insertBefore(card, btn);
