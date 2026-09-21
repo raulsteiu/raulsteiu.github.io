@@ -1726,7 +1726,7 @@ function generateBrochure() {
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
   loadJsPDF(function(jsPDF) {
     try {
-      _buildBrochurePDF(jsPDF, storyData);
+      window._buildBrochurePDF(jsPDF, storyData);
     } catch(e) {
       alert('PDF generation failed: ' + e.message);
     } finally {
@@ -1735,7 +1735,7 @@ function generateBrochure() {
   });
 }
 
-function _buildBrochurePDF(jsPDF, data) {
+window._buildBrochurePDF = function _buildBrochurePDF(jsPDF, data) {
   var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   var W = 210, H = 297;
   var RED = [239, 54, 61];
