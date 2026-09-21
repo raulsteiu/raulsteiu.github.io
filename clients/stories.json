@@ -12,19 +12,6 @@
     "logo": true
   },
   {
-    "slug": "meridian-logistic-group",
-    "name": "Meridian Logistic Group",
-    "ind": "Logistics & Supply Chain, Brussels",
-    "langs": [
-      "en",
-      "fr"
-    ],
-    "status": "approved",
-    "created": "2026-09-18T15:29:19.937Z",
-    "logo": true,
-    "edited": "2026-09-21T12:35:25.344Z"
-  },
-  {
     "slug": "eaglestone",
     "name": "Eaglestone",
     "ind": "Real Estate Development",
