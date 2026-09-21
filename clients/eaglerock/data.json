@@ -23,20 +23,20 @@
   "whoText": "EagleRock is a real estate promotion group that manages a complex portfolio of projects across Europe. They rely on Prophix to maintain financial integrity and provide clear, consolidated reporting to their shareholders and investors.",
   "krs": [
     {
-      "text": "Transitioned from receiving static consolidated contributions to full visibility into local data, intercompany eliminations, and adjustments.",
-      "bold": "Enhanced Transparency:"
+      "bold": "Enhanced Transparency:",
+      "text": "Enhanced Transparency:: Transitioned from receiving static consolidated contributions to full visibility into local data, intercompany eliminations, and adjustments."
     },
     {
-      "text": "Restructured consolidation workflows to eliminate manual bottlenecks and ensure strict adherence to reporting deadlines.",
-      "bold": "Process Efficiency:"
+      "bold": "Process Efficiency:",
+      "text": "Process Efficiency:: Restructured consolidation workflows to eliminate manual bottlenecks and ensure strict adherence to reporting deadlines."
     },
     {
-      "text": "Utilized simulation capabilities to model the impact of capital transactions and investor entries on consolidated accounts.",
-      "bold": "Strategic Agility:"
+      "bold": "Strategic Agility:",
+      "text": "Strategic Agility:: Utilized simulation capabilities to model the impact of capital transactions and investor entries on consolidated accounts."
     },
     {
-      "text": "Achieved the ability to generate segment-specific reporting, providing clearer insights into clean funds per country.",
-      "bold": "Improved Reporting:"
+      "bold": "Improved Reporting:",
+      "text": "Improved Reporting:: Achieved the ability to generate segment-specific reporting, providing clearer insights into clean funds per country."
     }
   ],
   "results": [],
@@ -74,16 +74,18 @@
       "type": "clip",
       "data": {
         "title": "OPERATIONAL TRANSPARENCY",
-        "ts": "9:02",
-        "quote": "I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system."
+        "ts": "",
+        "quote": "I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system.",
+        "audio": ""
       }
     },
     {
       "type": "clip",
       "data": {
         "title": "STRATEGIC SIMULATION",
-        "ts": "11:48",
-        "quote": "Prophix allows me to be able to simulate this kind of dilution operation... that's where we can say to ourselves, okay, strategically, it's more interesting to go into this scenario rather than into the other."
+        "ts": "",
+        "quote": "Prophix allows me to be able to simulate this kind of dilution operation... that's where we can say to ourselves, okay, strategically, it's more interesting to go into this scenario rather than into the other.",
+        "audio": ""
       }
     }
   ],
@@ -92,5 +94,77 @@
     "password": "bold-sky-73",
     "expiresAt": "2026-09-21T16:01:09.294Z",
     "createdAt": "2026-09-18T16:01:09.296Z"
+  },
+  "krsHeading": "Key Results Snapshot",
+  "translations": {
+    "fr": {
+      "name": "[FR] EagleRock",
+      "desc": "[FR] EagleRock is a decentralized real estate group operating across Belgium, France, and Luxembourg. By leveraging Prophix, they have transformed their complex financial consolidation process into a transparent, efficient, and strategic operation.",
+      "krsHeading": "[FR] Key Results Snapshot",
+      "krs": [
+        {
+          "bold": "Enhanced Transparency:",
+          "text": "Enhanced Transparency:: [FR]  Transitioned from receiving static consolidated contributions to full visibility into local data, intercompany eliminations, and adjustments."
+        },
+        {
+          "bold": "Process Efficiency:",
+          "text": "Process Efficiency:: [FR]  Restructured consolidation workflows to eliminate manual bottlenecks and ensure strict adherence to reporting deadlines."
+        },
+        {
+          "bold": "Strategic Agility:",
+          "text": "Strategic Agility:: [FR]  Utilized simulation capabilities to model the impact of capital transactions and investor entries on consolidated accounts."
+        },
+        {
+          "bold": "Improved Reporting:",
+          "text": "Improved Reporting:: [FR]  Achieved the ability to generate segment-specific reporting, providing clearer insights into clean funds per country."
+        }
+      ],
+      "whoText": "[FR] EagleRock is a real estate promotion group that manages a complex portfolio of projects across Europe. They rely on Prophix to maintain financial integrity and provide clear, consolidated reporting to their shareholders and investors.",
+      "whoStats": [],
+      "results": [],
+      "participants": [],
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] THE CHALLENGE",
+            "heading": "[FR] Navigating Decentralized Complexity",
+            "body": "[FR] As a decentralized group operating in three different countries, EagleRock faced significant hurdles in consolidating financial data from disparate systems. The previous configuration lacked transparency, forcing the group consolidation manager to rely on pre-consolidated packs from subsidiaries, which hindered the ability to drill down into local data or intercompany eliminations.\n\nFurthermore, the lack of a unified system for all regions meant that reporting was often delayed, and the team struggled to provide the granular insights required by stakeholders and investors. The existing setup was not optimized for the complex, project-based nature of real estate promotion."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] THE SOLUTION",
+            "heading": "[FR] Optimizing Through Continuous Success",
+            "body": "[FR] By engaging with the Prophix Continuous Success Package (CSP), the team conducted a comprehensive audit of their existing configuration. They restructured their consolidation model to integrate the French market directly into Prophix, moving away from manual data entry and fragmented reporting.\n\nThis transformation allowed the team to implement robust coherence controls and leverage advanced reporting tools like DynProphix. These tools provided the granularity needed to view data at the local, adjustment, and consolidated levels, while also enabling the team to perform complex simulations for strategic decision-making."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] THE RESULTS",
+            "heading": "[FR] Faster Closings and Strategic Insight",
+            "body": "[FR] The implementation of a more efficient, transparent process has allowed EagleRock to meet its strict quarterly and annual reporting deadlines consistently. With the ability to simulate different financial scenarios, the team can now provide investors with accurate, real-time insights into the impact of capital changes and project investments.\n\nBeyond speed, the solution has provided a user-friendly interface for intercompany reconciliation and a scalable foundation for future expansion into new markets. The team now spends less time chasing data and more time delivering strategic value to the business."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] OPERATIONAL TRANSPARENCY",
+            "quote": "[FR] I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system.",
+            "audio": ""
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] STRATEGIC SIMULATION",
+            "quote": "[FR] Prophix allows me to be able to simulate this kind of dilution operation... that's where we can say to ourselves, okay, strategically, it's more interesting to go into this scenario rather than into the other.",
+            "audio": ""
+          }
+        }
+      ]
+    }
   }
 }
