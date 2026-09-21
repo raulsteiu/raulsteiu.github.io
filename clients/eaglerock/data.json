@@ -40,20 +40,20 @@
   "whoText": "EagleRock is a decentralized real estate promotion group headquartered in Luxembourg. The company operates across three international markets, managing complex financial consolidation and IFRS reporting for its stakeholders.",
   "krs": [
     {
-      "text": "granular visibility into local data, intercompany eliminations, and consolidation adjustments is now available.",
-      "bold": "Improved data transparency"
+      "bold": "Improved data transparency",
+      "text": "Improved data transparency: granular visibility into local data, intercompany eliminations, and consolidation adjustments is now available."
     },
     {
-      "text": "strict deadlines for investors are now consistently met.",
-      "bold": "Faster reporting cycles"
+      "bold": "Faster reporting cycles",
+      "text": "Faster reporting cycles: strict deadlines for investors are now consistently met."
     },
     {
-      "text": "impacts of dilution and capital transactions can be modeled across different scenarios.",
-      "bold": "Enhanced strategic simulation"
+      "bold": "Enhanced strategic simulation",
+      "text": "Enhanced strategic simulation: impacts of dilution and capital transactions can be modeled across different scenarios."
     },
     {
-      "text": "user-friendly workflows replace manual, opaque processes for managing inter-society positions.",
-      "bold": "Streamlined intercompany reconciliation"
+      "bold": "Streamlined intercompany reconciliation",
+      "text": "Streamlined intercompany reconciliation: user-friendly workflows replace manual, opaque processes for managing inter-society positions."
     }
   ],
   "results": [
@@ -101,7 +101,10 @@
       "data": {
         "title": "IMPROVED TRANSPARENCY",
         "ts": "9:02",
-        "quote": "I have a lot more transparency, much easier to get the information out too because I learned to use for example, the dynprofix that my predecessor did not use."
+        "quote": "I have a lot more transparency, much easier to get the information out too because I learned to use for example, the dynprofix that my predecessor did not use.",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
       }
     },
     {
@@ -109,7 +112,10 @@
       "data": {
         "title": "STRATEGIC MODELING",
         "ts": "11:48",
-        "quote": "Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario."
+        "quote": "Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario.",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
       }
     },
     {
@@ -117,8 +123,127 @@
       "data": {
         "title": "USER EXPERIENCE",
         "ts": "13:25",
-        "quote": "What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures."
+        "quote": "What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures.",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "Ceva Frumos",
+        "ts": "",
+        "quote": "Pull quote (optional)",
+        "mediaType": "video",
+        "media": "snippet_8791660788917222092_13-15.mp4",
+        "audio": ""
       }
     }
-  ]
+  ],
+  "krsHeading": "Key Results Snapshot",
+  "translations": {
+    "fr": {
+      "name": "[FR] EagleRock",
+      "desc": "[FR] EagleRock is a decentralized real estate promotion group that manages complex financial consolidation across multiple international markets. The company leverages Prophix to streamline statutory reporting and IFRS compliance while maintaining granular visibility into project-level performance.",
+      "krsHeading": "[FR] Key Results Snapshot",
+      "krs": [
+        {
+          "bold": "Improved data transparency",
+          "text": "Improved data transparency: [FR] Improved data transparency: granular visibility into local data, intercompany eliminations, and consolidation adjustments is now available."
+        },
+        {
+          "bold": "Faster reporting cycles",
+          "text": "Faster reporting cycles: [FR] Faster reporting cycles: strict deadlines for investors are now consistently met."
+        },
+        {
+          "bold": "Enhanced strategic simulation",
+          "text": "Enhanced strategic simulation: [FR] Enhanced strategic simulation: impacts of dilution and capital transactions can be modeled across different scenarios."
+        },
+        {
+          "bold": "Streamlined intercompany reconciliation",
+          "text": "Streamlined intercompany reconciliation: [FR] Streamlined intercompany reconciliation: user-friendly workflows replace manual, opaque processes for managing inter-society positions."
+        }
+      ],
+      "whoText": "[FR] EagleRock is a decentralized real estate promotion group headquartered in Luxembourg. The company operates across three international markets, managing complex financial consolidation and IFRS reporting for its stakeholders.",
+      "whoStats": [
+        {
+          "v": "[FR] 3",
+          "l": "[FR] markets"
+        },
+        {
+          "v": "[FR] 1",
+          "l": "[FR] group consolidation manager"
+        }
+      ],
+      "results": [
+        "[FR] Integrated disparate regional data into a single, centralized system",
+        "[FR] Improved reporting speed to consistently meet strict investor deadlines",
+        "[FR] Enabled granular simulation of capital transactions and project dilution",
+        "[FR] Enhanced visibility into local statutory figures and intercompany eliminations"
+      ],
+      "participants": [
+        {
+          "name": "Quentin",
+          "title": "Group Consolidation Manager, EagleRock"
+        }
+      ],
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] BUSINESS CHALLENGES",
+            "heading": "[FR] Navigating a complex, decentralized consolidation process",
+            "body": "[FR] Before adopting Prophix, the group relied on a fragmented approach where data originated from disparate systems across Belgium, France, and Luxembourg. The previous consolidation process was opaque, with the group-level manager receiving only consolidated contributions from subsidiaries rather than raw local data, which prevented deep-dive analysis and required constant back-and-forth communication to resolve discrepancies.\n\nThe status quo was unsustainable because the lack of transparency hindered the ability to answer investor queries and perform accurate strategic modeling. Furthermore, the reliance on manual integration of reporting packs from external systems led to inefficiencies and delays, making it impossible to meet strict reporting deadlines while maintaining the necessary granularity for real estate project management."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] WHY PROPHIX",
+            "heading": "[FR] What made Prophix the right fit",
+            "body": "[FR] - Requirement for a centralized system to integrate disparate local data from multiple international markets.\n- Need for granular visibility into local statutory figures, consolidation adjustments, and intercompany eliminations.\n- Requirement for flexible reporting tools to support both local Luxembourgian referential and IFRS standards for listed shareholders."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "[FR] KEY RESULTS",
+            "heading": "[FR] Achieving transparency and strategic agility",
+            "body": "[FR] The implementation of Prophix has transformed the group's financial operations, moving from a black-box reporting model to a transparent, system-driven process. By integrating all regional data directly into the platform, the finance team now maintains full control over the consolidation lifecycle, ensuring that statutory and IFRS accounts are accurate and audit-ready.\n\nCollaboration has significantly improved, as the team can now perform intercompany reconciliations within a user-friendly interface. The ability to drill down into analytical dimensions allows the team to provide management with specific insights, such as bank debt by establishment, which were previously inaccessible under the old reporting structure.\n\nStrategic decision-making is now supported by the ability to simulate complex capital transactions and dilution scenarios in real-time. This capability allows the group to evaluate the consolidated impact of various project structures before committing, ensuring that the team consistently meets its one-month consolidation deadline even as the business scales."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] IMPROVED TRANSPARENCY",
+            "quote": "[FR] I have a lot more transparency, much easier to get the information out too because I learned to use for example, the dynprofix that my predecessor did not use.",
+            "mediaType": "audio",
+            "media": "",
+            "audio": ""
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] STRATEGIC MODELING",
+            "quote": "[FR] Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario.",
+            "mediaType": "audio",
+            "media": "",
+            "audio": ""
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] USER EXPERIENCE",
+            "quote": "[FR] What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures.",
+            "mediaType": "audio",
+            "media": "",
+            "audio": ""
+          }
+        }
+      ]
+    }
+  }
 }
