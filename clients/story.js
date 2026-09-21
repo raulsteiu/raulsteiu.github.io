@@ -197,7 +197,8 @@ function getCSS() {
     '.media-url-input{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none;margin-bottom:5px;transition:border-color .15s}',
     '.media-url-input:focus{border-color:var(--red)}',
     '.media-url-hint{font-size:11px;color:var(--muted);margin-bottom:4px}',
-    '.media-iframe-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:6px;background:#000;margin-bottom:6px}',
+    '.media-iframe-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:6px;background:#000;margin-bottom:6px;width:100%}',
+    '.media-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:6px;display:block}',
     '.media-iframe-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:6px}',
     // Lightbox
     '.lightbox-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;align-items:center;justify-content:center;cursor:zoom-out}',
@@ -251,6 +252,8 @@ function getVideoEmbedUrl(url) {
 function renderMediaCard(c) {
   var mt = c.mediaType || 'audio'; // 'audio' | 'video' | 'image'
   var card = document.createElement('div'); card.className = 'media-card';
+  card.setAttribute('data-media-type', mt);
+  if (mt === 'video') card.setAttribute('data-media-url', c.media || c.url || '');
 
   // Label row
   var labelDiv = document.createElement('div'); labelDiv.className = 'media-label'; labelDiv.contentEditable = 'false';
@@ -291,7 +294,7 @@ function renderMediaCard(c) {
       if (embedUrl) {
         var iframeWrap = document.createElement('div'); iframeWrap.className = 'media-iframe-wrap';
         var iframe = document.createElement('iframe');
-        iframe.src = embedUrl; iframe.allowFullscreen = true;
+        iframe.src = embedUrl; iframe.allowFullscreen = true; iframe.setAttribute('frameborder','0');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
         iframeWrap.appendChild(iframe); player.appendChild(iframeWrap);
       } else {
@@ -700,7 +703,7 @@ function domToData() {
           var mt = el.getAttribute('data-media-type') || 'audio';
           var mediaSrc = '';
           if (mt === 'audio') { var asrc = el.querySelector('audio source'); mediaSrc = asrc ? (asrc.getAttribute('src')||'') : ''; }
-          else if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = vurlEl ? vurlEl.value.trim() : (function(){ var ifr = el.querySelector('iframe'); return ifr ? ifr.getAttribute('src') || '' : ''; })(); }
+          else if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = vurlEl ? vurlEl.value.trim() : (el.getAttribute('data-media-url') || ''); }
           else if (mt === 'image') { var img = el.querySelector('.media-img-wrap img'); mediaSrc = img ? (img.getAttribute('src')||'') : ''; }
           if (mediaSrc && mediaSrc.indexOf('://') > -1) mediaSrc = mediaSrc.split('/').pop();
           var quoteEl = el.querySelector('.media-quote') || el.querySelector('.media-caption');
@@ -780,7 +783,7 @@ function domToData() {
           var mt2 = el.getAttribute('data-media-type') || 'audio';
           var mSrc2 = '';
           if (mt2 === 'audio') { var as2 = el.querySelector('audio source'); mSrc2 = as2 ? (as2.getAttribute('src')||'') : ''; }
-          else if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = vurlEl2 ? vurlEl2.value.trim() : (function(){ var ifr2 = el.querySelector('iframe'); return ifr2 ? ifr2.getAttribute('src') || '' : ''; })(); }
+          else if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = vurlEl2 ? vurlEl2.value.trim() : (el.getAttribute('data-media-url') || ''); }
           else if (mt2 === 'image') { var im2 = el.querySelector('.media-img-wrap img'); mSrc2 = im2 ? (im2.getAttribute('src')||'') : ''; }
           if (mSrc2 && mSrc2.indexOf('://') > -1) mSrc2 = mSrc2.split('/').pop();
           var qEl2 = el.querySelector('.media-quote') || el.querySelector('.media-caption');
@@ -1094,17 +1097,18 @@ function addEditControlsToExisting() {
       var pl_c = card.querySelector('.media-player');
       if (pl_c) {
         var existingIframe = pl_c.querySelector('iframe');
-        var currentUrl = existingIframe ? existingIframe.src.replace('https://www.youtube.com/embed/','https://www.youtube.com/watch?v=').replace('https://player.vimeo.com/video/','https://vimeo.com/') : '';
+        var currentUrl = card.getAttribute('data-media-url') || '';
         var hint_c = document.createElement('div'); hint_c.className = 'media-url-hint edit-only'; hint_c.textContent = 'YouTube or Vimeo URL:';
         var inp_c = document.createElement('input'); inp_c.type = 'text'; inp_c.className = 'media-url-input edit-only';
         inp_c.placeholder = 'https://www.youtube.com/watch?v=... or https://vimeo.com/...';
         inp_c.setAttribute('data-video-url', 'true');
         inp_c.value = currentUrl;
         inp_c.addEventListener('change', function() {
+          card.setAttribute('data-media-url', inp_c.value.trim());
           var embedUrl = getVideoEmbedUrl(inp_c.value.trim());
           var wrap = pl_c.querySelector('.media-iframe-wrap');
           if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl_c.insertBefore(wrap, hint_c); }
-          if (embedUrl) wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:6px"></iframe>';
+          if (embedUrl) wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0"></iframe>';
         });
         pl_c.insertBefore(inp_c, pl_c.firstChild);
         pl_c.insertBefore(hint_c, inp_c);
@@ -1254,11 +1258,12 @@ function addMediaInline(btn, mediaType) {
     urlInput.placeholder = 'https://www.youtube.com/watch?v=... or https://vimeo.com/...';
     urlInput.setAttribute('data-video-url', 'true');
     urlInput.addEventListener('change', function() {
+      card.setAttribute('data-media-url', urlInput.value.trim());
       var embedUrl = getVideoEmbedUrl(urlInput.value.trim());
       var wrap = pl.querySelector('.media-iframe-wrap');
       if (!wrap) { wrap = document.createElement('div'); wrap.className = 'media-iframe-wrap'; pl.insertBefore(wrap, urlHint); }
       if (embedUrl && embedUrl !== urlInput.value.trim()) {
-        wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:6px"></iframe>';
+        wrap.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0"></iframe>';
       }
     });
     pl.appendChild(qt); pl.appendChild(urlHint); pl.appendChild(urlInput);
@@ -1322,12 +1327,14 @@ function uploadMedia(btn, card) {
         var d = await r.json();
         if (r.ok && d.content) {
           if (mt === 'audio') {
+            card.setAttribute('data-media-type', 'audio');
             var srcEl = card.querySelector('audio source'); if (srcEl) { srcEl.setAttribute('src', file.name); srcEl.parentNode.load(); }
           } else if (mt === 'video') {
             var vsrc = card.querySelector('video source') || document.createElement('source');
             vsrc.setAttribute('src', file.name); vsrc.type = 'video/mp4';
             var vid = card.querySelector('video'); if (vid) { if (!vid.querySelector('source')) vid.appendChild(vsrc); vid.load(); }
           } else if (mt === 'image') {
+            card.setAttribute('data-media-type', 'image');
             var wrap = card.querySelector('.media-img-wrap');
             if (wrap) { wrap.innerHTML = ''; var img = document.createElement('img'); img.src = file.name + '?v=' + Date.now(); img.alt = ''; img.onclick = function(){ openLightbox(file.name); }; wrap.appendChild(img); }
           }
