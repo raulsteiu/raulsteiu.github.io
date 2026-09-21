@@ -1,0 +1,137 @@
+{
+  "slug": "meridian-logistics-group",
+  "name": "Meridian Logistics Group",
+  "desc": "Meridian Logistics Group is a global third-party logistics provider specializing in warehousing, freight, and last-mile delivery services. The organization leverages Prophix to automate complex financial consolidations across its international operations.",
+  "ind": "Logistics, Brussels",
+  "status": "published",
+  "langs": [
+    "en",
+    "fr",
+    "de"
+  ],
+  "hasLogo": false,
+  "stats": [
+    {
+      "v": "15 days",
+      "l": "Close cycle time saved"
+    },
+    {
+      "v": "14",
+      "l": "Countries consolidated"
+    },
+    {
+      "v": "47",
+      "l": "Spreadsheet templates replaced"
+    },
+    {
+      "v": "4.2 million",
+      "l": "Euros of trapped cash identified"
+    }
+  ],
+  "whoStats": [
+    {
+      "v": "3,400",
+      "l": "Global staff"
+    },
+    {
+      "v": "28",
+      "l": "Finance team members"
+    },
+    {
+      "v": "14",
+      "l": "Countries of operation"
+    },
+    {
+      "v": "12",
+      "l": "Operating currencies"
+    }
+  ],
+  "whoText": "Meridian Logistics Group is a third-party logistics provider headquartered in Brussels. The company operates across 14 countries with 3,400 staff members and manages a lean finance team of 28 people.",
+  "krs": [
+    {
+      "text": "reduced from twenty-one working days to six",
+      "bold": "Faster financial close"
+    },
+    {
+      "text": "dropped from eight days of manual work to four hours",
+      "bold": "Automated intercompany reconciliation"
+    },
+    {
+      "text": "provided investors with accurate, real-time reporting confidence",
+      "bold": "Enhanced financial transparency"
+    },
+    {
+      "text": "shifted two finance staff members from manual consolidation to FP&A",
+      "bold": "Strategic resource redeployment"
+    }
+  ],
+  "results": [
+    "Reduced close cycle by 71 percent",
+    "Automated intercompany reconciliations from eight days to four hours",
+    "Identified 4.2 million euros in trapped cash",
+    "Redeployed finance staff to FP&A activities"
+  ],
+  "participants": [
+    {
+      "name": "James Okafor",
+      "title": "CFO, Meridian Logistics Group"
+    },
+    {
+      "name": "Sarah Thompson",
+      "title": "Head of Finance, Meridian Logistics Group"
+    }
+  ],
+  "products": [
+    "Financial Consolidation"
+  ],
+  "content": [
+    {
+      "type": "section",
+      "data": {
+        "label": "BUSINESS CHALLENGES",
+        "heading": "Moving beyond heroic, manual consolidation",
+        "body": "Before adopting Prophix, the finance team at Meridian Logistics Group relied on an unsustainable, manual consolidation process involving 47 different Excel spreadsheet templates. A team of six finance professionals worked fourteen-hour days for three weeks every quarter to complete the consolidation, with intercompany reconciliations alone consuming eight days of effort.\n\nThis status quo was unsustainable due to the high risk of human error, which led to material restatements and uncomfortable board conversations. The manual burden created significant audit risks and led to staff burnout, making it impossible to maintain the pace of growth across their 14 international markets."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "WHY PROPHIX",
+        "heading": "What made Prophix the right fit",
+        "body": "- Requirement for a robust Financial Consolidation module to handle complex international structures\n- Need for automated intercompany management capabilities to process high transaction volumes\n- Desire for a scalable platform to replace fragmented, error-prone Excel processes"
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "KEY RESULTS",
+        "heading": "Transforming the finance function",
+        "body": "The implementation of Prophix fundamentally transformed the financial close process, enabling the team to reduce their quarterly close cycle from 21 working days to just six. This 71 percent improvement allowed the finance department to deliver reporting packs to the board within the first week of quarter end, significantly increasing operational efficiency.\n\nBeyond speed, the organization achieved greater accuracy and visibility across its 12 operating currencies. The treasury team gained real-time insight into liquidity, while the automated reconciliation processes ensured data integrity, fostering increased confidence from investors and auditors regarding the accuracy of the financial numbers.\n\nSpecific quantitative outcomes included reducing intercompany reconciliation time from eight days to four hours and identifying 4.2 million euros of trapped cash in Southeast Asian entities within the first month of use. Furthermore, the efficiency gains enabled the company to redeploy two full-time employees from manual consolidation tasks to higher-value FP&A activities."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "THE BEFORE STATE",
+        "ts": "00:38",
+        "quote": "Before Prophix, our close process was... I would call it heroic, in the wrong way. We had a team of six finance people working fourteen-hour days for three weeks every quarter just to consolidate."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "THE IMPACT",
+        "ts": "03:01",
+        "quote": "Our close cycle went from 21 working days down to six. That's a 71 percent reduction."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "USER EXPERIENCE",
+        "ts": "05:12",
+        "quote": "I'd say: the first close on Prophix felt like cheating. And I mean that in the best possible way."
+      }
+    }
+  ]
+}
