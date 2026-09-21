@@ -1,9 +1,11 @@
-// Prophix Client Story — story.js v9.1 — KRS double-colon fix
+// Prophix Client Story — story.js v9.3
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
-// v9.1 fix: KRS double-colon bug — bold prefix stripped from text using regex before render
+// v9.1: KRS double-colon fix
+// v9.2: Logo edit label; Media blocks (audio/video/image); lightbox
+// v9.3: Results → Prophix Features; Delete Story button in edit toolbar; directory tile cleanup
 
 'use strict';
 
@@ -133,6 +135,8 @@ function getCSS() {
     '.edit-mode .page-nav{top:46px}',
     '.tb-save{background:var(--red);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}',
     '.tb-save:hover{background:#c0272d}.tb-cancel{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:var(--font);cursor:pointer}',
+    '.tb-delete{background:transparent;border:1px solid rgba(239,54,61,.5);color:#ff8888;border-radius:6px;padding:7px 14px;font-size:13px;font-family:var(--font);cursor:pointer;margin-left:auto}',
+    '.tb-delete:hover{background:rgba(239,54,61,.2);border-color:var(--red);color:#fff}',
     '.save-status{font-size:12px;color:rgba(255,255,255,.6);margin-left:8px}',
     '.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center}',
     '.modal-ov.visible{display:flex}',
@@ -360,6 +364,7 @@ function renderPage(data) {
     '<option value="published" style="background:#fff;color:#1A1A2E">● Published</option>' +
     '</select>' +
     '<button onclick="showPreviewLinkModal()" style="background:transparent;border:1px solid rgba(255,200,0,.4);color:#F5C842;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">⧉ Preview link</button>' +
+    '<button class="tb-delete" onclick="confirmDeleteStory()">🗑 Delete story</button>' +
     '</div>';
   body.appendChild(toolbar);
 
@@ -580,8 +585,8 @@ function renderLangBlock(data, lc, isActive, meta) {
   }
 
   // Results
-  var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','results');
-  resCard.innerHTML = '<h3>Results</h3>';
+  var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','features');
+  resCard.innerHTML = '<h3>Prophix Features</h3>';
   var ul = document.createElement('ul'); ul.className = 'results-ul';
   if (blockData.results && blockData.results.length > 0) {
     blockData.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc(r.replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</li>'; });
@@ -680,7 +685,7 @@ function domToData() {
 
       data.products = Array.from(block.querySelectorAll('.app-name')).map(function(s){ return s.textContent.trim(); });
 
-      data.results = Array.from(block.querySelectorAll('.result-item')).map(function(r){
+      data.results = Array.from(block.querySelectorAll('[data-section="features"] .result-item, [data-section="results"] .result-item')).map(function(r){
         var clone = r.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
         return clone.textContent.trim();
@@ -721,7 +726,7 @@ function domToData() {
         return { v: (tile.querySelector('.who-stat-n')||{}).textContent||'', l: (tile.querySelector('.who-stat-l')||{}).textContent||'' };
       });
 
-      t.results = Array.from(block.querySelectorAll('.result-item')).map(function(r) {
+      t.results = Array.from(block.querySelectorAll('[data-section="features"] .result-item, [data-section="results"] .result-item')).map(function(r) {
         var clone = r.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
         return clone.textContent.trim();
@@ -1082,7 +1087,7 @@ function addEditControlsToExisting() {
   });
 
   // Results
-  document.querySelectorAll('.sidebar-card[data-section="results"],.sidebar-card:has(.result-item)').forEach(function(card) {
+  document.querySelectorAll('.sidebar-card[data-section="features"],.sidebar-card[data-section="results"],.sidebar-card:has(.result-item)').forEach(function(card) {
     card.querySelectorAll('.result-item').forEach(function(item) {
       var del = document.createElement('button');
       del.className = 'result-del-btn edit-only'; del.innerHTML = '✕';
@@ -1090,7 +1095,7 @@ function addEditControlsToExisting() {
       del.addEventListener('click', function(){ item.remove(); }); item.insertBefore(del, item.firstChild);
     });
     var addBtn = document.createElement('button');
-    addBtn.className = 'result-add-btn edit-only'; addBtn.textContent = '+ Add result';
+    addBtn.className = 'result-add-btn edit-only'; addBtn.textContent = '+ Add feature';
     addBtn.style.cssText = 'width:100%;background:transparent;border:1px dashed var(--border,#E0DFF0);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:Arial,sans-serif;cursor:pointer;color:#888;margin-top:8px';
     addBtn.addEventListener('click', function(){ addResultInline(card, addBtn); }); card.appendChild(addBtn);
   });
@@ -1164,18 +1169,16 @@ function addMediaInline(btn, mediaType) {
     var cap = document.createElement('div'); cap.className = 'media-caption'; cap.contentEditable = 'true'; cap.textContent = 'Optional caption';
     pl.appendChild(wrap); pl.appendChild(cap);
   } else if (mediaType === 'video') {
+    var qt = document.createElement('div'); qt.className = 'media-quote'; qt.contentEditable = 'true'; qt.textContent = 'Pull quote (optional)';
     var vid = document.createElement('video'); vid.controls = true; vid.preload = 'metadata';
     vid.style.cssText = 'width:100%;max-height:280px;border-radius:6px;background:#000';
-    pl.appendChild(vid);
-    var qt = document.createElement('div'); qt.className = 'media-quote'; qt.contentEditable = 'true'; qt.textContent = 'Pull quote (optional)';
-    card.insertBefore(qt, pl);
+    pl.appendChild(qt); pl.appendChild(vid);
   } else {
+    var qt2 = document.createElement('div'); qt2.className = 'media-quote'; qt2.contentEditable = 'true'; qt2.textContent = 'Pull quote';
     var aud = document.createElement('audio'); aud.controls = true; aud.preload = 'metadata';
     aud.style.cssText = 'width:100%;height:38px;border-radius:6px;accent-color:#EF363D';
     aud.appendChild(document.createElement('source'));
-    pl.appendChild(aud);
-    var qt2 = document.createElement('div'); qt2.className = 'media-quote'; qt2.contentEditable = 'true'; qt2.textContent = 'Pull quote';
-    card.insertBefore(qt2, pl);
+    pl.appendChild(qt2); pl.appendChild(aud);
   }
 
   pl.appendChild(upBtn);
@@ -1313,7 +1316,7 @@ function addParticipantInline(card, addBtn) {
 function addResultInline(card, addBtn) {
   var ul = card.querySelector('.results-ul');
   if (!ul) { ul = document.createElement('ul'); ul.className = 'results-ul'; card.insertBefore(ul, addBtn); }
-  var li = document.createElement('li'); li.className = 'result-item'; li.contentEditable = 'true'; li.textContent = 'New result';
+  var li = document.createElement('li'); li.className = 'result-item'; li.contentEditable = 'true'; li.textContent = 'New feature';
   var del = document.createElement('button');
   del.className = 'result-del-btn edit-only'; del.innerHTML = '✕';
   del.style.cssText = 'background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;float:right;padding:0 2px';
@@ -1810,6 +1813,56 @@ function showPreviewLinkModal() {
     }
   })();
 }
+
+// ── Delete story from within edit mode (v9.3) ─────────────────────────────────
+async function confirmDeleteStory() {
+  if (!confirm('Permanently delete this story and all its files?\n\nThis cannot be undone.')) return;
+  var statusEl = document.getElementById('save-status');
+  var delBtn = document.querySelector('.tb-delete');
+  if (delBtn) { delBtn.disabled = true; delBtn.textContent = 'Deleting…'; }
+  if (statusEl) statusEl.textContent = 'Deleting…';
+  try {
+    var slug = STORY_META.slug;
+    var folder = 'clients/' + slug + '/';
+    // List all files in the story folder
+    var listRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+folder, {
+      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
+    });
+    if (!listRes.ok) throw new Error('Could not list story files');
+    var files = await listRes.json();
+    for (var i = 0; i < files.length; i++) {
+      if (statusEl) statusEl.textContent = 'Removing ' + (i+1) + '/' + files.length + '…';
+      await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+files[i].path, {
+        method:'DELETE',
+        headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+        body:JSON.stringify({message:'Delete story: '+slug, sha:files[i].sha})
+      });
+    }
+    // Remove from stories.json
+    if (statusEl) statusEl.textContent = 'Updating directory…';
+    var sRes = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
+      headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}
+    });
+    if (sRes.ok) {
+      var sData = await sRes.json();
+      var stories = JSON.parse(atob(sData.content.replace(/\n/g,'')));
+      stories = stories.filter(function(s){ return s.slug !== slug; });
+      var enc = btoa(unescape(encodeURIComponent(JSON.stringify(stories, null, 2))));
+      await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/clients/stories.json', {
+        method:'PUT',
+        headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+        body:JSON.stringify({message:'Remove story: '+slug, content:enc, sha:sData.sha})
+      });
+    }
+    // Redirect to directory
+    window.location.href = '/clients/';
+  } catch(err) {
+    if (delBtn) { delBtn.disabled = false; delBtn.textContent = '🗑 Delete story'; }
+    if (statusEl) statusEl.textContent = 'Delete failed: ' + err.message;
+    alert('Delete failed: ' + err.message);
+  }
+}
+
 
 async function changeStatus(newStatus) {
   storyData.status = newStatus;
