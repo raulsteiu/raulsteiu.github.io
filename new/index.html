@@ -143,7 +143,6 @@ body{font-family:var(--font);background:var(--light);color:#222;min-height:100vh
 
   <!-- ── AI generation screen ───────────────────────────────────────── -->
   <div class="ai-screen" id="ai-screen">
-    <div class="ai-screen.visible{display:block}"></div>
     <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:4px">✦ Generate with AI</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Paste your Gong, Teams, or any meeting transcript. AI extracts the full story automatically.</div>
     <div class="f"><label>Gemini API key</label><input type="password" id="gemini-key" placeholder="AIzaSy…" autocomplete="off"/><div class="hint">Free at aistudio.google.com — entered once per session, never stored</div></div>
@@ -330,7 +329,6 @@ document.getElementById('tok-btn').addEventListener('click',function(){
     document.getElementById('tok-ok').style.display='block';
     document.getElementById('tok-btn').textContent='✓ Unlocked';
     document.getElementById('tok-btn').style.background='#2a7a2a';
-    // Show choice screen instead of form directly
     document.getElementById('choice-wrap').classList.add('visible');
   }).catch(function(){document.getElementById('tok-err').textContent='Could not verify token.';});
 });
@@ -355,16 +353,16 @@ function backToChoice(){
   document.getElementById('choice-wrap').classList.add('visible');
 }
 
-var aiLoadingMsgs=['Identifying client and industry…','Extracting key results and stats…','Building story sections from the call…','Finding participant names and quotes…','Selecting relevant Prophix products…'];
+var aiLoadingMsgs=['Identifying client and industry…','Extracting key results and stats…','Building story sections from the call…','Finding participant names and quotes…','Selecting confirmed Prophix products…'];
 
 function callGemini(key, prompt, attempt) {
   attempt = attempt || 1;
   var maxAttempts = 3;
   if(attempt > 1) document.getElementById('ai-sub').textContent = 'Retrying (attempt '+attempt+'/'+maxAttempts+')…';
-  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key='+key,{
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:8192}})
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:8192}})
   })
   .then(function(r){return r.json();})
   .then(function(d){
@@ -374,6 +372,7 @@ function callGemini(key, prompt, attempt) {
     return d;
   });
 }
+
 function generateStory(){
   var key=document.getElementById('gemini-key').value.trim();
   var clientName=document.getElementById('ai-client-name').value.trim();
@@ -393,20 +392,29 @@ function generateStory(){
     if(step<aiLoadingMsgs.length) document.getElementById('ai-sub').textContent=aiLoadingMsgs[step++];
   },1800);
 
-  var prompt='You are a B2B content writer for Prophix, a corporate performance management software company.\n\nAnalyse this customer call transcript and extract a structured client success story.\n\nClient name: '+clientName+'\n\nReturn ONLY valid JSON with this exact structure (no markdown, no explanation):\n{\n  "name": "client company name",\n  "desc": "2-3 sentence hero description",\n  "ind": "Industry, Location",\n  "stats": [{"v": "metric value", "l": "short label"}],\n  "krs": [{"bold": "optional bold prefix", "text": "full KRS item text"}],\n  "secs": [{"label": "SECTION LABEL IN CAPS", "heading": "Section heading", "body": "2-3 paragraph body"}],\n  "clips": [{"title": "CLIP LABEL IN CAPS", "ts": "", "quote": "exact client quote"}],\n  "whoTxt": "2-3 sentences about this client for sidebar",\n  "whoStats": [{"v": "value", "l": "label"}],\n  "prods": ["Financial Consolidation"],\n  "results": ["short result bullet"],\n  "parts": [{"name": "Full Name", "title": "Title, Company"}]\n}\n\nAvailable Prophix products (only include ones mentioned or clearly implied):\nFinancial Consolidation, Cash Management, Account Reconciliation, FP&A Plus, Intercompany Management, Lease Accounting\n\nRules:\n- stats: 2-4 concrete numbers from the transcript\n- krs: 3-5 most impactful outcomes\n- secs: 2-4 sections covering challenge, solution, results\n- clips: 1-3 best direct client quotes\n- results: 3-5 short outcome bullets\n- parts: anyone mentioned by name in the call\n\nTRANSCRIPT:\n'+transcript.substring(0,12000);
+  // ── Improved Gemini prompt v2 ─────────────────────────────────────────────
+  // Key improvements over v1:
+  // - STATS: only explicit numbers, never invented
+  // - KRS: bold label never repeated in text field (fixes double-colon bug source)
+  // - PRODUCTS: only confirmed deployments, not inferred from features
+  // - SECTIONS: fixed structure — Business Challenges / Why Prophix / Key Results
+  // - CLIPS: exact verbatim quotes only
+  // - transcript limit increased to 14000 chars
+  var prompt='You are a senior B2B content writer for Prophix, a CPM software company.\n\nAnalyse this customer call transcript. Be conservative and precise \u2014 only extract what is explicitly stated.\n\nClient name: '+clientName+'\n\nReturn ONLY valid JSON, no markdown, no explanation:\n{\n  "name": "client company name",\n  "desc": "2-3 sentence hero description",\n  "ind": "Industry, City",\n  "stats": [{"v": "value", "l": "label"}],\n  "krs": [{"bold": "short label 2-5 words", "text": "rest of sentence only \u2014 never start with the bold label"}],\n  "secs": [\n    {"label": "BUSINESS CHALLENGES", "heading": "heading", "body": "2 paragraphs prose only no bullets. Para 1: process before Prophix specific to transcript. Para 2: what they needed and why status quo unsustainable."},\n    {"label": "WHY PROPHIX", "heading": "What made Prophix the right fit", "body": "- requirement 1\\n- requirement 2\\n- requirement 3"},\n    {"label": "KEY RESULTS", "heading": "heading", "body": "3 paragraphs prose only. Para 1: headline outcome current state. Para 2: secondary outcome quality traceability collaboration. Para 3: most specific quantified result with before/after if available."}\n  ],\n  "clips": [{"title": "CLIP LABEL IN CAPS", "ts": "", "quote": "exact verbatim client quote from transcript"}],\n  "whoTxt": "2-3 sentences founding context headquarters industry scale third person present tense",\n  "whoStats": [{"v": "value", "l": "label"}],\n  "prods": ["Financial Consolidation"],\n  "results": ["short bullet starting with past-tense verb"],\n  "parts": [{"name": "Full Name", "title": "Title, Company"}]\n}\n\nSTATS rules:\n- Only use metrics explicitly stated in the transcript as numbers or timeframes\n- Never invent or estimate\n- 0-4 stats. Fewer real stats is better than invented ones\n\nKRS rules:\n- 3-5 items\n- bold = 2-5 word label e.g. "Faster close"\n- text = rest of sentence ONLY, never starting with or repeating the bold label\n- WRONG: bold="Faster close", text="Faster close: data now visible" \u2014 never do this\n- RIGHT: bold="Faster close", text="Consolidated data and eliminations now in one system"\n\nPRODUCTS rules:\n- Only include products explicitly confirmed as deployed by the client\n- Do NOT infer from features \u2014 interco reconciliation discussed does NOT mean Intercompany Management is deployed\n- Available: Financial Consolidation, Cash Management, Account Reconciliation, FP&A Plus, Intercompany Management, Lease Accounting\n\nSECTIONS rules:\n- Always produce exactly 3 sections in this order: BUSINESS CHALLENGES, WHY PROPHIX, KEY RESULTS\n- BUSINESS CHALLENGES: prose only, 2 paragraphs, no bullets\n- WHY PROPHIX: exactly 3 bullet points starting with -, written as customer requirements not product names\n- KEY RESULTS: prose only, 3 paragraphs\n\nCLIPS rules:\n- 3-6 clips using exact verbatim quotes from transcript\n- Title = short ALL-CAPS topic label not a speaker name\n\nRESULTS (sidebar):\n- 3-5 bullets each starting with a past-tense verb, specific not generic\n\nTRANSCRIPT:\n'+transcript.substring(0,14000);
 
   callGemini(key, prompt)
   .then(function(d){
     clearInterval(interval);
     document.getElementById('ai-loading').style.display='none';
     document.getElementById('gen-btn').disabled=false;
-    if(d.error){errEl.textContent='API error: '+d.error.message;return;}
-    // Handle both standard and thinking model response formats
+    if(d.error){
+      if(d.error.code===429){errEl.textContent='Daily AI limit reached. Quota resets at midnight Pacific time \u2014 try again tomorrow. No charges apply.';}
+      else{errEl.textContent='API error: '+d.error.message;}
+      return;
+    }
     var part = d.candidates[0].content.parts;
     var text = '';
-    // Find the text part (thinking models have multiple parts)
     for(var i=0;i<part.length;i++){ if(part[i].text){ text = part[i].text; } }
-    // Strip think tags, markdown fences, and find JSON
     var clean = text.replace(/<think>[\s\S]*?<\/think>/g,'').replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
     var start=clean.indexOf('{'); var end=clean.lastIndexOf('}');
     if(start>-1&&end>-1) clean=clean.substring(start,end+1);
@@ -416,7 +424,6 @@ function generateStory(){
       var story=JSON.parse(clean);
       prefillForm(story);
       document.getElementById('ai-success').style.display='block';
-      // Show form and scroll to it
       var f=document.getElementById('form');f.style.opacity='1';f.style.pointerEvents='';
       document.getElementById('sub-btn').disabled=false;
       setTimeout(function(){window.scrollTo({top:document.getElementById('form').offsetTop-20,behavior:'smooth'});},300);
@@ -433,13 +440,11 @@ function generateStory(){
 }
 
 function prefillForm(s){
-  // Core fields
   if(s.name) document.getElementById('c-name').value=s.name;
   if(s.ind)  document.getElementById('c-ind').value=s.ind;
   if(s.desc) document.getElementById('c-desc').value=s.desc;
   if(s.whoTxt) document.getElementById('who-txt').value=s.whoTxt;
 
-  // Stats
   if(s.stats && s.stats.length){
     var sb=document.getElementById('stats-b'); sb.innerHTML='';
     s.stats.forEach(function(st){
@@ -449,7 +454,6 @@ function prefillForm(s){
     });
   }
 
-  // KRS
   if(s.krs && s.krs.length){
     var kb=document.getElementById('krs-b'); kb.innerHTML='';
     s.krs.forEach(function(k){
@@ -459,7 +463,6 @@ function prefillForm(s){
     });
   }
 
-  // Sections
   if(s.secs && s.secs.length){
     var secb=document.getElementById('secs-b'); secb.innerHTML='';
     s.secs.forEach(function(sec){
@@ -469,7 +472,6 @@ function prefillForm(s){
     });
   }
 
-  // Clips
   if(s.clips && s.clips.length){
     var clb=document.getElementById('clips-b'); clb.innerHTML='';
     s.clips.forEach(function(c){
@@ -479,31 +481,28 @@ function prefillForm(s){
     });
   }
 
-  // Who stats
   if(s.whoStats && s.whoStats.length){
-    var wb=document.getElementById('who-stats-b'); if(wb){ wb.innerHTML='';
+    var wb=document.getElementById('who-b'); if(wb){ wb.innerHTML='';
       s.whoStats.forEach(function(ws){
         var row=document.createElement('div'); row.className='stat-row';
-        row.innerHTML='<input type="text" class="wsv" value="'+esc(ws.v)+'"/><input type="text" class="wsl" value="'+esc(ws.l)+'"/><button class="rm-sm" onclick="this.closest(\'.stat-row\').remove()">✕</button>';
+        row.innerHTML='<input type="text" class="wv" value="'+esc(ws.v)+'"/><input type="text" class="wl" value="'+esc(ws.l)+'"/><button class="rm-sm" onclick="this.closest(\'.stat-row\').remove()">✕</button>';
         wb.appendChild(row);
       });
     }
   }
 
-  // Results
   if(s.results && s.results.length){
-    var rb=document.getElementById('results-b'); if(rb){ rb.innerHTML='';
+    var rb=document.getElementById('res-b'); if(rb){ rb.innerHTML='';
       s.results.forEach(function(r){
         var row=document.createElement('div'); row.className='dyn';
-        row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><input type="text" class="ri" style="width:calc(100% - 30px)" value="'+esc(r)+'"/>';
+        row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="f" style="margin:0"><input type="text" class="rt" value="'+esc(r)+'"/></div>';
         rb.appendChild(row);
       });
     }
   }
 
-  // Participants
   if(s.parts && s.parts.length){
-    var pb=document.getElementById('parts-b'); if(pb){ pb.innerHTML='';
+    var pb=document.getElementById('part-b'); if(pb){ pb.innerHTML='';
       s.parts.forEach(function(pt){
         var row=document.createElement('div'); row.className='dyn';
         row.innerHTML='<button class="rm" onclick="this.closest(\'.dyn\').remove()">✕</button><div class="row"><div class="f"><label>Name</label><input type="text" class="pn" value="'+esc(pt.name||'')+'"/></div><div class="f"><label>Title</label><input type="text" class="pt2" value="'+esc(pt.title||'')+'"/></div></div>';
@@ -512,7 +511,6 @@ function prefillForm(s){
     }
   }
 
-  // Products
   if(s.prods && s.prods.length){
     document.querySelectorAll('.plbl input').forEach(function(cb){
       cb.checked=s.prods.indexOf(cb.value)>-1;
@@ -543,12 +541,7 @@ async function ghPut(path,content,message,sha){
   var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
   var d=await r.json();if(!r.ok)throw new Error(d.message||'GitHub error');return d;
 }
-async function ghPutBin(path,b64,msg){
-  var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:msg,content:b64})});
-  var d=await r.json();if(!r.ok)throw new Error(d.message||'GitHub error');return d;
-}
 async function ghGetSha(path){var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json'}});if(!r.ok)return null;return(await r.json()).sha;}
-function f2b(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(e){res(e.target.result.split(',')[1]);};fr.onerror=rej;fr.readAsDataURL(file);});}
 
 document.getElementById('sub-btn').addEventListener('click',async function(){
   if(!sessionToken)return;
@@ -585,7 +578,6 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
     var hasLogo=false;
     if(logoFile){
       setP('Uploading logo…',15);
-      // Always convert to PNG via canvas so logo.png is consistent regardless of input format
       var logob64 = await new Promise(function(resolve) {
         var objectUrl = URL.createObjectURL(logoFile);
         var tempImg = new Image();
@@ -599,13 +591,12 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
         };
         tempImg.onerror = function() {
           URL.revokeObjectURL(objectUrl);
-          // Fallback: read raw file
           var fr=new FileReader(); fr.onload=function(e){resolve(e.target.result.split(',')[1]);};
           fr.readAsDataURL(logoFile);
         };
         tempImg.src = objectUrl;
       });
-      var logoPath=folder+'logo.png'; // always .png
+      var logoPath=folder+'logo.png';
       var logoSha=await ghGetSha(logoPath);
       var logoBody={message:'Logo: '+name,content:logob64};
       if(logoSha)logoBody.sha=logoSha;
@@ -614,14 +605,13 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
       hasLogo=true;
     }
     setP('Saving story data…',35);
-    // Build data.json — all story content lives here
     var data = {
       slug:slug, name:name, desc:desc, ind:ind,
       status:'published',
       langs:langs, hasLogo:hasLogo,
       stats:stats, whoStats:whoStats, whoText:whoTxt,
       krs:krs, results:results, participants:parts, products:prods,
-      content:[]  // sections + clips interleaved in order
+      content:[]
     };
     secs.forEach(function(s){ data.content.push({type:'section', data:s}); });
     clips.forEach(function(c){ data.content.push({type:'clip', data:c}); });
@@ -630,7 +620,6 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
     var dataSha = await ghGetSha(folder+'data.json');
     await ghPut(folder+'data.json', dataJson, 'Story data: '+name, dataSha);
 
-    // Generate minimal shell — just script tags, no HTML structure
     setP('Generating shell…',55);
     var shell = buildShell({slug:slug, name:name, hasLogo:hasLogo});
     var shellSha = await ghGetSha(folder+'index.html');
@@ -674,52 +663,7 @@ document.getElementById('sub-btn').addEventListener('click',async function(){
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-var PRODUCTS_ICON_MAP = {
-  'Financial Consolidation':'/assets/icons/financial-consolidation.png',
-  'Cash Management':'/assets/icons/cash-management.png',
-  'Account Reconciliation':'/assets/icons/account-reconciliation.png',
-  'FP&A Plus':'/assets/icons/fpanda-plus.png',
-  'Intercompany Management':'/assets/icons/intercompany-management.png',
-  'Lease Accounting':'/assets/icons/lease-accounting.png'
-};
-
-// renderBody: lines starting with "- " become red-dot <li> items.
-// Bold prefix "- Bold text: rest" supported.
-function renderBody(text, pfx) {
-  if (!text) return '';
-  pfx = pfx || '';
-  var lines = text.split('\n');
-  var html = '';
-  var inList = false;
-  lines.forEach(function(line) {
-    var trimmed = line.trim();
-    if (trimmed.startsWith('- ') || trimmed.startsWith('\u2013 ')) {
-      if (!inList) { html += '<ul>'; inList = true; }
-      var content = trimmed.replace(/^[-\u2013]\s+/, '');
-      var colonIdx = content.indexOf(':');
-      if (colonIdx > 0 && colonIdx < 60) {
-        var boldPart = content.substring(0, colonIdx);
-        var rest = content.substring(colonIdx + 1);
-        content = '<strong>' + pfx + esc(boldPart) + ':</strong>' + esc(rest);
-      } else {
-        content = pfx + esc(content);
-      }
-      html += '<li>' + content + '</li>';
-    } else {
-      if (inList) { html += '</ul>'; inList = false; }
-      if (trimmed) {
-        html += '<p>' + pfx + esc(trimmed) + '</p>';
-      } else {
-        html += '<p>&nbsp;</p>';
-      }
-    }
-  });
-  if (inList) html += '</ul>';
-  return html || '<p>' + pfx + esc(text) + '</p>';
-}
-
 function buildShell(d) {
-  // Minimal shell — story.js fetches data.json and renders everything
   var p = [];
   p.push('<!DOCTYPE html><html lang="en"><head>');
   p.push('<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">');
@@ -736,151 +680,6 @@ function buildShell(d) {
   p.push('<script src="/clients/story.js"><\/script>');
   p.push('<\/body><\/html>');
   return p.join('\n');
-}
-
-
-function css(){
-return ':root{--red:#EF363D;--dark:#1A1A2E;--mid:#2C2C4A;--light:#F4F4F8;--border:#E0DFF0;--muted:#888;--font:Arial,sans-serif}'+
-'*{box-sizing:border-box;margin:0;padding:0}'+
-'body{font-family:var(--font);background:var(--light);color:#333;line-height:1.6;font-size:15px}'+
-// Page nav bar — dark strip, sits above hero, always visible
-'.page-nav{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:10px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}'+
-'.portal-link{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;transition:all .15s;white-space:nowrap;flex-shrink:0}'+
-'.portal-link:hover{color:#fff;border-color:rgba(255,255,255,.5)}'+
-'.share-page-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}'+
-'.share-page-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.6)}'+
-'.share-page-btn.share-copied{background:#2a7a2a;border-color:#2a7a2a;color:#fff}'+
-'.edit-fab{position:fixed;bottom:28px;right:28px;z-index:500;width:46px;height:46px;border-radius:50%;background:var(--dark);color:#fff;border:none;font-size:17px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25)}'+
-'.edit-fab:hover{background:var(--mid)}.edit-fab.hidden{display:none}'+
-'.edit-toolbar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:rgba(26,26,46,.97);padding:9px 20px;align-items:center;gap:10px;backdrop-filter:blur(4px)}'+
-'.edit-toolbar.visible{display:flex}'+
-'.tb-save{background:var(--red);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}'+
-'.tb-save:hover{background:#c0272d}.tb-save:disabled{opacity:.5;cursor:not-allowed}'+
-'.tb-cancel{background:transparent;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer}'+
-'.tb-cancel:hover{color:#fff}'+
-'.save-status{font-size:12px;color:rgba(255,255,255,.5);margin-left:2px}'+
-'.edit-only{display:none!important}'+
-'.edit-mode .edit-only{display:block!important}'+
-'.edit-mode .add-sec-btn,.edit-mode .add-clip-btn{display:block!important}'+
-'.edit-mode .clip-remove-btn,.edit-mode .sec-delete-btn{display:inline-block!important}'+
-'.edit-mode .lang-btn.remove-lang{display:inline-flex!important}'+
-'#lang-add-wrap{display:none}'+
-'.edit-mode #lang-add-wrap{display:flex!important}'+
-'.lang-block{display:none}.lang-block.active{display:block}'+
-'.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:26px 40px 48px}'+
-'.logo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}'+
-'.logo-pill-hero{background:#fff;border-radius:8px;padding:10px 16px;display:inline-flex;align-items:center}'+
-'.logo-pill-hero img{height:26px;display:block}'+
-'.logo-pill-client{background:#fff;border-radius:8px;padding:9px 16px;display:inline-flex;align-items:center;cursor:pointer;transition:opacity .15s}'+
-'.logo-pill-client img{max-height:30px;max-width:140px;object-fit:contain;display:block}'+
-'.logo-pill-client:hover{opacity:.85}'+
-'.hero-logo-ph{background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.3);border-radius:8px;padding:8px 14px;font-size:11px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s}'+
-'.hero-logo-ph:hover{background:rgba(255,255,255,.2);color:#fff}'+
-'.hero-body{max-width:700px}'+
-'.hero-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--red);margin-bottom:12px}'+
-'h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;color:#fff;margin-bottom:14px;max-width:680px}'+
-'.hero-desc{font-size:15px;color:rgba(255,255,255,.82);line-height:1.65;max-width:640px;margin-bottom:14px}'+
-'.hero-ind{display:inline-flex;align-items:center;font-size:12px;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 13px;margin-bottom:18px}'+
-'.lang-toggle{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}'+
-'.lang-btn{border:1px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.65);border-radius:20px;padding:5px 16px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}'+
-'.lang-btn.active{background:#fff;color:var(--dark);border-color:#fff}'+
-'.lang-btn:hover:not(.active){color:#fff;border-color:rgba(255,255,255,.6)}'+
-'.lang-btn.remove-lang{padding:5px 10px;color:rgba(255,100,100,.8);border-color:rgba(255,100,100,.3)}'+
-'#lang-add-wrap select{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:5px;padding:5px 9px;font-size:12px;font-family:var(--font);cursor:pointer}'+
-'.stats-row{display:flex;flex-wrap:wrap;background:#fff;border-top:none;border-bottom:1px solid var(--border);position:relative}'+
-'.stat-tile{flex:1;min-width:110px;padding:20px 16px;border-right:1px solid var(--border);text-align:center;position:relative}'+
-'.stat-tile:last-of-type{border-right:none}'+
-'.stat-n{font-size:26px;font-weight:900;color:var(--red);line-height:1}'+
-'.stat-l{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}'+
-'.stat-tile-del{position:absolute;top:4px;right:4px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;padding:2px 5px}'+
-'.stat-tile-del:hover{color:var(--red)}'+
-'.stat-add-btn{background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:0;padding:0 18px;font-size:22px;cursor:pointer;min-width:52px;transition:all .15s;align-self:stretch}'+
-'.stat-add-btn:hover{border-color:var(--red);color:var(--red)}'+
-'.krs-outer{background:var(--light);max-width:1100px;margin:0 auto;padding:32px 24px 0}'+
-'.krs-card{background:linear-gradient(135deg,#2C2C4A 0%,#1A1A2E 55%,#5A1A1A 100%);border-radius:14px;padding:30px 34px;max-width:100%;width:100%}'+
-'.krs-heading{font-size:15px;font-weight:900;color:#fff;margin-bottom:18px}'+
-'.krs-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:13px}'+
-'.krs-item{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:rgba(255,255,255,.8);line-height:1.6;position:relative}'+
-'.krs-check{flex-shrink:0;margin-top:1px}'+
-'.krs-item-text strong{color:#fff}'+
-'.krs-item-del{position:absolute;right:0;top:0;background:transparent;border:none;cursor:pointer;color:rgba(255,255,255,.3);font-size:12px;padding:2px 5px}'+
-'.krs-item-del:hover{color:var(--red)}'+
-'.krs-add-btn{background:transparent;border:1px dashed rgba(255,255,255,.2);color:rgba(255,255,255,.5);border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-top:12px;transition:all .15s}'+
-'.krs-add-btn:hover{border-color:rgba(255,255,255,.5);color:#fff}'+
-'.content-area{background:var(--light)}'+
-'.body-layout{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 290px;gap:24px;padding:28px 24px}'+
-'@media(max-width:820px){.body-layout{grid-template-columns:1fr;padding:18px 14px}}'+
-'.story-sec{background:#fff;border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden}'+
-'.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--red);margin-bottom:7px}'+
-'.story-sec h2{font-size:19px;font-weight:900;color:var(--dark);margin-bottom:9px;line-height:1.3}'+
-'.story-sec p,.story-sec li{color:#444;line-height:1.75;font-size:15px;overflow-wrap:break-word;word-break:break-word}'+
-'.story-sec ul{list-style:none;padding-left:0;margin:10px 0}'+
-'.story-sec ul li{padding-left:18px;margin-bottom:8px;position:relative}'+
-'.story-sec ul li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--red)}'+
-'.story-sec ul li b,.story-sec ul li strong{color:var(--dark)}'+
-'.sec-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:14px;padding:2px 6px}'+
-'.sec-delete-btn:hover{color:var(--red)}'+
-'.main-content{display:flex;flex-direction:column;gap:0}'+
-'.add-blocks-bar{display:none;gap:10px;margin-top:8px}'+
-'.edit-mode .add-blocks-bar{display:flex}'+
-'.add-sec-btn,.add-clip-btn{flex:1;background:transparent;border:2px dashed var(--border);color:var(--muted);border-radius:6px;padding:9px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}'+
-'.add-sec-btn:hover,.add-clip-btn:hover{border-color:var(--red);color:var(--red)}'+
-'.clips-wrap{margin-top:8px}'+
-'.clips-section-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}'+
-'.clip-remove-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:15px;padding:2px 6px}'+
-'.clip-remove-btn:hover{color:var(--red)}'+
-'.clip-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);border-radius:8px;padding:18px 20px;margin-bottom:14px;position:relative}'+
-'.clip-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:9px}'+
-'.clip-quote{font-size:15px;font-style:italic;color:var(--dark);line-height:1.6;font-weight:500;margin-bottom:10px}'+
-'.clip-quote::before{content:"\u201C"}'+
-'.clip-quote::after{content:"\u201D"}'+
-'.clip-player{display:flex;flex-direction:column;gap:5px}'+
-'.upload-audio-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:5px 11px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s;align-self:flex-start}'+
-'.upload-audio-btn:hover{border-color:var(--red);color:var(--red)}'+
-'.sidebar{display:flex;flex-direction:column;gap:14px}'+
-'.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px}'+
-'.sidebar-card h3{font-size:11px;font-weight:900;color:var(--dark);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;padding-bottom:7px;border-bottom:2px solid var(--red)}'+
-'.who-text{font-size:13px;color:#444;line-height:1.65;margin-bottom:10px}'+
-'.who-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;position:relative}'+
-'.who-stat-tile{background:var(--light);border-radius:6px;padding:9px;text-align:center;position:relative}'+
-'.who-stat-n{font-size:19px;font-weight:900;color:var(--red);line-height:1}'+
-'.who-stat-l{font-size:11px;color:var(--muted);margin-top:3px}'+
-'.who-stat-del{position:absolute;top:3px;right:3px;background:transparent;border:none;cursor:pointer;color:#ddd;font-size:11px;padding:1px 4px}'+
-'.who-stat-del:hover{color:var(--red)}'+
-'.who-stat-add-btn{grid-column:1/-1;background:transparent;border:1px dashed var(--border);border-radius:5px;padding:6px;font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;color:var(--muted);transition:all .15s}'+
-'.who-stat-add-btn:hover{border-color:var(--red);color:var(--red)}'+
-'.apps-display{display:flex;flex-wrap:wrap;gap:5px;min-height:24px;border-radius:5px;padding:3px;transition:all .15s}'+
-'.edit-mode .apps-display{border:2px dashed rgba(239,54,61,.35);cursor:pointer}'+
-'.edit-mode .apps-display:hover{border-color:var(--red);background:rgba(239,54,61,.03)}'+
-'.app-tag{display:inline-flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 8px;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:4px}'+
-'.app-icon{width:20px;height:20px;object-fit:contain;flex-shrink:0}'+
-'.app-dot{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0}'+
-'.inline-products-panel{position:absolute;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:5px;margin-top:3px}'+
-'.prod-toggle{font-size:13px;padding:6px 11px;border:1px solid var(--border);border-radius:6px;cursor:pointer;user-select:none;transition:all .15s}'+
-'.prod-toggle.active{background:#fff5f5;border-color:var(--red);color:var(--red);font-weight:700}'+
-'.prod-toggle:hover{border-color:var(--red)}'+
-'.results-ul{list-style:none;padding:0}'+
-'.result-item{font-size:12px;color:#444;padding:4px 0;border-bottom:1px solid var(--light);line-height:1.5}'+
-'.result-item:last-child{border-bottom:none}'+
-'.result-item::before{content:"→ ";color:var(--red);font-weight:700}'+
-'.page-footer{background:var(--dark);padding:18px 32px;text-align:center}'+
-'.disclaimer-text{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6}'+
-'.disclaimer-text strong{color:rgba(255,255,255,.6)}'+
-'.edit-mode [contenteditable]{outline:2px dashed rgba(239,54,61,.3);border-radius:3px;min-width:20px;min-height:16px}'+
-'.edit-mode [contenteditable]:focus{outline:2px solid var(--red);background:rgba(239,54,61,.03)}'+
-'.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center}'+
-'.modal-ov.visible{display:flex}'+
-'.modal-box{background:#fff;border-radius:12px;padding:26px;width:100%;max-width:370px;box-shadow:0 8px 40px rgba(0,0,0,.2)}'+
-'.modal-box h3{font-size:15px;font-weight:900;color:var(--dark);margin-bottom:5px}'+
-'.modal-box p{font-size:13px;color:var(--muted);margin-bottom:14px}'+
-'.mf{margin-bottom:11px}'+
-'.mf label{display:block;font-size:11px;font-weight:700;color:var(--dark);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}'+
-'.mf input{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none}'+
-'.mf input:focus{border-color:var(--red)}'+
-'.merr{font-size:12px;color:var(--red);min-height:15px;margin-bottom:7px}'+
-'.mbtn-p{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}'+
-'.mbtn-p:hover{background:#c0272d}'+
-'.mbtn-g{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:9px;font-size:13px;cursor:pointer;font-family:var(--font);margin-top:7px}';
 }
 </script>
 </body>
