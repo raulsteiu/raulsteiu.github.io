@@ -51,6 +51,9 @@ function getCSS() {
     '.share-page-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}',
     '.share-page-btn:hover{background:rgba(255,255,255,.1)}',
     '.share-page-btn.share-copied{background:#2a7a2a;border-color:#2a7a2a}',
+    '.pdf-dl-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}',
+    '.pdf-dl-btn:hover{background:rgba(255,255,255,.1)}',
+    '.pdf-dl-btn:disabled{opacity:.5;cursor:wait}',
     '.lang-toggle{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto}',
     '.lang-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s}',
     '.lang-btn.active{background:#fff;color:var(--dark);border-color:#fff}',
@@ -409,7 +412,8 @@ function renderPage(data) {
   nav.innerHTML = '<a href="/clients/" class="portal-link">← All stories</a>' +
     '<div style="display:flex;align-items:center;gap:8px">' +
     '<span class="last-edited" style="font-size:11px;color:rgba(255,255,255,.45)"></span>' +
-    '<button id="story-share-btn" class="share-page-btn">⧉ Share</button></div>' +
+    '<button id="story-share-btn" class="share-page-btn">⧉ Share</button>' +
+    '<button id="pdf-dl-btn" class="pdf-dl-btn" onclick="generateBrochure()">↓ Brochure</button></div>' +
     '<div id="lang-toggle" class="lang-toggle">' +
     langs.map(function(l) {
       return '<button class="lang-btn' + (l==='en'?' active':'') + '" data-lang="' + l + '">' + LANG_NAMES[l] + '</button>' +
@@ -1702,6 +1706,357 @@ function wireEvents() {
     }, 300);
   }
 }
+
+
+// ── PDF Brochure Generator (v9.4) ─────────────────────────────────────────────
+// Generates an Auchan-style branded PDF brochure from story data
+// Uses jsPDF loaded on demand from CDN
+
+function loadJsPDF(cb) {
+  if (window.jspdf) { cb(window.jspdf.jsPDF); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  s.onload = function() { cb(window.jspdf.jsPDF); };
+  s.onerror = function() { alert('Could not load PDF library. Check your connection.'); };
+  document.head.appendChild(s);
+}
+
+function generateBrochure() {
+  var btn = document.getElementById('pdf-dl-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
+  loadJsPDF(function(jsPDF) {
+    try {
+      _buildBrochurePDF(jsPDF, storyData);
+    } catch(e) {
+      alert('PDF generation failed: ' + e.message);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '↓ Brochure'; }
+    }
+  });
+}
+
+function _buildBrochurePDF(jsPDF, data) {
+  var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  var W = 210, H = 297;
+  var RED = [239, 54, 61];
+  var DARK_BLUE = [26, 26, 46];
+  var MID_BLUE = [44, 44, 74];
+  var LIGHT = [244, 244, 248];
+  var MUTED = [136, 136, 136];
+  var WHITE = [255, 255, 255];
+  var BLACK = [51, 51, 51];
+
+  var margin = 14;
+  var colRight = 138; // right sidebar x
+  var colRightW = W - colRight - margin; // ~58mm
+  var colMainW = colRight - margin - 6; // ~118mm
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function setColor(rgb, type) {
+    if (type === 'fill') doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+    else doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+  }
+  function setFont(style, size) {
+    doc.setFont('helvetica', style);
+    doc.setFontSize(size);
+  }
+  function wrapText(text, x, y, maxW, lineH, options) {
+    options = options || {};
+    var lines = doc.splitTextToSize(text || '', maxW);
+    if (options.maxLines) lines = lines.slice(0, options.maxLines);
+    lines.forEach(function(line) { doc.text(line, x, y); y += lineH; });
+    return y;
+  }
+
+  // ── Decorative shapes (bottom right, like Auchan PDF) ──────────────────────
+  function drawDecorativeShapes(yBase) {
+    // Large red shape
+    setColor(RED, 'fill');
+    doc.setDrawColor(239, 54, 61);
+    doc.roundedRect(W - 38, yBase, 32, 22, 8, 8, 'F');
+    // Small blue square
+    setColor(MID_BLUE, 'fill');
+    doc.roundedRect(W - 46, yBase + 14, 14, 14, 3, 3, 'F');
+  }
+
+  // ── Header bar ───────────────────────────────────────────────────────────────
+  // White background (default)
+  // "CUSTOMER STORY" label
+  setFont('bold', 8);
+  setColor(MUTED, 'text');
+  doc.text('CUSTOMER STORY', margin, 18);
+
+  // Prophix logo (text fallback — bold red "Prophix")
+  setFont('bold', 14);
+  setColor(RED, 'text');
+  doc.text('Prophix', margin, 12);
+  // Draw registered trademark circle
+  setFont('normal', 6);
+  doc.text('®', margin + 22, 10);
+
+  // Client logo — attempt to load, fall back to client name text
+  var clientName = data.name || 'Client';
+  var slug = (window.STORY_META && STORY_META.slug) ? STORY_META.slug : (data.slug || '');
+  var logoSrc = slug ? ('/clients/' + slug + '/logo.png') : null;
+
+  function continueWithLogo(logoDataUrl) {
+    if (logoDataUrl) {
+      try {
+        // Client logo top-right
+        doc.addImage(logoDataUrl, 'PNG', W - 50, 6, 36, 14, undefined, 'FAST');
+      } catch(e) {
+        // fallback: client name text
+        setFont('bold', 11);
+        setColor(RED, 'text');
+        doc.text(clientName, W - margin, 12, { align: 'right' });
+      }
+    } else {
+      setFont('bold', 11);
+      setColor(RED, 'text');
+      doc.text(clientName, W - margin, 12, { align: 'right' });
+    }
+    renderBody();
+  }
+
+  function renderBody() {
+    var y = 26;
+
+    // ── Title ─────────────────────────────────────────────────────────────────
+    // Red divider line under header
+    setColor(RED, 'fill');
+    doc.setDrawColor(239, 54, 61);
+    doc.rect(margin, y, W - margin * 2, 0.4, 'F');
+    y += 5;
+
+    // Big bold title: "How [Name] [did X]"
+    // Use desc as subtitle fallback
+    var title = 'How ' + clientName + ' improved with Prophix';
+    // Try to get a better title from first section heading
+    if (data.content && data.content.length > 0) {
+      var firstSec = data.content.find(function(c){ return c.type === 'section' && c.data && c.data.heading; });
+      if (firstSec) title = firstSec.data.heading;
+    }
+
+    setFont('bold', 18);
+    setColor(RED, 'text');
+    var titleLines = doc.splitTextToSize(title, W - margin * 2);
+    titleLines = titleLines.slice(0, 3);
+    titleLines.forEach(function(line) { doc.text(line, margin, y); y += 8; });
+    y += 2;
+
+    // ── Two-column layout ─────────────────────────────────────────────────────
+    var mainY = y;
+    var sideY = y;
+
+    // ── RIGHT SIDEBAR ─────────────────────────────────────────────────────────
+    // "Who is [Client]?" box
+    setFont('bold', 9);
+    setColor(RED, 'text');
+    doc.text('Who is ' + clientName + '?', colRight, sideY);
+    sideY += 4;
+
+    // Red underline
+    setColor(RED, 'fill');
+    doc.rect(colRight, sideY, colRightW, 0.5, 'F');
+    sideY += 4;
+
+    setFont('normal', 8);
+    setColor(BLACK, 'text');
+    var whoText = data.whoText || (data.desc || '');
+    sideY = wrapText(whoText, colRight, sideY, colRightW, 4.5);
+    sideY += 4;
+
+    // Who stats (small tiles)
+    if (data.whoStats && data.whoStats.length > 0) {
+      data.whoStats.slice(0, 4).forEach(function(ws) {
+        setFont('bold', 11);
+        setColor(RED, 'text');
+        doc.text(ws.v || '', colRight, sideY);
+        sideY += 4;
+        setFont('normal', 7);
+        setColor(MUTED, 'text');
+        var lblLines = doc.splitTextToSize(ws.l || '', colRightW);
+        lblLines.slice(0,2).forEach(function(l){ doc.text(l, colRight, sideY); sideY += 3.5; });
+        sideY += 1;
+      });
+      sideY += 3;
+    }
+
+    // "Applications deployed" box
+    setFont('bold', 9);
+    setColor(RED, 'text');
+    doc.text('Applications deployed', colRight, sideY);
+    sideY += 3;
+    setColor(RED, 'fill');
+    doc.rect(colRight, sideY, colRightW, 0.5, 'F');
+    sideY += 4;
+
+    var products = data.products || [];
+    products.forEach(function(pr) {
+      // Bullet dot
+      setColor(RED, 'fill');
+      doc.circle(colRight + 1.5, sideY - 1.5, 1.2, 'F');
+      setFont('normal', 8);
+      setColor(BLACK, 'text');
+      doc.text(pr, colRight + 5, sideY);
+      sideY += 5;
+    });
+
+    // ── LEFT MAIN COLUMN ──────────────────────────────────────────────────────
+    // KRS dark card
+    var krs = data.krs || [];
+    if (krs.length > 0) {
+      var krsH = 12 + krs.length * 9;
+      // Dark blue rounded rect
+      setColor(DARK_BLUE, 'fill');
+      doc.roundedRect(margin, mainY, colMainW, krsH, 3, 3, 'F');
+
+      // KRS heading
+      setFont('bold', 9);
+      setColor(WHITE, 'text');
+      doc.text(data.krsHeading || 'Key Results Snapshot', margin + 4, mainY + 7);
+
+      var krsY = mainY + 13;
+      krs.forEach(function(k) {
+        // Red checkmark circle
+        setColor(RED, 'fill');
+        doc.circle(margin + 5, krsY - 1.5, 2.5, 'F');
+        // White checkmark (drawn as lines)
+        doc.setDrawColor(255, 255, 255);
+        doc.setLineWidth(0.4);
+        doc.line(margin + 3.8, krsY - 1.5, margin + 4.8, krsY - 0.4);
+        doc.line(margin + 4.8, krsY - 0.4, margin + 6.2, krsY - 2.5);
+
+        // KRS text
+        var krsText = k.text || '';
+        if (k.bold) krsText = krsText.replace(k.bold + ':', '').replace(k.bold + ': ', '').trim();
+        var fullText = k.bold ? k.bold + ': ' + krsText : krsText;
+        setFont('normal', 7.5);
+        setColor(WHITE, 'text');
+        var krsLines = doc.splitTextToSize(fullText, colMainW - 16);
+        krsLines.slice(0,2).forEach(function(line, i) {
+          doc.text(line, margin + 10, krsY + (i * 3.8));
+        });
+        krsY += krsLines.length > 1 ? 9 : 7;
+      });
+      mainY += krsH + 6;
+    }
+
+    // Headline stats row
+    var stats = data.stats || [];
+    if (stats.length > 0) {
+      var statW = colMainW / Math.min(stats.length, 4);
+      stats.slice(0, 4).forEach(function(s, i) {
+        var sx = margin + i * statW;
+        setFont('bold', 14);
+        setColor(RED, 'text');
+        doc.text(s.v || '', sx, mainY + 6);
+        setFont('normal', 7);
+        setColor(MUTED, 'text');
+        var lblLines = doc.splitTextToSize(s.l || '', statW - 2);
+        lblLines.slice(0,2).forEach(function(l, j){ doc.text(l, sx, mainY + 10 + j * 3.5); });
+      });
+      mainY += 18;
+      // Light separator
+      setColor([224, 223, 240], 'fill');
+      doc.rect(margin, mainY, colMainW, 0.3, 'F');
+      mainY += 5;
+    }
+
+    // Content sections
+    var content = data.content || [];
+    content.forEach(function(item) {
+      if (item.type !== 'section') return;
+      var s = item.data;
+      if (!s || mainY > H - 30) return;
+
+      // Section label
+      if (s.label) {
+        setFont('bold', 7.5);
+        setColor(RED, 'text');
+        doc.text(s.label.toUpperCase(), margin, mainY);
+        mainY += 4;
+      }
+
+      // Section heading
+      if (s.heading) {
+        setFont('bold', 11);
+        setColor(RED, 'text');
+        var headLines = doc.splitTextToSize(s.heading, colMainW);
+        headLines.slice(0,2).forEach(function(l){ doc.text(l, margin, mainY); mainY += 5.5; });
+        mainY += 1;
+      }
+
+      // Section body
+      if (s.body) {
+        setFont('normal', 8.5);
+        setColor(BLACK, 'text');
+        // Split body into paragraphs and bullet lines
+        var lines = s.body.split('\n');
+        lines.forEach(function(line) {
+          if (mainY > H - 25) return;
+          var t = line.trim();
+          if (!t) { mainY += 2; return; }
+          if (/^[-–]\s/.test(t)) {
+            // Bullet
+            var bulletText = t.replace(/^[-–]\s+/, '');
+            setColor(RED, 'fill');
+            doc.circle(margin + 1.5, mainY - 1.5, 1, 'F');
+            setFont('normal', 8);
+            setColor(BLACK, 'text');
+            var bLines = doc.splitTextToSize(bulletText, colMainW - 7);
+            bLines.slice(0,2).forEach(function(bl){ doc.text(bl, margin + 5, mainY); mainY += 4; });
+          } else {
+            var pLines = doc.splitTextToSize(t, colMainW);
+            pLines.slice(0,4).forEach(function(pl){ doc.text(pl, margin, mainY); mainY += 4; });
+          }
+        });
+        mainY += 4;
+      }
+    });
+
+    // ── Page 2 check ──────────────────────────────────────────────────────────
+    // (We keep it to one page for simplicity — content is clipped at H-30)
+
+    // ── Footer ────────────────────────────────────────────────────────────────
+    var footerY = H - 12;
+    setColor([230, 230, 240], 'fill');
+    doc.rect(0, footerY - 4, W, 16, 'F');
+
+    setFont('bold', 9);
+    setColor(RED, 'text');
+    doc.text('Prophix', margin, footerY + 2);
+    setFont('normal', 6);
+    setColor(MUTED, 'text');
+    doc.text('Copyright © ' + new Date().getFullYear() + ' Prophix Software Inc. All rights reserved. May only be reproduced with Prophix\'s prior consent.', margin, footerY + 6);
+
+    // Decorative shapes bottom right
+    drawDecorativeShapes(H - 30);
+
+    // ── Save ──────────────────────────────────────────────────────────────────
+    var filename = clientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '_Customer_Story.pdf';
+    doc.save(filename);
+  }
+
+  // Try to load client logo as base64
+  if (logoSrc && data.hasLogo) {
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        continueWithLogo(canvas.toDataURL('image/png'));
+      } catch(e) { continueWithLogo(null); }
+    };
+    img.onerror = function() { continueWithLogo(null); };
+    img.src = logoSrc + '?v=' + Date.now();
+  } else {
+    continueWithLogo(null);
+  }
+}
+
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function() {
