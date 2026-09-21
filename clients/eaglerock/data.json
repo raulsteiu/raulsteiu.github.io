@@ -106,6 +106,17 @@
         "media": "https://www.youtube.com/watch?v=QIsY5LH3E_Q",
         "audio": ""
       }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "Video with Ed",
+        "ts": "",
+        "quote": "",
+        "mediaType": "video",
+        "media": "https://www.youtube.com/watch?v=StVCQMy-5dU",
+        "audio": ""
+      }
     }
   ],
   "krsHeading": "Key Results Snapshot",
