@@ -89,6 +89,17 @@
       }
     },
     {
+      "type": "clip",
+      "data": {
+        "title": "Ceva Frumos",
+        "ts": "",
+        "quote": "Pull quote (optional)",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
+      }
+    },
+    {
       "type": "section",
       "data": {
         "label": "KEY RESULTS",
@@ -126,17 +137,6 @@
         "quote": "What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures.",
         "mediaType": "audio",
         "media": "",
-        "audio": ""
-      }
-    },
-    {
-      "type": "clip",
-      "data": {
-        "title": "Ceva Frumos",
-        "ts": "",
-        "quote": "Pull quote (optional)",
-        "mediaType": "video",
-        "media": "snippet_8791660788917222092_13-15.mp4",
         "audio": ""
       }
     }
