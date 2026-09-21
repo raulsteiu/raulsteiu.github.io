@@ -172,10 +172,6 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
     </div>
   </div>
   <a href="/new/" class="new-btn">+ New Story</a>
-  <div style="display:flex;align-items:center;gap:8px">
-    <button onclick="toggleManageMode()" id="manage-btn" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer" title="Enter token to see drafts">🔑</button>
-    <button onclick="exitManageMode()" id="exit-btn" style="display:none;background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:6px;padding:7px 14px;font-size:13px;font-family:Arial,sans-serif;cursor:pointer">Exit</button>
-  </div>
 </div>
 
 <div class="content">
@@ -193,6 +189,9 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
           <option value="created">Date created</option>
           <option value="fav">Favourites first</option>
           <option value="name">Name A–Z</option>
+          <option value="status-draft">◑ Drafts only</option>
+          <option value="status-approved">✓ Approved only</option>
+          <option value="status-published">● Published only</option>
         </select>
         <span class="sort-chev">▾</span>
       </div>
@@ -261,29 +260,36 @@ function renderGrid(filter) {
   var sort = (document.getElementById('sort-select') || {value:'edited'}).value || 'edited';
   var favs = getFavs();
 
+  // Status filter
+  var statusFilter = null;
+  if (sort === 'status-draft') statusFilter = 'draft';
+  else if (sort === 'status-approved') statusFilter = 'approved';
+  else if (sort === 'status-published') statusFilter = 'published';
+
   var list = STORIES.filter(function(s) {
-    if (!sessionToken && s.status && s.status !== 'published') return false;
+    if (statusFilter && (s.status || 'published') !== statusFilter) return false;
     return !q || s.name.toLowerCase().indexOf(q) > -1 || (s.ind||'').toLowerCase().indexOf(q) > -1 || s.slug.toLowerCase().indexOf(q) > -1;
   });
 
   // Sort
-  if (sort === 'edited') {
-    list.sort(function(a,b){ return new Date(b.edited||b.created||0) - new Date(a.edited||a.created||0); });
-  } else if (sort === 'created') {
-    list.sort(function(a,b){ return new Date(b.created||0) - new Date(a.created||0); });
-  } else if (sort === 'name') {
-    list.sort(function(a,b){ return a.name.localeCompare(b.name); });
-  } else if (sort === 'fav') {
-    list.sort(function(a,b){
-      var af = favs.indexOf(a.slug) > -1 ? 1 : 0;
-      var bf = favs.indexOf(b.slug) > -1 ? 1 : 0;
-      return (bf - af) || (new Date(b.edited||b.created||0) - new Date(a.edited||a.created||0));
-    });
+  if (!statusFilter) {
+    if (sort === 'edited') {
+      list.sort(function(a,b){ return new Date(b.edited||b.created||0) - new Date(a.edited||a.created||0); });
+    } else if (sort === 'created') {
+      list.sort(function(a,b){ return new Date(b.created||0) - new Date(a.created||0); });
+    } else if (sort === 'name') {
+      list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    } else if (sort === 'fav') {
+      list.sort(function(a,b){
+        var af = favs.indexOf(a.slug) > -1 ? 1 : 0;
+        var bf = favs.indexOf(b.slug) > -1 ? 1 : 0;
+        return (bf - af) || (new Date(b.edited||b.created||0) - new Date(a.edited||a.created||0));
+      });
+    }
   }
 
   var publishedCount = STORIES.filter(function(s){ return !s.status || s.status === 'published'; }).length;
-  var total = sessionToken ? STORIES.length : publishedCount;
-  countEl.textContent = total + ' stor' + (total === 1 ? 'y' : 'ies') + (sessionToken && STORIES.length !== publishedCount ? ' (' + publishedCount + ' published)' : ' published');
+  countEl.textContent = STORIES.length + ' stor' + (STORIES.length === 1 ? 'y' : 'ies') + ' (' + publishedCount + ' published)';
 
   document.getElementById('results-count').textContent = q
     ? list.length + ' result' + (list.length===1?'':'s') + ' for "' + q + '"'
@@ -324,18 +330,20 @@ function renderGrid(filter) {
       ? '<div class="lang-pills">' + s.langs.map(function(l){ return '<span class="lang-pill">' + l.toUpperCase() + '</span>'; }).join('') + '</div>'
       : '';
     var isFav = favs.indexOf(s.slug) > -1;
+
+    // Status badge and card tint
+    var cardStyle = '';
     var statusBadge = '';
-    if (sessionToken && s.status && s.status !== 'published') {
-      var badgeMap = {
-        'draft':    {bg:'#E8E8F0',color:'#555',label:'◑ Draft'},
-        'approved': {bg:'#E8F5E9',color:'#2a7a2a',label:'✓ Approved'},
-        'rejected': {bg:'#FFF0F0',color:'#c0272d',label:'✗ Changes requested'}
-      };
-      var b = badgeMap[s.status];
-      if (b) statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;background:'+b.bg+';color:'+b.color+'">'+b.label+'</div>';
+    var st = s.status || 'published';
+    if (st === 'draft') {
+      cardStyle = 'background:#f0f4ff;';
+      statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;background:#dce5ff;color:#3355cc">◑ Draft</div>';
+    } else if (st === 'approved') {
+      cardStyle = 'background:#f0fff4;';
+      statusBadge = '<div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block;background:#c8f0d8;color:#2a7a2a">✓ Approved</div>';
     }
 
-    return '<div class="story-card" id="card-' + s.slug + '">' +
+    return '<div class="story-card" id="card-' + s.slug + '" style="' + cardStyle + '">' +
       '<div class="card-logo-wrap">' + logoHtml +
         '<button class="fav-btn' + (isFav ? ' fav-on' : '') + '" onclick="toggleFav(\'' + s.slug + '\')" title="' + (isFav ? 'Remove from favourites' : 'Add to favourites') + '">★</button>' +
       '</div>' +
@@ -347,7 +355,7 @@ function renderGrid(filter) {
         langPills +
       '</div>' +
       '<div class="card-actions">' +
-        '<a class="open-btn" href="/clients/' + s.slug + '/' + (sessionToken && s.status && s.status !== 'published' ? '?edit=1' : '') + '">Open &#x2192;</a>' +
+        '<a class="open-btn" href="/clients/' + s.slug + '/">Open &#x2192;</a>' +
         '<button class="share-btn" onclick="shareStory(\'' + s.slug + '\')" title="Copy link">⧉</button>' +
         '<button class="delete-btn" onclick="confirmDelete(\'' + s.slug + '\',\'' + s.name.replace(/'/g,'\\x27') + '\')" title="Delete story">🗑</button>' +
       '</div>' +
@@ -378,28 +386,6 @@ function copyEditLink(url) {
 }
 
 // ── Auth — token only ─────────────────────────────────────────────────────────
-function exitManageMode() {
-  sessionToken = '';
-  var btn = document.getElementById('manage-btn');
-  var exit = document.getElementById('exit-btn');
-  btn.textContent = '🔑'; btn.style.borderColor = 'rgba(255,255,255,.3)'; btn.style.color = 'rgba(255,255,255,.7)';
-  if (exit) exit.style.display = 'none';
-  renderGrid(document.getElementById('search-input').value);
-}
-
-function toggleManageMode() {
-  if (sessionToken) {
-    exitManageMode();
-  } else {
-    showAuth(function(){
-      renderGrid(document.getElementById('search-input').value);
-      var btn = document.getElementById('manage-btn');
-      var exit = document.getElementById('exit-btn');
-      btn.textContent = '🔑 ✓'; btn.style.borderColor = 'rgba(42,200,42,.5)'; btn.style.color = '#5cc85c';
-      if (exit) exit.style.display = 'block';
-    });
-  }
-}
 function showAuth(onSuccess) {
   var modal = document.getElementById('auth-modal');
   modal._cb = onSuccess;
