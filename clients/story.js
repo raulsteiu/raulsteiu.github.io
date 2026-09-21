@@ -702,7 +702,7 @@ function domToData() {
           if (titleClone) titleClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
           var mt = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : 'audio'));
           var mediaSrc = '';
-          if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = vurlEl ? vurlEl.value.trim() : (el.getAttribute('data-media-url') || ''); }
+          if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = (vurlEl ? (vurlEl.value.trim() || vurlEl.getAttribute('data-url') || '') : '') || el.getAttribute('data-media-url') || ''; }
           else if (mt === 'image') { var img = el.querySelector('.media-img-wrap img'); mediaSrc = img ? (img.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
           else { var asrc = el.querySelector('audio source'); mediaSrc = asrc ? (asrc.getAttribute('src')||'') : ''; }
           if (mediaSrc && mediaSrc.indexOf('://') > -1) mediaSrc = mediaSrc.split('/').pop();
@@ -782,7 +782,7 @@ function domToData() {
           if (ctClone2) ctClone2.querySelectorAll('button').forEach(function(b){ b.remove(); });
           var mt2 = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : 'audio'));
           var mSrc2 = '';
-          if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = vurlEl2 ? vurlEl2.value.trim() : (el.getAttribute('data-media-url') || ''); }
+          if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = (vurlEl2 ? (vurlEl2.value.trim() || vurlEl2.getAttribute('data-url') || '') : '') || el.getAttribute('data-media-url') || ''; }
           else if (mt2 === 'image') { var im2 = el.querySelector('.media-img-wrap img'); mSrc2 = im2 ? (im2.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
           else { var as2 = el.querySelector('audio source'); mSrc2 = as2 ? (as2.getAttribute('src')||'') : ''; }
           if (mSrc2 && mSrc2.indexOf('://') > -1) mSrc2 = mSrc2.split('/').pop();
@@ -1105,6 +1105,7 @@ function addEditControlsToExisting() {
         inp_c.value = currentUrl;
         function applyVideoUrlEdit() {
           var url = inp_c.value.trim();
+          inp_c.setAttribute('data-url', url);
           card.setAttribute('data-media-url', url);
           card.setAttribute('data-media-type', 'video');
           var embedUrl = getVideoEmbedUrl(url);
@@ -1264,6 +1265,7 @@ function addMediaInline(btn, mediaType) {
     urlInput.setAttribute('data-video-url', 'true');
     function applyVideoUrlInline() {
       var url = urlInput.value.trim();
+      urlInput.setAttribute('data-url', url);
       card.setAttribute('data-media-url', url);
       card.setAttribute('data-media-type', 'video');
       var embedUrl = getVideoEmbedUrl(url);
