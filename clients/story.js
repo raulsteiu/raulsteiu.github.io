@@ -232,10 +232,13 @@ function renderMediaCard(c) {
   var card = document.createElement('div'); card.className = 'media-card';
 
   // Label row
-  var labelDiv = document.createElement('div'); labelDiv.className = 'media-label';
-  labelDiv.innerHTML = getMediaIcon(mt) +
-    '<span class="media-title-text">' + esc((c.title||'').replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</span>' +
-    (c.ts ? '<span class="media-ts"> · ' + esc(c.ts) + '</span>' : '');
+  var labelDiv = document.createElement('div'); labelDiv.className = 'media-label'; labelDiv.contentEditable = 'false';
+  var iconSpan = document.createElement('span'); iconSpan.innerHTML = getMediaIcon(mt);
+  labelDiv.appendChild(iconSpan);
+  var titleSpanR = document.createElement('span'); titleSpanR.className = 'media-title-text';
+  titleSpanR.textContent = (c.title||'').replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'');
+  labelDiv.appendChild(titleSpanR);
+  if (c.ts) { var tsSpan = document.createElement('span'); tsSpan.className = 'media-ts'; tsSpan.textContent = ' · ' + c.ts; labelDiv.appendChild(tsSpan); }
   card.appendChild(labelDiv);
 
   // Quote / caption
@@ -674,7 +677,7 @@ function domToData() {
           var quoteEl = el.querySelector('.media-quote') || el.querySelector('.media-caption');
           data.content.push({ type: 'clip', data: {
             title: titleClone ? titleClone.textContent.trim() : '',
-            ts: (el.querySelector('.media-ts')||{}).textContent.replace(/^\s*·\s*/,'').trim()||'',
+            ts: (el.querySelector('.media-ts')||{textContent:''}).textContent.replace(/^\s*·\s*/,'').trim()||'',
             quote: quoteEl ? quoteEl.textContent.trim() : '',
             mediaType: mt,
             media: mediaSrc,
@@ -962,7 +965,7 @@ function enableDragDrop() {
       _sortableInstances.push(Sortable.create(container, {
         animation: 150, handle: '.drag-handle',
         ghostClass: 'drag-ghost', chosenClass: 'drag-chosen',
-        filter: '[contenteditable]', preventOnFilter: false
+        filter: '[contenteditable]', preventOnFilter: true
       }));
     });
   });
