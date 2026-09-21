@@ -12,19 +12,6 @@
     "logo": false
   },
   {
-    "slug": "eaglerock",
-    "name": "EagleRock",
-    "ind": "Real Estate, Luxembourg",
-    "langs": [
-      "en",
-      "fr"
-    ],
-    "status": "published",
-    "created": "2026-09-18T15:53:49.183Z",
-    "logo": false,
-    "edited": "2026-09-21T11:18:43.568Z"
-  },
-  {
     "slug": "meridian-logistic-group",
     "name": "Meridian Logistic Group",
     "ind": "Logistics & Supply Chain, Brussels",
