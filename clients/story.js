@@ -854,6 +854,11 @@ function setLang(code) {
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(b){
     b.classList.toggle('active', b.getAttribute('data-lang') === code);
   });
+  // Update toolbar indicator to show active language
+  var statusEl = document.getElementById('save-status');
+  if (statusEl && document.body.classList.contains('edit-mode')) {
+    statusEl.textContent = 'Editing: ' + code.toUpperCase();
+  }
 }
 
 function addLanguage(code) {
@@ -1604,10 +1609,12 @@ async function saveToGitHub() {
     _updateEditedTimestamp();
     statusEl.textContent = 'Saved ✓';
 
+    var savedLang = currentLang;
     setTimeout(function() {
       renderPage(storyData);
       wireEvents();
       disableEditMode();
+      if (savedLang && savedLang !== 'en') setLang(savedLang);
     }, 1200);
 
   } catch(err) {
@@ -1673,7 +1680,7 @@ function wireEvents() {
     btn.onclick = function(){ removeLanguage(code); };
   });
 
-  setLang('en');
+  setLang(currentLang || 'en');  // restore active lang, not always EN
 
   document.getElementById('edit-fab').addEventListener('click', function() {
     document.getElementById('token-modal').classList.add('visible');
