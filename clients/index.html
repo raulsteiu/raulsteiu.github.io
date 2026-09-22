@@ -628,20 +628,40 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!btn) return;
     var slug = btn.getAttribute('data-pdf-slug');
     if (!slug) return;
-    btn.textContent = '⏳'; btn.disabled = true;
-    fetch('/clients/' + slug + '/data.json?v=' + Date.now())
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        loadJsPDFDir(function(jsPDF) {
-          try { _buildBrochurePDFDir(jsPDF, data, slug); }
-          catch(e) { alert('PDF error: ' + e.message); }
-          finally { btn.textContent = '⬇'; btn.disabled = false; }
-        });
-      })
-      .catch(function(e) {
-        alert('Could not load story: ' + e.message);
-        btn.textContent = '⬇'; btn.disabled = false;
-      });
+
+    // Security: draft/approved stories require a valid access token before PDF generation
+    var storyMeta = STORIES.find(function(s) { return s.slug === slug; });
+    var status = storyMeta ? (storyMeta.status || 'published') : 'published';
+
+    function proceedWithPDF() {
+      btn.textContent = '\u23f3'; btn.disabled = true;
+      fetch('/clients/' + slug + '/data.json?v=' + Date.now())
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          loadJsPDFDir(function(jsPDF) {
+            try { _buildBrochurePDFDir(jsPDF, data, slug); }
+            catch(e2) { alert('PDF error: ' + e2.message); }
+            finally { btn.textContent = '\u2913'; btn.disabled = false; }
+          });
+        })
+        .catch(function() { alert('Could not load story data.'); btn.textContent = '\u2913'; btn.disabled = false; });
+    }
+
+    if (status === 'draft' || status === 'approved') {
+      if (sessionToken) {
+        // Verify token still valid
+        fetch('https://api.github.com/repos/' + GH_REPO + '/contents/clients/stories.json', {
+          headers: { 'Authorization': 'Bearer ' + sessionToken, 'Accept': 'application/vnd.github+json' }
+        }).then(function(r) {
+          if (r.ok) { proceedWithPDF(); }
+          else { sessionToken = ''; showAuth(proceedWithPDF); }
+        }).catch(function() { sessionToken = ''; showAuth(proceedWithPDF); });
+      } else {
+        showAuth(proceedWithPDF);
+      }
+    } else {
+      proceedWithPDF();
+    }
   });
 });
 </script>
