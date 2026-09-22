@@ -2024,7 +2024,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   // ── Content sections — two pages ───────────────────────────────────────────
   var PAGE1_SHAPE_H = 30;   // reserved at bottom of page 1 for right shape
   var PAGE1_MAX = H - PAGE1_SHAPE_H - 16;
-  var PAGE2_SHAPE_H = 28;   // shape-up at top of page 2
+  var PAGE2_SHAPE_H = 20;   // shape-up at top of page 2
   var PAGE2_CONTENT_TOP = PAGE2_SHAPE_H + 10;  // content starts below shape-up
   var PAGE2_FOOTER_TOP = H - 28; // footer area on page 2
   var onPage2 = false;
@@ -2036,11 +2036,11 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
       onPage2 = true;
       textW = fullW;  // page 2: full width, no sidebar
 
-      // shape-up.png: LEFT-aligned at top of page 2
+      // shape-up.png: LEFT-aligned at top of page 2 — same height as all shapes (20mm)
       if (assets.shapeUp) {
         try {
-          fc([255,255,255]); doc.rect(0, 0, 60, PAGE2_SHAPE_H, 'F');
-          doc.addImage(assets.shapeUp, 'PNG', 0, 0, 56, PAGE2_SHAPE_H, undefined, 'FAST');
+          fc([255,255,255]); doc.rect(0, 0, 44, 20, 'F');
+          doc.addImage(assets.shapeUp, 'PNG', 0, 0, 42, 20, undefined, 'FAST');
         } catch(e) {}
       }
       mainY = PAGE2_CONTENT_TOP;
@@ -2103,41 +2103,44 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     onPage2 = true;
     if (assets.shapeUp) {
       try {
-        fc([255,255,255]); doc.rect(0, 0, 60, PAGE2_SHAPE_H, 'F');
-        doc.addImage(assets.shapeUp, 'PNG', 0, 0, 56, PAGE2_SHAPE_H, undefined, 'FAST');
+        fc([255,255,255]); doc.rect(0, 0, 44, 20, 'F');
+        doc.addImage(assets.shapeUp, 'PNG', 0, 0, 42, 20, undefined, 'FAST');
       } catch(e) {}
     }
   }
 
   // ── Page 1: right shape at bottom-right ────────────────────────────────────
-  // (rendered on page 1 which is still doc page 1 internally — use setPage)
+  // Draw on correct pages using setPage
   var currentPage = doc.internal.getCurrentPageInfo().pageNumber;
+
+  // Page 1: right shape bottom-right — use shapeLeft placed at right edge
   doc.setPage(1);
-  // Right shape bottom-right of page 1
-  // Positioned so it sits at the very bottom-right corner
-  if (assets.shapeUp) {  // reuse shapeUp mirrored, or use a right shape if available
-    // We use shapeLeft flipped — actually just place shapeLeft at bottom right
-    // The reference shows a right-version — we don't have shape-right so skip for now
-    // keeping this slot for when shape-right.png is uploaded
-  }
-  // Left shape bottom-left of page 2
-  doc.setPage(currentPage);
   if (assets.shapeLeft) {
     try {
-      fc([255,255,255]); doc.rect(0, H - 26, 40, 26, 'F');
-      doc.addImage(assets.shapeLeft, 'PNG', 0, H - 26, 38, 26, undefined, 'FAST');
+      fc([255,255,255]); doc.rect(W - 44, H - 20, 44, 20, 'F');
+      doc.addImage(assets.shapeLeft, 'PNG', W - 42, H - 20, 42, 20, undefined, 'FAST');
     } catch(e) {}
   }
 
-  // ── Footer on page 2 ────────────────────────────────────────────────────────
-  var fy = H - 12;
+  // Page 2 bottom-left shape
+  doc.setPage(currentPage);
+  if (assets.shapeLeft) {
+    try {
+      fc([255,255,255]); doc.rect(0, H - 20, 44, 20, 'F');
+      doc.addImage(assets.shapeLeft, 'PNG', 0, H - 20, 42, 20, undefined, 'FAST');
+    } catch(e) {}
+  }
+
+  // ── Footer on page 2: logo sits above copyright, both clear of bottom shape ──
+  var logoFooterY = H - 22;   // logo top — sits just above the shape area
+  var copyrightY  = H - 23;   // copyright text baseline, just below logo
   if (assets.prophixLogo) {
-    try { addImgFit(assets.prophixLogo, W - mR - 32, fy - 7, 32, 8); } catch(e) {}
+    try { addImgFit(assets.prophixLogo, W - mR - 30, logoFooterY, 30, 7); } catch(e) {}
   }
   font('normal', 5.5); tc(T.muted);
   doc.text(
     'Copyright \u00a9 ' + new Date().getFullYear() + ' Prophix Software Inc. All rights reserved. May only be reproduced with Prophix\u2019s prior consent.',
-    W - mR, fy, { align: 'right' }
+    W - mR, copyrightY + 9, { align: 'right' }
   );
 
   // ── Save ────────────────────────────────────────────────────────────────────
