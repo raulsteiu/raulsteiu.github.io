@@ -40,20 +40,20 @@
   "whoText": "EagleStone AI is a decentralized real estate promotion group headquartered in Luxembourg. The company operates across Belgium, France, and Luxembourg, managing complex financial reporting and consolidation for various project-based investors.",
   "krs": [
     {
-      "text": "information is now retrieved significantly quicker than before",
-      "bold": "Faster reporting"
+      "bold": "Faster reporting",
+      "text": "Faster reporting: information is now retrieved significantly quicker than before"
     },
     {
-      "text": "granular visibility into local data, eliminations, and adjustments",
-      "bold": "Increased transparency"
+      "bold": "Increased transparency",
+      "text": "Increased transparency: granular visibility into local data, eliminations, and adjustments"
     },
     {
-      "text": "ability to model dilution impacts for complex investor scenarios",
-      "bold": "Strategic simulation"
+      "bold": "Strategic simulation",
+      "text": "Strategic simulation: ability to model dilution impacts for complex investor scenarios"
     },
     {
-      "text": "strict reporting timelines are now consistently met",
-      "bold": "Deadline compliance"
+      "bold": "Deadline compliance",
+      "text": "Deadline compliance: strict reporting timelines are now consistently met"
     }
   ],
   "results": [],
@@ -96,7 +96,10 @@
       "data": {
         "title": "TRANSPARENCY GAINS",
         "ts": "9:02",
-        "quote": "I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system."
+        "quote": "I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system.",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
       }
     },
     {
@@ -104,7 +107,10 @@
       "data": {
         "title": "STRATEGIC SIMULATION",
         "ts": "11:48",
-        "quote": "Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario."
+        "quote": "Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario.",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
       }
     },
     {
@@ -112,8 +118,146 @@
       "data": {
         "title": "USER EXPERIENCE",
         "ts": "13:25",
-        "quote": "What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures."
+        "quote": "What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures.",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
       }
     }
-  ]
+  ],
+  "title": "EagleStone AI",
+  "langLabels": {
+    "en": "Customer Story",
+    "fr": "En français"
+  },
+  "krsHeading": "Key Results Snapshot",
+  "sidebarLabels": {
+    "who": "Who is EagleStone AI?",
+    "applications": "Applications deployed",
+    "features": "Prophix Features"
+  },
+  "translations": {
+    "fr": {
+      "name": "[FR] EagleStone AI",
+      "title": "[FR] EagleStone AI",
+      "desc": "[FR] EagleStone AI is a decentralized real estate promotion group that manages complex financial consolidations across multiple European markets. The company leverages Prophix to streamline reporting, improve data transparency, and support strategic decision-making for its investors.",
+      "ind": "Real Estate, Luxembourg",
+      "krsHeading": "[FR] Key Results Snapshot",
+      "krs": [
+        {
+          "bold": "Faster reporting",
+          "text": "Faster reporting: [FR] Faster reporting: information is now retrieved significantly quicker than before"
+        },
+        {
+          "bold": "Increased transparency",
+          "text": "Increased transparency: [FR] Increased transparency: granular visibility into local data, eliminations, and adjustments"
+        },
+        {
+          "bold": "Strategic simulation",
+          "text": "Strategic simulation: [FR] Strategic simulation: ability to model dilution impacts for complex investor scenarios"
+        },
+        {
+          "bold": "Deadline compliance",
+          "text": "Deadline compliance: [FR] Deadline compliance: strict reporting timelines are now consistently met"
+        }
+      ],
+      "whoText": "[FR] EagleStone AI is a decentralized real estate promotion group headquartered in Luxembourg. The company operates across Belgium, France, and Luxembourg, managing complex financial reporting and consolidation for various project-based investors.",
+      "whoStats": [
+        {
+          "v": "[FR] 3",
+          "l": "[FR] markets of operation"
+        },
+        {
+          "v": "[FR] 1",
+          "l": "[FR] group consolidation manager"
+        }
+      ],
+      "stats": [
+        {
+          "v": "[FR] 1 month",
+          "l": "[FR] consolidation cycle duration"
+        },
+        {
+          "v": "[FR] 3",
+          "l": "[FR] markets consolidated"
+        },
+        {
+          "v": "[FR] 2",
+          "l": "[FR] reporting frameworks"
+        },
+        {
+          "v": "[FR] 1 year",
+          "l": "[FR] tenure with Prophix"
+        }
+      ],
+      "sidebarLabels": {
+        "who": "Who is EagleStone AI?",
+        "applications": "Applications deployed",
+        "features": "Prophix Features"
+      },
+      "results": [],
+      "participants": [
+        {
+          "name": "Quentin",
+          "title": "Group Consolidation Manager, EagleStone AI"
+        }
+      ],
+      "content": [
+        {
+          "type": "section",
+          "data": {
+            "label": "BUSINESS CHALLENGES",
+            "heading": "Navigating a complex, decentralized consolidation process",
+            "body": "Before implementing the current Prophix configuration, the group relied on a fragmented process where the French entity operated on a separate system, providing only consolidated contributions to the group. This lack of granular data forced the consolidation manager to constantly revert to local teams for basic information, making it difficult to perform deep-dive analysis or verify intercompany eliminations effectively.\n\nThe status quo was unsustainable because the group required a unified view to satisfy IFRS reporting obligations for listed shareholders. The previous setup lacked the transparency needed to handle complex real estate project structures, such as changes in consolidation methods or capital movements, ultimately causing delays in meeting critical reporting deadlines."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "WHY PROPHIX",
+            "heading": "What made Prophix the right fit",
+            "body": "- Requirement for a centralized system to integrate decentralized data from multiple markets.\n- Need for granular visibility into local statutory figures, intercompany eliminations, and consolidation adjustments.\n- Requirement for a user-friendly interface to manage complex inter-society reconciliations and reporting."
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "KEY RESULTS",
+            "heading": "Achieving transparency and strategic agility",
+            "body": "The current state of the group’s financial consolidation is characterized by high transparency and operational efficiency. By integrating all entities directly into Prophix, the team has moved away from receiving opaque consolidated contributions, allowing for a comprehensive view of financial performance at both the local and group levels.\n\nCollaboration has significantly improved, as the team can now perform detailed reconciliations and apply coherence controls to ensure data integrity across the board. The ability to navigate between different consolidation schemas and utilize analytical dimensions has empowered the team to provide stakeholders with precise, reliable information on demand.\n\nMost importantly, the group has successfully transitioned from a state of constant reporting delays to consistently meeting strict deadlines. The system now enables the team to simulate complex dilution scenarios for real estate projects, providing the strategic insight required to make informed investment decisions."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] TRANSPARENCY GAINS",
+            "quote": "[FR] I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system.",
+            "mediaType": "audio",
+            "media": "",
+            "audio": ""
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] STRATEGIC SIMULATION",
+            "quote": "[FR] Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario.",
+            "mediaType": "audio",
+            "media": "",
+            "audio": ""
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "[FR] USER EXPERIENCE",
+            "quote": "[FR] What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures.",
+            "mediaType": "audio",
+            "media": "",
+            "audio": ""
+          }
+        }
+      ]
+    }
+  }
 }
