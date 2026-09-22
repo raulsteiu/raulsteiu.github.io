@@ -69,7 +69,8 @@
     }
   ],
   "products": [
-    "Financial Consolidation"
+    "Financial Consolidation",
+    "FP&A"
   ],
   "content": [
     {
@@ -170,25 +171,25 @@
         {
           "type": "section",
           "data": {
-            "label": "[FR] BUSINESS CHALLENGES",
-            "heading": "[FR] Navigating a complex, decentralized consolidation process",
-            "body": "[FR] Before adopting Prophix, the group relied on a fragmented approach where data originated from disparate systems across Belgium, France, and Luxembourg. The previous consolidation process was opaque, with the group-level manager receiving only consolidated contributions from subsidiaries rather than raw local data, which prevented deep-dive analysis and required constant back-and-forth communication to resolve discrepancies.\n\nThe status quo was unsustainable because the lack of transparency hindered the ability to answer investor queries and perform accurate strategic modeling. Furthermore, the reliance on manual integration of reporting packs from external systems led to inefficiencies and delays, making it impossible to meet strict reporting deadlines while maintaining the necessary granularity for real estate project management."
+            "label": "BUSINESS CHALLENGES",
+            "heading": "Navigating a complex, decentralized consolidation process",
+            "body": "Before adopting Prophix, the group relied on a fragmented approach where data originated from disparate systems across Belgium, France, and Luxembourg. The previous consolidation process was opaque, with the group-level manager receiving only consolidated contributions from subsidiaries rather than raw local data, which prevented deep-dive analysis and required constant back-and-forth communication to resolve discrepancies.\n\nThe status quo was unsustainable because the lack of transparency hindered the ability to answer investor queries and perform accurate strategic modeling. Furthermore, the reliance on manual integration of reporting packs from external systems led to inefficiencies and delays, making it impossible to meet strict reporting deadlines while maintaining the necessary granularity for real estate project management."
           }
         },
         {
           "type": "section",
           "data": {
-            "label": "[FR] WHY PROPHIX",
-            "heading": "[FR] What made Prophix the right fit",
-            "body": "[FR] - Requirement for a centralized system to integrate disparate local data from multiple international markets.\n- Need for granular visibility into local statutory figures, consolidation adjustments, and intercompany eliminations.\n- Requirement for flexible reporting tools to support both local Luxembourgian referential and IFRS standards for listed shareholders."
+            "label": "WHY PROPHIX",
+            "heading": "What made Prophix the right fit",
+            "body": "- Requirement for a centralized system to integrate disparate local data from multiple international markets.\n- Need for granular visibility into local statutory figures, consolidation adjustments, and intercompany eliminations.\n- Requirement for flexible reporting tools to support both local Luxembourgian referential and IFRS standards for listed shareholders."
           }
         },
         {
           "type": "section",
           "data": {
-            "label": "[FR] KEY RESULTS",
-            "heading": "[FR] Achieving transparency and strategic agility",
-            "body": "[FR] The implementation of Prophix has transformed the group's financial operations, moving from a black-box reporting model to a transparent, system-driven process. By integrating all regional data directly into the platform, the finance team now maintains full control over the consolidation lifecycle, ensuring that statutory and IFRS accounts are accurate and audit-ready.\n\nCollaboration has significantly improved, as the team can now perform intercompany reconciliations within a user-friendly interface. The ability to drill down into analytical dimensions allows the team to provide management with specific insights, such as bank debt by establishment, which were previously inaccessible under the old reporting structure.\n\nStrategic decision-making is now supported by the ability to simulate complex capital transactions and dilution scenarios in real-time. This capability allows the group to evaluate the consolidated impact of various project structures before committing, ensuring that the team consistently meets its one-month consolidation deadline even as the business scales."
+            "label": "KEY RESULTS",
+            "heading": "Achieving transparency and strategic agility",
+            "body": "The implementation of Prophix has transformed the group's financial operations, moving from a black-box reporting model to a transparent, system-driven process. By integrating all regional data directly into the platform, the finance team now maintains full control over the consolidation lifecycle, ensuring that statutory and IFRS accounts are accurate and audit-ready.\n\nCollaboration has significantly improved, as the team can now perform intercompany reconciliations within a user-friendly interface. The ability to drill down into analytical dimensions allows the team to provide management with specific insights, such as bank debt by establishment, which were previously inaccessible under the old reporting structure.\n\nStrategic decision-making is now supported by the ability to simulate complex capital transactions and dilution scenarios in real-time. This capability allows the group to evaluate the consolidated impact of various project structures before committing, ensuring that the team consistently meets its one-month consolidation deadline even as the business scales."
           }
         },
         {
@@ -221,7 +222,42 @@
             "audio": ""
           }
         }
-      ]
+      ],
+      "title": "[FR] EagleRock",
+      "ind": "Real Estate, Luxembourg",
+      "stats": [
+        {
+          "v": "1 francois",
+          "l": "[FR] consolidation cycle duration"
+        },
+        {
+          "v": "[FR] 3",
+          "l": "[FR] markets consolidated"
+        },
+        {
+          "v": "[FR] 2",
+          "l": "[FR] reporting frameworks managed"
+        },
+        {
+          "v": "[FR] 1 year",
+          "l": "[FR] tenure with Prophix"
+        }
+      ],
+      "sidebarLabels": {
+        "who": "Who is EagleRock? Who is it?",
+        "applications": "Applications deployed 2 1 2 1",
+        "features": "Prophix Features"
+      }
     }
+  },
+  "title": "EagleRock",
+  "langLabels": {
+    "en": "Customer Story",
+    "fr": "En français"
+  },
+  "sidebarLabels": {
+    "who": "Who is EagleRock?",
+    "applications": "Applications deployed",
+    "features": "Prophix Features"
   }
 }
