@@ -249,7 +249,8 @@ body { font-family: var(--font); background: var(--light); color: #222; min-heig
 // v1.2  2026-09-16  flexbox card layout; flex:1 on card-body; actions pinned to bottom
 // v2.0  2026-09-21  Status system — draft/approved/published badges and card tints
 // v2.1  2026-09-21  Sort filter by status; story count shows published vs total
-// v2.2  2026-09-21  Tile cleanup: Open only; status capsule redesign; logo left-aligned
+// v2.2  2026-09-21  Tile cleanup: Open only; status capsule redesign (published=blue, draft=orange, approved=green); logo left-aligned
+// v2.3  2026-09-21  PDF brochure download button (⬇) on each tile; loads story.js on demand for builder; event delegation wiring
 
 var GH_REPO = 'raulsteiu/raulsteiu.github.io';
 var sessionToken = '';
@@ -505,19 +506,28 @@ function loadJsPDFDir(cb) {
 
 // PDF builder — loads story.js on demand (avoids code duplication)
 function _buildBrochurePDFDir(jsPDF, data, slug) {
-  // story.js exposes _buildBrochurePDF — load it if not already present
-  if (window._buildBrochurePDF) {
-    window._buildBrochurePDF(jsPDF, data, slug);
+  function runWithAssets() {
+    // Temporarily set STORY_META so _loadBrochureAssets can find the slug + hasLogo
+    var prevMeta = window.STORY_META;
+    var prevStoryData = window.storyData;
+    window.STORY_META = { slug: slug, hasLogo: data.hasLogo || false };
+    window.storyData = data;
+    _loadBrochureAssets(data, function(assets) {
+      window.STORY_META = prevMeta;
+      window.storyData = prevStoryData;
+      try { window._buildBrochurePDF(jsPDF, data, assets); }
+      catch(e) { alert('PDF error: ' + e.message); }
+    });
+  }
+  if (window._buildBrochurePDF && window._loadBrochureAssets) {
+    runWithAssets();
     return;
   }
   var s = document.createElement('script');
   s.src = '/clients/story.js';
   s.onload = function() {
-    if (window._buildBrochurePDF) {
-      window._buildBrochurePDF(jsPDF, data, slug);
-    } else {
-      alert('PDF builder not available.');
-    }
+    if (window._buildBrochurePDF) { runWithAssets(); }
+    else { alert('PDF builder not available.'); }
   };
   s.onerror = function() { alert('Could not load PDF builder.'); };
   document.head.appendChild(s);
