@@ -2137,8 +2137,8 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   var footerLogoH = 9;
   var footerLogoW = 30;
   var footerLogoX = W - mR - footerLogoW;
-  var footerLogoY = H - 20 - 4 - footerLogoH - 7;  // 7mm above shape, logo height, 4mm gap for text
-  var footerTextY = footerLogoY + footerLogoH + 3;  // 3mm below logo bottom
+  var footerLogoY = H - 20 - 2 - footerLogoH;  // logo sits 2mm above the bottom shape
+  var footerTextY = footerLogoY + footerLogoH + 2;  // 2mm below logo = just above shape
 
   if (assets.prophixLogo) {
     try { addImgFit(assets.prophixLogo, footerLogoX, footerLogoY, footerLogoW, footerLogoH); } catch(e) {}
