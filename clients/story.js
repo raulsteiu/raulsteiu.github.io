@@ -1,4 +1,4 @@
-// Prophix Client Story — story.js v9.6
+// Prophix Client Story — story.js v9.7
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
@@ -10,7 +10,8 @@
 // v9.3  2026-09-21  Results→Prophix Features; Delete Story in toolbar; directory tile cleanup (Open only, status capsules, logo left-aligned)
 // v9.4  2026-09-21  Video blocks: YouTube/Vimeo URL embed (no file upload); URL strip bug fix (mt!==video guard); clip-card backwards compat restored
 // v9.5  2026-09-21  PDF brochure generator (BROCHURE_THEME config; Auchan layout; logos + icons + shapes)
-// v9.6  2026-09-22  Two-page PDF; language-aware brochure; shape-up.png page break; no content truncation; lang picker from directory (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
+// v9.6  2026-09-22  Two-page PDF; language-aware brochure; shape-up.png page break; no content truncation; lang picker from directory
+// v9.7  2026-09-22  Rich text (bold/italic) in section bodies and whoText; per-language stats+ind fix; language tab save fix (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
 
 'use strict';
 
@@ -123,7 +124,7 @@ function getCSS() {
     '.sidebar{display:flex;flex-direction:column;gap:16px}',
     '.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px}',
     '.sidebar-card h3{font-size:13px;font-weight:900;color:var(--dark);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--red);padding-bottom:8px;margin-bottom:12px}',
-    '.who-text{font-size:13px;color:#555;line-height:1.6;margin-bottom:10px}',
+    '.who-text{font-size:13px;color:#555;line-height:1.6;margin-bottom:10px;white-space:pre-wrap;word-break:break-word}',
     '.who-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}',
     '.who-stat-tile{background:var(--light);border-radius:6px;padding:10px;text-align:center;position:relative}',
     '.who-stat-n{font-size:18px;font-weight:900;color:var(--red)}',
@@ -358,16 +359,16 @@ function renderBody(text) {
       var content = t.replace(/^[-\u2013]\s+/,'');
       var ci = content.indexOf(':');
       if (ci > 0 && ci < 60) {
-        html += '<li><strong>' + esc(content.substring(0,ci)) + ':</strong>' + esc(content.substring(ci+1)) + '</li>';
+        html += '<li><strong>' + escRich(content.substring(0,ci)) + ':</strong>' + escRich(content.substring(ci+1)) + '</li>';
       } else { html += '<li>' + esc(content) + '</li>'; }
     } else {
       if (inList) { html += '</ul>'; inList = false; }
-      if (t) { html += '<p>' + esc(t) + '</p>'; }
+      if (t) { html += '<p>' + escRich(t) + '</p>'; }
       else { html += '<p>&nbsp;</p>'; }
     }
   });
   if (inList) html += '</ul>';
-  return html || '<p>' + esc(text) + '</p>';
+  return html || '<p>' + escRich(text) + '</p>';
 }
 
 // ── Full page renderer ────────────────────────────────────────────────────────
@@ -462,7 +463,7 @@ function renderLangBlock(data, lc, isActive, meta) {
   var blockData = {
     name:       (tr && tr.name)    ? tr.name    : (p + (data.name||'')),
     desc:       (tr && tr.desc)    ? tr.desc    : (p + (data.desc||'')),
-    ind:        data.ind,
+    ind:        (tr && tr.ind) ? tr.ind : data.ind,
     whoText:    (tr && tr.whoText) ? tr.whoText : (p + (data.whoText||'')),
     stats:      (tr && tr.stats && tr.stats.length > 0) ? tr.stats
                 : data.stats.map(function(s){ return isEN ? s : {v: p+s.v, l: p+s.l}; }),
@@ -603,7 +604,12 @@ function renderLangBlock(data, lc, isActive, meta) {
 
   // Who card
   var whoCard = document.createElement('div'); whoCard.className = 'sidebar-card';
-  whoCard.innerHTML = '<h3>Who is ' + esc(data.name) + '?</h3><p class="who-text">' + esc(blockData.whoText||'') + '</p>';
+  whoCard.innerHTML = '<h3>Who is ' + esc(data.name) + '?</h3>';
+  var whoTextEl = document.createElement('div');
+  whoTextEl.className = 'who-text';
+  whoTextEl.style.cssText = 'white-space:pre-wrap;word-break:break-word';
+  whoTextEl.innerHTML = (blockData.whoText || '').replace(/\n/g,'<br>');
+  whoCard.appendChild(whoTextEl);
   if (blockData.whoStats && blockData.whoStats.length > 0) {
     var wsg = document.createElement('div'); wsg.className = 'who-stats-grid';
     blockData.whoStats.forEach(function(ws) {
@@ -664,6 +670,32 @@ function renderLangBlock(data, lc, isActive, meta) {
   return block;
 }
 
+// ── Rich text helpers ────────────────────────────────────────────────────────
+// Escape HTML but preserve <b><strong><i><em> tags
+function escRich(s) {
+  if (!s) return '';
+  return s
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/&lt;(\/?(?:b|strong|i|em))&gt;/gi,'<$1>');
+}
+
+// Read rich innerHTML from a contentEditable element — keep <b>/<i>, strip rest
+function getRichHTML(el) {
+  if (!el) return '';
+  var clone = el.cloneNode(true);
+  clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+  var h = clone.innerHTML;
+  // Block elements to newlines
+  h = h.replace(/<div>/gi,'\n').replace(/<\/div>/gi,'');
+  h = h.replace(/<p>/gi,'').replace(/<\/p>/gi,'\n');
+  h = h.replace(/<br\s*\/?>/gi,'\n');
+  // Strip all tags except b/strong/i/em
+  h = h.replace(/<(?!\/?(?:b|strong|i|em)\b)[^>]+>/gi,'');
+  // Decode entities
+  h = h.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/&quot;/g,'"');
+  return h.trim();
+}
+
 // ── Read DOM state back to data object (for saving) ───────────────────────────
 function domToData() {
   var data = JSON.parse(JSON.stringify(storyData));
@@ -678,7 +710,7 @@ function domToData() {
       var h1 = block.querySelector('h1'); if (h1) data.name = h1.textContent.trim();
       var desc = block.querySelector('.hero-desc'); if (desc) data.desc = desc.textContent.trim();
       var ind = block.querySelector('.hero-ind'); if (ind) data.ind = ind.textContent.trim();
-      var whoText = block.querySelector('.who-text'); if (whoText) data.whoText = whoText.textContent.trim();
+      var whoText = block.querySelector('.who-text'); if (whoText) data.whoText = getRichHTML(whoText);
 
       data.stats = Array.from(block.querySelectorAll('.stat-tile')).map(function(t) {
         return { v: (t.querySelector('.stat-n')||{}).textContent||'', l: (t.querySelector('.stat-l')||{}).textContent||'' };
@@ -701,7 +733,7 @@ function domToData() {
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card, .main-content > .media-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
           var bodyEdit = el.querySelector('.sec-body-edit');
-          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'').replace(/^\[[A-Z]{2}\]\s*/gm,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,'').replace(/^\[[A-Z]{2}\]\s*/,''); }).join('\n');
+          var bodyText = bodyEdit ? getRichHTML(bodyEdit) : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,'').replace(/^\[[A-Z]{2}\]\s*/,''); }).join('\n');
           data.content.push({ type: 'section', data: {
             label: (el.querySelector('.sec-label')||{}).textContent.replace(/^\[[A-Z]{2}\]\s*/,'')||'',
             heading: (el.querySelector('h2')||{}).textContent.replace(/^\[[A-Z]{2}\]\s*/,'')||'',
@@ -751,6 +783,7 @@ function domToData() {
       var t = data.translations[lc];
       var h1l = block.querySelector('h1'); if (h1l) t.name = h1l.textContent.trim();
       var descl = block.querySelector('.hero-desc'); if (descl) t.desc = descl.textContent.trim();
+      var indl = block.querySelector('.hero-ind'); if (indl) t.ind = indl.textContent.trim();
 
       var krsHeadingEl = block.querySelector('.krs-heading'); if (krsHeadingEl) t.krsHeading = krsHeadingEl.textContent.trim();
 
@@ -765,10 +798,17 @@ function domToData() {
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
-      var whoTxtEl = block.querySelector('.who-text'); if (whoTxtEl) t.whoText = whoTxtEl.textContent.trim();
+      var whoTxtEl = block.querySelector('.who-text'); if (whoTxtEl) t.whoText = getRichHTML(whoTxtEl);
 
       t.whoStats = Array.from(block.querySelectorAll('.who-stat-tile')).map(function(tile) {
         return { v: (tile.querySelector('.who-stat-n')||{}).textContent||'', l: (tile.querySelector('.who-stat-l')||{}).textContent||'' };
+      });
+
+      // Hero stats — save per-language so each tab is fully independent
+      t.stats = Array.from(block.querySelectorAll('.stat-tile')).map(function(tile) {
+        var clone = tile.cloneNode(true);
+        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+        return { v: (clone.querySelector('.stat-n')||{}).textContent||'', l: (clone.querySelector('.stat-l')||{}).textContent||'' };
       });
 
       t.results = Array.from(block.querySelectorAll('[data-section="features"] .result-item, [data-section="results"] .result-item')).map(function(r) {
@@ -787,7 +827,7 @@ function domToData() {
       block.querySelectorAll('.main-content > .story-sec, .main-content > .clip-card, .main-content > .media-card').forEach(function(el) {
         if (el.classList.contains('story-sec')) {
           var bodyEdit = el.querySelector('.sec-body-edit');
-          var bodyText = bodyEdit ? bodyEdit.textContent.replace(/\u00a0/g,'').replace(lcPfxGm,'') : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,'').replace(lcPfx,''); }).join('\n');
+          var bodyText = bodyEdit ? getRichHTML(bodyEdit) : Array.from(el.querySelectorAll('p,li')).map(function(n){ return (n.tagName==='LI'?'- ':'')+n.textContent.replace(/\u00a0/g,'').replace(lcPfx,''); }).join('\n');
           t.content.push({ type:'section', data:{ label:(el.querySelector('.sec-label')||{}).textContent.replace(lcPfx,'').trim()||'', heading:(el.querySelector('h2')||{}).textContent.replace(lcPfx,'').trim()||'', body:bodyText.trim() }});
         } else if (el.classList.contains('media-card')) {
           var ctEl2 = el.querySelector('.media-title-text'); var ctClone2 = ctEl2 ? ctEl2.cloneNode(true) : null;
@@ -926,6 +966,18 @@ function makeBlockEditable(block) {
     block.querySelectorAll(sel).forEach(function(el) {
       if ((el.tagName === 'P' || el.tagName === 'LI') && el.closest('.story-sec')) return;
       el.contentEditable = 'true';
+      // For whoText: intercept Enter to insert newline instead of block element
+      if (el.classList.contains('who-text')) {
+        el.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            var sel2 = window.getSelection(); var range = sel2.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(document.createTextNode('\n'));
+            range.collapse(false); sel2.removeAllRanges(); sel2.addRange(range);
+          }
+        });
+      }
     });
   });
   block.querySelectorAll('.story-sec').forEach(function(sec) { wrapSectionBody(sec); });
@@ -942,18 +994,21 @@ function wrapSectionBody(sec) {
   var lines = [];
   bodyNodes.forEach(function(node) {
     if (node.tagName === 'UL') {
-      node.querySelectorAll('li').forEach(function(li) { lines.push('- ' + li.textContent); });
+      node.querySelectorAll('li').forEach(function(li) {
+        var liH = li.innerHTML.replace(/<br\s*\/?>/gi,'').replace(/&nbsp;/g,' ').trim();
+        lines.push('- ' + liH);
+      });
     } else if (node.tagName === 'P') {
-      var txt = node.textContent.replace(/\u00a0/g, '').trim();
-      lines.push(txt);
+      var pH = node.innerHTML.replace(/\u00a0/g,' ').replace(/&nbsp;/g,' ').trim();
+      lines.push(pH || '');
     }
   });
+
   var wrap = document.createElement('div');
   wrap.className = 'sec-body-edit';
   wrap.contentEditable = 'true';
   wrap.style.cssText = 'white-space:pre-wrap;word-break:break-word;outline:none;min-height:24px;font-size:15px;color:#444;line-height:1.75;font-family:Arial,sans-serif;padding:2px 0';
-  wrap.textContent = lines.join('\n');
-  wrap.addEventListener('keydown', function(e) {
+  wrap.innerHTML = lines.join('<br>');  wrap.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
       var sel = window.getSelection(); var range = sel.getRangeAt(0);
