@@ -64,6 +64,7 @@
   ],
   "products": [
     "Financial Consolidation",
+    "FP&A",
     "FP&A Plus",
     "Lease Accounting"
   ],
@@ -82,6 +83,8 @@
         "title": "One Song For AUTONOMOUS FINANCE",
         "ts": "",
         "quote": "Whats the story Prophix Glory",
+        "mediaType": "audio",
+        "media": "",
         "audio": ""
       }
     },
@@ -99,6 +102,8 @@
         "title": "Start A REVOLUTION IN FINANCE",
         "ts": "",
         "quote": "Don't look back to Excel",
+        "mediaType": "audio",
+        "media": "",
         "audio": ""
       }
     }
@@ -111,9 +116,9 @@
         {
           "type": "section",
           "data": {
-            "label": "[DE] ",
-            "heading": "[DE] Managing the finances behind a global comeback",
-            "body": "[DE] When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\n\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
+            "label": "",
+            "heading": "Managing the finances behind a global comeback",
+            "body": "When Oasis announced their reunion tour, the financial complexity behind it was enormous. Ticket revenue, merchandising, catalogue royalties, and international licensing all needed to be tracked, reconciled, and planned across multiple entities and currencies.\n\nThe finance team was working from disconnected spreadsheets and manual processes that couldn't keep pace with the scale of the operation. They needed a platform built for that level of complexity."
           }
         },
         {
@@ -121,15 +126,27 @@
           "data": {
             "title": "One Song For AUTONOMOUS FINANCE",
             "quote": "Whats the story Prophix Glory",
+            "mediaType": "audio",
+            "media": "",
             "audio": ""
           }
         },
         {
           "type": "section",
           "data": {
-            "label": "[DE] ",
-            "heading": "[DE] One version of the truth — across every revenue stream",
-            "body": "[DE] With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
+            "label": "",
+            "heading": "One version of the truth — across every revenue stream",
+            "body": "With Prophix, the team brought all entities under one roof. Touring financials, royalty income, and merchandise P&L are now consolidated automatically — giving leadership a single, accurate picture of performance at any point in the cycle.\nScenario planning for future tours and releases became far more structured, with the ability to model best- and worst-case projections without rebuilding spreadsheets from scratch."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "",
+            "quote": "",
+            "mediaType": "image",
+            "media": "",
+            "audio": ""
           }
         }
       ],
@@ -173,7 +190,28 @@
           "title": "Data Integration Engineer, Prophix"
         }
       ],
-      "krsHeading": "Key Results Snapshot"
+      "krsHeading": "Key Results Snapshot -changed",
+      "title": "[DE] Oasis",
+      "ind": "Music, Manchester",
+      "stats": [
+        {
+          "v": "70%",
+          "l": "German Text"
+        },
+        {
+          "v": "[DE] 12+",
+          "l": "[DE] Revenue streams consolidated"
+        },
+        {
+          "v": "[DE] 1 platform",
+          "l": "[DE] For planning, reporting, and close"
+        }
+      ],
+      "sidebarLabels": {
+        "who": "Who is Oasis? DE VERSION",
+        "applications": "Applications deployed",
+        "features": "Prophix Features"
+      }
     },
     "pt": {
       "name": "[PT] Oasis",
@@ -259,5 +297,15 @@
     "password": "gold-fire-96",
     "expiresAt": "2026-09-25T14:38:45.863Z",
     "createdAt": "2026-09-22T14:38:45.865Z"
+  },
+  "title": "Oasis",
+  "langLabels": {
+    "en": "Customer Story",
+    "de": "Auf Deutsch"
+  },
+  "sidebarLabels": {
+    "who": "Who is Oasis?",
+    "applications": "Applications deployed",
+    "features": "Prophix Features"
   }
 }
