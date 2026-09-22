@@ -84,9 +84,7 @@
     }
   ],
   "products": [
-    "Financial Consolidation",
-    "Cash Management",
-    "FP&A"
+    "Financial Consolidation"
   ],
   "content": [
     {
@@ -117,38 +115,6 @@
       }
     },
     {
-      "type": "section",
-      "data": {
-        "label": "Standout Features",
-        "heading": "What Quentin and his team rely on most",
-        "body": "Asked what he and his team use most, Quentin pointed to a handful of capabilities he now relies on daily rather than a single headline feature.\n\n- Intercompany reconciliation module: his preferred way to reconcile positions between entities, which he described as far more user friendly than the tool he used previously.\n- Custom reporting layer (DynProfit): lets him build detailed reports that go well beyond the standard consolidated contributions his predecessor relied on.\n- Analytical dimensions: used to answer specific management requests, such as pulling bank debt by banking establishment directly out of the consolidation.\n- Coherence controls in the liasses: validation rules, including some Quentin added himself, that catch errors such as assets not matching liabilities before consolidation runs.\n- Segment-level consolidation: the ability to release a consolidated view by business segment, not just by country, something the previous setup could not produce.\n- Scenario simulation: modeling the consolidated impact of a deal structure or an investor's dilution before it happens, to compare options before committing."
-      }
-    },
-    {
-      "type": "section",
-      "data": {
-        "label": "Key Results",
-        "heading": "From inherited complexity to full consolidation independence",
-        "body": "With the restructured Prophix setup, Eaglestone now runs a top-down group consolidation with sub-consolidations for Belgium, France, and Luxembourg linked in real time. Quentin has full visibility into intercompany eliminations, local data, and console adjustments for every entity, detail that was simply unavailable before.\n\nThe quality and traceability of consolidated figures improved significantly. Quentin builds detailed reporting using Prophix's DynProfit layer, analyses segment-level contributions, and reconciles consolidated accounts against treasury and business plan data, work that previously had no time allocated to it because consolidation itself was too slow and opaque.\n\nFrance was fully migrated from SAP BFC into Prophix during 2024. Investor-facing IFRS reporting now meets strict deadlines consistently. The team moved from spending most of its energy keeping consolidation running to spending that energy on analysis."
-      }
-    },
-    {
-      "type": "section",
-      "data": {
-        "label": "The ROI, in days",
-        "heading": "The time saving, in numbers",
-        "body": "Asked directly to quantify the impact, Quentin was careful not to overstate it. Eaglestone's consolidation process takes about a month at each closing, and the group closes its books four times a year: an interim consolidation in June, the annual consolidation in December, and quarterly stops on March 31 and September 30.\n\nBy restructuring the setup top-down with Alexandre, Quentin estimated the team now saves about a week per closing cycle. That work used to depend on unlinked sub-consolidations and now runs through a single group consolidation with real-time visibility into each entity."
-      }
-    },
-    {
-      "type": "section",
-      "data": {
-        "label": "With Prophix, Eaglestone Services SA was able to:",
-        "heading": "",
-        "body": "- Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
-      }
-    },
-    {
       "type": "clip",
       "data": {
         "title": "Meeting investors deadlines",
@@ -168,6 +134,22 @@
         "mediaType": "audio",
         "media": "",
         "audio": ""
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "Standout Features",
+        "heading": "What Quentin and his team rely on most",
+        "body": "Asked what he and his team use most, Quentin pointed to a handful of capabilities he now relies on daily rather than a single headline feature.\n\n- Intercompany reconciliation module: his preferred way to reconcile positions between entities, which he described as far more user friendly than the tool he used previously.\n- Custom reporting layer (DynProfit): lets him build detailed reports that go well beyond the standard consolidated contributions his predecessor relied on.\n- Analytical dimensions: used to answer specific management requests, such as pulling bank debt by banking establishment directly out of the consolidation.\n- Coherence controls in the liasses: validation rules, including some Quentin added himself, that catch errors such as assets not matching liabilities before consolidation runs.\n- Segment-level consolidation: the ability to release a consolidated view by business segment, not just by country, something the previous setup could not produce.\n- Scenario simulation: modeling the consolidated impact of a deal structure or an investor's dilution before it happens, to compare options before committing."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "Key Results",
+        "heading": "From inherited complexity to full consolidation independence",
+        "body": "With the restructured Prophix setup, Eaglestone now runs a top-down group consolidation with sub-consolidations for Belgium, France, and Luxembourg linked in real time. Quentin has full visibility into intercompany eliminations, local data, and console adjustments for every entity, detail that was simply unavailable before.\n\nThe quality and traceability of consolidated figures improved significantly. Quentin builds detailed reporting using Prophix's DynProfit layer, analyses segment-level contributions, and reconciles consolidated accounts against treasury and business plan data, work that previously had no time allocated to it because consolidation itself was too slow and opaque.\n\nFrance was fully migrated from SAP BFC into Prophix during 2024. Investor-facing IFRS reporting now meets strict deadlines consistently. The team moved from spending most of its energy keeping consolidation running to spending that energy on analysis."
       }
     },
     {
@@ -204,6 +186,14 @@
       }
     },
     {
+      "type": "section",
+      "data": {
+        "label": "The ROI, in days",
+        "heading": "The time saving, in numbers",
+        "body": "Asked directly to quantify the impact, Quentin was careful not to overstate it. Eaglestone's consolidation process takes about a month at each closing, and the group closes its books four times a year: an interim consolidation in June, the annual consolidation in December, and quarterly stops on March 31 and September 30.\n\nBy restructuring the setup top-down with Alexandre, Quentin estimated the team now saves about a week per closing cycle. That work used to depend on unlinked sub-consolidations and now runs through a single group consolidation with real-time visibility into each entity."
+      }
+    },
+    {
       "type": "clip",
       "data": {
         "title": "Estimating the time saved",
@@ -212,6 +202,14 @@
         "mediaType": "audio",
         "media": "",
         "audio": ""
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "With Prophix, Eaglestone Services SA was able to:",
+        "heading": "",
+        "body": "- Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
       }
     },
     {
