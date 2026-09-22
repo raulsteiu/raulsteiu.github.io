@@ -1,0 +1,119 @@
+{
+  "slug": "eaglestone-ai",
+  "name": "EagleStone AI",
+  "desc": "EagleStone AI is a decentralized real estate promotion group that manages complex financial consolidations across multiple European markets. The company leverages Prophix to streamline reporting, improve data transparency, and support strategic decision-making for its investors.",
+  "ind": "Real Estate, Luxembourg",
+  "status": "published",
+  "langs": [
+    "en",
+    "fr"
+  ],
+  "hasLogo": false,
+  "stats": [
+    {
+      "v": "1 month",
+      "l": "consolidation cycle duration"
+    },
+    {
+      "v": "3",
+      "l": "markets consolidated"
+    },
+    {
+      "v": "2",
+      "l": "reporting frameworks"
+    },
+    {
+      "v": "1 year",
+      "l": "tenure with Prophix"
+    }
+  ],
+  "whoStats": [
+    {
+      "v": "3",
+      "l": "markets of operation"
+    },
+    {
+      "v": "1",
+      "l": "group consolidation manager"
+    }
+  ],
+  "whoText": "EagleStone AI is a decentralized real estate promotion group headquartered in Luxembourg. The company operates across Belgium, France, and Luxembourg, managing complex financial reporting and consolidation for various project-based investors.",
+  "krs": [
+    {
+      "text": "information is now retrieved significantly quicker than before",
+      "bold": "Faster reporting"
+    },
+    {
+      "text": "granular visibility into local data, eliminations, and adjustments",
+      "bold": "Increased transparency"
+    },
+    {
+      "text": "ability to model dilution impacts for complex investor scenarios",
+      "bold": "Strategic simulation"
+    },
+    {
+      "text": "strict reporting timelines are now consistently met",
+      "bold": "Deadline compliance"
+    }
+  ],
+  "results": [],
+  "participants": [
+    {
+      "name": "Quentin",
+      "title": "Group Consolidation Manager, EagleStone AI"
+    }
+  ],
+  "products": [
+    "Financial Consolidation"
+  ],
+  "content": [
+    {
+      "type": "section",
+      "data": {
+        "label": "BUSINESS CHALLENGES",
+        "heading": "Navigating a complex, decentralized consolidation process",
+        "body": "Before implementing the current Prophix configuration, the group relied on a fragmented process where the French entity operated on a separate system, providing only consolidated contributions to the group. This lack of granular data forced the consolidation manager to constantly revert to local teams for basic information, making it difficult to perform deep-dive analysis or verify intercompany eliminations effectively.\n\nThe status quo was unsustainable because the group required a unified view to satisfy IFRS reporting obligations for listed shareholders. The previous setup lacked the transparency needed to handle complex real estate project structures, such as changes in consolidation methods or capital movements, ultimately causing delays in meeting critical reporting deadlines."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "WHY PROPHIX",
+        "heading": "What made Prophix the right fit",
+        "body": "- Requirement for a centralized system to integrate decentralized data from multiple markets.\n- Need for granular visibility into local statutory figures, intercompany eliminations, and consolidation adjustments.\n- Requirement for a user-friendly interface to manage complex inter-society reconciliations and reporting."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "KEY RESULTS",
+        "heading": "Achieving transparency and strategic agility",
+        "body": "The current state of the group’s financial consolidation is characterized by high transparency and operational efficiency. By integrating all entities directly into Prophix, the team has moved away from receiving opaque consolidated contributions, allowing for a comprehensive view of financial performance at both the local and group levels.\n\nCollaboration has significantly improved, as the team can now perform detailed reconciliations and apply coherence controls to ensure data integrity across the board. The ability to navigate between different consolidation schemas and utilize analytical dimensions has empowered the team to provide stakeholders with precise, reliable information on demand.\n\nMost importantly, the group has successfully transitioned from a state of constant reporting delays to consistently meeting strict deadlines. The system now enables the team to simulate complex dilution scenarios for real estate projects, providing the strategic insight required to make informed investment decisions."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "TRANSPARENCY GAINS",
+        "ts": "9:02",
+        "quote": "I'm much faster at getting the information out. The information is much more transparent especially since France is now directly integrated into the system."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "STRATEGIC SIMULATION",
+        "ts": "11:48",
+        "quote": "Prophix allows me to be able to simulate this kind of dilution… operation. For example… I mean, I've already experienced it last year where I was asked hey, Quentin, if the operation is structured this way, what would be the impacts in consolidated accounts versus another scenario."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "USER EXPERIENCE",
+        "ts": "13:25",
+        "quote": "What profix offers is very user friendly. I really like to use certain reports that offer a lot of visibility on the granularity of consolidated figures."
+      }
+    }
+  ]
+}
