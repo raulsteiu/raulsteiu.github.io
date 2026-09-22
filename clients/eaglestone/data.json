@@ -425,6 +425,25 @@
             "audio": ""
           }
         }
+      ],
+      "ind": "Développement Immobilier",
+      "stats": [
+        {
+          "v": "~1 semaine",
+          "l": "[FR] Closing cycle saved per period"
+        },
+        {
+          "v": "[FR] 9/10",
+          "l": "[FR] NPS, déjà des recommandations"
+        },
+        {
+          "v": "[FR] 3",
+          "l": "[FR] Marchés consolidés dans Prophix (BE, FR, LU)"
+        },
+        {
+          "v": "[FR] 2",
+          "l": "[FR] Cadres de Reporting: LuxGAAP & IFRS"
+        }
       ]
     },
     "nl": {
@@ -449,7 +468,7 @@
           "text": "Volledige onafhankelijkheid bij de consolidatie: Dankzij het CSP-coachingmodel beheert en ontwikkelt het team de Prophix-configuratie nu volledig zelfstandig."
         }
       ],
-      "whoText": "Eaglestone is een vastgoedontwikkelings- en projectontwikkelingsgroep met hoofdkantoor in Luxemburg, die actief is in België, Frankrijk en Luxemburg. De groep stelt haar jaarrekening op volgens de Luxemburgse wettelijke voorschriften en de IFRS-normen, ten behoeve van beleggers, waaronder ten minste één beursgenoteerde aandeelhouder. Volgens het persbericht van Eaglestone van 11 juni 2026 omvat de actieve ontwikkelingsportefeuille van de groep: meer dan 6.500 appartementen, 1.094 studentenwoningen en 765 hotelkamers in ontwikkeling. Bron: persbericht Eaglestone, 11 juni 2026.",
+      "whoText": "Eaglestone is een vastgoedontwikkelings- en projectontwikkelingsgroep met hoofdkantoor in Luxemburg, die actief is in België, Frankrijk en Luxemburg. De groep stelt haar jaarrekening op volgens de Luxemburgse wettelijke voorschriften en de IFRS-normen, ten behoeve van beleggers, waaronder ten minste één beursgenoteerde aandeelhouder. Volgens het persbericht van Eaglestone van 11 juni 2026 omvat de actieve ontwikkelingsportefeuille van de groep: meer dan 6.500 appartementen, 1.094 studentenwoningen en 765 hotelkamers in ontwikkeling. Bron: persbericht Eaglestone, 11 juni 2026.",
       "whoStats": [
         {
           "v": "[NL] 69",
@@ -613,6 +632,25 @@
             "media": "",
             "audio": ""
           }
+        }
+      ],
+      "ind": "Développement Immobilier",
+      "stats": [
+        {
+          "v": "[NL] ~1 week",
+          "l": "[NL] Closing cycle saved per period"
+        },
+        {
+          "v": "[NL] 9/10",
+          "l": "[NL] NPS, déjà des recommandations"
+        },
+        {
+          "v": "[NL] 3",
+          "l": "[NL] Marchés consolidés dans Prophix (BE, FR, LU)"
+        },
+        {
+          "v": "[NL] 2",
+          "l": "[NL] Cadres de Reporting: LuxGAAP & IFRS"
         }
       ]
     }
