@@ -240,27 +240,23 @@
     "fr": {
       "name": "Comment Eaglestone a révolutionné la consolidation financière grâce à Prophix",
       "desc": "Écoutez Quentin, Group Consolidation Manager chez Eaglestone, partager comment la consolidation financière Prophix et le Continuous Success Package l'ont aidé à restructurer une configuration héritée complexe, intégrer la France dans la consolidation groupe, et construire une visibilité en temps réel sur trois marchés.",
-      "krsHeading": "[FR] Key Results Snapshot",
+      "krsHeading": "Résultats en un coup d'œil",
       "krs": [
         {
-          "bold": "Full transparency, faster close:",
-          "text": "Full transparency, faster close:: [FR]  consolidated data, local figures, and intercompany eliminations are now visible in one system, removing the back and forth with France that used to slow every close."
-        },
-        {
-          "bold": "On-time investor reporting:",
-          "text": "On-time investor reporting:: [FR]  IFRS reporting to shareholders now meets strict deadlines consistently, replacing a process that was regularly late."
-        },
-        {
-          "bold": "About a week saved per closing cycle:",
-          "text": "About a week saved per closing cycle:: [FR]  restructuring the consolidation top-down freed up roughly one week per closing period, by Quentin's own estimate."
-        },
-        {
-          "bold": "Full consolidation independence:",
-          "text": "Full consolidation independence:: [FR]  through the CSP coaching model, the team now manages and evolves the Prophix configuration entirely on its own."
+          "bold": "",
+          "text": "Transparence totale, clôture plus rapide : les données consolidées, les chiffres locaux et les éliminations intercos sont désormais visibles dans un seul système, supprimant les allers-retours avec la France qui ralentissaient chaque clôture."
         },
         {
           "bold": "",
-          "text": "New result"
+          "text": "Reporting investisseurs dans les délais : le reporting IFRS aux actionnaires respecte désormais des délais stricts de façon constante, alors qu'il était auparavant régulièrement en retard."
+        },
+        {
+          "bold": "",
+          "text": "Environ une semaine gagnée par clôture : la restructuration de la consolidation en top-down a permis de gagner environ une semaine par période de clôture, selon l'estimation de Quentin lui-même."
+        },
+        {
+          "bold": "",
+          "text": "Indépendance complète en consolidation : grâce au modèle de coaching CSP, l'équipe gère et fait désormais évoluer la configuration Prophix de façon entièrement autonome."
         }
       ],
       "whoText": "[FR] Eaglestone is a real estate promotion and development group headquartered in Luxembourg, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.\n\nAs disclosed in Eaglestone's press release of 11 June 2026, the Group's active development portfolio spans:",
