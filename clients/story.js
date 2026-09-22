@@ -1,4 +1,4 @@
-// Prophix Client Story — story.js v9.7
+// Prophix Client Story — story.js v9.8
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
@@ -11,7 +11,8 @@
 // v9.4  2026-09-21  Video blocks: YouTube/Vimeo URL embed (no file upload); URL strip bug fix (mt!==video guard); clip-card backwards compat restored
 // v9.5  2026-09-21  PDF brochure generator (BROCHURE_THEME config; Auchan layout; logos + icons + shapes)
 // v9.6  2026-09-22  Two-page PDF; language-aware brochure; shape-up.png page break; no content truncation; lang picker from directory
-// v9.7  2026-09-22  Rich text (bold/italic) in section bodies and whoText; per-language stats+ind fix; language tab save fix (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
+// v9.7  2026-09-22  Rich text (bold/italic); per-language stats+ind; language tab save fix
+// v9.8  2026-09-22  Sidebar labels per-language (Applications/Features/Who is); desc rich text; name vs title split; comprehensive save audit (bold/italic) in section bodies and whoText; per-language stats+ind fix; language tab save fix (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
 
 'use strict';
 
@@ -78,6 +79,7 @@ function getCSS() {
     '.hero-logo-ph{background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.3);border-radius:8px;padding:8px 14px;font-size:11px;color:rgba(255,255,255,.5);cursor:pointer}',
     '.hero-body{max-width:700px}',
     '.hero-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--red);margin-bottom:12px}',
+    '.client-name-label{font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.55);text-transform:uppercase;margin-bottom:4px}',
     'h1{font-size:clamp(20px,3vw,32px);font-weight:900;line-height:1.2;color:#fff;margin-bottom:14px;max-width:680px}',
     '.hero-desc{font-size:15px;color:rgba(255,255,255,.82);line-height:1.65;max-width:640px;margin-bottom:14px}',
     '.hero-ind{display:inline-block;border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-size:12px;color:rgba(255,255,255,.6)}',
@@ -462,6 +464,7 @@ function renderLangBlock(data, lc, isActive, meta) {
   var p = isEN ? '' : ('[' + (LANG_NAMES[lc]||lc) + '] ');
   var blockData = {
     name:       (tr && tr.name)    ? tr.name    : (p + (data.name||'')),
+    title:      (tr && tr.title)   ? tr.title   : (data.title ? (p + data.title) : (p + (data.name||''))),
     desc:       (tr && tr.desc)    ? tr.desc    : (p + (data.desc||'')),
     ind:        (tr && tr.ind) ? tr.ind : data.ind,
     whoText:    (tr && tr.whoText) ? tr.whoText : (p + (data.whoText||'')),
@@ -498,7 +501,8 @@ function renderLangBlock(data, lc, isActive, meta) {
     products:     data.products,
     results:    (tr && tr.results && tr.results.length > 0) ? tr.results
                 : (isEN ? data.results : (data.results||[]).map(function(r){ return p+r; })),
-    participants: data.participants
+    participants: data.participants,
+    sidebarLabels: (tr && tr.sidebarLabels) ? tr.sidebarLabels : (data.sidebarLabels || {})
   };
   var block = document.createElement('div');
   block.className = 'lang-block' + (isActive ? ' active' : '');
@@ -526,7 +530,8 @@ function renderLangBlock(data, lc, isActive, meta) {
   hero.innerHTML = logoHtml +
     '<div class="hero-body">' +
     '<div class="hero-tag">' + esc(langLabel) + '</div>' +
-    '<h1>' + esc(blockData.name) + '</h1>' +
+    '<div class="client-name-label" style="font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:4px">' + esc(blockData.name) + '</div>' +
+    '<h1 class="story-headline">' + esc(blockData.title || blockData.name) + '</h1>' +
     '<div class="hero-desc">' + esc(blockData.desc) + '</div>' +
     (blockData.ind ? '<div class="hero-ind">' + esc(blockData.ind) + '</div>' : '') +
     '</div>';
@@ -604,7 +609,8 @@ function renderLangBlock(data, lc, isActive, meta) {
 
   // Who card
   var whoCard = document.createElement('div'); whoCard.className = 'sidebar-card';
-  whoCard.innerHTML = '<h3>Who is ' + esc(data.name) + '?</h3>';
+  var whoLabel = (blockData.sidebarLabels && blockData.sidebarLabels.who) || ('Who is ' + esc(data.name) + '?');
+  whoCard.innerHTML = '<h3>' + whoLabel + '</h3>';
   var whoTextEl = document.createElement('div');
   whoTextEl.className = 'who-text';
   whoTextEl.style.cssText = 'white-space:pre-wrap;word-break:break-word';
@@ -622,7 +628,8 @@ function renderLangBlock(data, lc, isActive, meta) {
   // Products
   if (blockData.products && blockData.products.length > 0) {
     var prodCard = document.createElement('div'); prodCard.className = 'sidebar-card';
-    prodCard.innerHTML = '<h3>Applications deployed</h3>';
+    var appsLabel = (blockData.sidebarLabels && blockData.sidebarLabels.applications) || 'Applications deployed';
+    prodCard.innerHTML = '<h3>' + esc(appsLabel) + '</h3>';
     var appsDisplay = document.createElement('div'); appsDisplay.className = 'apps-display';
     appsDisplay.title = 'Click in edit mode to change';
     appsDisplay.setAttribute('onclick', "if(document.body.classList.contains('edit-mode'))toggleProductsPanel(this)");
@@ -637,7 +644,8 @@ function renderLangBlock(data, lc, isActive, meta) {
 
   // Results
   var resCard = document.createElement('div'); resCard.className = 'sidebar-card'; resCard.setAttribute('data-section','features');
-  resCard.innerHTML = '<h3>Prophix Features</h3>';
+  var featLabel = (blockData.sidebarLabels && blockData.sidebarLabels.features) || 'Prophix Features';
+  resCard.innerHTML = '<h3>' + esc(featLabel) + '</h3>';
   var ul = document.createElement('ul'); ul.className = 'results-ul';
   if (blockData.results && blockData.results.length > 0) {
     blockData.results.forEach(function(r) { ul.innerHTML += '<li class="result-item">' + esc(r.replace(/^[✕✗×\s]+|[✕✗×\s]+$/g,'')) + '</li>'; });
@@ -707,8 +715,18 @@ function domToData() {
     var isEN = lc === 'en';
 
     if (isEN) {
-      var h1 = block.querySelector('h1'); if (h1) data.name = h1.textContent.trim();
-      var desc = block.querySelector('.hero-desc'); if (desc) data.desc = desc.textContent.trim();
+      // Client company name — separate from story headline
+      var clientNameEl = block.querySelector('.client-name-label');
+      if (clientNameEl) data.name = clientNameEl.textContent.trim();
+      // Story headline (h1)
+      var h1 = block.querySelector('h1'); if (h1) data.title = h1.textContent.trim();
+      // Save hero-tag (lang label) per language
+      var heroTag = block.querySelector('.hero-tag');
+      if (heroTag) {
+        if (!data.langLabels) data.langLabels = {};
+        data.langLabels['en'] = heroTag.textContent.trim();
+      }
+      var desc = block.querySelector('.hero-desc'); if (desc) data.desc = getRichHTML(desc);
       var ind = block.querySelector('.hero-ind'); if (ind) data.ind = ind.textContent.trim();
       var whoText = block.querySelector('.who-text'); if (whoText) data.whoText = getRichHTML(whoText);
 
@@ -719,13 +737,15 @@ function domToData() {
       var krsHeading = block.querySelector('.krs-heading'); if (krsHeading) data.krsHeading = krsHeading.textContent.trim();
 
       data.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
-        var clone = item.querySelector('.krs-item-text') ? item.querySelector('.krs-item-text').cloneNode(true) : null;
-        if (!clone) return null;
+        var el = item.querySelector('.krs-item-text');
+        if (!el) return null;
+        var clone = el.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-        var text = clone.textContent.trim();
         var strong = clone.querySelector('strong');
         var bold = strong ? strong.textContent.replace(/:$/, '').trim() : '';
-        var body = bold ? text.replace(bold + ':', '').trim() : text;
+        // Remove the strong element to get the body text cleanly
+        if (strong) strong.remove();
+        var body = clone.textContent.replace(/^[\s:]+/, '').trim();
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
@@ -762,6 +782,16 @@ function domToData() {
 
       data.products = Array.from(block.querySelectorAll('.app-name')).map(function(s){ return s.textContent.trim(); });
 
+      // Sidebar heading labels (translatable)
+      if (!data.sidebarLabels) data.sidebarLabels = {};
+      block.querySelectorAll('.sidebar-card').forEach(function(card) {
+        var h3 = card.querySelector('h3'); if (!h3) return;
+        var txt = h3.textContent.trim();
+        if (card.querySelector('.apps-display')) data.sidebarLabels.applications = txt;
+        else if (card.getAttribute('data-section') === 'features') data.sidebarLabels.features = txt;
+        else if (card.querySelector('.who-text')) data.sidebarLabels.who = txt;
+      });
+
       data.results = Array.from(block.querySelectorAll('[data-section="features"] .result-item, [data-section="results"] .result-item')).map(function(r){
         var clone = r.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
@@ -781,20 +811,29 @@ function domToData() {
       if (!data.translations) data.translations = {};
       if (!data.translations[lc]) data.translations[lc] = {};
       var t = data.translations[lc];
-      var h1l = block.querySelector('h1'); if (h1l) t.name = h1l.textContent.trim();
-      var descl = block.querySelector('.hero-desc'); if (descl) t.desc = descl.textContent.trim();
+      var clientNameElL = block.querySelector('.client-name-label');
+      if (clientNameElL) t.name = clientNameElL.textContent.trim();
+      var h1l = block.querySelector('h1'); if (h1l) t.title = h1l.textContent.trim();
+      // Save hero-tag (lang label) for this language
+      var heroTagL = block.querySelector('.hero-tag');
+      if (heroTagL) {
+        if (!data.langLabels) data.langLabels = {};
+        data.langLabels[lc] = heroTagL.textContent.trim();
+      }
+      var descl = block.querySelector('.hero-desc'); if (descl) t.desc = getRichHTML(descl);
       var indl = block.querySelector('.hero-ind'); if (indl) t.ind = indl.textContent.trim();
 
       var krsHeadingEl = block.querySelector('.krs-heading'); if (krsHeadingEl) t.krsHeading = krsHeadingEl.textContent.trim();
 
       t.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
-        var clone = item.querySelector('.krs-item-text') ? item.querySelector('.krs-item-text').cloneNode(true) : null;
-        if (!clone) return null;
+        var el = item.querySelector('.krs-item-text');
+        if (!el) return null;
+        var clone = el.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-        var text = clone.textContent.trim();
         var strong = clone.querySelector('strong');
         var bold = strong ? strong.textContent.replace(/:$/, '').trim() : '';
-        var body = bold ? text.replace(bold + ':', '').trim() : text;
+        if (strong) strong.remove();
+        var body = clone.textContent.replace(/^[\s:]+/, '').trim();
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
@@ -809,6 +848,17 @@ function domToData() {
         var clone = tile.cloneNode(true);
         clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
         return { v: (clone.querySelector('.stat-n')||{}).textContent||'', l: (clone.querySelector('.stat-l')||{}).textContent||'' };
+      });
+
+      // Non-EN sidebar heading labels
+      if (!data.translations[lc].sidebarLabels) data.translations[lc].sidebarLabels = {};
+      var tsl = data.translations[lc].sidebarLabels;
+      block.querySelectorAll('.sidebar-card').forEach(function(card) {
+        var h3 = card.querySelector('h3'); if (!h3) return;
+        var txt = h3.textContent.trim();
+        if (card.querySelector('.apps-display')) tsl.applications = txt;
+        else if (card.getAttribute('data-section') === 'features') tsl.features = txt;
+        else if (card.querySelector('.who-text')) tsl.who = txt;
       });
 
       t.results = Array.from(block.querySelectorAll('[data-section="features"] .result-item, [data-section="results"] .result-item')).map(function(r) {
@@ -950,7 +1000,7 @@ function removeLanguage(code) {
 
 // ── Edit mode ─────────────────────────────────────────────────────────────────
 var EDITABLE_SELECTORS = [
-  '.hero-tag', 'h1', '.hero-desc', '.hero-industry', '.hero-ind',
+  '.hero-tag', '.client-name-label', 'h1', '.story-headline', '.hero-desc', '.hero-industry', '.hero-ind',
   '.sec-label', '.story-sec h2', '.story-sec p', '.story-sec li',
   '.clip-title-text', '.clip-quote', '.clips-section-title',
   '.media-title-text', '.media-quote', '.media-caption',
@@ -1995,6 +2045,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     var fs = data.content.find(function(c) { return c.type === 'section' && c.data && c.data.heading; });
     if (fs) title = fs.data.heading;
   }
+  if (!title && data.title) title = data.title;
   if (!title) title = 'How ' + (data.name || 'our client') + ' transformed with Prophix';
   font('bold', 24); tc(T.red);
   doc.splitTextToSize(title, W - mL - mR).slice(0, 3).forEach(function(l) { boldText(l, mL, y); y += 11; });
