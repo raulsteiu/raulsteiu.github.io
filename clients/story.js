@@ -171,8 +171,8 @@ function getCSS() {
     '.edit-mode .logo-pill-client.edit-only{display:inline-flex!important}',
     '.edit-mode .add-blocks-bar.edit-only{display:flex!important}',
     '#lang-add-wrap{display:none!important;position:relative}.edit-mode #lang-add-wrap{display:inline-flex!important}',
-    '[contenteditable]{outline:2px dashed rgba(239,54,61,.35);border-radius:3px}',
-    '[contenteditable]:focus{outline:2px dashed rgba(239,54,61,.7)}',
+    '.edit-mode [contenteditable]{outline:2px dashed rgba(239,54,61,.35);border-radius:3px}',
+    '.edit-mode [contenteditable]:focus{outline:2px dashed rgba(239,54,61,.7)}',
     '.edit-mode .sec-body-edit{outline:2px dashed rgba(239,54,61,.35)!important;border-radius:4px;padding:4px 6px!important;min-height:32px}',
     '.edit-mode .sec-body-edit:focus{outline:2px dashed rgba(239,54,61,.7)!important}',
     '.inline-products-panel{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:4px}',
@@ -571,7 +571,7 @@ function renderLangBlock(data, lc, isActive, meta) {
       var li = document.createElement('li'); li.className = 'krs-item';
       // v9.1 fix: use krsBodyText() to strip bold prefix from text before rendering
       var krsBody = krsBodyText(k.bold, k.text);
-      var boldHtml = k.bold ? '<span class="krs-bold" contenteditable="false">' + esc(k.bold) + ': </span>' : '';
+      var boldHtml = k.bold ? '<span class="krs-bold">' + esc(k.bold) + ': </span>' : '';
       li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + boldHtml + '<span class="krs-body">' + esc(krsBody) + '</span></span>';
       krsList.appendChild(li);
     });
