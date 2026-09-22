@@ -2138,8 +2138,8 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   var footerLogoH = 9;
   var footerLogoW = 30;
   var footerLogoX = W - mR - footerLogoW;
-  var footerLogoY = H - 20 - footerLogoH - 3;  // 3mm clearance above shape
-  var footerTextY = H - 20 - 2;                // copyright sits 2mm above shape, below logo
+  var footerTextY = H - 21;           // copyright text just above the 20mm shape
+  var footerLogoY = footerTextY - footerLogoH - 2;  // logo 2mm above copyright
 
   if (assets.prophixLogo) {
     try { addImgFit(assets.prophixLogo, footerLogoX, footerLogoY, footerLogoW, footerLogoH); } catch(e) {}
