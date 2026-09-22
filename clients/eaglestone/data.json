@@ -637,20 +637,20 @@
       "ind": "Développement Immobilier",
       "stats": [
         {
-          "v": "[NL] ~1 week",
-          "l": "[NL] Closing cycle saved per period"
+          "v": "~1 week",
+          "l": "Closing cycle saved per period"
         },
         {
-          "v": "[NL] 9/10",
-          "l": "[NL] NPS, déjà des recommandations"
+          "v": "9/10",
+          "l": "NPS, déjà des recommandations"
         },
         {
-          "v": "[NL] 3",
-          "l": "[NL] Marchés consolidés dans Prophix (BE, FR, LU)"
+          "v": "3",
+          "l": "[Marchés consolidés dans Prophix (BE, FR, LU)"
         },
         {
-          "v": "[NL] 2",
-          "l": "[NL] Cadres de Reporting: LuxGAAP & IFRS"
+          "v": "2",
+          "l": "Cadres de Reporting: LuxGAAP & IFRS"
         }
       ]
     }
