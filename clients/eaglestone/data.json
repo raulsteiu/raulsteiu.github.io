@@ -449,7 +449,7 @@
           "text": "Volledige onafhankelijkheid bij de consolidatie: Dankzij het CSP-coachingmodel beheert en ontwikkelt het team de Prophix-configuratie nu volledig zelfstandig."
         }
       ],
-      "whoText": "[NL] Eaglestone is a real estate promotion and development group headquartered in Luxembourg, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.\n\nAs disclosed in Eaglestone's press release of 11 June 2026, the Group's active development portfolio spans:",
+      "whoText": "Eaglestone is een vastgoedontwikkelings- en projectontwikkelingsgroep met hoofdkantoor in Luxemburg, die actief is in België, Frankrijk en Luxemburg. De groep stelt haar jaarrekening op volgens de Luxemburgse wettelijke voorschriften en de IFRS-normen, ten behoeve van beleggers, waaronder ten minste één beursgenoteerde aandeelhouder. Volgens het persbericht van Eaglestone van 11 juni 2026 omvat de actieve ontwikkelingsportefeuille van de groep: meer dan 6.500 appartementen, 1.094 studentenwoningen en 765 hotelkamers in ontwikkeling. Bron: persbericht Eaglestone, 11 juni 2026.",
       "whoStats": [
         {
           "v": "[NL] 69",
@@ -491,13 +491,13 @@
           "data": {
             "label": "Zakelijke uitdagingen",
             "heading": "Een complexe, overgenomen structuur die zich uitstrekt over drie gedecentraliseerde markten",
-            "body": "When Quentin joined Eaglestone as Group Consolidation Manager in July 2025, he inherited a Prophix environment configured by a predecessor without formal consolidation training. The structure was built bottom-up rather than top-down, sub-consolidations were not linked to the group consolidation, and France, a key activity cluster, ran its own consolidation in SAP BFC, sending only pre-aggregated contributions to the group level.\n\nThis created real visibility problems. Quentin had no access to the underlying intercompany eliminations, local data, or console adjustments for France. When questions arose from management or from IFRS-reporting shareholders, he had to go back to France for every detail. Deadlines were regularly missed. The group operates across Belgium, France, and Luxembourg with differing accounting systems and a dual reporting requirement: local Luxembourgian standards alongside IFRS."
+            "body": "Toen Quentin in juli 2025 bij Eaglestone in dienst trad als Group Consolidation Manager, erfde hij een Prophix-omgeving die was geconfigureerd door een voorganger zonder formele consolidatietraining. De structuur was bottom-up opgebouwd in plaats van top-down, subconsolidaties waren niet gekoppeld aan de groepsconsolidatie, en Frankrijk, een belangrijke activiteitscluster, voerde zijn eigen consolidatie uit in SAP BFC en stuurde alleen vooraf geaggregeerde bijdragen door naar het groepsniveau.\n\nDit leidde tot echte zichtbaarheidsproblemen. Quentin had geen toegang tot de onderliggende intercompany-eliminaties, lokale gegevens of console-aanpassingen voor Frankrijk. Wanneer er vragen rezen vanuit het management of van aandeelhouders die op basis van IFRS gerapporteerd wilden worden, moest hij voor elk detail teruggaan naar Frankrijk. Deadlines werden regelmatig gemist. De groep is actief in België, Frankrijk en Luxemburg met verschillende boekhoudsystemen en een dubbele rapportageverplichting: lokale Luxemburgse standaarden naast IFRS."
           }
         },
         {
           "type": "section",
           "data": {
-            "label": "Why Prophix",
+            "label": "Waroom Prophix",
             "heading": "The right platform to restructure and scale the consolidation",
             "body": "Prophix Financial Consolidation was already deployed at Eaglestone when Quentin arrived. What changed was how it was used. Through the Continuous Success Package, Quentin worked alongside a Prophix consultant to audit the existing setup, identify structural weaknesses, and rebuild the consolidation architecture from scratch: top-down, with all sub-consolidations linked to the group level in real time.\n\n- A platform for top-down multi-country consolidation with real-time visibility across all entity and subgroup levels simultaneously.\n- Full integration of France (local figures, console adjustments, and intercompany eliminations) replacing pre-aggregated SAP BFC contributions with entity-level detail.\n- Dual reporting support (Luxembourgian statutory and IFRS) with segment-level consolidation, analytical dimensions, and full traceability of adjustments."
           }
