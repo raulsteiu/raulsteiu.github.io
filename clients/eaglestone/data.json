@@ -259,32 +259,28 @@
           "text": "Indépendance complète en consolidation : grâce au modèle de coaching CSP, l'équipe gère et fait désormais évoluer la configuration Prophix de façon entièrement autonome."
         }
       ],
-      "whoText": "Eaglestone is a real estate promotion and development group headquartered in Luxembourg, operating across Belgium, France, and Luxembourg. The group reports under both local Luxembourgian statutory standards and IFRS, serving investors including at least one listed company shareholder.\n\nAs disclosed in Eaglestone's press release of 11 June 2026, the Group's active development portfolio spans:",
+      "whoText": "Eaglestone est un groupe de promotion et développement immobilier dont le siège est au Luxembourg, opérant en Belgique, France et Luxembourg. Le groupe établit ses comptes selon les référentiels statutaires luxembourgeois et IFRS, au service d'investisseurs dont au moins un actionnaire coté en bourse.Selon le communiqué de presse d'Eaglestone du 11 juin 2026, le portefeuille de développement actif du Groupe comprend :Représentant plus de 6 500 appartements, 1 094 logements étudiants et 765 chambres d'hôtel en développement.Source : communiqué de presse Eaglestone, 11 juin 2026.",
       "whoStats": [
         {
-          "v": "[FR] 69",
-          "l": "[FR] Active Projects"
+          "v": "69",
+          "l": "Projets Actifs"
         },
         {
-          "v": "[FR] €447M",
-          "l": "[FR] Total book value"
+          "v": "€447M",
+          "l": "Valeur comptable totale"
         },
         {
-          "v": "[FR] 600,000+ m²",
-          "l": "[FR] Under development"
+          "v": " 600,000+ m²",
+          "l": "En développement"
         },
         {
-          "v": "[FR] 3",
-          "l": "[FR] Countries consolidated with Prophix (BE,FR,LU)"
-        },
-        {
-          "v": "0",
-          "l": "Label"
+          "v": "3",
+          "l": "Pays Consolidés avec  Prophix (BE,FR,LU)"
         }
       ],
       "results": [
-        "[FR] Reduced close from 10 days to 2",
-        "New result"
+        "Continuous Success Package (CSP)",
+        "Excel Add- In"
       ],
       "participants": [
         {
