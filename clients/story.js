@@ -1,11 +1,15 @@
-// Prophix Client Story — story.js v9.3
+// Prophix Client Story — story.js v9.5
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
-// v9.1: KRS double-colon fix
-// v9.2: Logo edit label; Media blocks (audio/video/image); lightbox
-// v9.3: Results → Prophix Features; Delete Story button in edit toolbar; directory tile cleanup
+//
+// Version history:
+// v9.1  2026-09-21  KRS double-colon rendering fix (krsBodyText helper)
+// v9.2  2026-09-21  Media blocks (audio/video/image); logo edit label; lightbox; Sortable preventOnFilter fix
+// v9.3  2026-09-21  Results→Prophix Features; Delete Story in toolbar; directory tile cleanup (Open only, status capsules, logo left-aligned)
+// v9.4  2026-09-21  Video blocks: YouTube/Vimeo URL embed (no file upload); URL strip bug fix (mt!==video guard); clip-card backwards compat restored
+// v9.5  2026-09-21  PDF brochure generator (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
 
 'use strict';
 
@@ -1842,27 +1846,26 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   // Red shape: 5-sided irregular pentagon (wide rounded base, pointed arch top)
   // Approximated with jsPDF path operations
   function drawRedBlob(cx, cy, w, h) {
-    // Points: bottom-left, bottom-right, right-mid, top-center, left-mid
-    var pts = [
-      [cx - w/2,     cy + h*0.45],  // bottom-left
-      [cx + w/2,     cy + h*0.45],  // bottom-right
-      [cx + w/2,     cy - h*0.1],   // right-mid
-      [cx,           cy - h*0.5],   // top-center (point)
-      [cx - w/2,     cy - h*0.1],   // left-mid
-    ];
+    // Dome/hill: draw as a wide roundedRect (for the body/bottom)
+    // overlaid with a filled ellipse (for the curved top dome effect)
     fc(T.shapeRed);
-    doc.moveTo(pts[0][0], pts[0][1]);
-    // Use curved bottom
-    doc.lines([
-      [pts[1][0] - pts[0][0], 0],                              // bottom flat
-      [pts[2][0] - pts[1][0], pts[2][1] - pts[1][1]],          // right side
-      [pts[3][0] - pts[2][0], pts[3][1] - pts[2][1]],          // right to top
-      [pts[4][0] - pts[3][0], pts[4][1] - pts[3][1]],          // top to left
-      [pts[0][0] - pts[4][0], pts[0][1] - pts[4][1]],          // left side back
-    ], pts[0][0], pts[0][1], [1,1], 'F', true);
-  }
+    var x0 = cx - w/2;
+    var yBot = cy + h * 0.42;
+    var yTop = cy - h * 0.48;
+    var totalH = yBot - yTop;
+    var cr = Math.min(6, w * 0.1); // bottom rounded corners
 
-  // Blue hexagon (6 sides, flat-top orientation)
+    // Draw body as rounded rectangle (lower 60% of shape)
+    var bodyTop = yTop + totalH * 0.38;
+    doc.roundedRect(x0, bodyTop, w, yBot - bodyTop, cr, cr, 'F');
+
+    // Draw dome cap as a filled ellipse covering the top portion
+    // ellipse(x_center, y_center, rx, ry, style)
+    var ry = totalH * 0.60; // tall enough to create smooth dome
+    var rx = w * 0.52;
+    doc.ellipse(cx, bodyTop, rx, ry, 'F');
+  }
+    // Blue hexagon (6 sides, flat-top orientation)
   function drawHexagon(cx, cy, r) {
     fc(T.shapeBlue);
     var pts = [];
@@ -1928,7 +1931,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     font('bold', 11); tc(T.bodyText); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' });
   }
 
-  var y = logoY + logoH + 8;  // clear breathing room after logos
+  var y = logoY + logoH + 14;  // clear breathing room after logos
 
   // "CUSTOMER STORY" — small grey, clear gap from header
   font('bold', 7.5); tc(T.muted);
@@ -1983,12 +1986,12 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
   font('bold', 10); tc(T.red);
   doc.text('Applications deployed', sideX, sideY);
-  sideY += 5;
+  sideY += 8;  // clear gap between heading and icons
 
   (data.products || []).forEach(function(pr) {
     var icon = assets.icons[pr];
     if (icon) {
-      try { doc.addImage(icon, 'PNG', sideX, sideY - 4, 5, 5, undefined, 'FAST'); }
+      try { doc.addImage(icon, 'PNG', sideX, sideY - 4.5, 5.5, 5.5, undefined, 'FAST'); }
       catch(e) { fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F'); }
     } else {
       fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F');
