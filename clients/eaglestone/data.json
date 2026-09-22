@@ -489,8 +489,8 @@
         {
           "type": "section",
           "data": {
-            "label": "Business Challenges",
-            "heading": "A complex, inherited setup across three decentralized markets",
+            "label": "Zakelijke uitdagingen",
+            "heading": "Een complexe, overgenomen structuur die zich uitstrekt over drie gedecentraliseerde markten",
             "body": "When Quentin joined Eaglestone as Group Consolidation Manager in July 2025, he inherited a Prophix environment configured by a predecessor without formal consolidation training. The structure was built bottom-up rather than top-down, sub-consolidations were not linked to the group consolidation, and France, a key activity cluster, ran its own consolidation in SAP BFC, sending only pre-aggregated contributions to the group level.\n\nThis created real visibility problems. Quentin had no access to the underlying intercompany eliminations, local data, or console adjustments for France. When questions arose from management or from IFRS-reporting shareholders, he had to go back to France for every detail. Deadlines were regularly missed. The group operates across Belgium, France, and Luxembourg with differing accounting systems and a dual reporting requirement: local Luxembourgian standards alongside IFRS."
           }
         },
