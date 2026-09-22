@@ -1797,20 +1797,26 @@ window._loadBrochureAssets = function _loadBrochureAssets(data, cb) {
   if (!toLoad.length) { cb(assets); return; }
   var rem = toLoad.length;
 
+  function fetchB64(url, done) {
+    fetch(url + '?v=' + Date.now())
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
+      .then(function(blob) {
+        var fr = new FileReader();
+        fr.onloadend = function() { done(fr.result); };
+        fr.onerror = function() { done(null); };
+        fr.readAsDataURL(blob);
+      })
+      .catch(function() { done(null); });
+  }
+
   toLoad.forEach(function(item) {
-    var img = new Image(); img.crossOrigin = 'anonymous';
-    img.onload = function() {
-      try {
-        var c = document.createElement('canvas');
-        c.width = img.naturalWidth; c.height = img.naturalHeight;
-        c.getContext('2d').drawImage(img, 0, 0);
-        if (item.sub) assets[item.key][item.sub] = c.toDataURL('image/png');
-        else assets[item.key] = c.toDataURL('image/png');
-      } catch(e) {}
+    fetchB64(item.url, function(dataUrl) {
+      if (dataUrl) {
+        if (item.sub) assets[item.key][item.sub] = dataUrl;
+        else assets[item.key] = dataUrl;
+      }
       if (--rem === 0) cb(assets);
-    };
-    img.onerror = function() { if (--rem === 0) cb(assets); };
-    img.src = item.url + '?v=' + Date.now();
+    });
   });
 }
 
@@ -1904,15 +1910,23 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   // Shapes right side (page break area): blob center-right, hexagon top-right of blob
   function drawShapesRight() {
     if (assets.shapeRight) {
-      try { doc.addImage(assets.shapeRight, 'PNG', W - 50, H - 34, 50, 34, undefined, 'FAST'); } catch(e) {}
+      try { doc.addImage(assets.shapeRight, 'PNG', W - 50, H - 34, 50, 34, undefined, 'FAST'); return; } catch(e) {}
     }
+    // Fallback: simple dome + hexagon
+    fc(T.shapeRed); doc.ellipse(W - 20, H + 6, 22, 18, 'F');
+    fc(T.shapeBlue); var hpts=[]; for(var i=0;i<6;i++){var a=Math.PI/3*i-Math.PI/6;hpts.push([W-22+4*Math.cos(a), H-28+4*Math.sin(a)]);}
+    doc.lines(hpts.slice(1).map(function(p,i){return[p[0]-hpts[i][0],p[1]-hpts[i][1]];}),hpts[0][0],hpts[0][1],[1,1],'F',true);
   }
 
   // Shapes left side (last page bottom): blob bottom-left, hexagon bottom-left of blob
   function drawShapesLeft() {
     if (assets.shapeLeft) {
-      try { doc.addImage(assets.shapeLeft, 'PNG', 0, H - 34, 50, 34, undefined, 'FAST'); } catch(e) {}
+      try { doc.addImage(assets.shapeLeft, 'PNG', 0, H - 34, 50, 34, undefined, 'FAST'); return; } catch(e) {}
     }
+    // Fallback: simple dome + hexagon
+    fc(T.shapeRed); doc.ellipse(20, H + 6, 22, 18, 'F');
+    fc(T.shapeBlue); var hpts2=[]; for(var j=0;j<6;j++){var a2=Math.PI/3*j-Math.PI/6;hpts2.push([8+4*Math.cos(a2), H-28+4*Math.sin(a2)]);}
+    doc.lines(hpts2.slice(1).map(function(p,j){return[p[0]-hpts2[j][0],p[1]-hpts2[j][1]];}),hpts2[0][0],hpts2[0][1],[1,1],'F',true);
   }
 
   // ── HEADER ────────────────────────────────────────────────────────────────
