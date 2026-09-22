@@ -1,4 +1,4 @@
-// Prophix Client Story — story.js v9.5
+// Prophix Client Story — story.js v9.6
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
@@ -9,7 +9,8 @@
 // v9.2  2026-09-21  Media blocks (audio/video/image); logo edit label; lightbox; Sortable preventOnFilter fix
 // v9.3  2026-09-21  Results→Prophix Features; Delete Story in toolbar; directory tile cleanup (Open only, status capsules, logo left-aligned)
 // v9.4  2026-09-21  Video blocks: YouTube/Vimeo URL embed (no file upload); URL strip bug fix (mt!==video guard); clip-card backwards compat restored
-// v9.5  2026-09-21  PDF brochure generator (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
+// v9.5  2026-09-21  PDF brochure generator (BROCHURE_THEME config; Auchan layout; logos + icons + shapes)
+// v9.6  2026-09-22  Two-page PDF; language-aware brochure; shape-up.png page break; no content truncation; lang picker from directory (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
 
 'use strict';
 
@@ -1714,32 +1715,29 @@ function wireEvents() {
 
 
 
-// ── PDF Brochure Generator v3 ─────────────────────────────────────────────────
-// Pixel-accurate match to Prophix Auchan-style customer story PDF.
-// All visual constants in BROCHURE_THEME — edit here to restyle.
+
+// ── PDF Brochure Generator v3.5 ────────────────────────────────────────────────
+// v9.5  2026-09-21  Initial PDF generator
+// v9.6  2026-09-22  Two-page layout; language-aware; shape-up.png page break;
+//                   no content truncation; lang picker from directory tile
 
 var BROCHURE_THEME = {
-  // Colors — extracted from reference PDF
-  red:          [239, 54, 61],    // #EF363D headlines, KRS text, section titles
-  krsBlue:      [30, 115, 190],   // #1E73BE KRS heading + checkmarks + text
-  krsCard:      [232, 236, 244],  // #E8ECF4 KRS card background
+  red:          [239, 54, 61],
+  krsBlue:      [30, 115, 190],
+  krsCard:      [232, 236, 244],
   bodyText:     [30, 30, 30],
-  muted:        [130, 130, 130],  // CUSTOMER STORY label, footer text
+  muted:        [130, 130, 130],
   white:        [255, 255, 255],
-  shapeRed:     [239, 54, 61],    // decorative blob
-  shapeBlue:    [74, 134, 200],   // #4A86C8 hexagon accent
 
-  // Layout (mm, A4 = 210 × 297)
   marginL:  14,
   marginR:  14,
-  colSplit: 132,   // right sidebar starts here
+  colSplit: 132,
   pageW:    210,
   pageH:    297,
 
-  // Asset paths
   prophixLogoUrl: '/prophix-logo-1000px.png',
-  shapeRightUrl:  'https://raulsteiu.github.io/assets/shape-right.png',
   shapeLeftUrl:   'https://raulsteiu.github.io/assets/shape-left.png',
+  shapeUpUrl:     'https://raulsteiu.github.io/assets/shape-up.png',
   iconBasePath:   '/assets/icons/',
   iconMap: {
     'Financial Consolidation': 'financial-consolidation.png',
@@ -1761,29 +1759,57 @@ function loadJsPDF(cb) {
   document.head.appendChild(s);
 }
 
-// ── Entry point from story page ───────────────────────────────────────────────
+// ── Entry point from story page — language-aware ──────────────────────────────
 function generateBrochure() {
   var btn = document.getElementById('pdf-dl-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
   loadJsPDF(function(jsPDF) {
+    // Use currentLang to pick the right translation data
+    var langData = _getBrochureData(storyData, currentLang);
     _loadBrochureAssets(storyData, function(assets) {
-      try { window._buildBrochurePDF(jsPDF, storyData, assets); }
+      try { window._buildBrochurePDF(jsPDF, langData, assets); }
       catch(e) { console.error(e); alert('PDF error: ' + e.message); }
       finally { if (btn) { btn.disabled = false; btn.textContent = '↓ Brochure'; } }
     });
   });
 }
 
-// ── Asset loader ──────────────────────────────────────────────────────────────
+// ── Get data for a specific language ─────────────────────────────────────────
+window._getBrochureData = function _getBrochureData(data, lc) {
+  if (!lc || lc === 'en') return data;
+  var tr = data.translations && data.translations[lc];
+  if (!tr) return data; // fall back to EN if no translation
+  // Merge: translation overrides EN fields where available
+  return {
+    slug:         data.slug,
+    name:         tr.name        || data.name,
+    desc:         tr.desc        || data.desc,
+    ind:          data.ind,
+    hasLogo:      data.hasLogo,
+    status:       data.status,
+    stats:        (tr.stats  && tr.stats.length)  ? tr.stats  : data.stats,
+    krs:          (tr.krs    && tr.krs.length)    ? tr.krs    : data.krs,
+    krsHeading:   tr.krsHeading  || data.krsHeading,
+    content:      (tr.content && tr.content.length) ? tr.content : data.content,
+    whoText:      tr.whoText     || data.whoText,
+    whoStats:     (tr.whoStats && tr.whoStats.length) ? tr.whoStats : data.whoStats,
+    products:     data.products,
+    results:      (tr.results && tr.results.length) ? tr.results : data.results,
+    participants: tr.participants || data.participants
+  };
+}
+
+// ── Asset loader (fetch + FileReader — avoids CORS canvas taint) ──────────────
 window._loadBrochureAssets = function _loadBrochureAssets(data, cb) {
   var T = BROCHURE_THEME;
-  var assets = { prophixLogo: null, clientLogo: null, icons: {}, shapeRight: null, shapeLeft: null };
+  var assets = { prophixLogo: null, clientLogo: null, icons: {}, shapeLeft: null, shapeUp: null };
   var toLoad = [];
 
   function queue(url, key, sub) { toLoad.push({ url: url, key: key, sub: sub }); }
 
   queue(T.prophixLogoUrl, 'prophixLogo', null);
-  queue(T.shapeLeftUrl, 'shapeLeft', null);
+  queue(T.shapeLeftUrl,   'shapeLeft',   null);
+  queue(T.shapeUpUrl,     'shapeUp',     null);
 
   var slug = window.STORY_META ? STORY_META.slug : (data ? data.slug : '');
   if (data && data.hasLogo && slug) {
@@ -1804,7 +1830,7 @@ window._loadBrochureAssets = function _loadBrochureAssets(data, cb) {
       .then(function(blob) {
         var fr = new FileReader();
         fr.onloadend = function() { done(fr.result); };
-        fr.onerror = function() { done(null); };
+        fr.onerror   = function() { done(null); };
         fr.readAsDataURL(blob);
       })
       .catch(function() { done(null); });
@@ -1814,14 +1840,14 @@ window._loadBrochureAssets = function _loadBrochureAssets(data, cb) {
     fetchB64(item.url, function(dataUrl) {
       if (dataUrl) {
         if (item.sub) assets[item.key][item.sub] = dataUrl;
-        else assets[item.key] = dataUrl;
+        else          assets[item.key] = dataUrl;
       }
       if (--rem === 0) cb(assets);
     });
   });
-}
+};
 
-// ── Main builder (exposed globally for directory reuse) ───────────────────────
+// ── Main builder ──────────────────────────────────────────────────────────────
 window._buildBrochurePDF = function(jsPDF, data, assets) {
   var T = BROCHURE_THEME;
   var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -1837,6 +1863,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   function dc(r) { doc.setDrawColor(r[0], r[1], r[2]); }
   function lw(w) { doc.setLineWidth(w); }
   function font(style, size) { doc.setFont('helvetica', style); doc.setFontSize(size); }
+  function boldText(text, x, y) { doc.text(text, x, y); doc.text(text, x + 0.15, y); }
 
   function printWrap(text, x, y, maxW, lineH, maxL) {
     var lines = doc.splitTextToSize(String(text || ''), maxW);
@@ -1845,134 +1872,61 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     return y;
   }
 
-  // Bold text simulation — draw twice offset by 0.15mm for heavier weight
-  function boldText(text, x, y) {
-    doc.text(text, x, y);
-    doc.text(text, x + 0.15, y);
+  // Decode PNG dimensions from base64 to preserve aspect ratio
+  function getImgDims(b64) {
+    try {
+      var raw = b64.replace(/^data:image\/[a-z]+;base64,/, '');
+      var bytes = atob(raw.substring(0, 40));
+      var pw = (bytes.charCodeAt(16)<<24)|(bytes.charCodeAt(17)<<16)|(bytes.charCodeAt(18)<<8)|bytes.charCodeAt(19);
+      var ph = (bytes.charCodeAt(20)<<24)|(bytes.charCodeAt(21)<<16)|(bytes.charCodeAt(22)<<8)|bytes.charCodeAt(23);
+      return (pw > 0 && ph > 0) ? { w: pw, h: ph } : null;
+    } catch(e) { return null; }
   }
 
-  // ── Decorative shapes ──────────────────────────────────────────────────────
-  // Red shape: 5-sided irregular pentagon (wide rounded base, pointed arch top)
-  // Approximated with jsPDF path operations
-  function drawRedBlob(cx, cy, w, h) {
-    // Smooth dome shape using jsPDF path commands (moveTo/curveTo/lineTo)
-    // Shape: wide flat bottom with small corner radius, smooth bezier dome on top
-    fc(T.shapeRed);
-    var x0 = cx - w/2, x1 = cx + w/2;
-    var yBot = cy + h * 0.42;
-    var yTop = cy - h * 0.46;
-    var cr = 5; // bottom corner radius
-    // Bezier magic constant for quarter-circle
-    var k = 0.5523;
-    var domeH = yBot - yTop;
-
-    doc.moveTo(x0 + cr, yBot);
-    // Bottom edge →
-    doc.lineTo(x1 - cr, yBot);
-    // Bottom-right corner
-    doc.curveTo(x1 - cr + cr*k, yBot, x1, yBot - cr + cr*k, x1, yBot - cr);
-    // Right straight side up
-    doc.lineTo(x1, yTop + domeH * 0.45);
-    // Right dome curve to top
-    doc.curveTo(x1, yTop + domeH * 0.45 - domeH * 0.45 * k, cx + w * 0.18, yTop, cx, yTop);
-    // Left dome curve from top
-    doc.curveTo(cx - w * 0.18, yTop, x0, yTop + domeH * 0.45 - domeH * 0.45 * k, x0, yTop + domeH * 0.45);
-    // Left straight side down
-    doc.lineTo(x0, yBot - cr);
-    // Bottom-left corner
-    doc.curveTo(x0, yBot - cr + cr*k, x0 + cr - cr*k, yBot, x0 + cr, yBot);
-    doc.close();
-    doc.fill();
+  function addImgFit(b64, x, y, maxW, maxH) {
+    if (!b64) return;
+    try {
+      var dims = getImgDims(b64);
+      var aspect = dims ? dims.w / dims.h : 2;
+      var dh = maxH, dw = dh * aspect;
+      if (dw > maxW) { dw = maxW; dh = dw / aspect; }
+      // Center vertically in box
+      var dy = y + (maxH - dh) / 2;
+      doc.addImage(b64, 'PNG', x, dy, dw, dh, undefined, 'FAST');
+    } catch(e) {}
   }
 
-  // Blue hexagon (6 sides, flat-top orientation)
-  function drawHexagon(cx, cy, r) {
-    fc(T.shapeBlue);
-    var pts = [];
-    for (var i = 0; i < 6; i++) {
-      var angle = (Math.PI / 3) * i - Math.PI / 6; // flat-top: offset by -30deg
-      pts.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
-    }
-    doc.moveTo(pts[0][0], pts[0][1]);
-    for (var j = 1; j < pts.length; j++) {
-      doc.lineTo(pts[j][0], pts[j][1]);
-    }
-    doc.lineTo(pts[0][0], pts[0][1]);
-    doc.fillExt ? doc.fillExt() : doc.fill ? doc.fill('F') : doc.path(pts, 'F');
-    // Fallback: use lines method
-    var moves = [];
-    for (var k = 1; k < pts.length; k++) {
-      moves.push([pts[k][0] - pts[k-1][0], pts[k][1] - pts[k-1][1]]);
-    }
-    moves.push([pts[0][0] - pts[pts.length-1][0], pts[0][1] - pts[pts.length-1][1]]);
-    doc.lines(moves, pts[0][0], pts[0][1], [1,1], 'F', true);
-  }
+  // ── Page 1: Header ──────────────────────────────────────────────────────────
+  var logoH = 12, logoY = mR;
 
-  // Shapes right side (page break area): blob center-right, hexagon top-right of blob
-  function drawShapesRight() {
-    if (assets.shapeRight) {
-      try { doc.addImage(assets.shapeRight, 'PNG', W - 50, H - 34, 50, 34, undefined, 'FAST'); } catch(e) {}
-    }
-  }
-
-  // Shapes left side (last page bottom): blob bottom-left, hexagon bottom-left of blob
-  function drawShapesLeft() {
-    if (assets.shapeLeft) {
-      try {
-        // White background to mask any PNG background artifacts
-        fc([255,255,255]); doc.rect(0, H - 24, 36, 24, 'F');
-        doc.addImage(assets.shapeLeft, 'PNG', 0, H - 24, 36, 24, undefined, 'FAST');
-      } catch(e) {}
-    }
-  }
-
-  // ── HEADER ────────────────────────────────────────────────────────────────
-  var logoH = 12;  // fixed height for Prophix logo — width scales automatically
-  var logoY = mR;
-
-  // Prophix logo — maintain aspect ratio, fixed height 12mm
+  // Prophix logo — left, aspect ratio safe
   if (assets.prophixLogo) {
-    // Get natural dimensions from a temp image to preserve aspect ratio
-    // We know prophix logo is roughly 4:1 ratio, so width ≈ 48mm for 12mm height
-    // Use a conservative width that won't stretch
-    try { doc.addImage(assets.prophixLogo, 'PNG', mL, logoY, 0, logoH, undefined, 'FAST'); }
-    catch(e) {
-      // Fallback: text
-      font('bold', 14); tc(T.red); doc.text('Prophix®', mL, logoY + 8);
-    }
+    try { addImgFit(assets.prophixLogo, mL, logoY, 42, logoH); } catch(e) {}
   } else {
     font('bold', 14); tc(T.red); doc.text('Prophix®', mL, logoY + 8);
   }
 
-  // Client logo — aspect-ratio preserved, right-aligned, max 44x16mm box
+  // Client logo — right, aspect ratio safe
   if (assets.clientLogo) {
     try {
-      // Decode dimensions from base64 PNG header to preserve aspect ratio
-      var b64 = assets.clientLogo.replace(/^data:image\/[a-z]+;base64,/, '');
-      var bytes = atob(b64.substring(0, 40));
-      var pw = (bytes.charCodeAt(16)<<24)|(bytes.charCodeAt(17)<<16)|(bytes.charCodeAt(18)<<8)|bytes.charCodeAt(19);
-      var ph = (bytes.charCodeAt(20)<<24)|(bytes.charCodeAt(21)<<16)|(bytes.charCodeAt(22)<<8)|bytes.charCodeAt(23);
-      var aspect = (pw > 0 && ph > 0) ? pw / ph : 2;
-      var maxW = 44, maxH = 16;
-      var clH = maxH;
-      var clW = clH * aspect;
-      if (clW > maxW) { clW = maxW; clH = clW / aspect; }
-      var clX = W - mR - clW;
-      var clY = logoY + (maxH - clH) / 2; // vertically center in the box
-      doc.addImage(assets.clientLogo, 'PNG', clX, clY, clW, clH, undefined, 'FAST');
+      var dims = getImgDims(assets.clientLogo);
+      var aspect = dims ? dims.w / dims.h : 2;
+      var clH = logoH, clW = clH * aspect;
+      if (clW > 44) { clW = 44; clH = clW / aspect; }
+      doc.addImage(assets.clientLogo, 'PNG', W - mR - clW, logoY + (logoH - clH)/2, clW, clH, undefined, 'FAST');
     } catch(e) { font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' }); }
   } else {
     font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' });
   }
 
-  var y = logoY + logoH + 14;  // clear breathing room after logos
+  var y = logoY + logoH + 14;
 
-  // "CUSTOMER STORY" — small grey, clear gap from header
+  // "CUSTOMER STORY" label
   font('bold', 7.5); tc(T.muted);
   doc.text('CUSTOMER STORY', mL, y);
   y += 10;
 
-  // ── TITLE — ultra-bold red ────────────────────────────────────────────────
+  // Title — ultra-bold red
   var title = '';
   if (data.content) {
     var fs = data.content.find(function(c) { return c.type === 'section' && c.data && c.data.heading; });
@@ -1982,17 +1936,14 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
   font('bold', 24); tc(T.red);
   var titleLines = doc.splitTextToSize(title, W - mL - mR);
-  titleLines.slice(0, 3).forEach(function(l) {
-    boldText(l, mL, y);  // double-draw for heavier appearance
-    y += 11;
-  });
+  titleLines.slice(0, 3).forEach(function(l) { boldText(l, mL, y); y += 11; });
   y += 5;
 
-  // ── TWO-COLUMN ─────────────────────────────────────────────────────────────
+  // ── Page 1: Two-column body ─────────────────────────────────────────────────
   var mainY = y;
   var sideY = y;
 
-  // ── RIGHT SIDEBAR ──────────────────────────────────────────────────────────
+  // RIGHT SIDEBAR ─────────────────────────────────────────────────────────────
   font('bold', 10); tc(T.red);
   doc.text('Who is ' + (data.name || 'the client') + '?', sideX, sideY);
   sideY += 2.5;
@@ -2013,14 +1964,13 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   });
   sideY += 3;
 
-  // Short red divider line
   dc(T.red); lw(0.8);
   doc.line(sideX, sideY, sideX + 18, sideY);
   sideY += 7;
 
   font('bold', 10); tc(T.red);
   doc.text('Applications deployed', sideX, sideY);
-  sideY += 8;  // clear gap between heading and icons
+  sideY += 8;
 
   (data.products || []).forEach(function(pr) {
     var icon = assets.icons[pr];
@@ -2030,56 +1980,44 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     } else {
       fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F');
     }
-    font('normal', 8.5); tc(T.red);  // product name in red like reference
-    doc.text(pr, sideX + 7, sideY);
-    sideY += 6.5;
+    font('normal', 8.5); tc(T.red);
+    doc.text(pr, sideX + 8, sideY);
+    sideY += 7;
   });
 
-  // ── KRS CARD — light blue-grey bg, BLUE text/checkmarks ───────────────────
+  // KRS CARD ──────────────────────────────────────────────────────────────────
   var krs = data.krs || [];
   if (krs.length > 0) {
     var krsLineH = 5;
     var krsCardH = 12;
     krs.forEach(function(k) {
-      var txt = k.text || '';
-      if (k.bold) txt = txt.replace(new RegExp('^' + k.bold.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':?\\s*', 'i'), '').trim();
-      var full = k.bold ? k.bold + ': ' + txt : txt;
-      krsCardH += Math.min(doc.splitTextToSize(full, mainW - 14).length, 3) * krsLineH + 2;
+      var txt = k.bold ? k.bold + ': ' + (k.text || '').replace(new RegExp('^' + (k.bold||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':?\\s*','i'),'').trim() : (k.text || '');
+      krsCardH += Math.min(doc.splitTextToSize(txt, mainW - 14).length, 3) * krsLineH + 2;
     });
     krsCardH += 6;
 
     fc(T.krsCard);
     doc.roundedRect(mL, mainY, mainW, krsCardH, 4, 4, 'F');
 
-    // KRS heading — BLUE bold
-    font('bold', 10); tc(T.krsBlue);
+    font('bold', 10); tc([30, 115, 190]);
     doc.text(data.krsHeading || 'Key results snapshot', mL + 5, mainY + 8);
 
     var krsY = mainY + 15;
     krs.forEach(function(k) {
       if (krsY > mainY + krsCardH - 5) return;
-      var txt = k.text || '';
-      if (k.bold) txt = txt.replace(new RegExp('^' + k.bold.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':?\\s*', 'i'), '').trim();
-      var full = k.bold ? k.bold + ': ' + txt : txt;
-
-      // Blue checkmark ✓
-      dc(T.krsBlue); lw(0.5);
-      doc.line(krsY > 0 ? mL + 4 : mL + 4, krsY - 1.5, mL + 5.5, krsY);
+      var txt = k.bold ? k.bold + ': ' + (k.text || '').replace(new RegExp('^' + (k.bold||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':?\\s*','i'),'').trim() : (k.text || '');
+      dc([30, 115, 190]); lw(0.5);
+      doc.line(mL + 4, krsY - 1.5, mL + 5.5, krsY);
       doc.line(mL + 5.5, krsY, mL + 8, krsY - 3);
-
-      font('normal', 8); tc(T.krsBlue);
-      var kLines = doc.splitTextToSize(full, mainW - 14);
-      kLines.slice(0, 3).forEach(function(l) {
-        doc.text(l, mL + 11, krsY);
-        krsY += krsLineH;
-      });
+      font('normal', 8); tc([30, 115, 190]);
+      var kLines = doc.splitTextToSize(txt, mainW - 14);
+      kLines.slice(0, 3).forEach(function(l) { doc.text(l, mL + 11, krsY); krsY += krsLineH; });
       krsY += 1;
     });
-
     mainY += krsCardH + 5;
   }
 
-  // ── Stats row ──────────────────────────────────────────────────────────────
+  // STATS ROW ─────────────────────────────────────────────────────────────────
   var stats = data.stats || [];
   if (stats.length > 0) {
     var sw = mainW / Math.min(stats.length, 4);
@@ -2095,38 +2033,69 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     mainY += 5;
   }
 
-  // ── Content sections ───────────────────────────────────────────────────────
+  // ── Render content sections across pages ────────────────────────────────────
+  // Page break threshold: leave room for shape-up image (24mm) at top of page 2
+  var PAGE1_MAX = H - 36;  // stop before bottom shape on page 1
+  var PAGE2_TOP = 28;      // page 2 starts here (after shape-up decoration)
+  var PAGE2_MAX = H - 30;  // stop before footer on page 2
+  var onPage2 = false;
+
+  function checkPageBreak() {
+    if (!onPage2 && mainY > PAGE1_MAX) {
+      // Add page
+      doc.addPage();
+      onPage2 = true;
+
+      // shape-up.png at very top of page 2 (upside-down dome)
+      if (assets.shapeUp) {
+        try {
+          fc([255,255,255]); doc.rect(0, 0, W, 28, 'F');
+          doc.addImage(assets.shapeUp, 'PNG', W/2 - 25, 0, 50, 24, undefined, 'FAST');
+        } catch(e) {}
+      }
+
+      mainY = PAGE2_TOP + 4;
+    }
+  }
+
   var sections = (data.content || []).filter(function(c) { return c.type === 'section'; });
-  sections.forEach(function(item) {
-    if (!item.data || mainY > H - 42) return;
+  sections.forEach(function(item, idx) {
+    if (!item.data) return;
+    // Skip the very first section if its heading was used as the title
     var s = item.data;
+
+    checkPageBreak();
+    var maxY = onPage2 ? PAGE2_MAX : PAGE1_MAX;
 
     if (s.label) {
       font('bold', 7.5); tc(T.red);
       doc.text(s.label.toUpperCase(), mL, mainY);
       mainY += 5;
     }
+
     if (s.heading) {
+      checkPageBreak();
       font('bold', 11); tc(T.red);
       doc.splitTextToSize(s.heading, mainW).slice(0, 2).forEach(function(l) {
         boldText(l, mL, mainY); mainY += 5.5;
       });
       mainY += 1;
     }
+
     if (s.body) {
       s.body.split('\n').forEach(function(line) {
-        if (mainY > H - 42) return;
+        checkPageBreak();
         var t = line.trim();
         if (!t) { mainY += 2; return; }
         if (/^[-–]\s/.test(t)) {
           fc(T.bodyText); doc.circle(mL + 1.5, mainY - 1.2, 0.8, 'F');
           font('normal', 8.5); tc(T.bodyText);
-          doc.splitTextToSize(t.replace(/^[-–]\s+/, ''), mainW - 6).slice(0, 2).forEach(function(l) {
+          doc.splitTextToSize(t.replace(/^[-–]\s+/, ''), mainW - 6).slice(0, 3).forEach(function(l) {
             doc.text(l, mL + 5, mainY); mainY += 4;
           });
         } else {
           font('normal', 8.5); tc(T.bodyText);
-          doc.splitTextToSize(t, mainW).slice(0, 4).forEach(function(l) {
+          doc.splitTextToSize(t, mainW).slice(0, 5).forEach(function(l) {
             doc.text(l, mL, mainY); mainY += 4;
           });
         }
@@ -2135,19 +2104,30 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     }
   });
 
-  // ── Decorative shapes — fixed at bottom of page ──────────────────────────
-  // Right shape: bottom-right of page (sits just above footer)
-  // Center at W-24, bottom at H-22 (above footer), size 40x42mm
-  // Shapes: center placed below page bottom so only dome top peeks up — no content overlap
-  drawShapesLeft();  // left shape only
+  // ── Page 2 footer ───────────────────────────────────────────────────────────
+  if (!onPage2) {
+    doc.addPage();
+    onPage2 = true;
+    if (assets.shapeUp) {
+      try {
+        fc([255,255,255]); doc.rect(0, 0, W, 28, 'F');
+        doc.addImage(assets.shapeUp, 'PNG', W/2 - 25, 0, 50, 24, undefined, 'FAST');
+      } catch(e) {}
+    }
+  }
 
-  // ── FOOTER ────────────────────────────────────────────────────────────────
+  // Left shape at bottom-left of last page
+  if (assets.shapeLeft) {
+    try {
+      fc([255,255,255]); doc.rect(0, H - 24, 36, 24, 'F');
+      doc.addImage(assets.shapeLeft, 'PNG', 0, H - 24, 36, 24, undefined, 'FAST');
+    } catch(e) {}
+  }
+
+  // Prophix logo bottom-right
   var fy = H - 14;
-
-  // Prophix logo — bottom right, same aspect-ratio-safe approach
   if (assets.prophixLogo) {
-    try { doc.addImage(assets.prophixLogo, 'PNG', W - mR - 28, fy - 5, 0, 8, undefined, 'FAST'); }
-    catch(e) { font('bold', 8); tc(T.red); doc.text('Prophix', W - mR, fy, { align: 'right' }); }
+    try { addImgFit(assets.prophixLogo, W - mR - 32, fy - 6, 32, 8); } catch(e) {}
   }
 
   font('normal', 5.5); tc(T.muted);
@@ -2156,7 +2136,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     W - mR, fy + 5, { align: 'right' }
   );
 
-  // ── Save ──────────────────────────────────────────────────────────────────
+  // ── Save ────────────────────────────────────────────────────────────────────
   var filename = (data.name || 'Client').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '_Customer_Story.pdf';
   doc.save(filename);
 };
