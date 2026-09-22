@@ -2012,37 +2012,48 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   doc.line(sideX, sideY, sideX + sideW, sideY);
   sideY += 5;
 
+  var SIDE_MAX = H - 32;  // sidebar must not exceed this y on page 1
+
   font('normal', 8); tc(T.bodyText);
-  sideY = printWrap(data.whoText || data.desc || '', sideX, sideY, sideW, 4.2);
+  // Wrap whoText with line-by-line guard against page overflow
+  var whoLines = doc.splitTextToSize(data.whoText || data.desc || '', sideW);
+  whoLines.forEach(function(l) {
+    if (sideY < SIDE_MAX) { doc.text(l, sideX, sideY); sideY += 4.2; }
+  });
   sideY += 3;
 
   (data.whoStats || []).slice(0, 4).forEach(function(ws) {
+    if (sideY >= SIDE_MAX) return;
     font('bold', 13); tc(T.red);
     doc.text(ws.v || '', sideX, sideY); sideY += 4.5;
+    if (sideY >= SIDE_MAX) return;
     font('normal', 7); tc(T.muted);
     sideY = printWrap(ws.l || '', sideX, sideY, sideW, 3.5, 2);
     sideY += 1;
   });
   sideY += 3;
 
-  dc(T.red); lw(0.8);
-  doc.line(sideX, sideY, sideX + 18, sideY);
-  sideY += 7;
-
-  font('bold', 10); tc(T.red);
-  doc.text('Applications deployed', sideX, sideY);
-  sideY += 8;
-
-  (data.products || []).forEach(function(pr) {
-    var icon = assets.icons[pr];
-    if (icon) {
-      try { doc.addImage(icon, 'PNG', sideX, sideY - 4.5, 5.5, 5.5, undefined, 'FAST'); }
-      catch(e) { fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F'); }
-    } else { fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F'); }
-    font('normal', 8.5); tc(T.red);
-    doc.text(pr, sideX + 8, sideY);
+  if (sideY < SIDE_MAX - 10) {
+    dc(T.red); lw(0.8);
+    doc.line(sideX, sideY, sideX + 18, sideY);
     sideY += 7;
-  });
+
+    font('bold', 10); tc(T.red);
+    doc.text('Applications deployed', sideX, sideY);
+    sideY += 8;
+
+    (data.products || []).forEach(function(pr) {
+      if (sideY >= SIDE_MAX) return;
+      var icon = assets.icons[pr];
+      if (icon) {
+        try { doc.addImage(icon, 'PNG', sideX, sideY - 4.5, 5.5, 5.5, undefined, 'FAST'); }
+        catch(e) { fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F'); }
+      } else { fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F'); }
+      font('normal', 8.5); tc(T.red);
+      doc.text(pr, sideX + 8, sideY);
+      sideY += 7;
+    });
+  }
 
   // KRS CARD
   var krs = data.krs || [];
@@ -2071,17 +2082,26 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     mainY += krsCardH + 5;
   }
 
-  // STATS
+  // STATS — dynamic row height to prevent overlap
   var stats = data.stats || [];
   if (stats.length > 0) {
-    var sw = mainW / Math.min(stats.length, 4);
-    stats.slice(0, 4).forEach(function(s, i) {
-      var sx = mL + i * sw;
-      font('bold', 16); tc(T.red); boldText(s.v || '', sx, mainY + 7);
+    var statCount = Math.min(stats.length, 4);
+    var sw = mainW / statCount;
+    // Calculate row height based on tallest label
+    var maxLabelLines = 1;
+    stats.slice(0, statCount).forEach(function(s) {
       font('normal', 7); tc(T.muted);
-      printWrap(s.l || '', sx, mainY + 12, sw - 2, 3.5, 2);
+      var ll = doc.splitTextToSize(s.l || '', sw - 3).length;
+      if (ll > maxLabelLines) maxLabelLines = ll;
     });
-    mainY += 20;
+    var statRowH = 9 + maxLabelLines * 3.5 + 3; // value(9) + label lines + gap
+    stats.slice(0, statCount).forEach(function(s, i) {
+      var sx = mL + i * sw;
+      font('bold', 14); tc(T.red); boldText(s.v || '', sx, mainY + 7);
+      font('normal', 7); tc(T.muted);
+      printWrap(s.l || '', sx, mainY + 11, sw - 3, 3.5);
+    });
+    mainY += statRowH;
     dc([210, 210, 220]); lw(0.3);
     doc.line(mL, mainY, mL + mainW, mainY);
     mainY += 5;
