@@ -306,46 +306,6 @@
           }
         },
         {
-          "type": "section",
-          "data": {
-            "label": "Pourquoi Prophix",
-            "heading": "La bonne plateforme pour restructurer et faire évoluer la consolidation",
-            "body": "Prophix Financial Consolidation était déjà déployé chez Eaglestone à l'arrivée de Quentin. Ce qui a changé, c'est la façon dont il était utilisé. Grâce au Continuous Success Package, Quentin a travaillé avec un consultant Prophix pour auditer la configuration existante, identifier les faiblesses structurelles et reconstruire l'architecture de consolidation de zéro : en top-down, avec toutes les sous-consolidations liées au niveau groupe en temps réel.\n\n- Une plateforme pour une consolidation multinationale en top-down avec visibilité en temps réel sur tous les niveaux d'entités et de sous-groupes.\n- Intégration complète de la France (données locales, ajustements de consolidation et éliminations intercos), remplaçant les contributions pré-agrégées de SAP BFC.\n- Double référentiel de reporting (luxembourgeois statutaire et IFRS) avec consolidation au niveau segment, dimensions analytiques et traçabilité complète."
-          }
-        },
-        {
-          "type": "section",
-          "data": {
-            "label": "Fonctionnalités Préférées",
-            "heading": "Ce que Quentin et son équipe utilisent le plus",
-            "body": "Interrogé sur ce que lui et son équipe utilisent le plus, Quentin a cité plusieurs fonctionnalités devenues incontournables au quotidien, plutôt qu'une seule fonctionnalité phare.\n\n- Le module de réconciliation intercos : sa méthode préférée pour rapprocher les positions entre entités, qu'il juge beaucoup plus convivial que l'outil qu'il utilisait auparavant.\n- La couche de reporting personnalisé (Excel Add-In) : lui permet de construire des rapports détaillés qui vont bien au-delà des contributions consolidées standard utilisées par son prédécesseur.\n- Les dimensions analytiques : utilisées pour répondre à des demandes précises de la direction, comme extraire la dette bancaire par établissement directement depuis la consolidation.\n- Les contrôles de cohérence dans les liasses : des règles de validation, dont certaines ajoutées par Quentin lui-même, qui détectent les erreurs telles qu'un actif ne correspondant pas au passif avant le lancement de la consolidation.\n- La consolidation au niveau segment : la possibilité de sortir une vue consolidée par segment d'activité, et non plus seulement par pays, ce que l'ancienne configuration ne permettait pas.\n- La simulation de scénarios : modéliser l'impact consolidé d'un montage ou d'une dilution d'investisseur avant qu'elle n'ait lieu, pour comparer les options avant de s'engager.\n- Navigation plus rapide dans les dossiers : depuis la mise à jour de juin 2026, passer d’un schéma à l’autre au sein d’un dossier ne nécessite plus de revenir en arrière via les écrans précédents, une amélioration récente du produit que Quentin a expressément saluée."
-          }
-        },
-        {
-          "type": "section",
-          "data": {
-            "label": "Résultats Clés",
-            "heading": "De la complexité héritée à une indépendance complète en consolidation",
-            "body": "Avec la configuration Prophix restructurée, Eaglestone dispose désormais d'une consolidation groupe en top-down avec des sous-consolidations pour la Belgique, la France et le Luxembourg liées en temps réel. Quentin a une visibilité complète sur les éliminations intercos, les données locales et les ajustements de consolidation pour chaque entité, un niveau de détail qui était tout simplement indisponible auparavant.\n\nLa qualité et la traçabilité des chiffres consolidés se sont considérablement améliorées. Quentin construit des reportings détaillés en utilisant la fonctionalité Excel Add-In de Prophix, analyse les contributions au niveau segment et réconcilie les comptes consolidés avec les données trésorerie et business plan, un travail pour lequel il n'y avait auparavant aucun temps disponible, parce que la consolidation elle-même était trop lente et opaque.\n\nLa France a été entièrement migrée de SAP BFC vers Prophix au cours de 2025 et 2026. Le reporting IFRS à destination des investisseurs respecte désormais des délais stricts de façon constante. L'équipe est passée de consacrer la majorité de son énergie à maintenir la consolidation à consacrer cette énergie à l'analyse."
-          }
-        },
-        {
-          "type": "section",
-          "data": {
-            "label": "Le Retour sur investissement, en jours",
-            "heading": "Un gain de temps concrèt",
-            "body": "Interrogé pour chiffrer précisément l'impact, Quentin s'est montré prudent. Le processus de consolidation d'Eaglestone dure environ un mois à chaque clôture, et le groupe clôture ses comptes quatre fois par an : une consolidation intermédiaire en juin, la consolidation annuelle en décembre, et des arrêts trimestriels au 31 mars et au 30 septembre.En restructurant la configuration en top-down avec Alexandre, Quentin estime que l'équipe gagne aujourd'hui environ une semaine par cycle de clôture. Ce travail dépendait auparavant de sous-consolidations non liées entre elles et repose désormais sur une consolidation groupe unique avec une visibilité en temps réel sur chaque entité."
-          }
-        },
-        {
-          "type": "section",
-          "data": {
-            "label": "Avec Prophix, Eaglestone a pu :",
-            "heading": "",
-            "body": "- Restructurer la consolidation groupe en top-down, en liant toutes les sous-consolidations en temps réel.\n- Intégrer entièrement la France dans Prophix avec toutes les couches de données sous-jacentes, en remplaçant les contributions pré-agrégées de SAP BFC.\n- Produire des reportings de consolidation au niveau segment et réconcilier la consolidation statutaire avec les données de pilotage et de trésorerie.\n- Développer les compétences internes en consolidation grâce au modèle de coaching CSP, rendant l'équipe entièrement indépendante dans la gestion de la configuration Prophix."
-          }
-        },
-        {
           "type": "clip",
           "data": {
             "title": "plus de transparence, information plus rapide",
@@ -353,6 +313,14 @@
             "mediaType": "audio",
             "media": "clip1_transparency.mp3",
             "audio": "clip1_transparency.mp3"
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "Pourquoi Prophix",
+            "heading": "La bonne plateforme pour restructurer et faire évoluer la consolidation",
+            "body": "Prophix Financial Consolidation était déjà déployé chez Eaglestone à l'arrivée de Quentin. Ce qui a changé, c'est la façon dont il était utilisé. Grâce au Continuous Success Package, Quentin a travaillé avec un consultant Prophix pour auditer la configuration existante, identifier les faiblesses structurelles et reconstruire l'architecture de consolidation de zéro : en top-down, avec toutes les sous-consolidations liées au niveau groupe en temps réel.\n\n- Une plateforme pour une consolidation multinationale en top-down avec visibilité en temps réel sur tous les niveaux d'entités et de sous-groupes.\n- Intégration complète de la France (données locales, ajustements de consolidation et éliminations intercos), remplaçant les contributions pré-agrégées de SAP BFC.\n- Double référentiel de reporting (luxembourgeois statutaire et IFRS) avec consolidation au niveau segment, dimensions analytiques et traçabilité complète."
           }
         },
         {
@@ -373,6 +341,32 @@
             "mediaType": "audio",
             "media": "",
             "audio": ""
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "Fonctionnalités Préférées",
+            "heading": "Ce que Quentin et son équipe utilisent le plus",
+            "body": "Interrogé sur ce que lui et son équipe utilisent le plus, Quentin a cité plusieurs fonctionnalités devenues incontournables au quotidien, plutôt qu'une seule fonctionnalité phare.\n\n- Le module de réconciliation intercos : sa méthode préférée pour rapprocher les positions entre entités, qu'il juge beaucoup plus convivial que l'outil qu'il utilisait auparavant.\n- La couche de reporting personnalisé (Excel Add-In) : lui permet de construire des rapports détaillés qui vont bien au-delà des contributions consolidées standard utilisées par son prédécesseur.\n- Les dimensions analytiques : utilisées pour répondre à des demandes précises de la direction, comme extraire la dette bancaire par établissement directement depuis la consolidation.\n- Les contrôles de cohérence dans les liasses : des règles de validation, dont certaines ajoutées par Quentin lui-même, qui détectent les erreurs telles qu'un actif ne correspondant pas au passif avant le lancement de la consolidation.\n- La consolidation au niveau segment : la possibilité de sortir une vue consolidée par segment d'activité, et non plus seulement par pays, ce que l'ancienne configuration ne permettait pas.\n- La simulation de scénarios : modéliser l'impact consolidé d'un montage ou d'une dilution d'investisseur avant qu'elle n'ait lieu, pour comparer les options avant de s'engager.\n- Navigation plus rapide dans les dossiers : depuis la mise à jour de juin 2026, passer d’un schéma à l’autre au sein d’un dossier ne nécessite plus de revenir en arrière via les écrans précédents, une amélioration récente du produit que Quentin a expressément saluée."
+          }
+        },
+        {
+          "type": "clip",
+          "data": {
+            "title": "Navigation plus rapide dans Liasse après la mise à jour de juin 2026",
+            "quote": "surtout grâce aux mises à jour proposées par Prophix. J'ai vu qu'il y avait eu une mise à jour en juin (2026), notamment au niveau des interfaces de la conso, qui facilite la navigation entre les différents schémas… C'est donc également très positif. Et enfin, c'est vraiment quelque chose que je me suis dit : c'est vrai que pour passer d'un modèle à un autre, il faut toujours revenir un peu en arrière, mais maintenant, c'est un peu plus direct. On peut passer de l'un à l'autre sans avoir à revenir en arrière.",
+            "mediaType": "audio",
+            "media": "",
+            "audio": ""
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "Résultats Clés",
+            "heading": "De la complexité héritée à une indépendance complète en consolidation",
+            "body": "Avec la configuration Prophix restructurée, Eaglestone dispose désormais d'une consolidation groupe en top-down avec des sous-consolidations pour la Belgique, la France et le Luxembourg liées en temps réel. Quentin a une visibilité complète sur les éliminations intercos, les données locales et les ajustements de consolidation pour chaque entité, un niveau de détail qui était tout simplement indisponible auparavant.\n\nLa qualité et la traçabilité des chiffres consolidés se sont considérablement améliorées. Quentin construit des reportings détaillés en utilisant la fonctionalité Excel Add-In de Prophix, analyse les contributions au niveau segment et réconcilie les comptes consolidés avec les données trésorerie et business plan, un travail pour lequel il n'y avait auparavant aucun temps disponible, parce que la consolidation elle-même était trop lente et opaque.\n\nLa France a été entièrement migrée de SAP BFC vers Prophix au cours de 2025 et 2026. Le reporting IFRS à destination des investisseurs respecte désormais des délais stricts de façon constante. L'équipe est passée de consacrer la majorité de son énergie à maintenir la consolidation à consacrer cette énergie à l'analyse."
           }
         },
         {
@@ -406,6 +400,14 @@
           }
         },
         {
+          "type": "section",
+          "data": {
+            "label": "Le Retour sur investissement, en jours",
+            "heading": "Un gain de temps concrèt",
+            "body": "Interrogé pour chiffrer précisément l'impact, Quentin s'est montré prudent. Le processus de consolidation d'Eaglestone dure environ un mois à chaque clôture, et le groupe clôture ses comptes quatre fois par an : une consolidation intermédiaire en juin, la consolidation annuelle en décembre, et des arrêts trimestriels au 31 mars et au 30 septembre.En restructurant la configuration en top-down avec Alexandre, Quentin estime que l'équipe gagne aujourd'hui environ une semaine par cycle de clôture. Ce travail dépendait auparavant de sous-consolidations non liées entre elles et repose désormais sur une consolidation groupe unique avec une visibilité en temps réel sur chaque entité."
+          }
+        },
+        {
           "type": "clip",
           "data": {
             "title": "estimer le temps gagné",
@@ -413,6 +415,14 @@
             "mediaType": "audio",
             "media": "",
             "audio": ""
+          }
+        },
+        {
+          "type": "section",
+          "data": {
+            "label": "Avec Prophix, Eaglestone a pu :",
+            "heading": "",
+            "body": "- Restructurer la consolidation groupe en top-down, en liant toutes les sous-consolidations en temps réel.\n- Intégrer entièrement la France dans Prophix avec toutes les couches de données sous-jacentes, en remplaçant les contributions pré-agrégées de SAP BFC.\n- Produire des reportings de consolidation au niveau segment et réconcilier la consolidation statutaire avec les données de pilotage et de trésorerie.\n- Développer les compétences internes en consolidation grâce au modèle de coaching CSP, rendant l'équipe entièrement indépendante dans la gestion de la configuration Prophix."
           }
         },
         {
