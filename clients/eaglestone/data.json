@@ -218,7 +218,7 @@
     {
       "type": "section",
       "data": {
-        "label": "With Prophix, Eaglestone Services SA was able to:",
+        "label": "With Prophix, Eaglestone was able to:",
         "heading": "",
         "body": "- Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
       }
@@ -340,7 +340,7 @@
         {
           "type": "section",
           "data": {
-            "label": "Avec Prophix, Eaglestone Services SA a pu :",
+            "label": "Avec Prophix, Eaglestone a pu :",
             "heading": "",
             "body": "- Restructurer la consolidation groupe en top-down, en liant toutes les sous-consolidations en temps réel.\n- Intégrer entièrement la France dans Prophix avec toutes les couches de données sous-jacentes, en remplaçant les contributions pré-agrégées de SAP BFC.\n- Produire des reportings de consolidation au niveau segment et réconcilier la consolidation statutaire avec les données de pilotage et de trésorerie.\n- Développer les compétences internes en consolidation grâce au modèle de coaching CSP, rendant l'équipe entièrement indépendante dans la gestion de la configuration Prophix."
           }
@@ -525,32 +525,32 @@
           "type": "section",
           "data": {
             "label": "Opvallende kenmerken",
-            "heading": "What Quentin and his team rely on most",
+            "heading": "Waar Quentin en zijn team het meest op vertrouwen",
             "body": "Toen hem werd gevraagd wat hij en zijn team het meest gebruiken, noemde Quentin verschillende functies die in het dagelijks werk onmisbaar zijn geworden, in plaats van één enkele uitblinker.\n\n- De module voor intercompany-afstemming: zijn favoriete methode om de standen tussen entiteiten op elkaar af te stemmen, die hij veel gebruiksvriendelijker vindt dan de tool die hij voorheen gebruikte.\n- De laag voor aangepaste rapportage (Excel Add-In): hiermee kan hij gedetailleerde rapporten opstellen die veel verder gaan dan de standaard geconsolideerde bijdragen die zijn voorganger gebruikte.\n- De analytische dimensies: deze worden gebruikt om aan specifieke verzoeken van het management te voldoen, zoals het rechtstreeks uit de consolidatie opvragen van de bankschulden per instelling.\n- De consistentiecontroles in de rapportages: validatieregels, waarvan sommige door Quentin zelf zijn toegevoegd, die fouten detecteren, zoals een actief dat niet overeenkomt met een passief, voordat de consolidatie wordt gestart.\n- Consolidatie op segmentniveau: de mogelijkheid om een geconsolideerd overzicht per activiteitsegment te genereren, en niet langer alleen per land, wat met de oude configuratie niet mogelijk was.\n- Scenariosimulatie: het modelleren van de geconsolideerde impact van een transactie of een verwatering van het aandeelhouderschap voordat deze plaatsvindt, om de opties te vergelijken alvorens een beslissing te nemen.\n- Snellere navigatie in de mappen: sinds de update van juni 2026 is het niet meer nodig om via de vorige schermen terug te gaan om binnen een map van het ene schema naar het andere te schakelen; een recente verbetering van het product die Quentin uitdrukkelijk heeft geprezen."
           }
         },
         {
           "type": "section",
           "data": {
-            "label": "Key Results",
-            "heading": "From inherited complexity to full consolidation independence",
-            "body": "With the restructured Prophix setup, Eaglestone now runs a top-down group consolidation with sub-consolidations for Belgium, France, and Luxembourg linked in real time. Quentin has full visibility into intercompany eliminations, local data, and console adjustments for every entity, detail that was simply unavailable before.\n\nThe quality and traceability of consolidated figures improved significantly. Quentin builds detailed reporting using Prophix's DynProfit layer, analyses segment-level contributions, and reconciles consolidated accounts against treasury and business plan data, work that previously had no time allocated to it because consolidation itself was too slow and opaque.\n\nFrance was fully migrated from SAP BFC into Prophix during 2024. Investor-facing IFRS reporting now meets strict deadlines consistently. The team moved from spending most of its energy keeping consolidation running to spending that energy on analysis."
+            "label": "Belangrijkste resultaten",
+            "heading": "Van erfelijke complexiteit naar volledige onafhankelijkheid op het gebied van consolidatie",
+            "body": "Dankzij de geherstructureerde Prophix-opzet voert Eaglestone nu een top-down groepsconsolidatie uit, waarbij de subconsolidaties voor België, Frankrijk en Luxemburg in realtime met elkaar zijn gekoppeld. Quentin heeft volledig inzicht in de eliminaties tussen gelieerde ondernemingen, lokale gegevens en console-aanpassingen voor elke entiteit, details die voorheen simpelweg niet beschikbaar waren.\n\nDe kwaliteit en traceerbaarheid van de geconsolideerde cijfers zijn aanzienlijk verbeterd. Quentin stelt gedetailleerde rapportages op met behulp van de Excel Add-IN van Prophix, analyseert bijdragen op segmentniveau en stemt de geconsolideerde rekeningen af op treasury- en businessplan-gegevens, werkzaamheden waarvoor voorheen geen tijd was gereserveerd omdat de consolidatie zelf te traag en ondoorzichtig was.\n\nFrankrijk is in de loop van 2024 volledig gemigreerd van SAP BFC naar Prophix. De IFRS-rapportage voor beleggers voldoet nu consequent aan strikte deadlines. Het team besteedt nu niet langer het grootste deel van zijn energie aan het draaiende houden van de consolidatie, maar aan analyse."
           }
         },
         {
           "type": "section",
           "data": {
-            "label": "The ROI, in days",
-            "heading": "The time saving, in numbers",
-            "body": "Asked directly to quantify the impact, Quentin was careful not to overstate it. Eaglestone's consolidation process takes about a month at each closing, and the group closes its books four times a year: an interim consolidation in June, the annual consolidation in December, and quarterly stops on March 31 and September 30.\n\nBy restructuring the setup top-down with Alexandre, Quentin estimated the team now saves about a week per closing cycle. That work used to depend on unlinked sub-consolidations and now runs through a single group consolidation with real-time visibility into each entity."
+            "label": "Het rendement op investering, in dagen",
+            "heading": "De tijdwinst, in cijfers",
+            "body": "Toen hem rechtstreeks werd gevraagd de impact te kwantificeren, was Quentin voorzichtig om deze niet te overdrijven. Het consolidatieproces van Eaglestone duurt bij elke afsluiting ongeveer een maand, en de groep sluit vier keer per jaar de boeken: een tussentijdse consolidatie in juni, de jaarlijkse consolidatie in december en kwartaalafsluitingen op 31 maart en 30 september.\n\nDoor de opzet samen met Alexandre van bovenaf te herstructureren, schat Quentin dat het team nu ongeveer een week per afsluitingscyclus bespaart. Vroeger was dat werk afhankelijk van losstaande deelconsolidaties, maar nu verloopt het via één enkele groepsconsolidatie met realtime inzicht in elke entiteit."
           }
         },
         {
           "type": "section",
           "data": {
-            "label": "With Prophix, Eaglestone Services SA was able to:",
+            "label": "Dankzij Prophix kon Eaglestone:",
             "heading": "",
-            "body": "- Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
+            "body": "- De groepsconsolidatie top-down herstructureren, waarbij alle subconsolidaties in realtime aan elkaar worden gekoppeld en losstaande bijdragen van entiteiten in afzonderlijke landen worden geëlimineerd.\n- Frankrijk volledig integreren in Prophix, inclusief alle onderliggende gegevenslagen, waarbij vooraf geaggregeerde SAP BFC-bijdragen worden vervangen door details op entiteitsniveau en correct berekende intercompany-eliminaties.\n- Geconsolideerde rapportages op segmentniveau genereren en de wettelijke consolidatie afstemmen met management- en treasurygegevens binnen één enkel platform.\n- Bouw interne consolidatiecapaciteit op via het CSP-coachingmodel, zodat het team volledig zelfstandig de Prophix-configuratie kan beheren en verder ontwikkelen."
           }
         },
         {
