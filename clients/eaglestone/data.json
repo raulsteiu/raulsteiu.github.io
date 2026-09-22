@@ -98,6 +98,17 @@
       }
     },
     {
+      "type": "clip",
+      "data": {
+        "title": "More transparency, faster information",
+        "ts": "",
+        "quote": "The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
+        "mediaType": "audio",
+        "media": "",
+        "audio": ""
+      }
+    },
+    {
       "type": "section",
       "data": {
         "label": "Why Prophix",
@@ -135,17 +146,6 @@
         "label": "With Prophix, Eaglestone Services SA was able to:",
         "heading": "",
         "body": "- Restructure the group consolidation top-down, linking all sub-consolidations in real time and eliminating disconnected contributions from individual country entities.\n- Integrate France fully into Prophix with all underlying data layers, replacing pre-aggregated SAP BFC contributions with entity-level detail and correctly calculated intercompany eliminations.\n- Produce segment-level consolidated reporting and reconcile the statutory consolidation against management and treasury data within a single platform.\n- Build internal consolidation capability through the CSP coaching model, making the team fully independent in managing and evolving the Prophix configuration."
-      }
-    },
-    {
-      "type": "clip",
-      "data": {
-        "title": "More transparency, faster information",
-        "ts": "",
-        "quote": "The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
-        "mediaType": "audio",
-        "media": "clip1_transparency.mp3",
-        "audio": "clip1_transparency.mp3"
       }
     },
     {
