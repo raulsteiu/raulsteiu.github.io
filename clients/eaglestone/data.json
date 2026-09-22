@@ -1,8 +1,8 @@
 {
   "slug": "eaglestone",
-  "name": "Eaglestone",
-  "desc": "Listen to Quentin, Group Consolidation Manager at Eaglestone, share how Prophix Financial Consolidation and the Continuous Success Package helped him restructure a complex inherited setup, integrate France into the group consolidation, and build real-time visibility across three markets.",
-  "ind": "Real Estate Development",
+  "name": "How Eaglestone transformed financial consolidation with Prophix",
+  "desc": "Écoutez Quentin, responsable de la consolidation du groupe chez Eaglestone, expliquer comment Prophix Financial Consolidation et le « Continuous Success Package » l’ont aidé à restructurer un dispositif complexe dont il avait hérité, à intégrer la France dans la consolidation du groupe et à mettre en place une visibilité en temps réel sur trois marchés.",
+  "ind": "Développement Immobilier",
   "langs": [
     "en",
     "fr",
@@ -11,20 +11,20 @@
   "hasLogo": true,
   "stats": [
     {
-      "v": "~1 week",
-      "l": "Closing Cycle Saved"
+      "v": "~1 semaine",
+      "l": "Cycle de clôture enregistré"
     },
     {
       "v": "9/10",
-      "l": "NPS, already referring peers"
+      "l": "NPS, déjà des recommandations"
     },
     {
       "v": "3",
-      "l": "Markets consolidated (BE,FR,LU)"
+      "l": "Marchés consolidés dans Prophix (BE, FR, LU)"
     },
     {
       "v": "2",
-      "l": "Reporting Frameworks (LuxGAAP, IFRS)"
+      "l": "Cadres de Reporting: LuxGAAP & IFRS"
     }
   ],
   "whoStats": [
@@ -238,7 +238,7 @@
   "krsHeading": "Key Results Snapshot",
   "translations": {
     "fr": {
-      "name": "[FR] Eaglestone",
+      "name": "Comment Eaglestone a révolutionné la consolidation financière grâce à Prophix",
       "desc": "Écoutez Quentin parlant de la solution de consolidation ...",
       "krsHeading": "[FR] Key Results Snapshot",
       "krs": [
