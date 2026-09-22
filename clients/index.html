@@ -1,9 +1,3 @@
-<!-- ============================================================
-     Prophix Client Story Directory — clients/index.html
-     v2.1 — 2026-09-21
-     Permanent static shell. Never regenerate — edit in place.
-     Full version history inside the <script> block below.
-     ============================================================ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -506,8 +500,7 @@ function loadJsPDFDir(cb) {
 
 // PDF builder — loads story.js on demand (avoids code duplication)
 function _buildBrochurePDFDir(jsPDF, data, slug) {
-  function runWithAssets() {
-    // Temporarily set STORY_META so _loadBrochureAssets can find the slug + hasLogo
+  function runWithLang(lc) {
     var prevMeta = window.STORY_META;
     var prevStoryData = window.storyData;
     window.STORY_META = { slug: slug, hasLogo: data.hasLogo || false };
@@ -515,18 +508,66 @@ function _buildBrochurePDFDir(jsPDF, data, slug) {
     _loadBrochureAssets(data, function(assets) {
       window.STORY_META = prevMeta;
       window.storyData = prevStoryData;
-      try { window._buildBrochurePDF(jsPDF, data, assets); }
+      var langData = window._getBrochureData ? _getBrochureData(data, lc) : data;
+      try { window._buildBrochurePDF(jsPDF, langData, assets); }
       catch(e) { alert('PDF error: ' + e.message); }
     });
   }
-  if (window._buildBrochurePDF && window._loadBrochureAssets) {
-    runWithAssets();
-    return;
+
+  function showLangPicker(langs) {
+    // Remove any existing picker
+    var ex = document.getElementById('brochure-lang-picker');
+    if (ex) ex.remove();
+
+    if (!langs || langs.length <= 1) { runWithLang('en'); return; }
+
+    var overlay = document.createElement('div');
+    overlay.id = 'brochure-lang-picker';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center';
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#fff;border-radius:12px;padding:28px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.2)';
+    box.innerHTML = '<div style="font-size:16px;font-weight:900;color:#1A1A2E;margin-bottom:6px">Download brochure</div><div style="font-size:13px;color:#888;margin-bottom:18px">Select language for this PDF:</div><div id="brochure-lang-btns" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px"></div>';
+    var cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.style.cssText = 'width:100%;background:transparent;border:1px solid #E0DFF0;border-radius:6px;padding:9px;font-size:13px;cursor:pointer;color:#888;font-family:Arial,sans-serif;margin-top:16px';
+    cancelBtn.onclick = function(){ overlay.remove(); };
+    box.appendChild(cancelBtn);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    var LANG_NAMES = {en:'EN',fr:'FR',nl:'NL',de:'DE',it:'IT',es:'ES',pt:'PT',pl:'PL',sv:'SV',da:'DA',fi:'FI',no:'NO',ja:'JA',zh:'ZH',ko:'KO'};
+    var btnsDiv = box.querySelector('#brochure-lang-btns');
+    langs.forEach(function(lc) {
+      var btn = document.createElement('button');
+      btn.textContent = LANG_NAMES[lc] || lc.toUpperCase();
+      btn.style.cssText = 'background:#1A1A2E;color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif';
+      btn.onmouseover = function(){ this.style.background='#EF363D'; };
+      btn.onmouseout  = function(){ this.style.background='#1A1A2E'; };
+      btn.onclick = function() {
+        overlay.remove();
+        runWithLang(lc);
+      };
+      btnsDiv.appendChild(btn);
+    });
+
+    // Close on backdrop click
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) overlay.remove();
+    });
+  }
+
+  function run() {
+    var langs = data.langs || ['en'];
+    showLangPicker(langs);
+  }
+
+  if (window._buildBrochurePDF && window._loadBrochureAssets && window._getBrochureData) {
+    run(); return;
   }
   var s = document.createElement('script');
   s.src = '/clients/story.js';
   s.onload = function() {
-    if (window._buildBrochurePDF) { runWithAssets(); }
+    if (window._buildBrochurePDF) { run(); }
     else { alert('PDF builder not available.'); }
   };
   s.onerror = function() { alert('Could not load PDF builder.'); };
