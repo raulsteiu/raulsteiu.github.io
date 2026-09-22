@@ -238,7 +238,7 @@
   "krsHeading": "Key Results Snapshot",
   "translations": {
     "fr": {
-      "name": "[FR]",
+      "name": "",
       "desc": "Écoutez Quentin, Group Consolidation Manager chez Eaglestone, partager comment la consolidation financière Prophix et le Continuous Success Package l'ont aidé à restructurer une configuration héritée complexe, intégrer la France dans la consolidation groupe, et construire une visibilité en temps réel sur trois marchés.",
       "krsHeading": "Résultats en un coup d'œil",
       "krs": [
@@ -404,7 +404,7 @@
           "data": {
             "label": "Le Retour sur investissement, en jours",
             "heading": "Un gain de temps concrèt",
-            "body": "Interrogé pour chiffrer précisément l'impact, Quentin s'est montré prudent. Le processus de consolidation d'Eaglestone dure environ un mois à chaque clôture, et le groupe clôture ses comptes quatre fois par an : une consolidation intermédiaire en juin, la consolidation annuelle en décembre, et des arrêts trimestriels au 31 mars et au 30 septembre.En restructurant la configuration en top-down avec Alexandre, Quentin estime que l'équipe gagne aujourd'hui environ une semaine par cycle de clôture. Ce travail dépendait auparavant de sous-consolidations non liées entre elles et repose désormais sur une consolidation groupe unique avec une visibilité en temps réel sur chaque entité."
+            "body": "Interrogé pour chiffrer précisément l'impact, Quentin s'est montré prudent. Le processus de consolidation d'Eaglestone dure environ un mois à chaque clôture, et le groupe clôture ses comptes quatre fois par an : une consolidation intermédiaire en juin, la consolidation annuelle en décembre, et des arrêts trimestriels au 31 mars et au 30 septembre.\n\nEn restructurant la configuration en top-down avec Alexandre, Quentin estime que l'équipe gagne aujourd'hui environ une semaine par cycle de clôture. Ce travail dépendait auparavant de sous-consolidations non liées entre elles et repose désormais sur une consolidation groupe unique avec une visibilité en temps réel sur chaque entité."
           }
         },
         {
@@ -463,7 +463,7 @@
       }
     },
     "nl": {
-      "name": "Hoe Eaglestone de financiële consolidatie heeft getransformeerd met Prophix",
+      "name": "",
       "desc": "Luister naar Quentin, Group Consolidation Manager bij Eaglestone, die vertelt hoe Prophix Financial Consolidation en het Continuous Success Package hem hebben geholpen bij het herstructureren van een complexe, overgenomen opzet, het integreren van Frankrijk in de groepsconsolidatie en het creëren van realtime inzicht in drie markten.",
       "krsHeading": "Overzicht van de belangrijkste resultaten",
       "krs": [
