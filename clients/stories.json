@@ -1,5 +1,17 @@
 [
   {
+    "slug": "eaglestone-ai",
+    "name": "EagleStone AI",
+    "ind": "Real Estate, Luxembourg",
+    "langs": [
+      "en",
+      "fr"
+    ],
+    "status": "published",
+    "created": "2026-09-22T14:44:22.868Z",
+    "logo": false
+  },
+  {
     "slug": "eaglerock",
     "name": "EagleRock",
     "ind": "Real Estate, Luxembourg",
