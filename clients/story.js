@@ -1775,12 +1775,14 @@ function generateBrochure() {
 // ── Asset loader ──────────────────────────────────────────────────────────────
 window._loadBrochureAssets = function _loadBrochureAssets(data, cb) {
   var T = BROCHURE_THEME;
-  var assets = { prophixLogo: null, clientLogo: null, icons: {} };
+  var assets = { prophixLogo: null, clientLogo: null, icons: {}, shapeRight: null, shapeLeft: null };
   var toLoad = [];
 
   function queue(url, key, sub) { toLoad.push({ url: url, key: key, sub: sub }); }
 
   queue(T.prophixLogoUrl, 'prophixLogo', null);
+  queue(T.shapeRightUrl, 'shapeRight', null);
+  queue(T.shapeLeftUrl, 'shapeLeft', null);
 
   var slug = window.STORY_META ? STORY_META.slug : (data ? data.slug : '');
   if (data && data.hasLogo && slug) {
@@ -1900,23 +1902,17 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   }
 
   // Shapes right side (page break area): blob center-right, hexagon top-right of blob
-  function drawShapesRight(yMid) {
-    // Small blob, center below page — only smooth dome top visible above page edge
-    var blobW = 30, blobH = 26;
-    var blobCx = W - 16;
-    drawRedBlob(blobCx, yMid, blobW, blobH);
-    // Hexagon above-right of dome peak, fully on page
-    drawHexagon(blobCx + blobW*0.22, yMid - blobH*0.58, 4);
+  function drawShapesRight() {
+    if (assets.shapeRight) {
+      try { doc.addImage(assets.shapeRight, 'PNG', W - 50, H - 34, 50, 34, undefined, 'FAST'); } catch(e) {}
+    }
   }
 
   // Shapes left side (last page bottom): blob bottom-left, hexagon bottom-left of blob
-  function drawShapesLeft(yMid) {
-    // Small blob, center below page — only smooth dome top visible
-    var blobW = 30, blobH = 26;
-    var blobCx = 16;
-    drawRedBlob(blobCx, yMid, blobW, blobH);
-    // Hexagon above-left of dome, fully on page
-    drawHexagon(blobCx - blobW*0.18, yMid - blobH*0.52, 4);
+  function drawShapesLeft() {
+    if (assets.shapeLeft) {
+      try { doc.addImage(assets.shapeLeft, 'PNG', 0, H - 34, 50, 34, undefined, 'FAST'); } catch(e) {}
+    }
   }
 
   // ── HEADER ────────────────────────────────────────────────────────────────
@@ -2132,8 +2128,8 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   // Right shape: bottom-right of page (sits just above footer)
   // Center at W-24, bottom at H-22 (above footer), size 40x42mm
   // Shapes: center placed below page bottom so only dome top peeks up — no content overlap
-  drawShapesRight(H + 8);
-  drawShapesLeft(H + 8);
+  drawShapesRight();
+  drawShapesLeft();
 
   // ── FOOTER ────────────────────────────────────────────────────────────────
   var fy = H - 14;
