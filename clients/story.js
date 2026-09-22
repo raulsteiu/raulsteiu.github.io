@@ -1,4 +1,4 @@
-// Prophix Client Story — story.js v9.8
+// Prophix Client Story — story.js v9.9
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
@@ -12,12 +12,13 @@
 // v9.5  2026-09-21  PDF brochure generator (BROCHURE_THEME config; Auchan layout; logos + icons + shapes)
 // v9.6  2026-09-22  Two-page PDF; language-aware brochure; shape-up.png page break; no content truncation; lang picker from directory
 // v9.7  2026-09-22  Rich text (bold/italic); per-language stats+ind; language tab save fix
-// v9.8  2026-09-22  Sidebar labels per-language (Applications/Features/Who is); desc rich text; name vs title split; comprehensive save audit (bold/italic) in section bodies and whoText; per-language stats+ind fix; language tab save fix (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
+// v9.8  2026-09-22  Sidebar labels per-language; desc rich text; name/title split
+// v9.9  2026-09-22  Audit: guardSingleLine; active-block editable; no [XX] pollution; getRichHTML consistent; _isDirty; cachedDataSha removed; renderBody HTML per-language (Applications/Features/Who is); desc rich text; name vs title split; comprehensive save audit (bold/italic) in section bodies and whoText; per-language stats+ind fix; language tab save fix (BROCHURE_THEME config object); ↓ Brochure button in nav; pixel-accurate Auchan-style layout; Prophix + client logos; product icons; decorative shapes
 
 'use strict';
 
 var sessionToken = '';
-var cachedDataSha = '';
+var _isDirty = false;  // true after any unsaved edit
 var currentLang = 'en';
 var storyData = null; // loaded from data.json
 
@@ -96,6 +97,8 @@ function getCSS() {
     '.krs-item{display:flex;align-items:flex-start;gap:10px;position:relative}',
     '.krs-check{flex-shrink:0;margin-top:1px}',
     '.krs-item-text{font-size:14px;color:rgba(255,255,255,.88);line-height:1.55}',
+    '.krs-bold{font-weight:900;color:#fff;cursor:text;outline:2px dashed rgba(255,255,255,.3);border-radius:2px}',
+    '.krs-body{cursor:text}',
     '.krs-item-text strong{color:#fff}',
     '.body-layout{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 290px;gap:24px;padding:28px 24px}',
     '@media(max-width:820px){.body-layout{grid-template-columns:1fr;padding:18px 14px}}',
@@ -352,25 +355,29 @@ function closeLightbox() {
 
 function renderBody(text) {
   if (!text) return '';
-  var lines = text.split('\n');
+  // Detect HTML tags from getRichHTML (bold/italic)
+  var hasHTML = /<(b|strong|i|em)\b/i.test(text);
+  var rawLines = text.split(/\n|<br\s*\/?>/i);
   var html = ''; var inList = false;
-  lines.forEach(function(line) {
+  rawLines.forEach(function(line) {
     var t = line.trim();
+    if (!t) { if (inList) { html += '</ul>'; inList = false; } html += '<p>&nbsp;</p>'; return; }
     if (/^[-\u2013]\s/.test(t)) {
       if (!inList) { html += '<ul>'; inList = true; }
-      var content = t.replace(/^[-\u2013]\s+/,'');
-      var ci = content.indexOf(':');
-      if (ci > 0 && ci < 60) {
-        html += '<li><strong>' + escRich(content.substring(0,ci)) + ':</strong>' + escRich(content.substring(ci+1)) + '</li>';
-      } else { html += '<li>' + esc(content) + '</li>'; }
+      var cnt = t.replace(/^[-\u2013]\s+/, '');
+      if (!hasHTML) {
+        var ci = cnt.indexOf(':');
+        if (ci > 0 && ci < 60) {
+          html += '<li><strong>' + escRich(cnt.substring(0, ci)) + ':</strong>' + escRich(cnt.substring(ci + 1)) + '</li>';
+        } else { html += '<li>' + escRich(cnt) + '</li>'; }
+      } else { html += '<li>' + cnt + '</li>'; }
     } else {
       if (inList) { html += '</ul>'; inList = false; }
-      if (t) { html += '<p>' + escRich(t) + '</p>'; }
-      else { html += '<p>&nbsp;</p>'; }
+      html += '<p>' + (hasHTML ? t : escRich(t)) + '</p>';
     }
   });
   if (inList) html += '</ul>';
-  return html || '<p>' + escRich(text) + '</p>';
+  return html || '<p>' + (hasHTML ? text : escRich(text)) + '</p>';
 }
 
 // ── Full page renderer ────────────────────────────────────────────────────────
@@ -469,7 +476,7 @@ function renderLangBlock(data, lc, isActive, meta) {
     ind:        (tr && tr.ind) ? tr.ind : data.ind,
     whoText:    (tr && tr.whoText) ? tr.whoText : (p + (data.whoText||'')),
     stats:      (tr && tr.stats && tr.stats.length > 0) ? tr.stats
-                : data.stats.map(function(s){ return isEN ? s : {v: p+s.v, l: p+s.l}; }),
+                : data.stats,  // non-EN shows EN values until translated
     krs:        (tr && tr.krs && tr.krs.length > 0) ? tr.krs
                 : (isEN ? data.krs : data.krs.map(function(k){
                     return {bold: k.bold||'', text: p+(k.bold ? k.bold+': '+k.text.replace(k.bold+':','').trim() : k.text)};
@@ -497,10 +504,10 @@ function renderLangBlock(data, lc, isActive, meta) {
                     return item;
                   }),
     whoStats:   (tr && tr.whoStats && tr.whoStats.length > 0) ? tr.whoStats
-                : data.whoStats.map(function(s){ return isEN ? s : {v: p+s.v, l: p+s.l}; }),
+                : data.whoStats,  // non-EN shows EN values until translated
     products:     data.products,
     results:    (tr && tr.results && tr.results.length > 0) ? tr.results
-                : (isEN ? data.results : (data.results||[]).map(function(r){ return p+r; })),
+                : (data.results||[]),  // non-EN shows EN results until translated
     participants: data.participants,
     sidebarLabels: (tr && tr.sidebarLabels) ? tr.sidebarLabels : (data.sidebarLabels || {})
   };
@@ -530,7 +537,7 @@ function renderLangBlock(data, lc, isActive, meta) {
   hero.innerHTML = logoHtml +
     '<div class="hero-body">' +
     '<div class="hero-tag">' + esc(langLabel) + '</div>' +
-    '<div class="client-name-label" style="font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:4px">' + esc(blockData.name) + '</div>' +
+    '<div class="client-name-label" style="font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:4px">' + esc(data.name) + '</div>' +
     '<h1 class="story-headline">' + esc(blockData.title || blockData.name) + '</h1>' +
     '<div class="hero-desc">' + esc(blockData.desc) + '</div>' +
     (blockData.ind ? '<div class="hero-ind">' + esc(blockData.ind) + '</div>' : '') +
@@ -563,10 +570,9 @@ function renderLangBlock(data, lc, isActive, meta) {
     blockData.krs.forEach(function(k) {
       var li = document.createElement('li'); li.className = 'krs-item';
       // v9.1 fix: use krsBodyText() to strip bold prefix from text before rendering
-      var txt = k.bold
-        ? '<strong>' + esc(k.bold) + ':</strong> ' + krsBodyText(k.bold, k.text)
-        : esc(k.text||'');
-      li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + txt + '</span>';
+      var krsBody = krsBodyText(k.bold, k.text);
+      var boldHtml = k.bold ? '<span class="krs-bold" contenteditable="false">' + esc(k.bold) + ': </span>' : '';
+      li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + boldHtml + '<span class="krs-body">' + esc(krsBody) + '</span></span>';
       krsList.appendChild(li);
     });
     krsCard.appendChild(krsList);
@@ -737,15 +743,18 @@ function domToData() {
       var krsHeading = block.querySelector('.krs-heading'); if (krsHeading) data.krsHeading = krsHeading.textContent.trim();
 
       data.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
-        var el = item.querySelector('.krs-item-text');
-        if (!el) return null;
-        var clone = el.cloneNode(true);
-        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-        var strong = clone.querySelector('strong');
-        var bold = strong ? strong.textContent.replace(/:$/, '').trim() : '';
-        // Remove the strong element to get the body text cleanly
-        if (strong) strong.remove();
-        var body = clone.textContent.replace(/^[\s:]+/, '').trim();
+        var boldEl = item.querySelector('.krs-bold');
+        var bodyEl = item.querySelector('.krs-body');
+        if (!bodyEl && !boldEl) {
+          // Legacy fallback: read from .krs-item-text
+          var el = item.querySelector('.krs-item-text');
+          if (!el) return null;
+          var clone = el.cloneNode(true);
+          clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+          return { bold: '', text: clone.textContent.trim() };
+        }
+        var bold = boldEl ? boldEl.textContent.replace(/:\s*$/, '').trim() : '';
+        var body = bodyEl ? bodyEl.textContent.trim() : '';
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
@@ -793,9 +802,7 @@ function domToData() {
       });
 
       data.results = Array.from(block.querySelectorAll('[data-section="features"] .result-item, [data-section="results"] .result-item')).map(function(r){
-        var clone = r.cloneNode(true);
-        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-        return clone.textContent.trim();
+        return getRichHTML(r);
       }).filter(function(r){ return r.length > 0; });
 
       data.participants = Array.from(block.querySelectorAll('[data-section="participants"] p')).map(function(p) {
@@ -826,14 +833,17 @@ function domToData() {
       var krsHeadingEl = block.querySelector('.krs-heading'); if (krsHeadingEl) t.krsHeading = krsHeadingEl.textContent.trim();
 
       t.krs = Array.from(block.querySelectorAll('.krs-item')).map(function(item) {
-        var el = item.querySelector('.krs-item-text');
-        if (!el) return null;
-        var clone = el.cloneNode(true);
-        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-        var strong = clone.querySelector('strong');
-        var bold = strong ? strong.textContent.replace(/:$/, '').trim() : '';
-        if (strong) strong.remove();
-        var body = clone.textContent.replace(/^[\s:]+/, '').trim();
+        var boldEl = item.querySelector('.krs-bold');
+        var bodyEl = item.querySelector('.krs-body');
+        if (!bodyEl && !boldEl) {
+          var el = item.querySelector('.krs-item-text');
+          if (!el) return null;
+          var clone = el.cloneNode(true);
+          clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+          return { bold: '', text: clone.textContent.trim() };
+        }
+        var bold = boldEl ? boldEl.textContent.replace(/:\s*$/, '').trim() : '';
+        var body = bodyEl ? bodyEl.textContent.trim() : '';
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
@@ -862,9 +872,7 @@ function domToData() {
       });
 
       t.results = Array.from(block.querySelectorAll('[data-section="features"] .result-item, [data-section="results"] .result-item')).map(function(r) {
-        var clone = r.cloneNode(true);
-        clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-        return clone.textContent.trim();
+        return getRichHTML(r);
       }).filter(function(r){ return r.length > 0; });
 
       t.participants = Array.from(block.querySelectorAll('[data-section="participants"] p')).map(function(p) {
@@ -1005,17 +1013,41 @@ var EDITABLE_SELECTORS = [
   '.clip-title-text', '.clip-quote', '.clips-section-title',
   '.media-title-text', '.media-quote', '.media-caption',
   '.sidebar-card h3', '.result-item', '.krs-heading',
-  '.stat-n', '.stat-l', '.krs-item-text',
+  '.stat-n', '.stat-l', '.krs-bold', '.krs-body',
   '.who-text', '.who-stat-n', '.who-stat-l',
   '.participant-name', '.participant-title',
   '.disclaimer-text'
 ];
+
+// Single-line contentEditable guard — prevents Enter/paste injecting block elements
+function guardSingleLine(el) {
+  if (el._guardedSL) return;
+  el._guardedSL = true;
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); }
+  });
+  el.addEventListener('paste', function(e) {
+    e.preventDefault();
+    var text = (e.clipboardData || window.clipboardData).getData('text/plain')
+               .replace(/[\r\n]+/g, ' ');
+    var sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    sel.deleteFromDocument();
+    sel.getRangeAt(0).insertNode(document.createTextNode(text));
+    sel.collapseToEnd();
+  });
+}
 
 function makeBlockEditable(block) {
   EDITABLE_SELECTORS.forEach(function(sel) {
     block.querySelectorAll(sel).forEach(function(el) {
       if ((el.tagName === 'P' || el.tagName === 'LI') && el.closest('.story-sec')) return;
       el.contentEditable = 'true';
+      // Single-line fields: prevent Enter/paste block injection
+      var _sl = ['.stat-n','.stat-l','.who-stat-n','.who-stat-l',
+        '.participant-name','.participant-title','.sec-label','.story-sec h2',
+        '.krs-heading','.hero-tag','.hero-ind','.client-name-label','.krs-bold','.krs-body'];
+      if (_sl.some(function(s){ try{return el.matches(s);}catch(e){return false;} })) guardSingleLine(el);
       // For whoText: intercept Enter to insert newline instead of block element
       if (el.classList.contains('who-text')) {
         el.addEventListener('keydown', function(e) {
@@ -1031,6 +1063,10 @@ function makeBlockEditable(block) {
     });
   });
   block.querySelectorAll('.story-sec').forEach(function(sec) { wrapSectionBody(sec); });
+  if (!block._dirtyWired) {
+    block._dirtyWired = true;
+    block.addEventListener('input', function(){ _isDirty = true; });
+  }
 }
 
 function wrapSectionBody(sec) {
@@ -1132,10 +1168,13 @@ function disableDragDrop() {
 
 function enableEditMode() {
   document.body.classList.add('edit-mode');
-  document.querySelectorAll('.lang-block').forEach(makeBlockEditable);
+  // Only make active block editable — others processed on lang switch
+  var _ab = document.querySelector('.lang-block.active');
+  if (_ab) makeBlockEditable(_ab);
   document.getElementById('edit-fab').classList.add('hidden');
   document.getElementById('edit-toolbar').classList.add('visible');
   document.getElementById('save-btn').disabled = false;
+  _isDirty = false;
   document.getElementById('save-status').textContent = 'Editing: ' + currentLang.toUpperCase();
   var statusSel = document.getElementById('status-select');
   if (statusSel) statusSel.value = storyData.status || 'published';
@@ -1166,8 +1205,9 @@ function stripEditControls() {
 }
 
 function addEditControlsToExisting() {
+  var _scope = document.querySelector('.lang-block.active') || document;
   // Legacy clip-cards (audio only — backwards compat with pre-v9.2 stories)
-  document.querySelectorAll('.clip-card').forEach(function(card) {
+  _scope.querySelectorAll('.clip-card').forEach(function(card) {
     var rb = document.createElement('button');
     rb.className = 'clip-remove-btn edit-only'; rb.innerHTML = '🗑'; rb.title = 'Delete clip';
     rb.addEventListener('click', function(){ if(confirm('Delete this clip?')) card.remove(); });
@@ -1191,7 +1231,7 @@ function addEditControlsToExisting() {
   });
 
   // Media cards (audio / video / image)
-  document.querySelectorAll('.media-card').forEach(function(card) {
+  _scope.querySelectorAll('.media-card').forEach(function(card) {
     var rb = document.createElement('button');
     rb.className = 'clip-remove-btn edit-only'; rb.innerHTML = '🗑'; rb.title = 'Delete';
     rb.addEventListener('click', function(){ if(confirm('Delete this media block?')) card.remove(); });
@@ -1245,7 +1285,7 @@ function addEditControlsToExisting() {
   });
 
   // Sections
-  document.querySelectorAll('.story-sec').forEach(function(sec) {
+  _scope.querySelectorAll('.story-sec').forEach(function(sec) {
     var handle = document.createElement('div');
     handle.className = 'drag-handle edit-only'; handle.textContent = '⠿'; handle.title = 'Drag';
     handle.style.right = '36px'; sec.insertBefore(handle, sec.firstChild);
@@ -1256,7 +1296,7 @@ function addEditControlsToExisting() {
   });
 
   // Stats
-  document.querySelectorAll('.stats-row').forEach(function(row) {
+  _scope.querySelectorAll('.stats-row').forEach(function(row) {
     row.querySelectorAll('.stat-tile').forEach(addStatDeleteBtn);
     var addBtn = document.createElement('button');
     addBtn.className = 'stat-add-btn edit-only'; addBtn.textContent = '+'; addBtn.title = 'Add stat';
@@ -1264,7 +1304,7 @@ function addEditControlsToExisting() {
   });
 
   // Who stats
-  document.querySelectorAll('.who-stats-grid').forEach(function(grid) {
+  _scope.querySelectorAll('.who-stats-grid').forEach(function(grid) {
     grid.querySelectorAll('.who-stat-tile').forEach(addWhoStatDeleteBtn);
     var addBtn = document.createElement('button');
     addBtn.className = 'who-stat-add-btn edit-only'; addBtn.textContent = '+ Add stat';
@@ -1272,19 +1312,19 @@ function addEditControlsToExisting() {
   });
 
   // KRS
-  document.querySelectorAll('.krs-item').forEach(function(item) {
+  _scope.querySelectorAll('.krs-item').forEach(function(item) {
     var btn = document.createElement('button');
     btn.className = 'krs-item-del edit-only'; btn.innerHTML = '✕'; btn.title = 'Delete';
     btn.addEventListener('click', function(){ item.remove(); }); item.appendChild(btn);
   });
-  document.querySelectorAll('.krs-list').forEach(function(krsList) {
+  _scope.querySelectorAll('.krs-list').forEach(function(krsList) {
     var krsAdd = document.createElement('button');
     krsAdd.className = 'krs-add-btn edit-only'; krsAdd.textContent = '+ Add result';
     krsAdd.addEventListener('click', function(){ addKrsItem(krsList, krsAdd); }); krsList.appendChild(krsAdd);
   });
 
   // Participants
-  document.querySelectorAll('.sidebar-card[data-section="participants"],.sidebar-card:has(.participant-name)').forEach(function(card) {
+  _scope.querySelectorAll('.sidebar-card[data-section="participants"],.sidebar-card:has(.participant-name)').forEach(function(card) {
     card.querySelectorAll('p').forEach(function(p) {
       var del = document.createElement('button');
       del.className = 'part-del-btn edit-only'; del.innerHTML = '✕';
@@ -1298,7 +1338,7 @@ function addEditControlsToExisting() {
   });
 
   // Results
-  document.querySelectorAll('.sidebar-card[data-section="features"],.sidebar-card[data-section="results"],.sidebar-card:has(.result-item)').forEach(function(card) {
+  _scope.querySelectorAll('.sidebar-card[data-section="features"],.sidebar-card[data-section="results"],.sidebar-card:has(.result-item)').forEach(function(card) {
     card.querySelectorAll('.result-item').forEach(function(item) {
       var del = document.createElement('button');
       del.className = 'result-del-btn edit-only'; del.innerHTML = '✕';
@@ -1508,7 +1548,7 @@ async function deleteMediaFile(card, xBtn) {
 
 function addKrsItem(list, addBtn) {
   var li = document.createElement('li'); li.className = 'krs-item';
-  li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text" contenteditable="true">New result</span>';
+  li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text"><span class="krs-bold" contenteditable="true"></span><span class="krs-body" contenteditable="true">New result</span></span>';
   var del = document.createElement('button');
   del.className = 'krs-item-del edit-only'; del.innerHTML = '✕';
   del.addEventListener('click', function(){ li.remove(); }); li.appendChild(del);
@@ -1690,6 +1730,7 @@ async function deleteAudioFile(player, xBtn) {
 async function saveToGitHub() {
   var saveBtn = document.getElementById('save-btn');
   var statusEl = document.getElementById('save-status');
+  _isDirty = false;
   saveBtn.disabled = true; statusEl.textContent = 'Saving…';
 
   try {
