@@ -2131,16 +2131,22 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     } catch(e) {}
   }
 
-  // ── Footer on page 2: logo sits above copyright, both clear of bottom shape ──
-  var logoFooterY = H - 22;   // logo top — sits just above the shape area
-  var copyrightY  = H - 23;   // copyright text baseline, just below logo
+  // ── Footer on page 2 ──────────────────────────────────────────────────────
+  // Layout (matching reference): Prophix logo top-right, copyright below with gap
+  // Both sit above the bottom shape (H-20)
+  var footerLogoH = 9;
+  var footerLogoW = 30;
+  var footerLogoX = W - mR - footerLogoW;
+  var footerLogoY = H - 20 - 4 - footerLogoH - 7;  // 7mm above shape, logo height, 4mm gap for text
+  var footerTextY = footerLogoY + footerLogoH + 3;  // 3mm below logo bottom
+
   if (assets.prophixLogo) {
-    try { addImgFit(assets.prophixLogo, W - mR - 30, logoFooterY, 30, 7); } catch(e) {}
+    try { addImgFit(assets.prophixLogo, footerLogoX, footerLogoY, footerLogoW, footerLogoH); } catch(e) {}
   }
-  font('normal', 5.5); tc(T.muted);
+  font('normal', 7); tc(T.muted);
   doc.text(
     'Copyright \u00a9 ' + new Date().getFullYear() + ' Prophix Software Inc. All rights reserved. May only be reproduced with Prophix\u2019s prior consent.',
-    W - mR, copyrightY + 9, { align: 'right' }
+    W - mR, footerTextY, { align: 'right' }
   );
 
   // ── Save ────────────────────────────────────────────────────────────────────
