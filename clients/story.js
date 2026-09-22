@@ -1773,7 +1773,7 @@ function generateBrochure() {
 }
 
 // ── Asset loader ──────────────────────────────────────────────────────────────
-function _loadBrochureAssets(data, cb) {
+window._loadBrochureAssets = function _loadBrochureAssets(data, cb) {
   var T = BROCHURE_THEME;
   var assets = { prophixLogo: null, clientLogo: null, icons: {} };
   var toLoad = [];
@@ -1846,26 +1846,37 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   // Red shape: 5-sided irregular pentagon (wide rounded base, pointed arch top)
   // Approximated with jsPDF path operations
   function drawRedBlob(cx, cy, w, h) {
-    // Dome/hill: draw as a wide roundedRect (for the body/bottom)
-    // overlaid with a filled ellipse (for the curved top dome effect)
+    // Smooth dome shape using jsPDF path commands (moveTo/curveTo/lineTo)
+    // Shape: wide flat bottom with small corner radius, smooth bezier dome on top
     fc(T.shapeRed);
-    var x0 = cx - w/2;
+    var x0 = cx - w/2, x1 = cx + w/2;
     var yBot = cy + h * 0.42;
-    var yTop = cy - h * 0.48;
-    var totalH = yBot - yTop;
-    var cr = Math.min(6, w * 0.1); // bottom rounded corners
+    var yTop = cy - h * 0.46;
+    var cr = 5; // bottom corner radius
+    // Bezier magic constant for quarter-circle
+    var k = 0.5523;
+    var domeH = yBot - yTop;
 
-    // Draw body as rounded rectangle (lower 60% of shape)
-    var bodyTop = yTop + totalH * 0.38;
-    doc.roundedRect(x0, bodyTop, w, yBot - bodyTop, cr, cr, 'F');
-
-    // Draw dome cap as a filled ellipse covering the top portion
-    // ellipse(x_center, y_center, rx, ry, style)
-    var ry = totalH * 0.60; // tall enough to create smooth dome
-    var rx = w * 0.52;
-    doc.ellipse(cx, bodyTop, rx, ry, 'F');
+    doc.moveTo(x0 + cr, yBot);
+    // Bottom edge →
+    doc.lineTo(x1 - cr, yBot);
+    // Bottom-right corner
+    doc.curveTo(x1 - cr + cr*k, yBot, x1, yBot - cr + cr*k, x1, yBot - cr);
+    // Right straight side up
+    doc.lineTo(x1, yTop + domeH * 0.45);
+    // Right dome curve to top
+    doc.curveTo(x1, yTop + domeH * 0.45 - domeH * 0.45 * k, cx + w * 0.18, yTop, cx, yTop);
+    // Left dome curve from top
+    doc.curveTo(cx - w * 0.18, yTop, x0, yTop + domeH * 0.45 - domeH * 0.45 * k, x0, yTop + domeH * 0.45);
+    // Left straight side down
+    doc.lineTo(x0, yBot - cr);
+    // Bottom-left corner
+    doc.curveTo(x0, yBot - cr + cr*k, x0 + cr - cr*k, yBot, x0 + cr, yBot);
+    doc.close();
+    doc.fill();
   }
-    // Blue hexagon (6 sides, flat-top orientation)
+
+  // Blue hexagon (6 sides, flat-top orientation)
   function drawHexagon(cx, cy, r) {
     fc(T.shapeBlue);
     var pts = [];
@@ -1890,16 +1901,22 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
   // Shapes right side (page break area): blob center-right, hexagon top-right of blob
   function drawShapesRight(yMid) {
-    var blobCx = W - 22, blobCy = yMid, blobW = 36, blobH = 38;
-    drawRedBlob(blobCx, blobCy, blobW, blobH);
-    drawHexagon(blobCx + blobW/2 - 2, blobCy - blobH/2 + 2, 6);
+    // Red blob: right edge flush with page, wide, centered on yMid
+    var blobW = 44, blobH = 42;
+    var blobCx = W - blobW/2 + 4; // slightly off right edge
+    drawRedBlob(blobCx, yMid, blobW, blobH);
+    // Blue hexagon: top-right of blob
+    drawHexagon(blobCx + blobW*0.28, yMid - blobH*0.44, 6);
   }
 
   // Shapes left side (last page bottom): blob bottom-left, hexagon bottom-left of blob
   function drawShapesLeft(yMid) {
-    var blobCx = mL + 20, blobCy = yMid, blobW = 36, blobH = 38;
-    drawRedBlob(blobCx, blobCy, blobW, blobH);
-    drawHexagon(blobCx - blobW/2 + 4, blobCy + blobH/2 - 4, 6);
+    // Red blob: left edge partially off page (cropped), like reference
+    var blobW = 44, blobH = 42;
+    var blobCx = mL + blobW*0.3; // left side clips off page edge
+    drawRedBlob(blobCx, yMid, blobW, blobH);
+    // Blue hexagon: bottom-left of blob
+    drawHexagon(blobCx - blobW*0.28, yMid + blobH*0.35, 5.5);
   }
 
   // ── HEADER ────────────────────────────────────────────────────────────────
@@ -1920,15 +1937,12 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     font('bold', 14); tc(T.red); doc.text('Prophix®', mL, logoY + 8);
   }
 
-  // Client logo — right side, same height
+  // Client logo — right-aligned, fixed 40mm wide x 12mm tall
   if (assets.clientLogo) {
-    try { doc.addImage(assets.clientLogo, 'PNG', W - mR, logoY, 0, logoH, undefined, 'FAST', undefined, undefined, undefined, 'right'); }
-    catch(e) {
-      // Fallback: right-align name
-      font('bold', 11); tc(T.bodyText); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' });
-    }
+    try { doc.addImage(assets.clientLogo, 'PNG', W - mR - 40, logoY, 40, 12, undefined, 'FAST'); }
+    catch(e) { font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' }); }
   } else {
-    font('bold', 11); tc(T.bodyText); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' });
+    font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' });
   }
 
   var y = logoY + logoH + 14;  // clear breathing room after logos
@@ -2101,13 +2115,13 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     }
   });
 
-  // ── Decorative shapes ──────────────────────────────────────────────────────
-  // Right side, at natural content break
-  var shapeY = Math.max(mainY, sideY) + 8;
-  if (shapeY < H - 50) drawShapesRight(shapeY);
+  // ── Decorative shapes — fixed at bottom of page ──────────────────────────
+  // Right shape: bottom-right of page (sits just above footer)
+  // Center at W-24, bottom at H-22 (above footer), size 40x42mm
+  drawShapesRight(H - 43);  // cy = H-43, blob bottom = H-43+42*0.42 ≈ H-25
 
-  // Left side, near bottom of last page
-  drawShapesLeft(H - 18);
+  // Left shape: bottom-left, partially cropped by page edge (like reference)
+  drawShapesLeft(H - 38);
 
   // ── FOOTER ────────────────────────────────────────────────────────────────
   var fy = H - 14;
