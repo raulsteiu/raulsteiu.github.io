@@ -39,6 +39,7 @@ var PROPHIX_PRODUCTS = [
   {name:'Financial Consolidation', icon:'/assets/icons/financial-consolidation.png'},
   {name:'Cash Management',         icon:'/assets/icons/cash-management.png'},
   {name:'Account Reconciliation',  icon:'/assets/icons/account-reconciliation.png'},
+  {name:'FP&A',                    icon:'/assets/icons/fpanda.png'},
   {name:'FP&A Plus',               icon:'/assets/icons/fpanda-plus.png'},
   {name:'Intercompany Management', icon:'/assets/icons/intercompany-management.png'},
   {name:'Lease Accounting',        icon:'/assets/icons/lease-accounting.png'}
@@ -1743,6 +1744,7 @@ var BROCHURE_THEME = {
     'Financial Consolidation': 'financial-consolidation.png',
     'Cash Management':         'cash-management.png',
     'Account Reconciliation':  'account-reconciliation.png',
+    'FP&A':                    'fpanda.png',
     'FP&A Plus':               'fpanda-plus.png',
     'Intercompany Management': 'intercompany-management.png',
     'Lease Accounting':        'lease-accounting.png'
@@ -2026,7 +2028,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   var PAGE1_MAX = H - PAGE1_SHAPE_H - 16;
   var PAGE2_SHAPE_H = 20;   // shape-up at top of page 2
   var PAGE2_CONTENT_TOP = PAGE2_SHAPE_H + 10;  // content starts below shape-up
-  var PAGE2_FOOTER_TOP = H - 28; // footer area on page 2
+  var PAGE2_FOOTER_TOP = H - 42; // stop content above footer zone (shape+logo+text)
   var onPage2 = false;
   var textW = mainW;  // current text width (switches to fullW on page 2)
 
@@ -2132,13 +2134,12 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   }
 
   // ── Footer on page 2 ──────────────────────────────────────────────────────
-  // Layout (matching reference): Prophix logo top-right, copyright below with gap
-  // Both sit above the bottom shape (H-20)
+  // Fixed to bottom of page — logo then copyright just above the 20mm shape zone
   var footerLogoH = 9;
   var footerLogoW = 30;
   var footerLogoX = W - mR - footerLogoW;
-  var footerLogoY = H - 20 - 2 - footerLogoH;  // logo sits 2mm above the bottom shape
-  var footerTextY = footerLogoY + footerLogoH + 2;  // 2mm below logo = just above shape
+  var footerLogoY = H - 20 - footerLogoH - 3;  // 3mm clearance above shape
+  var footerTextY = H - 20 - 2;                // copyright sits 2mm above shape, below logo
 
   if (assets.prophixLogo) {
     try { addImgFit(assets.prophixLogo, footerLogoX, footerLogoY, footerLogoW, footerLogoH); } catch(e) {}
