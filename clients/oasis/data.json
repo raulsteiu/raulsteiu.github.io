@@ -253,5 +253,11 @@
       "krsHeading": "Key Results Snapshot"
     }
   },
-  "krsHeading": "Key Results Snapshot"
+  "krsHeading": "Key Results Snapshot",
+  "preview": {
+    "token": "i7lcl8qwf5",
+    "password": "gold-fire-96",
+    "expiresAt": "2026-09-25T14:38:45.863Z",
+    "createdAt": "2026-09-22T14:38:45.865Z"
+  }
 }
