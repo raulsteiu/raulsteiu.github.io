@@ -97,7 +97,7 @@ function getCSS() {
     '.krs-item{display:flex;align-items:flex-start;gap:10px;position:relative}',
     '.krs-check{flex-shrink:0;margin-top:1px}',
     '.krs-item-text{font-size:14px;color:rgba(255,255,255,.88);line-height:1.55}',
-    '.krs-bold{font-weight:900;color:#fff;cursor:text;outline:2px dashed rgba(255,255,255,.3);border-radius:2px}',
+    '.krs-bold{font-weight:900;color:#fff}',
     '.krs-body{cursor:text}',
     '.krs-item-text strong{color:#fff}',
     '.body-layout{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 290px;gap:24px;padding:28px 24px}',
