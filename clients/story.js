@@ -1416,9 +1416,10 @@ function addMediaInline(btn, mediaType) {
 
   if (mediaType === 'image') {
     var wrap = document.createElement('div'); wrap.className = 'media-img-wrap';
-    wrap.innerHTML = '<div style="padding:20px;text-align:center;color:#aaa;font-size:13px">Image will appear here after upload</div>';
+    wrap.innerHTML = '<div style="padding:20px;text-align:center;color:#aaa;border:2px dashed #ddd;border-radius:6px;font-size:13px">Click "Upload image" below to add an image</div>';
     var cap = document.createElement('div'); cap.className = 'media-caption'; cap.contentEditable = 'true'; cap.textContent = '';
-    pl.appendChild(wrap); pl.appendChild(cap);
+    upBtn.textContent = 'Upload image';  // relabel button for image type
+    pl.appendChild(wrap); pl.appendChild(cap); pl.appendChild(upBtn);
   } else if (mediaType === 'video') {
     var qt = document.createElement('div'); qt.className = 'media-quote'; qt.contentEditable = 'true'; qt.textContent = '';
     var urlHint = document.createElement('div'); urlHint.className = 'media-url-hint'; urlHint.textContent = 'YouTube or Vimeo URL:';
