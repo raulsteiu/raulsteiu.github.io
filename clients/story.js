@@ -1766,6 +1766,7 @@ function generateBrochure() {
   loadJsPDF(function(jsPDF) {
     // Use currentLang to pick the right translation data
     var langData = _getBrochureData(storyData, currentLang);
+    langData._lang = currentLang || 'en';
     _loadBrochureAssets(storyData, function(assets) {
       try { window._buildBrochurePDF(jsPDF, langData, assets); }
       catch(e) { console.error(e); alert('PDF error: ' + e.message); }
@@ -1776,11 +1777,11 @@ function generateBrochure() {
 
 // ── Get data for a specific language ─────────────────────────────────────────
 window._getBrochureData = function _getBrochureData(data, lc) {
-  if (!lc || lc === 'en') return data;
+  if (!lc || lc === 'en') { data._lang = 'en'; return data; }
   var tr = data.translations && data.translations[lc];
-  if (!tr) return data; // fall back to EN if no translation
+  if (!tr) { data._lang = lc; return data; } // fall back to EN if no translation
   // Merge: translation overrides EN fields where available
-  return {
+  var merged = {
     slug:         data.slug,
     name:         tr.name        || data.name,
     desc:         tr.desc        || data.desc,
@@ -1797,6 +1798,8 @@ window._getBrochureData = function _getBrochureData(data, lc) {
     results:      (tr.results && tr.results.length) ? tr.results : data.results,
     participants: tr.participants || data.participants
   };
+  merged._lang = lc || 'en';
+  return merged;
 }
 
 // ── Asset loader (fetch + FileReader — avoids CORS canvas taint) ──────────────
@@ -1854,7 +1857,8 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   var W = T.pageW, H = T.pageH;
   var mL = T.marginL, mR = T.marginR;
   var sideX = T.colSplit;
-  var mainW = sideX - mL - 6;
+  var mainW = sideX - mL - 6;      // page 1 left column width
+  var fullW = W - mL - mR;         // page 2 full text width
   var sideW = W - sideX - mR;
 
   // ── Helpers ────────────────────────────────────────────────────────────────
@@ -1872,7 +1876,6 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     return y;
   }
 
-  // Decode PNG dimensions from base64 to preserve aspect ratio
   function getImgDims(b64) {
     try {
       var raw = b64.replace(/^data:image\/[a-z]+;base64,/, '');
@@ -1890,23 +1893,19 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
       var aspect = dims ? dims.w / dims.h : 2;
       var dh = maxH, dw = dh * aspect;
       if (dw > maxW) { dw = maxW; dh = dw / aspect; }
-      // Center vertically in box
-      var dy = y + (maxH - dh) / 2;
-      doc.addImage(b64, 'PNG', x, dy, dw, dh, undefined, 'FAST');
+      doc.addImage(b64, 'PNG', x, y + (maxH - dh) / 2, dw, dh, undefined, 'FAST');
     } catch(e) {}
   }
 
-  // ── Page 1: Header ──────────────────────────────────────────────────────────
+  // ── PAGE 1: Header ──────────────────────────────────────────────────────────
   var logoH = 12, logoY = mR;
 
-  // Prophix logo — left, aspect ratio safe
   if (assets.prophixLogo) {
     try { addImgFit(assets.prophixLogo, mL, logoY, 42, logoH); } catch(e) {}
   } else {
     font('bold', 14); tc(T.red); doc.text('Prophix®', mL, logoY + 8);
   }
 
-  // Client logo — right, aspect ratio safe
   if (assets.clientLogo) {
     try {
       var dims = getImgDims(assets.clientLogo);
@@ -1920,30 +1919,26 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   }
 
   var y = logoY + logoH + 14;
-
-  // "CUSTOMER STORY" label
   font('bold', 7.5); tc(T.muted);
   doc.text('CUSTOMER STORY', mL, y);
   y += 10;
 
-  // Title — ultra-bold red
+  // Title
   var title = '';
   if (data.content) {
     var fs = data.content.find(function(c) { return c.type === 'section' && c.data && c.data.heading; });
     if (fs) title = fs.data.heading;
   }
   if (!title) title = 'How ' + (data.name || 'our client') + ' transformed with Prophix';
-
   font('bold', 24); tc(T.red);
-  var titleLines = doc.splitTextToSize(title, W - mL - mR);
-  titleLines.slice(0, 3).forEach(function(l) { boldText(l, mL, y); y += 11; });
+  doc.splitTextToSize(title, W - mL - mR).slice(0, 3).forEach(function(l) { boldText(l, mL, y); y += 11; });
   y += 5;
 
-  // ── Page 1: Two-column body ─────────────────────────────────────────────────
+  // ── PAGE 1: Two-column layout ───────────────────────────────────────────────
   var mainY = y;
   var sideY = y;
 
-  // RIGHT SIDEBAR ─────────────────────────────────────────────────────────────
+  // RIGHT SIDEBAR
   font('bold', 10); tc(T.red);
   doc.text('Who is ' + (data.name || 'the client') + '?', sideX, sideY);
   sideY += 2.5;
@@ -1977,15 +1972,13 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     if (icon) {
       try { doc.addImage(icon, 'PNG', sideX, sideY - 4.5, 5.5, 5.5, undefined, 'FAST'); }
       catch(e) { fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F'); }
-    } else {
-      fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F');
-    }
+    } else { fc(T.red); doc.circle(sideX + 2.5, sideY - 2, 2.5, 'F'); }
     font('normal', 8.5); tc(T.red);
     doc.text(pr, sideX + 8, sideY);
     sideY += 7;
   });
 
-  // KRS CARD ──────────────────────────────────────────────────────────────────
+  // KRS CARD
   var krs = data.krs || [];
   if (krs.length > 0) {
     var krsLineH = 5;
@@ -1995,13 +1988,9 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
       krsCardH += Math.min(doc.splitTextToSize(txt, mainW - 14).length, 3) * krsLineH + 2;
     });
     krsCardH += 6;
-
-    fc(T.krsCard);
-    doc.roundedRect(mL, mainY, mainW, krsCardH, 4, 4, 'F');
-
+    fc(T.krsCard); doc.roundedRect(mL, mainY, mainW, krsCardH, 4, 4, 'F');
     font('bold', 10); tc([30, 115, 190]);
     doc.text(data.krsHeading || 'Key results snapshot', mL + 5, mainY + 8);
-
     var krsY = mainY + 15;
     krs.forEach(function(k) {
       if (krsY > mainY + krsCardH - 5) return;
@@ -2010,14 +1999,13 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
       doc.line(mL + 4, krsY - 1.5, mL + 5.5, krsY);
       doc.line(mL + 5.5, krsY, mL + 8, krsY - 3);
       font('normal', 8); tc([30, 115, 190]);
-      var kLines = doc.splitTextToSize(txt, mainW - 14);
-      kLines.slice(0, 3).forEach(function(l) { doc.text(l, mL + 11, krsY); krsY += krsLineH; });
+      doc.splitTextToSize(txt, mainW - 14).slice(0, 3).forEach(function(l) { doc.text(l, mL + 11, krsY); krsY += krsLineH; });
       krsY += 1;
     });
     mainY += krsCardH + 5;
   }
 
-  // STATS ROW ─────────────────────────────────────────────────────────────────
+  // STATS
   var stats = data.stats || [];
   if (stats.length > 0) {
     var sw = mainW / Math.min(stats.length, 4);
@@ -2033,41 +2021,40 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     mainY += 5;
   }
 
-  // ── Render content sections across pages ────────────────────────────────────
-  // Page break threshold: leave room for shape-up image (24mm) at top of page 2
-  var PAGE1_MAX = H - 36;  // stop before bottom shape on page 1
-  var PAGE2_TOP = 28;      // page 2 starts here (after shape-up decoration)
-  var PAGE2_MAX = H - 30;  // stop before footer on page 2
+  // ── Content sections — two pages ───────────────────────────────────────────
+  var PAGE1_SHAPE_H = 30;   // reserved at bottom of page 1 for right shape
+  var PAGE1_MAX = H - PAGE1_SHAPE_H - 16;
+  var PAGE2_SHAPE_H = 28;   // shape-up at top of page 2
+  var PAGE2_CONTENT_TOP = PAGE2_SHAPE_H + 10;  // content starts below shape-up
+  var PAGE2_FOOTER_TOP = H - 28; // footer area on page 2
   var onPage2 = false;
+  var textW = mainW;  // current text width (switches to fullW on page 2)
 
   function checkPageBreak() {
     if (!onPage2 && mainY > PAGE1_MAX) {
-      // Add page
       doc.addPage();
       onPage2 = true;
+      textW = fullW;  // page 2: full width, no sidebar
 
-      // shape-up.png at very top of page 2 (upside-down dome)
+      // shape-up.png: LEFT-aligned at top of page 2
       if (assets.shapeUp) {
         try {
-          fc([255,255,255]); doc.rect(0, 0, W, 28, 'F');
-          doc.addImage(assets.shapeUp, 'PNG', W/2 - 25, 0, 50, 24, undefined, 'FAST');
+          fc([255,255,255]); doc.rect(0, 0, 60, PAGE2_SHAPE_H, 'F');
+          doc.addImage(assets.shapeUp, 'PNG', 0, 0, 56, PAGE2_SHAPE_H, undefined, 'FAST');
         } catch(e) {}
       }
-
-      mainY = PAGE2_TOP + 4;
+      mainY = PAGE2_CONTENT_TOP;
     }
   }
 
   var sections = (data.content || []).filter(function(c) { return c.type === 'section'; });
-  sections.forEach(function(item, idx) {
+  sections.forEach(function(item) {
     if (!item.data) return;
-    // Skip the very first section if its heading was used as the title
     var s = item.data;
-
     checkPageBreak();
-    var maxY = onPage2 ? PAGE2_MAX : PAGE1_MAX;
 
     if (s.label) {
+      if (onPage2 && mainY > PAGE2_FOOTER_TOP - 20) return;
       font('bold', 7.5); tc(T.red);
       doc.text(s.label.toUpperCase(), mL, mainY);
       mainY += 5;
@@ -2075,8 +2062,9 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
     if (s.heading) {
       checkPageBreak();
+      if (onPage2 && mainY > PAGE2_FOOTER_TOP - 15) return;
       font('bold', 11); tc(T.red);
-      doc.splitTextToSize(s.heading, mainW).slice(0, 2).forEach(function(l) {
+      doc.splitTextToSize(s.heading, textW).slice(0, 2).forEach(function(l) {
         boldText(l, mL, mainY); mainY += 5.5;
       });
       mainY += 1;
@@ -2085,17 +2073,22 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     if (s.body) {
       s.body.split('\n').forEach(function(line) {
         checkPageBreak();
+        if (onPage2 && mainY > PAGE2_FOOTER_TOP - 6) return;
         var t = line.trim();
         if (!t) { mainY += 2; return; }
-        if (/^[-–]\s/.test(t)) {
+        if (/^[-\u2013]\s/.test(t)) {
           fc(T.bodyText); doc.circle(mL + 1.5, mainY - 1.2, 0.8, 'F');
           font('normal', 8.5); tc(T.bodyText);
-          doc.splitTextToSize(t.replace(/^[-–]\s+/, ''), mainW - 6).slice(0, 3).forEach(function(l) {
+          doc.splitTextToSize(t.replace(/^[-\u2013]\s+/, ''), textW - 6).forEach(function(l) {
+            checkPageBreak();
+            if (onPage2 && mainY > PAGE2_FOOTER_TOP - 6) return;
             doc.text(l, mL + 5, mainY); mainY += 4;
           });
         } else {
           font('normal', 8.5); tc(T.bodyText);
-          doc.splitTextToSize(t, mainW).slice(0, 5).forEach(function(l) {
+          doc.splitTextToSize(t, textW).forEach(function(l) {
+            checkPageBreak();
+            if (onPage2 && mainY > PAGE2_FOOTER_TOP - 6) return;
             doc.text(l, mL, mainY); mainY += 4;
           });
         }
@@ -2104,40 +2097,52 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     }
   });
 
-  // ── Page 2 footer ───────────────────────────────────────────────────────────
+  // ── Ensure we're on page 2 for footer ──────────────────────────────────────
   if (!onPage2) {
     doc.addPage();
     onPage2 = true;
     if (assets.shapeUp) {
       try {
-        fc([255,255,255]); doc.rect(0, 0, W, 28, 'F');
-        doc.addImage(assets.shapeUp, 'PNG', W/2 - 25, 0, 50, 24, undefined, 'FAST');
+        fc([255,255,255]); doc.rect(0, 0, 60, PAGE2_SHAPE_H, 'F');
+        doc.addImage(assets.shapeUp, 'PNG', 0, 0, 56, PAGE2_SHAPE_H, undefined, 'FAST');
       } catch(e) {}
     }
   }
 
-  // Left shape at bottom-left of last page
+  // ── Page 1: right shape at bottom-right ────────────────────────────────────
+  // (rendered on page 1 which is still doc page 1 internally — use setPage)
+  var currentPage = doc.internal.getCurrentPageInfo().pageNumber;
+  doc.setPage(1);
+  // Right shape bottom-right of page 1
+  // Positioned so it sits at the very bottom-right corner
+  if (assets.shapeUp) {  // reuse shapeUp mirrored, or use a right shape if available
+    // We use shapeLeft flipped — actually just place shapeLeft at bottom right
+    // The reference shows a right-version — we don't have shape-right so skip for now
+    // keeping this slot for when shape-right.png is uploaded
+  }
+  // Left shape bottom-left of page 2
+  doc.setPage(currentPage);
   if (assets.shapeLeft) {
     try {
-      fc([255,255,255]); doc.rect(0, H - 24, 36, 24, 'F');
-      doc.addImage(assets.shapeLeft, 'PNG', 0, H - 24, 36, 24, undefined, 'FAST');
+      fc([255,255,255]); doc.rect(0, H - 26, 40, 26, 'F');
+      doc.addImage(assets.shapeLeft, 'PNG', 0, H - 26, 38, 26, undefined, 'FAST');
     } catch(e) {}
   }
 
-  // Prophix logo bottom-right
-  var fy = H - 14;
+  // ── Footer on page 2 ────────────────────────────────────────────────────────
+  var fy = H - 12;
   if (assets.prophixLogo) {
-    try { addImgFit(assets.prophixLogo, W - mR - 32, fy - 6, 32, 8); } catch(e) {}
+    try { addImgFit(assets.prophixLogo, W - mR - 32, fy - 7, 32, 8); } catch(e) {}
   }
-
   font('normal', 5.5); tc(T.muted);
   doc.text(
-    'Copyright © ' + new Date().getFullYear() + ' Prophix Software Inc. All rights reserved. May only be reproduced with Prophix\'s prior consent.',
-    W - mR, fy + 5, { align: 'right' }
+    'Copyright \u00a9 ' + new Date().getFullYear() + ' Prophix Software Inc. All rights reserved. May only be reproduced with Prophix\u2019s prior consent.',
+    W - mR, fy, { align: 'right' }
   );
 
   // ── Save ────────────────────────────────────────────────────────────────────
-  var filename = (data.name || 'Client').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '_Customer_Story.pdf';
+  var lang = (data._lang || 'EN').toUpperCase();
+  var filename = (data.name || 'Client').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '_Customer_Story_' + lang + '.pdf';
   doc.save(filename);
 };
 
