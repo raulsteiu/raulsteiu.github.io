@@ -454,7 +454,13 @@
           "v": "2",
           "l": "Cadres de Reporting: LuxGAAP & IFRS"
         }
-      ]
+      ],
+      "title": "[FR] How Eaglestone transformed financial consolidation with Prophix",
+      "sidebarLabels": {
+        "who": "Qui est eaglestone",
+        "applications": "Applications Déployées",
+        "features": "Fonctionalités prophix"
+      }
     },
     "nl": {
       "name": "Hoe Eaglestone de financiële consolidatie heeft getransformeerd met Prophix",
@@ -662,7 +668,13 @@
           "v": "2",
           "l": "Cadres de Reporting: LuxGAAP & IFRS"
         }
-      ]
+      ],
+      "title": "[NL] How Eaglestone transformed financial consolidation with Prophix",
+      "sidebarLabels": {
+        "who": "Who is How Eaglestone transformed financial consolidation with Prophix?",
+        "applications": "Applications deployed",
+        "features": "Prophix Features"
+      }
     }
   },
   "status": "draft",
@@ -671,5 +683,16 @@
     "password": "iron-peak-76",
     "expiresAt": "2026-09-24T13:48:12.597Z",
     "createdAt": "2026-09-21T13:48:12.598Z"
+  },
+  "title": "How Eaglestone transformed financial consolidation with Prophix",
+  "langLabels": {
+    "en": "Customer Testimonial",
+    "fr": "Témoignage client",
+    "nl": "In het Nederlands"
+  },
+  "sidebarLabels": {
+    "who": "Who is Eaglestone",
+    "applications": "Applications deployed",
+    "features": "Prophix Features"
   }
 }
