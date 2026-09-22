@@ -1901,22 +1901,22 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
   // Shapes right side (page break area): blob center-right, hexagon top-right of blob
   function drawShapesRight(yMid) {
-    // Red blob: right edge flush with page, wide, centered on yMid
-    var blobW = 44, blobH = 42;
-    var blobCx = W - blobW/2 + 4; // slightly off right edge
+    // Small blob, center below page — only smooth dome top visible above page edge
+    var blobW = 30, blobH = 26;
+    var blobCx = W - 16;
     drawRedBlob(blobCx, yMid, blobW, blobH);
-    // Blue hexagon: top-right of blob
-    drawHexagon(blobCx + blobW*0.28, yMid - blobH*0.44, 6);
+    // Hexagon above-right of dome peak, fully on page
+    drawHexagon(blobCx + blobW*0.22, yMid - blobH*0.58, 4);
   }
 
   // Shapes left side (last page bottom): blob bottom-left, hexagon bottom-left of blob
   function drawShapesLeft(yMid) {
-    // Red blob: left edge partially off page (cropped), like reference
-    var blobW = 44, blobH = 42;
-    var blobCx = mL + blobW*0.3; // left side clips off page edge
+    // Small blob, center below page — only smooth dome top visible
+    var blobW = 30, blobH = 26;
+    var blobCx = 16;
     drawRedBlob(blobCx, yMid, blobW, blobH);
-    // Blue hexagon: bottom-left of blob
-    drawHexagon(blobCx - blobW*0.28, yMid + blobH*0.35, 5.5);
+    // Hexagon above-left of dome, fully on page
+    drawHexagon(blobCx - blobW*0.18, yMid - blobH*0.52, 4);
   }
 
   // ── HEADER ────────────────────────────────────────────────────────────────
@@ -1937,10 +1937,23 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     font('bold', 14); tc(T.red); doc.text('Prophix®', mL, logoY + 8);
   }
 
-  // Client logo — right-aligned, fixed 40mm wide x 12mm tall
+  // Client logo — aspect-ratio preserved, right-aligned, max 44x16mm box
   if (assets.clientLogo) {
-    try { doc.addImage(assets.clientLogo, 'PNG', W - mR - 40, logoY, 40, 12, undefined, 'FAST'); }
-    catch(e) { font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' }); }
+    try {
+      // Decode dimensions from base64 PNG header to preserve aspect ratio
+      var b64 = assets.clientLogo.replace(/^data:image\/[a-z]+;base64,/, '');
+      var bytes = atob(b64.substring(0, 40));
+      var pw = (bytes.charCodeAt(16)<<24)|(bytes.charCodeAt(17)<<16)|(bytes.charCodeAt(18)<<8)|bytes.charCodeAt(19);
+      var ph = (bytes.charCodeAt(20)<<24)|(bytes.charCodeAt(21)<<16)|(bytes.charCodeAt(22)<<8)|bytes.charCodeAt(23);
+      var aspect = (pw > 0 && ph > 0) ? pw / ph : 2;
+      var maxW = 44, maxH = 16;
+      var clH = maxH;
+      var clW = clH * aspect;
+      if (clW > maxW) { clW = maxW; clH = clW / aspect; }
+      var clX = W - mR - clW;
+      var clY = logoY + (maxH - clH) / 2; // vertically center in the box
+      doc.addImage(assets.clientLogo, 'PNG', clX, clY, clW, clH, undefined, 'FAST');
+    } catch(e) { font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' }); }
   } else {
     font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' });
   }
@@ -1950,7 +1963,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   // "CUSTOMER STORY" — small grey, clear gap from header
   font('bold', 7.5); tc(T.muted);
   doc.text('CUSTOMER STORY', mL, y);
-  y += 6;
+  y += 10;
 
   // ── TITLE — ultra-bold red ────────────────────────────────────────────────
   var title = '';
@@ -2118,10 +2131,9 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
   // ── Decorative shapes — fixed at bottom of page ──────────────────────────
   // Right shape: bottom-right of page (sits just above footer)
   // Center at W-24, bottom at H-22 (above footer), size 40x42mm
-  drawShapesRight(H - 43);  // cy = H-43, blob bottom = H-43+42*0.42 ≈ H-25
-
-  // Left shape: bottom-left, partially cropped by page edge (like reference)
-  drawShapesLeft(H - 38);
+  // Shapes: center placed below page bottom so only dome top peeks up — no content overlap
+  drawShapesRight(H + 8);
+  drawShapesLeft(H + 8);
 
   // ── FOOTER ────────────────────────────────────────────────────────────────
   var fy = H - 14;
