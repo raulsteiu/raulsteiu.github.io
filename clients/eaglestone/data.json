@@ -484,7 +484,7 @@
           "text": "Volledige onafhankelijkheid bij de consolidatie: Dankzij het CSP-coachingmodel beheert en ontwikkelt het team de Prophix-configuratie nu volledig zelfstandig."
         }
       ],
-      "whoText": "Eaglestone is een vastgoedontwikkelings- en projectontwikkelingsgroep met hoofdkantoor in Luxemburg, die actief is in België, Frankrijk en Luxemburg. De groep stelt haar jaarrekening op volgens de Luxemburgse wettelijke voorschriften en de IFRS-normen, ten behoeve van beleggers, waaronder ten minste één beursgenoteerde aandeelhouder. Volgens het persbericht van Eaglestone van 11 juni 2026 omvat de actieve ontwikkelingsportefeuille van de groep: meer dan 6.500 appartementen, 1.094 studentenwoningen en 765 hotelkamers in ontwikkeling. Bron: persbericht Eaglestone, 11 juni 2026.",
+      "whoText": "Eaglestone is een vastgoedontwikkelings- en projectontwikkelingsgroep met hoofdkantoor in Luxemburg, die actief is in België, Frankrijk en Luxemburg. De groep stelt haar jaarrekening op volgens de Luxemburgse wettelijke voorschriften en de IFRS-normen, ten behoeve van beleggers, waaronder ten minste één beursgenoteerde aandeelhouder. \n\nVolgens het persbericht van Eaglestone van 11 juni 2026 omvat de actieve ontwikkelingsportefeuille van de groep: meer dan 6.500 appartementen, 1.094 studentenwoningen en 765 hotelkamers in ontwikkeling. \n\n<i>Bron: persbericht Eaglestone, 11 juni 2026.</i>",
       "whoStats": [
         {
           "v": "[NL] 69",
@@ -650,26 +650,26 @@
           }
         }
       ],
-      "ind": "Développement Immobilier",
+      "ind": "Vastgoedontwikkeling",
       "stats": [
         {
           "v": "~1 week",
-          "l": "Closing cycle saved per period"
+          "l": "Besparing in gesloten cyclus per periode"
         },
         {
           "v": "9/10",
-          "l": "NPS, déjà des recommandations"
+          "l": "NPS, nu al aanbevelingen"
         },
         {
           "v": "3",
-          "l": "[Marchés consolidés dans Prophix (BE, FR, LU)"
+          "l": "Geconsolideerde markten in Prophix (BE, FR, LU)"
         },
         {
           "v": "2",
-          "l": "Cadres de Reporting: LuxGAAP & IFRS"
+          "l": "Verslaggevingskaders: LuxGAAP en IFRS"
         }
       ],
-      "title": "[NL] How Eaglestone transformed financial consolidation with Prophix",
+      "title": "Hoe Eaglestone de financiële consolidatie heeft getransformeerd met Prophix",
       "sidebarLabels": {
         "who": "Who is How Eaglestone transformed financial consolidation with Prophix?",
         "applications": "Applications deployed",
@@ -688,7 +688,7 @@
   "langLabels": {
     "en": "Customer Testimonial",
     "fr": "Témoignage client",
-    "nl": "In het Nederlands"
+    "nl": "Klantgetuigenis"
   },
   "sidebarLabels": {
     "who": "Who is Eaglestone",
