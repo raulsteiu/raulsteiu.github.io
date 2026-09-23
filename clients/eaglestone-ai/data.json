@@ -76,22 +76,6 @@
       }
     },
     {
-      "type": "section",
-      "data": {
-        "label": "WHY PROPHIX",
-        "heading": "What made Prophix the right fit",
-        "body": "- Requirement for a centralized system to integrate decentralized data from multiple markets.\n- Need for granular visibility into local statutory figures, intercompany eliminations, and consolidation adjustments.\n- Requirement for a user-friendly interface to manage complex inter-society reconciliations and reporting."
-      }
-    },
-    {
-      "type": "section",
-      "data": {
-        "label": "KEY RESULTS",
-        "heading": "Achieving transparency and strategic agility",
-        "body": "The current state of the group’s financial consolidation is characterized by high transparency and operational efficiency. By integrating all entities directly into Prophix, the team has moved away from receiving opaque consolidated contributions, allowing for a comprehensive view of financial performance at both the local and group levels.\n\nCollaboration has significantly improved, as the team can now perform detailed reconciliations and apply coherence controls to ensure data integrity across the board. The ability to navigate between different consolidation schemas and utilize analytical dimensions has empowered the team to provide stakeholders with precise, reliable information on demand.\n\nMost importantly, the group has successfully transitioned from a state of constant reporting delays to consistently meeting strict deadlines. The system now enables the team to simulate complex dilution scenarios for real estate projects, providing the strategic insight required to make informed investment decisions."
-      }
-    },
-    {
       "type": "clip",
       "data": {
         "title": "TRANSPARENCY GAINS",
@@ -103,6 +87,14 @@
       }
     },
     {
+      "type": "section",
+      "data": {
+        "label": "WHY PROPHIX",
+        "heading": "What made Prophix the right fit",
+        "body": "- Requirement for a centralized system to integrate decentralized data from multiple markets.\n- Need for granular visibility into local statutory figures, intercompany eliminations, and consolidation adjustments.\n- Requirement for a user-friendly interface to manage complex inter-society reconciliations and reporting."
+      }
+    },
+    {
       "type": "clip",
       "data": {
         "title": "STRATEGIC SIMULATION",
@@ -111,6 +103,14 @@
         "mediaType": "audio",
         "media": "",
         "audio": ""
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "KEY RESULTS",
+        "heading": "Achieving transparency and strategic agility",
+        "body": "The current state of the group’s financial consolidation is characterized by high transparency and operational efficiency. By integrating all entities directly into Prophix, the team has moved away from receiving opaque consolidated contributions, allowing for a comprehensive view of financial performance at both the local and group levels.\n\nCollaboration has significantly improved, as the team can now perform detailed reconciliations and apply coherence controls to ensure data integrity across the board. The ability to navigate between different consolidation schemas and utilize analytical dimensions has empowered the team to provide stakeholders with precise, reliable information on demand.\n\nMost importantly, the group has successfully transitioned from a state of constant reporting delays to consistently meeting strict deadlines. The system now enables the team to simulate complex dilution scenarios for real estate projects, providing the strategic insight required to make informed investment decisions."
       }
     },
     {
@@ -138,7 +138,7 @@
   },
   "translations": {
     "fr": {
-      "name": "[FR] EagleStone AI",
+      "name": "EagleStone AI",
       "title": "[FR] EagleStone AI",
       "desc": "[FR] EagleStone AI is a decentralized real estate promotion group that manages complex financial consolidations across multiple European markets. The company leverages Prophix to streamline reporting, improve data transparency, and support strategic decision-making for its investors.",
       "ind": "Real Estate, Luxembourg",
