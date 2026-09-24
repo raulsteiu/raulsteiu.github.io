@@ -1,10 +1,26 @@
-// Prophix Client Story — story.js v9.11
+// Prophix Client Story — story.js v9.12
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.12 2026-09-24  Prophix.com-style export: (1) hero headline now overlaps
+//                   into the white hexagon (negative margin + z-index) instead
+//                   of sitting beside it, with tighter line-height, matching the
+//                   reference; logo stays pinned to the top of the hex so it's
+//                   always above the overlapping text; (2) fixed the results-list
+//                   hex bullets rendering hugely oversized — they'd been switched
+//                   to the shared big-hero rounded SVG clipPath by mistake, now
+//                   reverted to a small plain sharp-cornered polygon clip-path;
+//                   (3) the "Prophix One enables X to:" box is now a black
+//                   rounded-border fieldset-style box whose heading overlaps and
+//                   visually interrupts the top border line (was a plain red
+//                   border with no interruption); (4) "See Prophix One in
+//                   action" CTA proportions tightened to match the reference:
+//                   smaller/better-aligned inline icon, fully pill-shaped
+//                   "Watch demo" button (was a slightly-rounded rectangle), and
+//                   less vertical section padding.
 // v9.11 2026-09-24  Prophix.com-style export: (1) product icons that 404 on the
 //                   cdn.prophix.com guessed URL (e.g. Lease Accounting) now fall
 //                   back via onerror to the app's own known-good local PNG, so
@@ -2191,17 +2207,22 @@ function exportHTMLProphix(lc) {
     '.hero-image{position:relative;min-height:460px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
     '.hero-image::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg, rgba(18,80,160,.55) 0%, rgba(18,80,160,.32) 45%, rgba(18,80,160,.14) 100%);z-index:0}',
     '.hero-image .container{position:relative;z-index:1;padding-top:60px;padding-bottom:60px}',
-    '.hex-container{display:flex;align-items:center;gap:30px;justify-content:flex-start;flex-wrap:wrap}',
+    '.hex-container{position:relative;display:flex;align-items:flex-start;gap:0;justify-content:flex-start;flex-wrap:wrap}',
     // Bigger, taller hexagon with rounded corners (via SVG clipPath, objectBoundingBox
     // units so the same rounded-corner path scales cleanly to this non-square box)
-    '.hex-shape{flex-shrink:0;width:360px;height:420px;position:relative;filter:drop-shadow(0 5px 16px rgba(0,0,0,.2))}',
-    '.hex-mask{position:absolute;inset:0;clip-path:url(#pxHexClip);display:flex;align-items:center;justify-content:center;padding:44px}',
+    '.hex-shape{flex-shrink:0;width:360px;height:420px;position:relative;z-index:1;filter:drop-shadow(0 5px 16px rgba(0,0,0,.2))}',
+    // Logo pinned to the top of the hex (align-items:flex-start), leaving the lower
+    // half of the white shape free for the headline text to overlap into
+    '.hex-mask{position:absolute;inset:0;clip-path:url(#pxHexClip);display:flex;align-items:flex-start;justify-content:center;padding:52px 44px 44px}',
     '.hex-mask.white{background:#fff}',
-    '.hex-mask img{max-width:62%;max-height:44%;object-fit:contain;display:block}',
-    '.hex-initials{font-size:64px;font-weight:900;color:#1250a0}',
-    '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:center}',
+    '.hex-mask img{max-width:62%;max-height:38%;object-fit:contain;display:block}',
+    '.hex-initials{font-size:56px;font-weight:900;color:#1250a0}',
+    // Headline overlaps into the hexagon (negative margin pulls it left, on top of
+    // the white shape via z-index) and sits below the logo, tight line spacing
+    '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:2;margin-left:-190px;margin-top:168px}',
+    '@media(max-width:820px){.hero-text{margin-left:0;margin-top:20px}}',
     '.hero-text > img{max-height:44px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
-    '.hero-text h1{font-size:clamp(28px,3.8vw,50px);font-weight:900;color:#EF363D;line-height:1.18;text-align:left;margin:0}',
+    '.hero-text h1{font-size:clamp(28px,3.8vw,50px);font-weight:900;color:#EF363D;line-height:1.04;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
 
     // ── KRS ───────────────────────────────────────────────────────────────────
@@ -2256,23 +2277,29 @@ function exportHTMLProphix(lc) {
     '.quotee p:first-child strong{color:#fff;font-size:15px}',
 
     // ── CONTAINER-OUTLINE — "enables to" results block ────────────────────────
-    '.container-outline{border:2px solid #EF363D;border-radius:12px;padding:32px 36px;margin:48px 0}',
-    '.container-outline .heading h3{font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;margin-bottom:24px;line-height:1.3}',
-    '.item-hex{width:32px;height:37px;position:relative;flex-shrink:0;margin-right:16px;margin-top:2px}',
-    '.hex-mask.red-background{position:absolute;inset:0;clip-path:url(#pxHexClip);background:#EF363D}',
+    // Black rounded border with a "fieldset/legend" heading that overlaps and
+    // visually interrupts the top border line, matching the reference design
+    '.container-outline{position:relative;border:1.5px solid #1a1a1a;border-radius:16px;padding:40px 36px 26px;margin:64px 0 48px}',
+    '.container-outline .outline-legend{position:absolute;top:-15px;left:32px;background:#fff;padding:0 14px;font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;line-height:1.3;white-space:nowrap;max-width:calc(100% - 64px);overflow:hidden;text-overflow:ellipsis}',
+    // Small hex bullet — kept as a plain, small, sharp-cornered polygon clip-path.
+    // (Rounding is imperceptible at 32x37px and reusing the big hero's rounded
+    // SVG clipPath here previously caused the bullets to render hugely oversized.)
+    '.item-hex{width:14px;height:16px;position:relative;flex-shrink:0;margin-right:16px;margin-top:4px}',
+    '.hex-mask.red-background{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:#EF363D}',
     '.container-outline .d-flex.flex-row{padding:10px 0;border-bottom:1px solid #f0f0f0;align-items:flex-start}',
     '.container-outline .d-flex.flex-row:last-child{border-bottom:none}',
     '.container-outline .d-flex.flex-row p{font-size:15px;color:#333;margin:0;line-height:1.55}',
 
     // ── SEE IN ACTION — .common-section.Red-bg ────────────────────────────────
     '.Red-bg{background:#EF363D}',
+    '.see-action-section{padding-top:48px!important;padding-bottom:48px!important}',
     '.see-action-section .container{text-align:center}',
-    '.see-action-section .row{display:flex;flex-direction:column;align-items:center;gap:28px}',
-    '.see-action-section h2{font-size:clamp(28px,3.5vw,44px);font-weight:900;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}',
+    '.see-action-section .row{display:flex;flex-direction:column;align-items:center;gap:22px}',
+    '.see-action-section h2{font-size:clamp(24px,3vw,36px);font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}',
     '.Almost-White-color{color:#fff}',
-    '.title-icon{height:40px;vertical-align:middle}',
+    '.title-icon{height:28px;width:auto;vertical-align:-3px;margin:0 1px}',
     '.only-btn-block{}',
-    '.btn.Almost-White-bg{background:#fff;color:#EF363D;font-weight:700;font-size:16px;padding:14px 40px;border-radius:6px;text-decoration:none;display:inline-block;border:none}',
+    '.btn.Almost-White-bg{background:#fff;color:#EF363D;font-weight:700;font-size:15px;padding:13px 34px;border-radius:30px;text-decoration:none;display:inline-block;border:none}',
     '.btn.Almost-White-bg:hover{background:#f5f5f5;text-decoration:none}',
 
     // Footer
@@ -2428,7 +2455,7 @@ function exportHTMLProphix(lc) {
     resultsHTML =
       '<div class="container" style="padding-bottom:48px">' +
         '<div class="container-outline">' +
-          '<span class="heading"><h3>Prophix One<sup class="tm">\u2122</sup> enables ' + escH(name) + ' to:</h3></span>' +
+          '<h3 class="outline-legend">Prophix One<sup class="tm">\u2122</sup> enables ' + escH(name) + ' to:</h3>' +
           '<div class="d-flex flex-column">' + resultRows + '</div>' +
         '</div>' +
       '</div>';
