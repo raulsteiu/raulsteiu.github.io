@@ -2143,14 +2143,16 @@ function exportHTMLProphix(lc) {
     '.hero-image::before{content:"";position:absolute;inset:0;background:rgba(18,80,160,.75);z-index:0}',
     '.hero-image .container{position:relative;z-index:1;padding-top:56px;padding-bottom:56px}',
     '.hex-container{display:flex;align-items:center;gap:36px;justify-content:flex-start}',
-    '.hex-shape{flex-shrink:0;width:200px;height:230px;position:relative}',
-    '.hex-mask{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center}',
+    '.hex-shape{flex-shrink:0;width:280px;height:320px;position:relative;filter:drop-shadow(0 4px 20px rgba(0,0,0,.15))}',
+    '.hex-mask{position:absolute;inset:0;clip-path:polygon(50% 0%,95% 25%,95% 75%,50% 100%,5% 75%,5% 25%);display:flex;align-items:center;justify-content:center;padding:40px}',
     '.hex-mask.white{background:#fff}',
+    '.hex-mask img{max-width:160px;max-height:130px;object-fit:contain;display:block}',
+    '.hex-initials{font-size:52px;font-weight:900;color:#1250a0}',
     '.hex-mask img{max-width:130px;max-height:110px;object-fit:contain}',
     '.hex-initials{font-size:44px;font-weight:900;color:#1250a0}',
-    '.hero-text{flex:1}',
+    '.hero-text{flex:1;display:flex;flex-direction:column;justify-content:center}',
     '.hero-text > img{max-height:56px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
-    '.hero-text h1{font-size:clamp(32px,4vw,52px);font-weight:900;color:#EF363D;line-height:1.1;text-align:left}',
+    '.hero-text h1{font-size:clamp(32px,4vw,52px);font-weight:900;color:#EF363D;line-height:1.15;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
 
     // ── KRS ───────────────────────────────────────────────────────────────────
@@ -2180,8 +2182,8 @@ function exportHTMLProphix(lc) {
     '.main-col ul li{font-size:16px;color:#333;line-height:1.7;margin-bottom:8px}',
 
     // ── TALL-CARD sidebar ─────────────────────────────────────────────────────
-    '.tall-card{background:#f2f2f5;border-radius:12px;padding:32px 28px;width:360px;flex-shrink:0;position:sticky;top:20px}',
-    '.tall-card h3{font-size:clamp(20px,2vw,26px);font-weight:900;line-height:1.2}',
+    '.tall-card{background:#f2f2f5;border-radius:12px;padding:32px;width:380px;flex-shrink:0;position:sticky;top:20px}',
+    '.tall-card h3{font-size:22px;font-weight:900;line-height:1.2;white-space:nowrap}',
     '.app-deployed-items{}',
     '.app-deployed-item{display:flex;align-items:center;gap:18px;margin-bottom:20px}',
     '.app-deployed-item img{max-width:5em;max-height:5em;flex-shrink:0}',
@@ -2237,24 +2239,22 @@ function exportHTMLProphix(lc) {
   ].join('\n');
 
   // ── HERO ───────────────────────────────────────────────────────────────────
-  // Hex is empty (prophix.com structure) — logo and title sit beside it in hero-text
-  var heroLogoTag = logoSrc
+  var hexContent = logoSrc
     ? '<img src="' + escH(logoSrc) + '" alt="' + escH(name) + ' logo">'
-    : '';
-  var heroHTML =
+    : '<span class="hex-initials">' + escH(name.charAt(0)) + '</span>';
+  heroHTML =
     '<div class="hero-image">' +
       '<div class="container">' +
         '<div class="hex-container">' +
-          '<div class="hex-shape"><div class="hex-mask white"></div></div>' +
+          '<div class="hex-shape"><div class="hex-mask white">' + hexContent + '</div></div>' +
           '<div class="hero-text">' +
-            heroLogoTag +
             '<h1><p>' + escH(title) + '</p></h1>' +
           '</div>' +
         '</div>' +
       '</div>' +
     '</div>';
 
-  // ── KRS ────────────────────────────────────────────────────────────────────
+    // ── KRS ────────────────────────────────────────────────────────────────────
   var krsHTML = '';
   if (krs.length) {
     var snapCards = krs.map(function(k) {
