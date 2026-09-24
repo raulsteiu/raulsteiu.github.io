@@ -1,10 +1,20 @@
-// Prophix Client Story — story.js v9.19
+// Prophix Client Story — story.js v9.20
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.20 2026-09-24  Prophix.com-style export: hero headline line-height/tracking
+//                   fixed using the ACTUAL values read off prophix.com's own
+//                   .hero-text h1 rule via devtools (customerSuccess.css) —
+//                   line-height:1 and letter-spacing:-3px. Earlier rounds had
+//                   been guessing and pushing line-height below 1 (down to
+//                   0.78), which was the wrong lever entirely: the real site
+//                   uses line-height:1 (not less) and gets the dense look
+//                   mainly from -3px letter-spacing plus their own font
+//                   (articulat-cf, which we don't have — using the existing
+//                   bold Arial/Helvetica fallback).
 // v9.19 2026-09-24  Live editor: floating Bold/Italic toolbar now shows for
 //                   every editable field (reuses EDITABLE_SELECTORS) instead
 //                   of only body text, who-text, quotes, results, and the hero
@@ -2306,7 +2316,7 @@ function exportHTMLProphix(lc) {
     '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:2;margin-left:-226px;margin-top:200px}',
     '@media(max-width:820px){.hero-text{margin-left:0;margin-top:20px}}',
     '.hero-text > img{max-height:44px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
-    '.hero-text h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:0.78;letter-spacing:-0.5px;text-align:left;margin:0}',
+    '.hero-text h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:1;letter-spacing:-3px;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
 
 
