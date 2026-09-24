@@ -1851,20 +1851,43 @@ function showExportMenu(btn) {
   menu.id = 'export-lang-menu';
   menu.style.cssText = 'position:absolute;top:100%;left:0;background:#fff;border:1px solid #E0DFF0;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:6px;z-index:600;min-width:180px;margin-top:4px';
 
-  var title = document.createElement('div');
-  title.style.cssText = 'font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px 8px;border-bottom:1px solid #f0f0f0;margin-bottom:4px';
-  title.textContent = 'Export language:';
-  menu.appendChild(title);
+  var LANG_FULL_MAP = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish',pt:'Portuguese',pl:'Polish',sv:'Swedish',da:'Danish',fi:'Finnish',no:'Norwegian',ja:'Japanese',zh:'Chinese',ko:'Korean'};
+
+  // Section: Internal style
+  var sec1 = document.createElement('div');
+  sec1.style.cssText = 'font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px 4px;';
+  sec1.textContent = 'Internal style';
+  menu.appendChild(sec1);
 
   langs.forEach(function(lc) {
-    var LANG_FULL = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish',pt:'Portuguese',pl:'Polish',sv:'Swedish',da:'Danish',fi:'Finnish',no:'Norwegian',ja:'Japanese',zh:'Chinese',ko:'Korean'};
     var item = document.createElement('button');
-    item.textContent = (LANG_NAMES[lc] || lc.toUpperCase()) + (LANG_FULL[lc] ? ' — ' + LANG_FULL[lc] : '');
-    item.style.cssText = 'display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:Arial,sans-serif;border-radius:5px;color:#1A1A2E';
+    item.textContent = (LANG_NAMES[lc] || lc.toUpperCase()) + (LANG_FULL_MAP[lc] ? ' — ' + LANG_FULL_MAP[lc] : '');
+    item.style.cssText = 'display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:Arial,sans-serif;border-radius:5px;color:#1A1A2E';
     item.onmouseover = function(){ this.style.background='#f5f5f5'; };
     item.onmouseout  = function(){ this.style.background='transparent'; };
     item.onclick = function(){ menu.remove(); exportHTML(lc); };
     menu.appendChild(item);
+  });
+
+  // Divider
+  var div = document.createElement('div');
+  div.style.cssText = 'height:1px;background:#f0f0f0;margin:6px 0';
+  menu.appendChild(div);
+
+  // Section: Prophix.com style
+  var sec2 = document.createElement('div');
+  sec2.style.cssText = 'font-size:10px;font-weight:700;color:#EF363D;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px 4px;';
+  sec2.textContent = 'prophix.com style';
+  menu.appendChild(sec2);
+
+  langs.forEach(function(lc) {
+    var item2 = document.createElement('button');
+    item2.textContent = (LANG_NAMES[lc] || lc.toUpperCase()) + (LANG_FULL_MAP[lc] ? ' — ' + LANG_FULL_MAP[lc] : '');
+    item2.style.cssText = 'display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:Arial,sans-serif;border-radius:5px;color:#1A1A2E';
+    item2.onmouseover = function(){ this.style.background='#fff5f5'; };
+    item2.onmouseout  = function(){ this.style.background='transparent'; };
+    item2.onclick = function(){ menu.remove(); exportHTMLProphix(lc); };
+    menu.appendChild(item2);
   });
 
   // Position relative to button
@@ -2026,6 +2049,293 @@ function exportHTML(lc) {
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+
+// ── HTML Export — Prophix.com style ─────────────────────────────────────────
+function exportHTMLProphix(lc) {
+  lc = lc || 'en';
+  var slug = storyData.slug || '';
+  var BASE = 'https://raulsteiu.github.io';
+  var CDN = 'https://cdn.prophix.com';
+
+  // ── Get data for this language ──────────────────────────────────────────────
+  var tr = (lc !== 'en' && storyData.translations && storyData.translations[lc]) ? storyData.translations[lc] : null;
+  function tget(field) { return (tr && tr[field]) || storyData[field] || ''; }
+  function tgetArr(field) {
+    var v = tr && tr[field] && tr[field].length ? tr[field] : storyData[field];
+    return v || [];
+  }
+
+  var title    = tget('title') || tget('name');
+  var whoText  = tget('whoText');
+  var name     = storyData.name || '';
+  var krs      = tgetArr('krs');
+  var content  = tgetArr('content');
+  var products = storyData.products || [];
+  var results  = tgetArr('results');
+  var parts    = storyData.participants || [];
+  var logoSrc  = storyData.hasLogo ? (BASE + '/clients/' + slug + '/logo.png') : '';
+
+  // ── CSS — matches prophix.com visual style ──────────────────────────────────
+  var css = [
+    '*{box-sizing:border-box;margin:0;padding:0}',
+    'body{font-family:"Helvetica Neue",Arial,sans-serif;background:#fff;color:#222;line-height:1.6;font-size:16px}',
+    'a{color:#EF363D;text-decoration:none}',
+    'a:hover{text-decoration:underline}',
+    // Nav bar
+    '.px-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:14px 40px;display:flex;align-items:center;justify-content:space-between}',
+    '.px-nav-logo{height:28px}',
+    '.px-nav-link{font-size:13px;font-weight:600;color:#EF363D;border:2px solid #EF363D;border-radius:4px;padding:8px 18px;transition:all .15s}',
+    '.px-nav-link:hover{background:#EF363D;color:#fff;text-decoration:none}',
+    // Hero
+    '.px-hero{max-width:900px;margin:0 auto;padding:40px 40px 0}',
+    '.px-client-logo{max-height:48px;max-width:200px;object-fit:contain;margin-bottom:24px;display:block}',
+    '.px-hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:32px}',
+    // KRS section
+    '.px-krs-section{background:#f4f4f6;padding:40px}',
+    '.px-krs-inner{max-width:900px;margin:0 auto}',
+    '.px-krs-section h2{font-size:22px;font-weight:700;color:#EF363D;margin-bottom:24px}',
+    '.px-krs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}',
+    '.px-krs-card{background:#fff;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px}',
+    '.px-krs-check{width:40px;height:40px;flex-shrink:0}',
+    '.px-krs-text{font-size:15px;color:#222;line-height:1.5}',
+    // Main content
+    '.px-content{max-width:900px;margin:0 auto;padding:40px}',
+    '.px-content h2{font-size:24px;font-weight:700;color:#1a1a1a;margin:40px 0 16px}',
+    '.px-content h2:first-child{margin-top:0}',
+    '.px-content p{font-size:16px;color:#333;line-height:1.7;margin-bottom:16px}',
+    '.px-content ul{padding-left:24px;margin-bottom:16px}',
+    '.px-content ul li{font-size:16px;color:#333;line-height:1.7;margin-bottom:8px}',
+    '.px-content h3{font-size:17px;font-weight:700;color:#1a1a1a;margin:28px 0 14px}',
+    // Applications deployed
+    '.px-apps{margin:24px 0}',
+    '.px-app-item{display:flex;align-items:center;gap:12px;margin-bottom:14px}',
+    '.px-app-icon{width:36px;height:36px;object-fit:contain;flex-shrink:0}',
+    '.px-app-name{font-size:15px;font-weight:700;color:#1a1a1a}',
+    // Quote/video block — red background
+    '.px-quote-section{background:#EF363D;padding:60px 40px}',
+    '.px-quote-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}',
+    '@media(max-width:680px){.px-quote-inner{grid-template-columns:1fr}}',
+    '.px-quote-video{border-radius:8px;overflow:hidden;background:#000}',
+    '.px-quote-video video,.px-quote-video iframe{width:100%;display:block;border-radius:8px}',
+    '.px-quote-video-placeholder{background:rgba(0,0,0,.3);border-radius:8px;padding:40px;text-align:center;color:rgba(255,255,255,.6);font-size:14px}',
+    '.px-quote-content{color:#fff}',
+    '.px-quote-mark{font-size:48px;font-weight:900;color:rgba(255,255,255,.5);line-height:1;margin-bottom:12px}',
+    '.px-quote-text{font-size:clamp(16px,2vw,20px);font-weight:600;line-height:1.55;color:#fff;margin-bottom:24px}',
+    '.px-speaker{display:flex;align-items:center;gap:14px}',
+    '.px-speaker-hex{width:48px;height:48px;background:rgba(255,255,255,.25);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);flex-shrink:0}',
+    '.px-speaker-name{font-size:15px;font-weight:700;color:#fff}',
+    '.px-speaker-title{font-size:13px;color:rgba(255,255,255,.8)}',
+    // Quote-only (no video)
+    '.px-quote-only{max-width:900px;margin:0 auto;padding:40px;border-left:4px solid #EF363D;margin:32px 40px}',
+    '.px-quote-only .px-quote-mark{font-size:36px;color:#EF363D}',
+    '.px-quote-only .px-quote-text{font-size:18px;color:#222;font-style:italic}',
+    '.px-quote-only .px-speaker-name{color:#1a1a1a}',
+    '.px-quote-only .px-speaker-title{color:#888}',
+    // Results "enables to" list
+    '.px-enables{background:#f4f4f6;padding:40px}',
+    '.px-enables-inner{max-width:900px;margin:0 auto}',
+    '.px-enables h3{font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:20px}',
+    '.px-enables ul{list-style:none;padding:0}',
+    '.px-enables ul li{padding:12px 0 12px 24px;border-bottom:1px solid #e0e0e0;position:relative;font-size:15px;color:#333}',
+    '.px-enables ul li:last-child{border-bottom:none}',
+    '.px-enables ul li::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#EF363D}',
+    // Footer
+    '.px-footer{background:#1a1a2e;padding:32px 40px;text-align:center;margin-top:60px}',
+    '.px-footer p{font-size:12px;color:rgba(255,255,255,.4);line-height:1.6}',
+    '.px-footer a{color:rgba(255,255,255,.4)}',
+    '.px-cta{background:#f4f4f6;padding:48px 40px;text-align:center;margin-top:48px}',
+    '.px-cta h2{font-size:24px;font-weight:700;color:#1a1a1a;margin-bottom:16px}',
+    '.px-cta-btn{display:inline-block;background:#EF363D;color:#fff;font-weight:700;font-size:15px;padding:12px 28px;border-radius:6px;text-decoration:none}',
+    '.px-cta-btn:hover{background:#c0272d;text-decoration:none}'
+  ].join('\n');
+
+  // ── Product icon map (Prophix CDN SVG icons) ──────────────────────────────
+  var PROD_ICONS = {
+    'Financial Consolidation': CDN + '/images/uploads/icons/Prophix-Icons/financial-consolidation.svg',
+    'Cash Management':         CDN + '/images/uploads/icons/Prophix-Icons/cash-management.svg',
+    'Account Reconciliation':  CDN + '/images/uploads/icons/Prophix-Icons/account-reconciliation.svg',
+    'FP&A Plus':               CDN + '/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
+    'FP&A':                    CDN + '/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
+    'Intercompany Management': CDN + '/images/uploads/icons/Prophix-Icons/intercompany-management.svg',
+    'Lease Accounting':        CDN + '/images/uploads/icons/Prophix-Icons/lease-accounting.svg'
+  };
+
+  function escH(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // ── Build sections HTML ────────────────────────────────────────────────────
+  var sectionsHTML = '';
+  var quoteBlocksHTML = '';
+  var firstParticipant = parts[0] || null;
+
+  content.forEach(function(item) {
+    if (item.type === 'section' && item.data) {
+      var s = item.data;
+      var heading = escH(s.heading || '');
+      var body = s.body || '';
+      // Convert body text to paragraphs and lists
+      var bodyHTML = '';
+      var lines = body.split('\n');
+      var inList = false;
+      lines.forEach(function(line) {
+        var t = line.trim();
+        if (!t) { if (inList) { bodyHTML += '</ul>'; inList = false; } return; }
+        if (/^[-–]\s/.test(t)) {
+          if (!inList) { bodyHTML += '<ul>'; inList = true; }
+          bodyHTML += '<li>' + escH(t.replace(/^[-–]\s+/, '')) + '</li>';
+        } else {
+          if (inList) { bodyHTML += '</ul>'; inList = false; }
+          bodyHTML += '<p>' + escH(t) + '</p>';
+        }
+      });
+      if (inList) bodyHTML += '</ul>';
+
+      sectionsHTML += '<h2>' + heading + '</h2>' + bodyHTML;
+
+    } else if (item.type === 'clip' && item.data) {
+      var c = item.data;
+      var quote = (c.quote || '').replace(/^[“”"]+|[“”"]+$/g, '').trim();
+      if (!quote) return;
+
+      var mt = c.mediaType || 'audio';
+      var hasVideo = mt === 'video' && c.media;
+      var speaker = firstParticipant;
+
+      if (hasVideo) {
+        // Full red section with video + quote
+        var embedUrl = '';
+        var ytMatch = (c.media || '').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)+([\w-]{11})/);
+        if (ytMatch) embedUrl = 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0';
+        var vmMatch = (c.media || '').match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/);
+        if (vmMatch) embedUrl = 'https://player.vimeo.com/video/' + vmMatch[1];
+
+        var videoHTML = embedUrl
+          ? '<div class="px-quote-video"><iframe src="' + escH(embedUrl) + '" allowfullscreen frameborder="0" style="width:100%;aspect-ratio:16/9;border-radius:8px"></iframe></div>'
+          : '<div class="px-quote-video-placeholder">🎬 ' + escH(c.title || 'Video') + '</div>';
+
+        var speakerHTML = speaker
+          ? '<div class="px-speaker"><div class="px-speaker-hex"></div><div><div class="px-speaker-name">' + escH(speaker.name) + '</div><div class="px-speaker-title">' + escH(speaker.title || '') + '</div></div></div>'
+          : '';
+
+        quoteBlocksHTML += '<div class="px-quote-section">' +
+          '<div class="px-quote-inner">' +
+          videoHTML +
+          '<div class="px-quote-content">' +
+          '<div class="px-quote-mark">““</div>' +
+          '<p class="px-quote-text">' + escH(quote) + '</p>' +
+          speakerHTML +
+          '</div></div></div>';
+      } else {
+        // Quote-only: inline left-border block inside content
+        var speakerInlineHTML = speaker
+          ? '<div class="px-speaker" style="margin-top:16px"><div><div class="px-speaker-name" style="color:#1a1a1a">' + escH(speaker.name) + '</div><div class="px-speaker-title" style="color:#888">' + escH(speaker.title || '') + '</div></div></div>'
+          : '';
+        sectionsHTML += '<div class="px-quote-only">' +
+          '<div class="px-quote-mark">““</div>' +
+          '<p class="px-quote-text">' + escH(quote) + '</p>' +
+          speakerInlineHTML +
+          '</div>';
+      }
+    }
+  });
+
+  // ── KRS cards HTML ─────────────────────────────────────────────────────────
+  var krsHTML = '';
+  if (krs.length > 0) {
+    krsHTML = '<div class="px-krs-section"><div class="px-krs-inner">' +
+      '<h2>Key results snapshot</h2>' +
+      '<div class="px-krs-grid">';
+    krs.forEach(function(k) {
+      // Strip bold prefix — Prophix.com uses full sentences only
+      var text = k.text || '';
+      if (k.bold) text = text.replace(new RegExp('^' + (k.bold||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':?\\s*', 'i'), '').trim();
+      if (!text) text = k.text || '';
+      krsHTML += '<div class="px-krs-card">' +
+        '<img class="px-krs-check" src="' + CDN + '/images/uploads/icons/check-mark.svg" alt="check">' +
+        '<p class="px-krs-text">' + escH(text) + '</p>' +
+        '</div>';
+    });
+    krsHTML += '</div></div></div>';
+  }
+
+  // ── Who is section ─────────────────────────────────────────────────────────
+  var whoHTML = '';
+  if (whoText) {
+    whoHTML = '<h2>Who is ' + escH(name) + '?</h2><p>' + escH(whoText) + '</p>';
+  }
+
+  // ── Applications deployed ──────────────────────────────────────────────────
+  var appsHTML = '';
+  if (products.length > 0) {
+    appsHTML = '<h3>Applications deployed</h3><div class="px-apps">';
+    products.forEach(function(pr) {
+      var iconUrl = PROD_ICONS[pr] || '';
+      var iconTag = iconUrl ? '<img class="px-app-icon" src="' + escH(iconUrl) + '" alt="' + escH(pr) + '">' : '';
+      appsHTML += '<div class="px-app-item">' + iconTag + '<span class="px-app-name">Prophix One ' + escH(pr) + '</span></div>';
+    });
+    appsHTML += '</div>';
+  }
+
+  // ── Results "enables to" ───────────────────────────────────────────────────
+  var resultsHTML = '';
+  if (results.length > 0) {
+    resultsHTML = '<div class="px-enables"><div class="px-enables-inner">' +
+      '<h3>Prophix One™ enables ' + escH(name) + ' to:</h3><ul>';
+    results.forEach(function(r) {
+      var clean = (r || '').replace(/^[✕✗×→\s•]+/, '').trim();
+      if (clean) resultsHTML += '<li>' + escH(clean) + '</li>';
+    });
+    resultsHTML += '</ul></div></div>';
+  }
+
+  // ── Prophix.com nav bar ───────────────────────────────────────────────────
+  var navHTML = '<nav class="px-nav">' +
+    '<img class="px-nav-logo" src="' + BASE + '/prophix-logo-1000px.png" alt="Prophix">' +
+    '<a class="px-nav-link" href="https://www.prophix.com/customer-stories/">← Customer Stories</a>' +
+    '</nav>';
+
+  // ── Footer ─────────────────────────────────────────────────────────────────
+  var footerHTML = '<div class="px-cta">' +
+    '<h2>See Prophix One in action</h2>' +
+    '<a class="px-cta-btn" href="https://www.prophix.com/demo/">Watch demo</a>' +
+    '</div>' +
+    '<footer class="px-footer">' +
+    '<p><strong style="color:rgba(255,255,255,.6)">Prophix Software Inc.</strong> Copyright &copy; ' + new Date().getFullYear() + '. All rights reserved.</p>' +
+    '<p><a href="https://www.prophix.com/privacy-policy/">Privacy Policy</a> &nbsp;|&nbsp; <a href="https://www.prophix.com/terms-of-use/">Terms of Use</a></p>' +
+    '</footer>';
+
+  // ── Assemble full page ─────────────────────────────────────────────────────
+  var heroLogo = logoSrc ? '<img class="px-client-logo" src="' + escH(logoSrc) + '" alt="' + escH(name) + ' logo">' : '';
+
+  var parts2 = [];
+  parts2.push('<!DOCTYPE html>');
+  parts2.push('<html lang="' + lc + '">');
+  parts2.push('<head>');
+  parts2.push('<meta charset="UTF-8">');
+  parts2.push('<meta name="viewport" content="width=device-width,initial-scale=1.0">');
+  parts2.push('<title>' + escH(title) + ' | Prophix</title>');
+  parts2.push('<style>' + css + '</style>');
+  parts2.push('</head>');
+  parts2.push('<body>');
+  parts2.push(navHTML);
+  parts2.push('<div class="px-hero">' + heroLogo + '<h1>' + escH(title) + '</h1></div>');
+  parts2.push(krsHTML);
+  parts2.push('<div class="px-content">' + whoHTML + sectionsHTML + appsHTML + '</div>');
+  parts2.push(quoteBlocksHTML);
+  parts2.push(resultsHTML);
+  parts2.push(footerHTML);
+  parts2.push('</body>');
+  parts2.push('</html>');
+
+  // ── Download ───────────────────────────────────────────────────────────────
+  var langSuffix = (LANG_NAMES[lc] || lc.toUpperCase());
+  var filename = (name || 'Story').replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_') +
+    '_Customer_Story_' + langSuffix + '_prophix.html';
+  var blob = new Blob([parts2.join('\n')], {type:'text/html;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
 }
 
 // ── Floating rich text toolbar ───────────────────────────────────────────────
