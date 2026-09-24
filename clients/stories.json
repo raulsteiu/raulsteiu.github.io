@@ -1,5 +1,18 @@
 [
   {
+    "slug": "infrastructurex",
+    "name": "InfrastructureX",
+    "ind": "Infrastructure, Vienna, Austria",
+    "langs": [
+      "en",
+      "de",
+      "pl"
+    ],
+    "status": "published",
+    "created": "2026-09-24T10:03:24.414Z",
+    "logo": true
+  },
+  {
     "slug": "eaglestone-ai",
     "name": "EagleStone AI",
     "ind": "Real Estate, Luxembourg",
