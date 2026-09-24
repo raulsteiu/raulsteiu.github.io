@@ -1976,9 +1976,17 @@ function exportHTML(lc) {
 
   // ── 5. Fix asset URLs — make all relative paths absolute ─────────────────
   var BASE = 'https://raulsteiu.github.io';
+  var clientBase = BASE + '/clients/' + (storyData.slug || '');
   clone.querySelectorAll('img[src]').forEach(function(img) {
     var src = img.getAttribute('src');
-    if (src && src.startsWith('/')) img.setAttribute('src', BASE + src);
+    if (!src) return;
+    if (src.startsWith('/')) {
+      // Absolute path — just prepend base
+      img.setAttribute('src', BASE + src.split('?')[0]);
+    } else if (!src.startsWith('http') && !src.startsWith('data:')) {
+      // Relative path (e.g. logo.png) — resolve to client folder
+      img.setAttribute('src', clientBase + '/' + src.split('?')[0].split('/').pop());
+    }
   });
   clone.querySelectorAll('audio source[src]').forEach(function(src) {
     var s = src.getAttribute('src');
@@ -2056,284 +2064,395 @@ function exportHTMLProphix(lc) {
   lc = lc || 'en';
   var slug = storyData.slug || '';
   var BASE = 'https://raulsteiu.github.io';
-  var CDN = 'https://cdn.prophix.com';
+  var CDN  = 'https://cdn.prophix.com';
 
-  // ── Get data for this language ──────────────────────────────────────────────
   var tr = (lc !== 'en' && storyData.translations && storyData.translations[lc]) ? storyData.translations[lc] : null;
-  function tget(field) { return (tr && tr[field]) || storyData[field] || ''; }
-  function tgetArr(field) {
-    var v = tr && tr[field] && tr[field].length ? tr[field] : storyData[field];
-    return v || [];
-  }
+  function tget(f)    { return (tr && tr[f]) || storyData[f] || ''; }
+  function tgetArr(f) { var v = tr && tr[f] && tr[f].length ? tr[f] : storyData[f]; return v || []; }
 
   var title    = tget('title') || tget('name');
   var whoText  = tget('whoText');
   var name     = storyData.name || '';
   var krs      = tgetArr('krs');
-  var content  = tgetArr('content');
+  var sections = tgetArr('content');
   var products = storyData.products || [];
   var results  = tgetArr('results');
-  var parts    = storyData.participants || [];
+  var parts0   = storyData.participants || [];
   var logoSrc  = storyData.hasLogo ? (BASE + '/clients/' + slug + '/logo.png') : '';
 
-  // ── CSS — matches prophix.com visual style ──────────────────────────────────
-  var css = [
-    '*{box-sizing:border-box;margin:0;padding:0}',
-    'body{font-family:"Helvetica Neue",Arial,sans-serif;background:#fff;color:#222;line-height:1.6;font-size:16px}',
-    'a{color:#EF363D;text-decoration:none}',
-    'a:hover{text-decoration:underline}',
-    // Nav bar
-    '.px-nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:14px 40px;display:flex;align-items:center;justify-content:space-between}',
-    '.px-nav-logo{height:28px}',
-    '.px-nav-link{font-size:13px;font-weight:600;color:#EF363D;border:2px solid #EF363D;border-radius:4px;padding:8px 18px;transition:all .15s}',
-    '.px-nav-link:hover{background:#EF363D;color:#fff;text-decoration:none}',
-    // Hero
-    '.px-hero{max-width:900px;margin:0 auto;padding:40px 40px 0}',
-    '.px-client-logo{max-height:48px;max-width:200px;object-fit:contain;margin-bottom:24px;display:block}',
-    '.px-hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:32px}',
-    // KRS section
-    '.px-krs-section{background:#f4f4f6;padding:40px}',
-    '.px-krs-inner{max-width:900px;margin:0 auto}',
-    '.px-krs-section h2{font-size:22px;font-weight:700;color:#EF363D;margin-bottom:24px}',
-    '.px-krs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}',
-    '.px-krs-card{background:#fff;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px}',
-    '.px-krs-check{width:40px;height:40px;flex-shrink:0}',
-    '.px-krs-text{font-size:15px;color:#222;line-height:1.5}',
-    // Main content
-    '.px-content{max-width:900px;margin:0 auto;padding:40px}',
-    '.px-content h2{font-size:24px;font-weight:700;color:#1a1a1a;margin:40px 0 16px}',
-    '.px-content h2:first-child{margin-top:0}',
-    '.px-content p{font-size:16px;color:#333;line-height:1.7;margin-bottom:16px}',
-    '.px-content ul{padding-left:24px;margin-bottom:16px}',
-    '.px-content ul li{font-size:16px;color:#333;line-height:1.7;margin-bottom:8px}',
-    '.px-content h3{font-size:17px;font-weight:700;color:#1a1a1a;margin:28px 0 14px}',
-    // Applications deployed
-    '.px-apps{margin:24px 0}',
-    '.px-app-item{display:flex;align-items:center;gap:12px;margin-bottom:14px}',
-    '.px-app-icon{width:36px;height:36px;object-fit:contain;flex-shrink:0}',
-    '.px-app-name{font-size:15px;font-weight:700;color:#1a1a1a}',
-    // Quote/video block — red background
-    '.px-quote-section{background:#EF363D;padding:60px 40px}',
-    '.px-quote-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}',
-    '@media(max-width:680px){.px-quote-inner{grid-template-columns:1fr}}',
-    '.px-quote-video{border-radius:8px;overflow:hidden;background:#000}',
-    '.px-quote-video video,.px-quote-video iframe{width:100%;display:block;border-radius:8px}',
-    '.px-quote-video-placeholder{background:rgba(0,0,0,.3);border-radius:8px;padding:40px;text-align:center;color:rgba(255,255,255,.6);font-size:14px}',
-    '.px-quote-content{color:#fff}',
-    '.px-quote-mark{font-size:48px;font-weight:900;color:rgba(255,255,255,.5);line-height:1;margin-bottom:12px}',
-    '.px-quote-text{font-size:clamp(16px,2vw,20px);font-weight:600;line-height:1.55;color:#fff;margin-bottom:24px}',
-    '.px-speaker{display:flex;align-items:center;gap:14px}',
-    '.px-speaker-hex{width:48px;height:48px;background:rgba(255,255,255,.25);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);flex-shrink:0}',
-    '.px-speaker-name{font-size:15px;font-weight:700;color:#fff}',
-    '.px-speaker-title{font-size:13px;color:rgba(255,255,255,.8)}',
-    // Quote-only (no video)
-    '.px-quote-only{max-width:900px;margin:0 auto;padding:40px;border-left:4px solid #EF363D;margin:32px 40px}',
-    '.px-quote-only .px-quote-mark{font-size:36px;color:#EF363D}',
-    '.px-quote-only .px-quote-text{font-size:18px;color:#222;font-style:italic}',
-    '.px-quote-only .px-speaker-name{color:#1a1a1a}',
-    '.px-quote-only .px-speaker-title{color:#888}',
-    // Results "enables to" list
-    '.px-enables{background:#f4f4f6;padding:40px}',
-    '.px-enables-inner{max-width:900px;margin:0 auto}',
-    '.px-enables h3{font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:20px}',
-    '.px-enables ul{list-style:none;padding:0}',
-    '.px-enables ul li{padding:12px 0 12px 24px;border-bottom:1px solid #e0e0e0;position:relative;font-size:15px;color:#333}',
-    '.px-enables ul li:last-child{border-bottom:none}',
-    '.px-enables ul li::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#EF363D}',
-    // Footer
-    '.px-footer{background:#1a1a2e;padding:32px 40px;text-align:center;margin-top:60px}',
-    '.px-footer p{font-size:12px;color:rgba(255,255,255,.4);line-height:1.6}',
-    '.px-footer a{color:rgba(255,255,255,.4)}',
-    '.px-cta{background:#f4f4f6;padding:48px 40px;text-align:center;margin-top:48px}',
-    '.px-cta h2{font-size:24px;font-weight:700;color:#1a1a1a;margin-bottom:16px}',
-    '.px-cta-btn{display:inline-block;background:#EF363D;color:#fff;font-weight:700;font-size:15px;padding:12px 28px;border-radius:6px;text-decoration:none}',
-    '.px-cta-btn:hover{background:#c0272d;text-decoration:none}'
-  ].join('\n');
+  function escH(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function bodyToHTML(text) {
+    var html = ''; var inUl = false;
+    (text||'').split('\n').forEach(function(line) {
+      var t = line.trim();
+      if (!t) { if (inUl){html+='</ul>';inUl=false;} return; }
+      if (/^[-\u2013]\s/.test(t)) {
+        if (!inUl){html+='<ul>';inUl=true;}
+        html += '<li>' + escH(t.replace(/^[-\u2013]\s+/,'')) + '</li>';
+      } else { if(inUl){html+='</ul>';inUl=false;} html+='<p>'+escH(t)+'</p>'; }
+    });
+    if(inUl) html+='</ul>';
+    return html;
+  }
 
-  // ── Product icon map (Prophix CDN SVG icons) ──────────────────────────────
   var PROD_ICONS = {
-    'Financial Consolidation': CDN + '/images/uploads/icons/Prophix-Icons/financial-consolidation.svg',
-    'Cash Management':         CDN + '/images/uploads/icons/Prophix-Icons/cash-management.svg',
-    'Account Reconciliation':  CDN + '/images/uploads/icons/Prophix-Icons/account-reconciliation.svg',
-    'FP&A Plus':               CDN + '/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
-    'FP&A':                    CDN + '/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
-    'Intercompany Management': CDN + '/images/uploads/icons/Prophix-Icons/intercompany-management.svg',
-    'Lease Accounting':        CDN + '/images/uploads/icons/Prophix-Icons/lease-accounting.svg'
+    'Financial Consolidation': CDN+'/images/uploads/icons/Prophix-Icons/financial-consolidation.svg',
+    'Cash Management':         CDN+'/images/uploads/icons/Prophix-Icons/cash-management.svg',
+    'Account Reconciliation':  CDN+'/images/uploads/icons/Prophix-Icons/account-reconciliation.svg',
+    'FP&A Plus':               CDN+'/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
+    'FP&A':                    CDN+'/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
+    'Intercompany Management': CDN+'/images/uploads/icons/Prophix-Icons/intercompany-management.svg',
+    'Lease Accounting':        CDN+'/images/uploads/icons/Prophix-Icons/lease-accounting.svg'
   };
 
-  function escH(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  // ── CSS using their exact class names ─────────────────────────────────────
+  var css = [
+    '*{box-sizing:border-box;margin:0;padding:0}',
+    'body{font-family:"Helvetica Neue",Arial,sans-serif;color:#333;background:#fff;font-size:16px;line-height:1.6}',
+    'a{color:#EF363D;text-decoration:none} a:hover{text-decoration:underline}',
+    'p{margin-bottom:12px;line-height:1.7;color:#333}',
+    'ul{padding-left:22px;margin-bottom:14px} li{margin-bottom:8px;line-height:1.6;color:#333}',
+    'strong{color:#1a1a1a} sup.reg,sup.tm{font-size:.6em;vertical-align:super}',
 
-  // ── Build sections HTML ────────────────────────────────────────────────────
-  var sectionsHTML = '';
-  var quoteBlocksHTML = '';
-  var firstParticipant = parts[0] || null;
+    // Utility
+    '.d-flex{display:flex} .flex-row{flex-direction:row} .flex-column{flex-direction:column}',
+    '.align-items-center{align-items:center} .align-items-lg-start{align-items:flex-start}',
+    '.justify-content-left{justify-content:flex-start}',
+    '.flex-wrap{flex-wrap:wrap}',
+    '.mt-3{margin-top:16px} .mt-5{margin-top:32px} .mb-4{margin-bottom:24px} .mb-5{margin-bottom:32px} .pt-70{padding-top:70px} .pb-70{padding-bottom:70px}',
+    '.h-100{height:100%}',
+    '.text-left{text-align:left}',
 
-  content.forEach(function(item) {
+    // Nav
+    '.px-nav{background:#fff;border-bottom:1px solid #e5e5e5;padding:12px 40px;display:flex;align-items:center;justify-content:space-between}',
+    '.px-nav-logo{height:26px}',
+    '.px-nav-right{display:flex;gap:12px;align-items:center}',
+    '.px-nav-btn{font-size:13px;font-weight:700;padding:9px 20px;border-radius:5px;text-decoration:none;white-space:nowrap}',
+    '.px-nav-btn-outline{border:2px solid #EF363D;color:#EF363D}',
+    '.px-nav-btn-solid{background:#EF363D;color:#fff}',
+    '.px-nav-btn:hover{opacity:.85;text-decoration:none}',
+
+    // Container
+    '.container{max-width:1100px;margin:0 auto;padding:0 40px}',
+
+    // ── HERO ──────────────────────────────────────────────────────────────────
+    '.hero-image{background:linear-gradient(135deg,#1250a0 0%,#0d3d80 60%,#1a6abf 100%);min-height:300px;display:flex;align-items:center}',
+    '.hero-image .container{padding-top:48px;padding-bottom:48px}',
+    '.hex-container{display:flex;align-items:center;gap:40px}',
+    '.hex-shape{flex-shrink:0;width:160px;height:185px;position:relative}',
+    '.hex-mask{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center}',
+    '.hex-mask.white{background:#fff}',
+    '.hex-mask img{max-width:110px;max-height:90px;object-fit:contain}',
+    '.hex-initials{font-size:36px;font-weight:900;color:#1250a0}',
+    '.hero-text{flex:1}',
+    '.hero-text > img{max-height:56px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
+    '.hero-text h1{font-size:clamp(26px,3.5vw,44px);font-weight:900;color:#EF363D;line-height:1.15}',
+    '.hero-text h1 p{margin:0;color:#EF363D}',
+
+    // ── KRS ───────────────────────────────────────────────────────────────────
+    '.common-section{padding:48px 0}',
+    '.Grey-background{background:#f2f2f5}',
+    '.content-container{}',
+    '.title-heading{font-size:clamp(22px,2.5vw,34px);font-weight:900;line-height:1.2}',
+    '.Red-color{color:#EF363D}',
+    '.snapshots{}',
+    '.snapshot-items{display:flex;flex-wrap:wrap;gap:20px;align-items:stretch}',
+    '.snap-card{background:#fff;border-radius:10px;padding:28px 24px;flex:1;min-width:200px;max-width:340px;display:flex;flex-direction:column;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)}',
+    '.snap-card img{width:40px;height:40px;flex-shrink:0}',
+    '.snap-card p{font-size:15px;color:#222;line-height:1.55;margin:0}',
+
+    // ── TWO-COLUMN page body ──────────────────────────────────────────────────
+    '.page-body{max-width:1100px;margin:0 auto;padding:48px 40px;display:flex;gap:48px;align-items:flex-start}',
+    '@media(max-width:800px){.page-body{flex-direction:column}}',
+
+    // ── MAIN CONTENT — .container .content-container .firstBlock ─────────────
+    '.main-col{flex:1;min-width:0}',
+    '.firstBlock{}',
+    '.main-col h2{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:#EF363D;margin:36px 0 14px;line-height:1.2}',
+    '.main-col h2:first-child{margin-top:0}',
+    '.main-col p{font-size:16px;color:#333;line-height:1.7;margin-bottom:14px}',
+    '.main-col ul{padding-left:22px;margin-bottom:14px}',
+    '.main-col ul li{font-size:16px;color:#333;line-height:1.7;margin-bottom:8px}',
+
+    // ── TALL-CARD sidebar ─────────────────────────────────────────────────────
+    '.tall-card{background:#f2f2f5;border-radius:12px;padding:28px;width:300px;flex-shrink:0;position:sticky;top:20px}',
+    '.tall-card h3{font-size:20px;font-weight:900;line-height:1.2}',
+    '.app-deployed-items{}',
+    '.app-deployed-item{display:flex;align-items:center;gap:14px;margin-bottom:16px}',
+    '.app-deployed-item img{max-width:4em;max-height:4em;flex-shrink:0}',
+    '.app-deployed{font-size:14px;color:#1a1a1a;margin:0;line-height:1.3}',
+    '.c-btn{display:block;background:#EF363D;color:#fff !important;text-align:center;font-weight:700;font-size:14px;padding:12px 16px;border-radius:5px;text-decoration:none;width:100%}',
+    '.c-btn:hover{background:#c0272d;text-decoration:none}',
+    '.c-btn span{color:#fff}',
+    'hr{border:none;border-top:1px solid #ddd;margin:20px 0}',
+
+    // ── QUOTE BLOCK — .red-background .quote-block ────────────────────────────
+    '.red-background{background:#EF363D}',
+    '.padding-heavy{padding:56px 40px}',
+    '.quote-block{max-width:1100px;margin:0 auto;display:flex;gap:32px;align-items:flex-start}',
+    '.quote-block > img{width:72px;flex-shrink:0;margin-top:4px}',
+    '.quote .p,.quote p{font-size:clamp(18px,2vw,24px);font-weight:600;color:#fff !important;line-height:1.55;margin-bottom:16px}',
+    '.quotee{gap:16px}',
+    // Speaker hexagon in quote
+    '.quote-hex{width:50px;height:57px;position:relative;flex-shrink:0}',
+    '.quote-hex .hex-mask.white-background{background:rgba(255,255,255,.25)}',
+    '.quotee p{font-size:14px;color:#fff !important;margin:0;line-height:1.4}',
+    '.quotee p strong{color:#fff}',
+
+    // Video + quote two-col inside red section
+    '.quote-video-wrap{flex:1;min-width:0}',
+    '.quote-video-wrap iframe{width:100%;aspect-ratio:16/9;border-radius:8px;display:block}',
+
+    // ── CONTAINER-OUTLINE — "enables to" results block ────────────────────────
+    // Their .container-outline wraps the heading + item-hex list
+    '.container-outline{border:2px solid #EF363D;border-radius:12px;padding:32px 36px;margin:48px 0}',
+    '.container-outline .heading h3{font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;margin-bottom:24px;line-height:1.3}',
+    // Each result row: .item-hex + text
+    '.item-hex{width:32px;height:37px;position:relative;flex-shrink:0;margin-right:16px;margin-top:2px}',
+    '.hex-mask.red-background{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:#EF363D}',
+    '.container-outline .d-flex.flex-row{padding:10px 0;border-bottom:1px solid #f0f0f0;align-items:flex-start}',
+    '.container-outline .d-flex.flex-row:last-child{border-bottom:none}',
+    '.container-outline .d-flex.flex-row p{font-size:15px;color:#333;margin:0;line-height:1.55}',
+
+    // ── SEE IN ACTION — .common-section.Red-bg ────────────────────────────────
+    '.Red-bg{background:#EF363D}',
+    '.see-action-section .container{text-align:center}',
+    '.see-action-section .row{display:flex;flex-direction:column;align-items:center;gap:28px}',
+    '.see-action-section h2{font-size:clamp(28px,3.5vw,44px);font-weight:900;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}',
+    '.Almost-White-color{color:#fff}',
+    '.title-icon{height:40px;vertical-align:middle}',
+    '.only-btn-block{}',
+    '.btn.Almost-White-bg{background:#fff;color:#EF363D;font-weight:700;font-size:16px;padding:14px 40px;border-radius:6px;text-decoration:none;display:inline-block;border:none}',
+    '.btn.Almost-White-bg:hover{background:#f5f5f5;text-decoration:none}',
+
+    // Footer
+    '.px-footer{background:#1a1a2e;padding:28px 40px;text-align:center}',
+    '.px-footer p{font-size:12px;color:rgba(255,255,255,.4);line-height:1.8;margin-bottom:4px}',
+    '.px-footer a{color:rgba(255,255,255,.4)}'
+  ].join('\n');
+
+  // ── HERO ───────────────────────────────────────────────────────────────────
+  var hexInner = logoSrc
+    ? '<img src="' + escH(logoSrc) + '" alt="' + escH(name) + ' logo">'
+    : '<span class="hex-initials">' + escH(name.charAt(0)) + '</span>';
+  var heroHTML =
+    '<div class="hero-image">' +
+      '<div class="container">' +
+        '<div class="hex-container">' +
+          '<div class="hex-shape"><div class="hex-mask white">' + hexInner + '</div></div>' +
+          '<div class="hero-text">' +
+            '<h1><p>' + escH(title) + '</p></h1>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  // ── KRS ────────────────────────────────────────────────────────────────────
+  var krsHTML = '';
+  if (krs.length) {
+    var snapCards = krs.map(function(k) {
+      var text = k.text || '';
+      if (k.bold) text = text.replace(new RegExp('^' + (k.bold||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':?\\s*','i'),'').trim() || text;
+      return '<div class="snap-card">' +
+        '<img src="' + CDN + '/images/uploads/icons/check-mark.svg" alt="check mark">' +
+        '<p>' + escH(text) + '</p>' +
+        '</div>';
+    }).join('');
+    krsHTML =
+      '<div class="common-section Grey-background">' +
+        '<div class="container h-100 snapshots content-container">' +
+          '<h2 class="title-heading Red-color mb-5">Key results snapshot</h2>' +
+          '<div class="d-flex justify-content-lg-between justify-content-sm-center flex-md-row flex-column align-items-stretch align-self-stretch flex-wrap snapshot-items">' +
+          snapCards +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // ── SIDEBAR — their .tall-card ─────────────────────────────────────────────
+  var sidebarHTML = '';
+  if (products.length) {
+    var appItems = products.map(function(pr) {
+      var iconUrl = PROD_ICONS[pr] || CDN + '/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg';
+      return '<div class="app-deployed-item d-flex flex-lg-row align-items-center">' +
+        '<img src="' + escH(iconUrl) + '" alt="' + escH(pr) + ' Icon" style="max-width:4em;max-height:4em">' +
+        '<p class="app-deployed text-left"><strong>Prophix One ' + escH(pr) + '</strong></p>' +
+        '</div>';
+    }).join('');
+    sidebarHTML =
+      '<div class="tall-card Grey-background">' +
+        '<h3 class="Red-color mb-4">Applications deployed</h3>' +
+        '<div class="app-deployed-items mb-4">' +
+          appItems +
+          '<a class="c-btn mt-3" href="https://www.prophix.com/platform-overview/" target="_blank"><span>Explore the Platform</span></a>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // ── MAIN CONTENT sections + quotes ────────────────────────────────────────
+  var mainHTML = '';
+  var quoteBlocks = [];
+  var firstSpeaker = parts0[0] || null;
+
+  if (whoText) {
+    mainHTML +=
+      '<div class="container content-container firstBlock">' +
+        '<h2 class="title-heading Red-color mb-4">Who is ' + escH(name) + '?</h2>' +
+        '<p>' + escH(whoText) + '</p>' +
+      '</div>';
+  }
+
+  sections.forEach(function(item) {
     if (item.type === 'section' && item.data) {
       var s = item.data;
-      var heading = escH(s.heading || '');
-      var body = s.body || '';
-      // Convert body text to paragraphs and lists
-      var bodyHTML = '';
-      var lines = body.split('\n');
-      var inList = false;
-      lines.forEach(function(line) {
-        var t = line.trim();
-        if (!t) { if (inList) { bodyHTML += '</ul>'; inList = false; } return; }
-        if (/^[-–]\s/.test(t)) {
-          if (!inList) { bodyHTML += '<ul>'; inList = true; }
-          bodyHTML += '<li>' + escH(t.replace(/^[-–]\s+/, '')) + '</li>';
-        } else {
-          if (inList) { bodyHTML += '</ul>'; inList = false; }
-          bodyHTML += '<p>' + escH(t) + '</p>';
-        }
-      });
-      if (inList) bodyHTML += '</ul>';
-
-      sectionsHTML += '<h2>' + heading + '</h2>' + bodyHTML;
+      mainHTML +=
+        '<div class="container content-container firstBlock">' +
+          '<h2 class="title-heading Red-color mb-4">' + escH(s.heading||'') + '</h2>' +
+          bodyToHTML(s.body||'') +
+        '</div>';
 
     } else if (item.type === 'clip' && item.data) {
       var c = item.data;
-      var quote = (c.quote || '').replace(/^[“”"]+|[“”"]+$/g, '').trim();
+      var quote = (c.quote||'').replace(/^[\u201C\u201D"]+|[\u201C\u201D"]+$/g,'').trim();
       if (!quote) return;
-
       var mt = c.mediaType || 'audio';
-      var hasVideo = mt === 'video' && c.media;
-      var speaker = firstParticipant;
 
-      if (hasVideo) {
-        // Full red section with video + quote
+      // Speaker hex + name/title — their .quotee structure
+      var speakerHTML = firstSpeaker
+        ? '<div class="d-flex flex-row align-items-center justify-content-left mt-5 quotee">' +
+            '<div class="quote-hex"><div class="hex-mask white-background"></div></div>' +
+            '<div>' +
+              '<p><strong>' + escH(firstSpeaker.name) + '</strong></p>' +
+              '<p>' + escH(firstSpeaker.title||'') + '</p>' +
+            '</div>' +
+          '</div>'
+        : '';
+
+      if (mt === 'video' && c.media) {
         var embedUrl = '';
-        var ytMatch = (c.media || '').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)+([\w-]{11})/);
-        if (ytMatch) embedUrl = 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0';
-        var vmMatch = (c.media || '').match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/);
-        if (vmMatch) embedUrl = 'https://player.vimeo.com/video/' + vmMatch[1];
+        var ytM = (c.media||'').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
+        if (ytM) embedUrl = 'https://www.youtube.com/embed/' + ytM[1] + '?rel=0';
+        var vmM = (c.media||'').match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/);
+        if (vmM) embedUrl = 'https://player.vimeo.com/video/' + vmM[1];
 
-        var videoHTML = embedUrl
-          ? '<div class="px-quote-video"><iframe src="' + escH(embedUrl) + '" allowfullscreen frameborder="0" style="width:100%;aspect-ratio:16/9;border-radius:8px"></iframe></div>'
-          : '<div class="px-quote-video-placeholder">🎬 ' + escH(c.title || 'Video') + '</div>';
-
-        var speakerHTML = speaker
-          ? '<div class="px-speaker"><div class="px-speaker-hex"></div><div><div class="px-speaker-name">' + escH(speaker.name) + '</div><div class="px-speaker-title">' + escH(speaker.title || '') + '</div></div></div>'
+        var videoEl = embedUrl
+          ? '<div class="quote-video-wrap"><iframe src="' + escH(embedUrl) + '" frameborder="0" allowfullscreen></iframe></div>'
           : '';
 
-        quoteBlocksHTML += '<div class="px-quote-section">' +
-          '<div class="px-quote-inner">' +
-          videoHTML +
-          '<div class="px-quote-content">' +
-          '<div class="px-quote-mark">““</div>' +
-          '<p class="px-quote-text">' + escH(quote) + '</p>' +
-          speakerHTML +
-          '</div></div></div>';
+        quoteBlocks.push(
+          '<div class="container padding-heavy red-background quote-block">' +
+            '<div class="quote-block d-flex flex-lg-row align-items-lg-start flex-column">' +
+              videoEl +
+              '<img src="' + CDN + '/images/uploads/icons/quotation-open-mark-white.svg">' +
+              '<div class="quote">' +
+                '<p>' + escH(quote) + '</p>' +
+                speakerHTML +
+              '</div>' +
+            '</div>' +
+          '</div>'
+        );
       } else {
-        // Quote-only: inline left-border block inside content
-        var speakerInlineHTML = speaker
-          ? '<div class="px-speaker" style="margin-top:16px"><div><div class="px-speaker-name" style="color:#1a1a1a">' + escH(speaker.name) + '</div><div class="px-speaker-title" style="color:#888">' + escH(speaker.title || '') + '</div></div></div>'
-          : '';
-        sectionsHTML += '<div class="px-quote-only">' +
-          '<div class="px-quote-mark">““</div>' +
-          '<p class="px-quote-text">' + escH(quote) + '</p>' +
-          speakerInlineHTML +
-          '</div>';
+        // Audio / quote-only — their exact structure
+        quoteBlocks.push(
+          '<div class="container padding-heavy red-background quote-block">' +
+            '<div class="quote-block d-flex flex-lg-row align-items-lg-start flex-column">' +
+              '<img src="' + CDN + '/images/uploads/icons/quotation-open-mark-white.svg">' +
+              '<div class="quote">' +
+                '<p>' + escH(quote) + '</p>' +
+                speakerHTML +
+              '</div>' +
+            '</div>' +
+          '</div>'
+        );
       }
     }
   });
 
-  // ── KRS cards HTML ─────────────────────────────────────────────────────────
-  var krsHTML = '';
-  if (krs.length > 0) {
-    krsHTML = '<div class="px-krs-section"><div class="px-krs-inner">' +
-      '<h2>Key results snapshot</h2>' +
-      '<div class="px-krs-grid">';
-    krs.forEach(function(k) {
-      // Strip bold prefix — Prophix.com uses full sentences only
-      var text = k.text || '';
-      if (k.bold) text = text.replace(new RegExp('^' + (k.bold||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ':?\\s*', 'i'), '').trim();
-      if (!text) text = k.text || '';
-      krsHTML += '<div class="px-krs-card">' +
-        '<img class="px-krs-check" src="' + CDN + '/images/uploads/icons/check-mark.svg" alt="check">' +
-        '<p class="px-krs-text">' + escH(text) + '</p>' +
-        '</div>';
-    });
-    krsHTML += '</div></div></div>';
-  }
-
-  // ── Who is section ─────────────────────────────────────────────────────────
-  var whoHTML = '';
-  if (whoText) {
-    whoHTML = '<h2>Who is ' + escH(name) + '?</h2><p>' + escH(whoText) + '</p>';
-  }
-
-  // ── Applications deployed ──────────────────────────────────────────────────
-  var appsHTML = '';
-  if (products.length > 0) {
-    appsHTML = '<h3>Applications deployed</h3><div class="px-apps">';
-    products.forEach(function(pr) {
-      var iconUrl = PROD_ICONS[pr] || '';
-      var iconTag = iconUrl ? '<img class="px-app-icon" src="' + escH(iconUrl) + '" alt="' + escH(pr) + '">' : '';
-      appsHTML += '<div class="px-app-item">' + iconTag + '<span class="px-app-name">Prophix One ' + escH(pr) + '</span></div>';
-    });
-    appsHTML += '</div>';
-  }
-
-  // ── Results "enables to" ───────────────────────────────────────────────────
+  // ── RESULTS — their .container-outline with .item-hex rows ────────────────
   var resultsHTML = '';
-  if (results.length > 0) {
-    resultsHTML = '<div class="px-enables"><div class="px-enables-inner">' +
-      '<h3>Prophix One™ enables ' + escH(name) + ' to:</h3><ul>';
-    results.forEach(function(r) {
-      var clean = (r || '').replace(/^[✕✗×→\s•]+/, '').trim();
-      if (clean) resultsHTML += '<li>' + escH(clean) + '</li>';
-    });
-    resultsHTML += '</ul></div></div>';
+  if (results.length) {
+    var resultRows = results.map(function(r) {
+      var text = (r||'').replace(/^[✕✗×→\s•]+/,'').trim();
+      return '<div class="d-flex flex-row align-items-center">' +
+        '<div class="item-hex"><div class="hex-mask red-background"></div></div>' +
+        '<div style="flex:1"><p>' + escH(text) + '</p></div>' +
+        '</div>';
+    }).join('');
+    resultsHTML =
+      '<div style="max-width:1100px;margin:0 auto;padding:0 40px 48px">' +
+        '<div class="container-outline">' +
+          '<span class="heading"><h3>Prophix One<sup class="tm">\u2122</sup> enables ' + escH(name) + ' to:</h3></span>' +
+          '<div class="d-flex flex-column">' + resultRows + '</div>' +
+        '</div>' +
+      '</div>';
   }
 
-  // ── Prophix.com nav bar ───────────────────────────────────────────────────
-  var navHTML = '<nav class="px-nav">' +
-    '<img class="px-nav-logo" src="' + BASE + '/prophix-logo-1000px.png" alt="Prophix">' +
-    '<a class="px-nav-link" href="https://www.prophix.com/customer-stories/">← Customer Stories</a>' +
+  // ── NAV ────────────────────────────────────────────────────────────────────
+  var navHTML =
+    '<nav class="px-nav">' +
+      '<img class="px-nav-logo" src="' + BASE + '/prophix-logo-1000px.png" alt="Prophix">' +
+      '<div class="px-nav-right">' +
+        '<a class="px-nav-btn px-nav-btn-outline" href="https://www.prophix.com/customer-stories/">\u2190 Customer Stories</a>' +
+        '<a class="px-nav-btn px-nav-btn-solid" href="https://www.prophix.com/demo/">Watch Demo</a>' +
+      '</div>' +
     '</nav>';
 
-  // ── Footer ─────────────────────────────────────────────────────────────────
-  var footerHTML = '<div class="px-cta">' +
-    '<h2>See Prophix One in action</h2>' +
-    '<a class="px-cta-btn" href="https://www.prophix.com/demo/">Watch demo</a>' +
-    '</div>' +
+  // ── SEE IN ACTION — their exact .common-section.Red-bg.see-action-section ──
+  var ctaHTML =
+    '<section class="common-section Red-bg see-action-section pt-70 pb-70">' +
+      '<div class="container">' +
+        '<div class="row red-background">' +
+          '<div class="col-lg-12">' +
+            '<div class="section-title">' +
+              '<h2 class="title Almost-White-color">See ' +
+                '<img class="title-icon" src="' + CDN + '/images/uploads/icons/Prophix-Logo.svg" alt="prophix logo">' +
+                'in action</h2>' +
+            '</div>' +
+          '</div>' +
+          '<div class="col-lg-12 only-btn-block">' +
+            '<a class="btn Almost-White-bg" href="https://www.prophix.com/demo/" target="_self">Watch demo</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</section>';
+
+  // ── FOOTER ─────────────────────────────────────────────────────────────────
+  var footerHTML =
     '<footer class="px-footer">' +
-    '<p><strong style="color:rgba(255,255,255,.6)">Prophix Software Inc.</strong> Copyright &copy; ' + new Date().getFullYear() + '. All rights reserved.</p>' +
-    '<p><a href="https://www.prophix.com/privacy-policy/">Privacy Policy</a> &nbsp;|&nbsp; <a href="https://www.prophix.com/terms-of-use/">Terms of Use</a></p>' +
+      '<p>Copyright &copy; ' + new Date().getFullYear() + ' Prophix Software Inc. All rights reserved.</p>' +
+      '<p><a href="https://www.prophix.com/privacy-policy/">Privacy Policy</a> &nbsp;|&nbsp; ' +
+      '<a href="https://www.prophix.com/terms-of-use/">Terms of Use</a></p>' +
     '</footer>';
 
-  // ── Assemble full page ─────────────────────────────────────────────────────
-  var heroLogo = logoSrc ? '<img class="px-client-logo" src="' + escH(logoSrc) + '" alt="' + escH(name) + ' logo">' : '';
+  // ── ASSEMBLE ───────────────────────────────────────────────────────────────
+  var pageParts = [];
+  pageParts.push('<!DOCTYPE html>');
+  pageParts.push('<html lang="' + lc + '">');
+  pageParts.push('<head>');
+  pageParts.push('<meta charset="UTF-8">');
+  pageParts.push('<meta name="viewport" content="width=device-width,initial-scale=1.0">');
+  pageParts.push('<title>' + escH(title) + ' | Prophix</title>');
+  pageParts.push('<style>' + css + '</style>');
+  pageParts.push('</head><body>');
+  pageParts.push(navHTML);
+  pageParts.push(heroHTML);
+  pageParts.push(krsHTML);
+  pageParts.push('<div class="page-body"><div class="main-col">' + mainHTML + '</div>' + (sidebarHTML ? sidebarHTML : '') + '</div>');
+  pageParts = pageParts.concat(quoteBlocks);
+  pageParts.push(resultsHTML);
+  pageParts.push(ctaHTML);
+  pageParts.push(footerHTML);
+  pageParts.push('</body></html>');
 
-  var parts2 = [];
-  parts2.push('<!DOCTYPE html>');
-  parts2.push('<html lang="' + lc + '">');
-  parts2.push('<head>');
-  parts2.push('<meta charset="UTF-8">');
-  parts2.push('<meta name="viewport" content="width=device-width,initial-scale=1.0">');
-  parts2.push('<title>' + escH(title) + ' | Prophix</title>');
-  parts2.push('<style>' + css + '</style>');
-  parts2.push('</head>');
-  parts2.push('<body>');
-  parts2.push(navHTML);
-  parts2.push('<div class="px-hero">' + heroLogo + '<h1>' + escH(title) + '</h1></div>');
-  parts2.push(krsHTML);
-  parts2.push('<div class="px-content">' + whoHTML + sectionsHTML + appsHTML + '</div>');
-  parts2.push(quoteBlocksHTML);
-  parts2.push(resultsHTML);
-  parts2.push(footerHTML);
-  parts2.push('</body>');
-  parts2.push('</html>');
-
-  // ── Download ───────────────────────────────────────────────────────────────
-  var langSuffix = (LANG_NAMES[lc] || lc.toUpperCase());
-  var filename = (name || 'Story').replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_') +
+  // ── DOWNLOAD ───────────────────────────────────────────────────────────────
+  var langSuffix = LANG_NAMES[lc] || lc.toUpperCase();
+  var filename = (name||'Story').replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_') +
     '_Customer_Story_' + langSuffix + '_prophix.html';
-  var blob = new Blob([parts2.join('\n')], {type:'text/html;charset=utf-8'});
+  var blob = new Blob([pageParts.join('\n')], {type:'text/html;charset=utf-8'});
   var url = URL.createObjectURL(blob);
-  var a = document.createElement('a'); a.href = url; a.download = filename;
+  var a = document.createElement('a'); a.href=url; a.download=filename;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
 }
