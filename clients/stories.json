@@ -1,5 +1,17 @@
 [
   {
+    "slug": "nordic-flow-dynamics-as",
+    "name": "Nordic Flow Dynamics AS",
+    "ind": "Manufacturing, Drammen",
+    "langs": [
+      "en",
+      "no"
+    ],
+    "status": "published",
+    "created": "2026-09-24T23:04:50.098Z",
+    "logo": true
+  },
+  {
     "slug": "infrastructurex",
     "name": "InfrastructureX",
     "ind": "Infrastructure, Vienna, Austria",
