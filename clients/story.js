@@ -1,10 +1,46 @@
-// Prophix Client Story — story.js v9.16
+// Prophix Client Story — story.js v9.19
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.19 2026-09-24  Live editor: floating Bold/Italic toolbar now shows for
+//                   every editable field (reuses EDITABLE_SELECTORS) instead
+//                   of only body text, who-text, quotes, results, and the hero
+//                   description — now also section titles/headers, sec-label,
+//                   stat tiles, KRS items, participant name/title, etc. Note:
+//                   bold/italic still only PERSISTS on save for the fields
+//                   that already went through getRichHTML() in domToData()
+//                   (body text, who-text, results, hero desc) — everywhere
+//                   else reads back via plain textContent, so formatting shows
+//                   while editing but won't survive a save yet. Flag if you
+//                   want that extended to more fields too.
+// v9.18 2026-09-24  Prophix.com-style export, quote block redesign per
+//                   reference comparison: (1) red background is now full-bleed
+//                   edge-to-edge (was capped to the 1100px .container, leaving
+//                   white margins on a wide page) — content inside is centered
+//                   via a nested .container; (2) quote icon moved back to the
+//                   LEFT of the quote text (icon-left/text-right row), not
+//                   stacked above it, and made bigger; (3) speaker line is now
+//                   "Title, Name" on one line (was "Name" then "Title, Company"
+//                   on two separate lines), at a bigger font-size; (4) restored
+//                   the small white hexagon avatar next to the speaker line
+//                   (removed in an earlier pass — reference shows it).
+// v9.17 2026-09-24  Prophix.com-style export: (1) "Who is ?" showing blank and
+//                   the download filename falling back to generic "Story" for
+//                   some older stories (Eaglestone) but not others (Oasis) —
+//                   both read directly from storyData.name, which is blank on
+//                   that story's data.json (likely never re-saved after the
+//                   name/title split introduced in v9.8, so .client-name-label
+//                   saved empty). Not fixable from the export alone since the
+//                   underlying field really is empty — added a robust fallback
+//                   chain (storyData.name → STORY_META.name → storyData.title →
+//                   "this client") so it can never render blank again, but the
+//                   real fix is to open Eaglestone in edit mode, retype the
+//                   client name in the top field, and Save once. (2) headline
+//                   line-height pulled down much further to 0.78 (was 0.9) —
+//                   still visibly too loose per feedback before this.
 // v9.16 2026-09-24  Prophix.com-style export hero, four more fixes: (1) the
 //                   hexagon was centered inside the shared 1100px .container,
 //                   so on wide viewports it sat far right of where the
@@ -2167,7 +2203,11 @@ function exportHTMLProphix(lc) {
 
   var title    = tget('title') || tget('name');
   var whoText  = tget('whoText');
-  var name     = storyData.name || '';
+  // storyData.name (client company name) can end up blank on older stories if it
+  // was never re-saved after the name/title split — fall back to STORY_META.name
+  // (a separate, reliable source set in the page shell) before the headline, so
+  // "Who is X?" and the download filename are never blank.
+  var name     = storyData.name || (window.STORY_META && STORY_META.name) || storyData.title || 'this client';
   var krs      = tgetArr('krs');
   var sections = tgetArr('content');
   var products = storyData.products || [];
@@ -2266,7 +2306,7 @@ function exportHTMLProphix(lc) {
     '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:2;margin-left:-226px;margin-top:200px}',
     '@media(max-width:820px){.hero-text{margin-left:0;margin-top:20px}}',
     '.hero-text > img{max-height:44px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
-    '.hero-text h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:0.9;letter-spacing:-0.5px;text-align:left;margin:0}',
+    '.hero-text h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:0.78;letter-spacing:-0.5px;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
 
 
@@ -2309,18 +2349,22 @@ function exportHTMLProphix(lc) {
     '.c-btn span{color:#fff}',
     'hr{border:none;border-top:1px solid #ddd;margin:20px 0}',
 
-    // ── QUOTE BLOCK — icon on top, left-aligned, larger text ──────────────────
+    // ── QUOTE BLOCK — full-bleed red section; icon sits to the LEFT of the quote
+    // text (not stacked above it); content column centered on the page via the
+    // shared .container; speaker line is "Title, Name" on one line with a small
+    // white hexagon avatar, matching the reference ────────────────────────────
     '.red-background{background:#EF363D}',
-    '.padding-heavy{padding:48px 40px}',
-    '.quote-block{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:16px}',
-    '.quote-block > img{width:40px;height:auto;display:block;flex-shrink:0}',
-    '.quote-video-wrap{width:100%}',
+    '.quote-section{background:#EF363D;padding:56px 0}',
+    '.quote-row{display:flex;align-items:flex-start;gap:24px;max-width:1000px}',
+    '.quote-icon{width:58px;height:auto;flex-shrink:0;display:block;margin-top:-2px}',
+    '.quote-col{flex:1;min-width:0}',
+    '.quote-video-wrap{width:100%;margin-bottom:24px}',
     '.quote-video-wrap iframe{width:100%;aspect-ratio:16/9;border-radius:8px;display:block;border:0}',
-    '.quote{width:100%;text-align:left}',
-    '.quote p{font-size:clamp(20px,2.4vw,28px);font-weight:600;color:#fff !important;line-height:1.5;margin:0;text-align:left}',
-    '.quotee{margin-top:8px}',
-    '.quotee p{font-size:14px;color:#fff !important;margin:0;line-height:1.5;text-align:left}',
-    '.quotee p:first-child strong{color:#fff;font-size:15px}',
+    '.quote-text{font-size:clamp(20px,2.4vw,28px);font-weight:600;color:#fff !important;line-height:1.45;margin:0 0 20px;text-align:left}',
+    '.quotee-row{display:flex;align-items:center;gap:16px;margin-top:6px}',
+    '.quotee-hex{width:54px;height:62px;flex-shrink:0;background:#fff;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}',
+    '.quotee-line{font-size:17px;font-weight:500;color:#fff !important;margin:0;line-height:1.4;text-align:left}',
+
 
     // ── CONTAINER-OUTLINE — "enables to" results block ────────────────────────
     // Black rounded border with a "fieldset/legend" heading that overlaps and
@@ -2459,13 +2503,20 @@ function exportHTMLProphix(lc) {
       if (!quote) return;
       var mt = c.mediaType || 'audio';
 
-      // Speaker name/title — no avatar image, matches reference layout
-      var speakerHTML = firstSpeaker
-        ? '<div class="quotee">' +
-            '<p><strong>' + escH(firstSpeaker.name) + '</strong></p>' +
-            '<p>' + escH(firstSpeaker.title||'') + '</p>' +
-          '</div>'
-        : '';
+      // Speaker line — "Title, Name" on one line (was "Name" / "Title" on two
+      // lines), with a small white hexagon avatar, matching the reference
+      var speakerHTML = '';
+      if (firstSpeaker) {
+        var spkTitle = (firstSpeaker.title || '').trim();
+        var spkName  = (firstSpeaker.name  || '').trim();
+        var spkCombined = spkTitle && spkName ? (spkTitle + ', ' + spkName) : (spkTitle || spkName);
+        if (spkCombined) {
+          speakerHTML = '<div class="quotee-row">' +
+              '<div class="quotee-hex"></div>' +
+              '<p class="quotee-line">' + escH(spkCombined) + '</p>' +
+            '</div>';
+        }
+      }
 
       var videoEl = '';
       if (mt === 'video' && c.media) {
@@ -2477,14 +2528,20 @@ function exportHTMLProphix(lc) {
         if (embedUrl) videoEl = '<div class="quote-video-wrap"><iframe src="' + escH(embedUrl) + '" frameborder="0" allowfullscreen></iframe></div>';
       }
 
-      // Icon on top, quote text below, speaker below that — all left-aligned
+      // Full-bleed red section (edge to edge); its content is centered on the
+      // page via the shared .container; icon sits to the LEFT of the quote
+      // text (not stacked above it), bigger than before
       quoteBlocks.push(
-        '<div class="container padding-heavy red-background quote-block">' +
-          videoEl +
-          '<img src="' + CDN + '/images/uploads/icons/quotation-open-mark-white.svg" alt="">' +
-          '<div class="quote">' +
-            '<p>' + escH(quote) + '</p>' +
-            speakerHTML +
+        '<div class="quote-section">' +
+          '<div class="container">' +
+            videoEl +
+            '<div class="quote-row">' +
+              '<img class="quote-icon" src="' + CDN + '/images/uploads/icons/quotation-open-mark-white.svg" alt="">' +
+              '<div class="quote-col">' +
+                '<p class="quote-text">' + escH(quote) + '</p>' +
+                speakerHTML +
+              '</div>' +
+            '</div>' +
           '</div>' +
         '</div>'
       );
@@ -2590,7 +2647,11 @@ function exportHTMLProphix(lc) {
 
 // ── Floating rich text toolbar ───────────────────────────────────────────────
 // Fields that support rich text (bold/italic) — single-line fields excluded
-var RICH_TEXT_SELECTORS = ['.sec-body-edit', '.who-text', '.clip-quote', '.media-quote', '.result-item', '.hero-desc'];
+// Rich-text toolbar now covers every editable field (reuses EDITABLE_SELECTORS,
+// plus .sec-body-edit which is added dynamically and isn't in that list) —
+// previously limited to a handful of fields (body text, who-text, quotes...),
+// leaving things like section titles/headings with no Bold/Italic popup at all.
+var RICH_TEXT_SELECTORS = EDITABLE_SELECTORS.concat(['.sec-body-edit']);
 
 function createRichToolbar() {
   if (document.getElementById('rich-toolbar')) return;
