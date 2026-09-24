@@ -1187,6 +1187,8 @@ function enableEditMode() {
   if (statusSel) statusSel.value = storyData.status || 'published';
   addEditControlsToExisting();
   enableDragDrop();
+  createRichToolbar();
+  document.addEventListener('selectionchange', positionRichToolbar);
 }
 
 function disableEditMode() {
@@ -1200,6 +1202,7 @@ function disableEditMode() {
   var panel = document.getElementById('inline-products-panel'); if (panel) panel.remove();
   disableDragDrop();
   stripEditControls();
+  destroyRichToolbar();
 }
 
 // ── Edit controls injection ───────────────────────────────────────────────────
@@ -1831,6 +1834,90 @@ function closeModal() {
   document.getElementById('token-error').textContent = '';
 }
 
+// ── Floating rich text toolbar ───────────────────────────────────────────────
+// Fields that support rich text (bold/italic) — single-line fields excluded
+var RICH_TEXT_SELECTORS = ['.sec-body-edit', '.who-text', '.clip-quote', '.media-quote', '.result-item', '.hero-desc'];
+
+function createRichToolbar() {
+  if (document.getElementById('rich-toolbar')) return;
+  var bar = document.createElement('div');
+  bar.id = 'rich-toolbar';
+  bar.style.cssText = [
+    'position:fixed;z-index:9999;background:#1A1A2E;border-radius:6px',
+    'padding:4px 6px;display:none;align-items:center;gap:2px',
+    'box-shadow:0 4px 14px rgba(0,0,0,.35);pointer-events:all'
+  ].join(';');
+
+  function makeBtn(label, title, action) {
+    var btn = document.createElement('button');
+    btn.innerHTML = label;
+    btn.title = title;
+    btn.style.cssText = 'background:transparent;border:none;color:#fff;cursor:pointer;font-size:13px;font-family:Arial,sans-serif;padding:3px 8px;border-radius:4px;line-height:1.4;min-width:26px';
+    btn.onmouseover = function(){ this.style.background='rgba(255,255,255,.15)'; };
+    btn.onmouseout  = function(){ this.style.background='transparent'; };
+    btn.onmousedown = function(e) {
+      e.preventDefault(); // keep selection alive
+      action();
+      positionRichToolbar(); // recheck active states
+    };
+    return btn;
+  }
+
+  var boldBtn  = makeBtn('<strong style="font-size:13px">B</strong>', 'Bold (Cmd+B)',   function(){ document.execCommand('bold',   false, null); _isDirty = true; });
+  var italBtn  = makeBtn('<em style="font-size:12px">I</em>',         'Italic (Cmd+I)', function(){ document.execCommand('italic', false, null); _isDirty = true; });
+  var clearBtn = makeBtn('<span style="font-size:11px;opacity:.7">✕</span>', 'Clear formatting', function(){
+    document.execCommand('removeFormat', false, null); _isDirty = true;
+  });
+  var sep = document.createElement('div');
+  sep.style.cssText = 'width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 2px';
+
+  bar.appendChild(boldBtn);
+  bar.appendChild(italBtn);
+  bar.appendChild(sep);
+  bar.appendChild(clearBtn);
+  document.body.appendChild(bar);
+}
+
+function positionRichToolbar() {
+  var bar = document.getElementById('rich-toolbar');
+  if (!bar) return;
+  if (!document.body.classList.contains('edit-mode')) { bar.style.display = 'none'; return; }
+
+  var sel = window.getSelection();
+  if (!sel || sel.isCollapsed || !sel.rangeCount) { bar.style.display = 'none'; return; }
+
+  // Check selection is inside a rich-text-capable field
+  var node = sel.anchorNode;
+  var el = node && node.nodeType === 3 ? node.parentElement : node;
+  var inRichField = el && RICH_TEXT_SELECTORS.some(function(s) {
+    return el.matches && (el.matches(s) || el.closest(s));
+  });
+  if (!inRichField) { bar.style.display = 'none'; return; }
+
+  // Position above the selection
+  var rect = sel.getRangeAt(0).getBoundingClientRect();
+  if (!rect || rect.width === 0) { bar.style.display = 'none'; return; }
+
+  bar.style.display = 'flex';
+  var barW = bar.offsetWidth || 110;
+  var left = Math.max(8, Math.min(rect.left + rect.width / 2 - barW / 2, window.innerWidth - barW - 8));
+  var top  = Math.max(8, rect.top - 42 + window.scrollY);
+  bar.style.left = left + 'px';
+  bar.style.top  = top  + 'px';
+
+  // Highlight active state
+  var isBold   = document.queryCommandState('bold');
+  var isItalic = document.queryCommandState('italic');
+  bar.querySelectorAll('button')[0].style.background = isBold   ? 'rgba(239,54,61,.5)' : 'transparent';
+  bar.querySelectorAll('button')[1].style.background = isItalic ? 'rgba(239,54,61,.5)' : 'transparent';
+}
+
+function destroyRichToolbar() {
+  var bar = document.getElementById('rich-toolbar');
+  if (bar) bar.remove();
+  document.removeEventListener('selectionchange', positionRichToolbar);
+}
+
 // ── Wire all events ───────────────────────────────────────────────────────────
 function wireEvents() {
   document.querySelectorAll('.lang-btn:not(.remove-lang)').forEach(function(btn) {
@@ -1875,6 +1962,15 @@ function wireEvents() {
       }).catch(function(){ prompt('Copy this link:', url); });
     });
   }
+
+  // Warn user if they try to leave with unsaved changes
+  window.addEventListener('beforeunload', function(e) {
+    if (_isDirty) {
+      e.preventDefault();
+      e.returnValue = 'You have unsaved changes. Leave anyway?';
+      return e.returnValue;
+    }
+  });
 
   if (new URLSearchParams(window.location.search).get('edit') === '1') {
     setTimeout(function(){
