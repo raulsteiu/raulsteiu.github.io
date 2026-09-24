@@ -1,10 +1,28 @@
-// Prophix Client Story — story.js v9.23
+// Prophix Client Story — story.js v9.24
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.24 2026-09-24  PDF brochure generator — the actual bug behind FR still
+//                   showing "Who is the client?"/English labels, found via
+//                   code trace (v9.23's fix wasn't wrong, just incomplete):
+//                   (1) _getBrochureData()'s sidebarLabels merge fell back to
+//                   the WHOLE English object the instant tr.sidebarLabels
+//                   existed at all — so a story where only one of the three
+//                   headings had ever been translated (e.g. just "features")
+//                   silently lost the other two, even if they too had already
+//                   been translated and saved. Switched to a true per-key
+//                   merge (who/applications/features each fall back
+//                   independently). (2) the PDF builder's "Who is X?" and
+//                   title fallbacks read storyData.name directly with no
+//                   robustness at all — the same blank-name issue fixed in the
+//                   HTML export (v9.17) was never applied here, and for the
+//                   English case _getBrochureData's early return skips any
+//                   fallback chain entirely. Added one clientName variable
+//                   (name → STORY_META.name → title → "the client") used
+//                   everywhere in the PDF builder, for every language.
 // v9.23 2026-09-24  PDF brochure generator: foreign-language brochures were
 //                   showing "Who is the client?" and "Applications deployed"
 //                   in English even when the story page itself had the
@@ -2919,10 +2937,15 @@ window._getBrochureData = function _getBrochureData(data, lc) {
   if (!lc || lc === 'en') { data._lang = 'en'; return data; }
   var tr = data.translations && data.translations[lc];
   if (!tr) { data._lang = lc; return data; } // fall back to EN if no translation
+  var trSL = tr.sidebarLabels || {};
+  var enSL = data.sidebarLabels || {};
   // Merge: translation overrides EN fields where available
   var merged = {
     slug:         data.slug,
-    name:         tr.name        || data.name,
+    // Same blank-name fallback used in the HTML export (v9.17) — a story whose
+    // top-level name field is blank was falling all the way through to the
+    // brochure's generic "Who is the client?" text further down.
+    name:         tr.name || data.name || (window.STORY_META && STORY_META.name) || data.title || '',
     desc:         tr.desc        || data.desc,
     ind:          data.ind,
     hasLogo:      data.hasLogo,
@@ -2936,7 +2959,16 @@ window._getBrochureData = function _getBrochureData(data, lc) {
     products:     data.products,
     results:      (tr.results && tr.results.length) ? tr.results : data.results,
     participants: tr.participants || data.participants,
-    sidebarLabels: tr.sidebarLabels || data.sidebarLabels
+    // Per-KEY merge, not whole-object — a story where only one of the three
+    // sidebar headings was ever translated (e.g. just "features") was losing
+    // the OTHER already-translated headings too, since the old code discarded
+    // the entire English fallback object the moment tr.sidebarLabels existed
+    // at all, even partially.
+    sidebarLabels: {
+      who:          trSL.who          || enSL.who,
+      applications: trSL.applications || enSL.applications,
+      features:     trSL.features     || enSL.features
+    }
   };
   merged._lang = lc || 'en';
   return merged;
@@ -2993,6 +3025,12 @@ window._loadBrochureAssets = function _loadBrochureAssets(data, cb) {
 // ── Main builder ──────────────────────────────────────────────────────────────
 window._buildBrochurePDF = function(jsPDF, data, assets) {
   var T = BROCHURE_THEME;
+  // Robust fallback so a blank storyData.name (seen on some older stories that
+  // predate the name/title split) never cascades into the generic "Who is the
+  // client?" text — covers the English case too, since _getBrochureData's
+  // early return for lc==='en' passes storyData straight through with no
+  // fallback chain applied at all.
+  var clientName = data.name || (window.STORY_META && STORY_META.name) || data.title || 'the client';
   var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   var W = T.pageW, H = T.pageH;
   var mL = T.marginL, mR = T.marginR;
@@ -3053,9 +3091,9 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
       var clH = logoH, clW = clH * aspect;
       if (clW > 44) { clW = 44; clH = clW / aspect; }
       doc.addImage(assets.clientLogo, 'PNG', W - mR - clW, logoY + (logoH - clH)/2, clW, clH, undefined, 'FAST');
-    } catch(e) { font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' }); }
+    } catch(e) { font('bold', 11); tc(T.red); doc.text(clientName || '', W - mR, logoY + 8, { align: 'right' }); }
   } else {
-    font('bold', 11); tc(T.red); doc.text(data.name || '', W - mR, logoY + 8, { align: 'right' });
+    font('bold', 11); tc(T.red); doc.text(clientName || '', W - mR, logoY + 8, { align: 'right' });
   }
 
   var y = logoY + logoH + 14;
@@ -3070,7 +3108,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     if (fs) title = fs.data.heading;
   }
   if (!title && data.title) title = data.title;
-  if (!title) title = 'How ' + (data.name || 'our client') + ' transformed with Prophix';
+  if (!title) title = 'How ' + clientName + ' transformed with Prophix';
   font('bold', 24); tc(T.red);
   doc.splitTextToSize(title, W - mL - mR).slice(0, 3).forEach(function(l) { boldText(l, mL, y); y += 11; });
   y += 5;
@@ -3081,7 +3119,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
   // RIGHT SIDEBAR
   font('bold', 10); tc(T.red);
-  var whoHeading = (data.sidebarLabels && data.sidebarLabels.who) || ('Who is ' + (data.name || 'the client') + '?');
+  var whoHeading = (data.sidebarLabels && data.sidebarLabels.who) || ('Who is ' + clientName + '?');
   doc.text(whoHeading, sideX, sideY);
   sideY += 2.5;
   dc(T.red); lw(0.6);
@@ -3313,7 +3351,7 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
   // ── Save ────────────────────────────────────────────────────────────────────
   var lang = (data._lang || 'EN').toUpperCase();
-  var filename = (data.name || 'Client').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '_Customer_Story_' + lang + '.pdf';
+  var filename = (clientName || 'Client').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '_Customer_Story_' + lang + '.pdf';
   doc.save(filename);
 };
 
