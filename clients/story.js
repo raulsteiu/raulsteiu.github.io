@@ -2248,7 +2248,7 @@ function exportHTMLProphix(lc) {
   var hexContent = logoSrc
     ? '<img src="' + escH(logoSrc) + '" alt="' + escH(name) + ' logo">'
     : '<span class="hex-initials">' + escH(name.charAt(0)) + '</span>';
-  heroHTML =
+  var heroHTML =
     '<div class="hero-image">' +
       '<div class="container">' +
         '<div class="hex-container">' +
