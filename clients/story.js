@@ -1,10 +1,21 @@
-// Prophix Client Story — story.js v9.15
+// Prophix Client Story — story.js v9.16
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.16 2026-09-24  Prophix.com-style export hero, four more fixes: (1) the
+//                   hexagon was centered inside the shared 1100px .container,
+//                   so on wide viewports it sat far right of where the
+//                   reference has it (close to the true left edge). Hero now
+//                   uses its own full-bleed, left-anchored container (max-width:
+//                   none, fixed 56px gutter) instead of the shared centered
+//                   one; (2) hexagon enlarged again (430x503, was 392x458);
+//                   (3) whole banner enlarged (min-height 560px, was 480px;
+//                   more padding); (4) headline line-height pulled down hard
+//                   to 0.9 (was 0.98) — still visibly looser than the reference
+//                   before this.
 // v9.15 2026-09-24  Prophix.com-style export: hero headline made bigger/bolder
 //                   and much tighter line-height (0.98, was 1.04) with slight
 //                   negative letter-spacing, matching the reference's large,
@@ -2231,28 +2242,33 @@ function exportHTMLProphix(lc) {
     '.container{max-width:1100px;margin:0 auto;padding:0 40px;box-sizing:border-box}',
 
     // ── HERO ──────────────────────────────────────────────────────────────────
-    '.hero-image{position:relative;min-height:480px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
+    '.hero-image{position:relative;min-height:560px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
     '.hero-image::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg, rgba(18,80,160,.55) 0%, rgba(18,80,160,.32) 45%, rgba(18,80,160,.14) 100%);z-index:0}',
-    '.hero-image .container{position:relative;z-index:1;padding-top:60px;padding-bottom:60px}',
+    // Full-bleed, left-anchored (NOT the shared centered 1100px .container) — the
+    // reference sits the hexagon close to the true left edge of the page at any
+    // viewport width; centering it inside a 1100px column was pushing it far to
+    // the right on wide screens instead.
+    '.hero-image .container{position:relative;z-index:1;max-width:none;margin:0;padding:70px 56px}',
     '.hex-container{position:relative;display:flex;align-items:flex-start;gap:0;justify-content:flex-start;flex-wrap:wrap}',
     // Bigger, taller hexagon with rounded corners (via SVG clipPath, objectBoundingBox
     // units so the same rounded-corner path scales cleanly to this non-square box)
-    '.hex-shape{flex-shrink:0;width:392px;height:458px;position:relative;z-index:1;filter:drop-shadow(0 5px 16px rgba(0,0,0,.2))}',
+    '.hex-shape{flex-shrink:0;width:430px;height:503px;position:relative;z-index:1;filter:drop-shadow(0 5px 16px rgba(0,0,0,.2))}',
     // Logo pinned to the top of the hex (align-items:flex-start), leaving the lower
     // half of the white shape free for the headline text to overlap into
-    '.hex-mask{position:absolute;inset:0;clip-path:url(#pxHexClip);display:flex;align-items:flex-start;justify-content:center;padding:56px 48px 48px}',
+    '.hex-mask{position:absolute;inset:0;clip-path:url(#pxHexClip);display:flex;align-items:flex-start;justify-content:center;padding:60px 52px 52px}',
     '.hex-mask.white{background:#fff}',
     '.hex-mask img{max-width:62%;max-height:38%;object-fit:contain;display:block}',
-    '.hex-initials{font-size:60px;font-weight:900;color:#1250a0}',
+    '.hex-initials{font-size:64px;font-weight:900;color:#1250a0}',
     // Headline overlaps into the hexagon (negative margin pulls it left, on top of
-    // the white shape via z-index) and sits below the logo. Bigger, bolder, and
-    // much tighter line spacing to match the reference (their text reads as
-    // large, dense, near-touching lines — ours was smaller/looser than that)
-    '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:2;margin-left:-206px;margin-top:182px}',
+    // the white shape via z-index) and sits below the logo. Line-height pulled
+    // down much further (0.9) so the lines read as dense/near-touching, matching
+    // the reference — 0.98 was still visibly looser than theirs.
+    '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:2;margin-left:-226px;margin-top:200px}',
     '@media(max-width:820px){.hero-text{margin-left:0;margin-top:20px}}',
     '.hero-text > img{max-height:44px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
-    '.hero-text h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:0.98;letter-spacing:-0.5px;text-align:left;margin:0}',
+    '.hero-text h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:0.9;letter-spacing:-0.5px;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
+
 
 
     // ── KRS ───────────────────────────────────────────────────────────────────
