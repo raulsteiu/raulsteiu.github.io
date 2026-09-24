@@ -44,7 +44,7 @@
     },
     {
       "bold": "",
-      "text": "Gave management real-time visibility into P&L across all revenue entities"
+      "text": "Gave management real-time visibility into P&amp;L across all revenue entities"
     }
   ],
   "results": [
@@ -82,8 +82,8 @@
       "data": {
         "title": "One Song For AUTONOMOUS FINANCE",
         "ts": "",
-        "quote": "Whats the story Prophix Glory",
-        "mediaType": "audio",
+        "quote": "What's the story Prophix Glory",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -102,7 +102,7 @@
         "title": "Start A REVOLUTION IN FINANCE",
         "ts": "",
         "quote": "Don't look back to Excel",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -110,7 +110,7 @@
   ],
   "translations": {
     "de": {
-      "name": "[DE] Oasis",
+      "name": "Oasis",
       "desc": "Oasis ist eine der kultigsten britischen Rockbands, die 1991 in Manchester gegründet wurde. Die von den Gallagher-Brüdern geleitete Gruppe verwaltet einen riesigen weltweiten Katalog, Tourneebetriebe, Merchandising-Einnahmen und Lizenzierungen über mehrere Unternehmen hinweg – mit einer finanziellen Komplexität, die ihrem legendären Status entspricht.",
       "content": [
         {
@@ -161,7 +161,7 @@
         },
         {
           "bold": "",
-          "text": "Gave management real-time visibility into P&L across all revenue entities"
+          "text": "Gave management real-time visibility into P&amp;L across all revenue entities"
         }
       ],
       "whoText": "[DE] Oasis is a British rock band formed in Manchester in 1991, fronted by brothers Liam and Noel Gallagher. With over 75 million records sold worldwide, they are one of the best-selling music acts in history. After a 15-year hiatus, the band announced a highly anticipated reunion tour in 2024.",
