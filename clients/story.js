@@ -1,10 +1,22 @@
-// Prophix Client Story — story.js v9.20
+// Prophix Client Story — story.js v9.21
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.21 2026-09-24  Prophix.com-style export: added a real headline font
+//                   instead of the plain Arial/Helvetica fallback. prophix.com
+//                   uses Articulat CF (Connary Fagen), a commercially-licensed
+//                   font we don't have rights to embed from a different
+//                   domain. Loaded Public Sans instead — a free, SIL-OFL
+//                   Google Font that font-pairing references (maxibestof.one)
+//                   explicitly list as an Articulat CF alternative (same
+//                   Swiss-inspired geometric character, open license, zero
+//                   risk to embed). Applied to all the big red display
+//                   headings: hero h1, KRS/section headings, the "enables X
+//                   to:" legend, the CTA heading. Body paragraph text is
+//                   unchanged (still Helvetica Neue/Arial) for readability.
 // v9.20 2026-09-24  Prophix.com-style export: hero headline line-height/tracking
 //                   fixed using the ACTUAL values read off prophix.com's own
 //                   .hero-text h1 rule via devtools (customerSuccess.css) —
@@ -2316,7 +2328,7 @@ function exportHTMLProphix(lc) {
     '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:2;margin-left:-226px;margin-top:200px}',
     '@media(max-width:820px){.hero-text{margin-left:0;margin-top:20px}}',
     '.hero-text > img{max-height:44px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
-    '.hero-text h1{font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:1;letter-spacing:-3px;text-align:left;margin:0}',
+    '.hero-text h1{font-family:"Public Sans",Arial,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:1;letter-spacing:-3px;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
 
 
@@ -2325,7 +2337,7 @@ function exportHTMLProphix(lc) {
     '.common-section{padding:48px 0}',
     '.Grey-background{background:#f2f2f5}',
     '.content-container{}',
-    '.title-heading{font-size:clamp(22px,2.5vw,34px);font-weight:900;line-height:1.2}',
+    '.title-heading{font-family:"Public Sans",Arial,sans-serif;font-size:clamp(22px,2.5vw,34px);font-weight:900;line-height:1.2}',
     '.Red-color{color:#EF363D}',
     '.snapshots{}',
     '.snapshot-items{display:flex;flex-direction:row;flex-wrap:wrap;gap:20px;align-items:stretch}',
@@ -2341,7 +2353,7 @@ function exportHTMLProphix(lc) {
     // ── MAIN CONTENT — .container .content-container .firstBlock ─────────────
     '.main-col{min-width:0}',
     '.firstBlock{}',
-    '.main-col h2{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:#EF363D;margin:36px 0 14px;line-height:1.2}',
+    '.main-col h2{font-family:"Public Sans",Arial,sans-serif;font-size:clamp(20px,2.2vw,28px);font-weight:900;color:#EF363D;margin:36px 0 14px;line-height:1.2}',
     '.main-col h2:first-child{margin-top:0}',
     '.main-col p{font-size:16px;color:#333;line-height:1.7;margin-bottom:14px;overflow-wrap:break-word;word-break:break-word}',
     '.main-col ul{padding-left:22px;margin-bottom:14px}',
@@ -2380,7 +2392,7 @@ function exportHTMLProphix(lc) {
     // Black rounded border with a "fieldset/legend" heading that overlaps and
     // visually interrupts the top border line, matching the reference design
     '.container-outline{position:relative;border:1.5px solid #1a1a1a;border-radius:16px;padding:40px 36px 26px;margin:64px 0 48px}',
-    '.container-outline .outline-legend{position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:#fff;padding:0 18px;font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;line-height:1.3;white-space:nowrap;max-width:calc(100% - 48px);overflow:hidden;text-overflow:ellipsis;text-align:center}',
+    '.container-outline .outline-legend{position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:#fff;padding:0 18px;font-family:"Public Sans",Arial,sans-serif;font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;line-height:1.3;white-space:nowrap;max-width:calc(100% - 48px);overflow:hidden;text-overflow:ellipsis;text-align:center}',
     // Small hex bullet — kept as a plain, small, sharp-cornered polygon clip-path.
     // (Rounding is imperceptible at 32x37px and reusing the big hero's rounded
     // SVG clipPath here previously caused the bullets to render hugely oversized.)
@@ -2398,7 +2410,7 @@ function exportHTMLProphix(lc) {
     '.see-action-section{padding-top:48px!important;padding-bottom:48px!important}',
     '.see-action-section .container{text-align:center}',
     '.see-action-section .row{display:flex;flex-direction:column;align-items:center;gap:22px}',
-    '.see-action-section h2{font-size:clamp(24px,3vw,36px);font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}',
+    '.see-action-section h2{font-family:"Public Sans",Arial,sans-serif;font-size:clamp(24px,3vw,36px);font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}',
     '.Almost-White-color{color:#fff}',
     '.title-icon{width:0.85em;height:0.85em;vertical-align:-0.08em;flex-shrink:0}',
     '.only-btn-block{}',
@@ -2631,6 +2643,14 @@ function exportHTMLProphix(lc) {
   pageParts.push('<meta charset="UTF-8">');
   pageParts.push('<meta name="viewport" content="width=device-width,initial-scale=1.0">');
   pageParts.push('<title>' + escH(title) + ' | Prophix</title>');
+  // Public Sans — a free, SIL-OFL-licensed Google Font. Font-pairing references
+  // (e.g. maxibestof.one/typefaces/articulat-cf) list it as an alternative to
+  // Articulat CF (prophix.com's actual headline font, which is commercially
+  // licensed and not something we have rights to embed here) — same
+  // Swiss-inspired geometric character, safe to embed with no licensing risk.
+  pageParts.push('<link rel="preconnect" href="https://fonts.googleapis.com">');
+  pageParts.push('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
+  pageParts.push('<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">');
   pageParts.push('<style>' + css + '</style>');
   pageParts.push('</head><body>');
   pageParts.push(hexClipDefsHTML);
