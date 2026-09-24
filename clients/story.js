@@ -1,10 +1,20 @@
-// Prophix Client Story — story.js v9.10
+// Prophix Client Story — story.js v9.11
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.11 2026-09-24  Prophix.com-style export: (1) product icons that 404 on the
+//                   cdn.prophix.com guessed URL (e.g. Lease Accounting) now fall
+//                   back via onerror to the app's own known-good local PNG, so
+//                   the icon never shows broken; (2) hero hexagon enlarged
+//                   (360x420, was 190x190) with genuinely rounded corners via a
+//                   reusable SVG clipPath (objectBoundingBox units, so it scales
+//                   onto both the big hero hex and the small results-list hex
+//                   bullets), replacing the sharp-cornered CSS polygon clip-path;
+//                   (3) hero banner enlarged (min-height 460px, was 340px) with
+//                   more vertical padding to match the reference proportions.
 // v9.10 2026-09-24  Export menu (showExportMenu) no longer nests inside the toolbar
 //                   button — now a fixed-position dropdown appended to <body>, so
 //                   it can't expand the edit toolbar. Prophix.com-style export
@@ -2178,18 +2188,20 @@ function exportHTMLProphix(lc) {
     '.container{max-width:1100px;margin:0 auto;padding:0 40px;box-sizing:border-box}',
 
     // ── HERO ──────────────────────────────────────────────────────────────────
-    '.hero-image{position:relative;min-height:340px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
+    '.hero-image{position:relative;min-height:460px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
     '.hero-image::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg, rgba(18,80,160,.55) 0%, rgba(18,80,160,.32) 45%, rgba(18,80,160,.14) 100%);z-index:0}',
-    '.hero-image .container{position:relative;z-index:1;padding-top:48px;padding-bottom:48px}',
-    '.hex-container{display:flex;align-items:center;gap:32px;justify-content:flex-start;flex-wrap:wrap}',
-    '.hex-shape{flex-shrink:0;width:190px;height:190px;position:relative;filter:drop-shadow(0 3px 8px rgba(0,0,0,.16))}',
-    '.hex-mask{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;padding:22px}',
+    '.hero-image .container{position:relative;z-index:1;padding-top:60px;padding-bottom:60px}',
+    '.hex-container{display:flex;align-items:center;gap:30px;justify-content:flex-start;flex-wrap:wrap}',
+    // Bigger, taller hexagon with rounded corners (via SVG clipPath, objectBoundingBox
+    // units so the same rounded-corner path scales cleanly to this non-square box)
+    '.hex-shape{flex-shrink:0;width:360px;height:420px;position:relative;filter:drop-shadow(0 5px 16px rgba(0,0,0,.2))}',
+    '.hex-mask{position:absolute;inset:0;clip-path:url(#pxHexClip);display:flex;align-items:center;justify-content:center;padding:44px}',
     '.hex-mask.white{background:#fff}',
-    '.hex-mask img{max-width:68%;max-height:58%;object-fit:contain;display:block}',
-    '.hex-initials{font-size:36px;font-weight:900;color:#1250a0}',
-    '.hero-text{flex:1;min-width:240px;display:flex;flex-direction:column;justify-content:center}',
-    '.hero-text > img{max-height:40px;max-width:180px;object-fit:contain;margin-bottom:14px;display:block}',
-    '.hero-text h1{font-size:clamp(26px,3.4vw,44px);font-weight:900;color:#EF363D;line-height:1.2;text-align:left;margin:0}',
+    '.hex-mask img{max-width:62%;max-height:44%;object-fit:contain;display:block}',
+    '.hex-initials{font-size:64px;font-weight:900;color:#1250a0}',
+    '.hero-text{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:center}',
+    '.hero-text > img{max-height:44px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
+    '.hero-text h1{font-size:clamp(28px,3.8vw,50px);font-weight:900;color:#EF363D;line-height:1.18;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
 
     // ── KRS ───────────────────────────────────────────────────────────────────
@@ -2247,7 +2259,7 @@ function exportHTMLProphix(lc) {
     '.container-outline{border:2px solid #EF363D;border-radius:12px;padding:32px 36px;margin:48px 0}',
     '.container-outline .heading h3{font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;margin-bottom:24px;line-height:1.3}',
     '.item-hex{width:32px;height:37px;position:relative;flex-shrink:0;margin-right:16px;margin-top:2px}',
-    '.hex-mask.red-background{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:#EF363D}',
+    '.hex-mask.red-background{position:absolute;inset:0;clip-path:url(#pxHexClip);background:#EF363D}',
     '.container-outline .d-flex.flex-row{padding:10px 0;border-bottom:1px solid #f0f0f0;align-items:flex-start}',
     '.container-outline .d-flex.flex-row:last-child{border-bottom:none}',
     '.container-outline .d-flex.flex-row p{font-size:15px;color:#333;margin:0;line-height:1.55}',
@@ -2270,6 +2282,16 @@ function exportHTMLProphix(lc) {
   ].join('\n');
 
   // ── HERO ───────────────────────────────────────────────────────────────────
+  // Shared rounded-hexagon clip path, defined once. Uses clipPathUnits=
+  // "objectBoundingBox" (0..1 coordinate space) so the exact same rounded-corner
+  // path scales correctly onto the hero hex (360x420) and the small results
+  // hex bullets (32x37) despite their very different aspect ratios.
+  var hexClipDefsHTML =
+    '<svg width="0" height="0" style="position:absolute" aria-hidden="true">' +
+      '<defs><clipPath id="pxHexClip" clipPathUnits="objectBoundingBox">' +
+        '<path d="M0.42,0.04 Q0.5,0 0.58,0.04 L0.92,0.21 Q1,0.25 1,0.33 L1,0.67 Q1,0.75 0.92,0.79 L0.58,0.96 Q0.5,1 0.42,0.96 L0.08,0.79 Q0,0.75 0,0.67 L0,0.33 Q0,0.25 0.08,0.21 Z"/>' +
+      '</clipPath></defs>' +
+    '</svg>';
   var hexContent = logoSrc
     ? '<img src="' + escH(logoSrc) + '" alt="' + escH(name) + ' logo">'
     : '<span class="hex-initials">' + escH(name.charAt(0)) + '</span>';
@@ -2312,8 +2334,14 @@ function exportHTMLProphix(lc) {
   if (products.length) {
     var appItems = products.map(function(pr) {
       var iconUrl = PROD_ICONS[pr] || CDN + '/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg';
+      // The cdn.prophix.com icon paths above are best-guess URLs and some (e.g.
+      // Lease Accounting) 404. Fall back to the app's own known-good local PNG
+      // (same one used in-app, from PROPHIX_PRODUCTS) so the icon never shows broken.
+      var localProd = PROPHIX_PRODUCTS.find(function(p){ return p.name === pr; });
+      var localFallback = localProd ? (BASE + localProd.icon) : '';
+      var onerrorAttr = localFallback ? (' onerror="this.onerror=null;this.src=\'' + escH(localFallback) + '\';"') : '';
       return '<div class="app-deployed-item d-flex flex-lg-row align-items-center">' +
-        '<img src="' + escH(iconUrl) + '" alt="' + escH(pr) + ' Icon" style="max-width:4em;max-height:4em">' +
+        '<img src="' + escH(iconUrl) + '"' + onerrorAttr + ' alt="' + escH(pr) + ' Icon" style="max-width:4em;max-height:4em">' +
         '<p class="app-deployed text-left"><strong>Prophix One ' + escH(pr) + '</strong></p>' +
         '</div>';
     }).join('');
@@ -2453,6 +2481,7 @@ function exportHTMLProphix(lc) {
   pageParts.push('<title>' + escH(title) + ' | Prophix</title>');
   pageParts.push('<style>' + css + '</style>');
   pageParts.push('</head><body>');
+  pageParts.push(hexClipDefsHTML);
   pageParts.push(navHTML);
   pageParts.push(heroHTML);
   pageParts.push(krsHTML);
