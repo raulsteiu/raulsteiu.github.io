@@ -7,9 +7,10 @@
       "en",
       "no"
     ],
-    "status": "published",
+    "status": "draft",
     "created": "2026-09-24T23:04:50.098Z",
-    "logo": true
+    "logo": true,
+    "edited": "2026-09-24T23:06:45.124Z"
   },
   {
     "slug": "infrastructurex",
