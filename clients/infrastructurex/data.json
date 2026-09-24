@@ -1,0 +1,125 @@
+{
+  "slug": "infrastructurex",
+  "name": "InfrastructureX",
+  "desc": "InfrastructureX is an international infrastructure firm managing complex project-specific entities across eight European countries. The company leverages Prophix to streamline financial consolidation, multi-currency reporting, and project-driven planning.",
+  "ind": "Infrastructure, Vienna, Austria",
+  "status": "published",
+  "langs": [
+    "en",
+    "de",
+    "pl"
+  ],
+  "hasLogo": true,
+  "stats": [
+    {
+      "v": "19 working days",
+      "l": "saved per closing cycle"
+    },
+    {
+      "v": "9/10",
+      "l": "customer recommendation score"
+    },
+    {
+      "v": "8 countries",
+      "l": "markets consolidated"
+    },
+    {
+      "v": "47 legal entities",
+      "l": "entities consolidated"
+    }
+  ],
+  "whoStats": [
+    {
+      "v": "8",
+      "l": "countries of operation"
+    },
+    {
+      "v": "47",
+      "l": "legal entities"
+    }
+  ],
+  "whoText": "InfrastructureX is an international infrastructure firm headquartered in Austria. The company manages 47 legal entities across eight European countries, focusing on long-duration infrastructure contracts and project-driven revenue.",
+  "krs": [
+    {
+      "text": "reduced from 28 to nine working days per quarter",
+      "bold": "Faster financial close"
+    },
+    {
+      "text": "runs in under two hours compared to previous manual effort",
+      "bold": "Automated intercompany reconciliation"
+    },
+    {
+      "text": "provides PE sponsors with direct, read-only access to reporting",
+      "bold": "Enhanced board transparency"
+    },
+    {
+      "text": "allows auditors to trace every consolidation entry and elimination",
+      "bold": "Improved audit traceability"
+    }
+  ],
+  "results": [],
+  "participants": [
+    {
+      "name": "Klaus Brandstätter",
+      "title": "CFO, InfrastructureX AG"
+    },
+    {
+      "name": "Monika Huber",
+      "title": "Head of Group Finance, InfrastructureX AG"
+    }
+  ],
+  "products": [
+    "Financial Consolidation",
+    "FP&A Plus"
+  ],
+  "content": [
+    {
+      "type": "section",
+      "data": {
+        "label": "BUSINESS CHALLENGES",
+        "heading": "Navigating complexity in a fragmented environment",
+        "body": "Before implementing Prophix, InfrastructureX relied on a highly fragmented manual process to manage financial reporting across eight countries and 47 legal entities. Each subsidiary operated with its own unique reporting templates and timelines, forcing the finance team to manually aggregate data, reconcile multiple currencies, and perform intercompany eliminations in Excel every quarter.\n\nThis status quo was unsustainable due to the sheer scale of the operation and the high risk of human error. The team faced a 28-day closing cycle, which delayed critical board packs and left the company vulnerable to material restatements, ultimately threatening investor confidence and audit compliance."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "WHY PROPHIX",
+        "heading": "What made Prophix the right fit",
+        "body": "- Ability to handle multi-currency consolidation across eight jurisdictions\n- Capability to manage project-entity accounting and infrastructure project timelines\n- Capacity to model complex cash flow scenarios within the planning module"
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "KEY RESULTS",
+        "heading": "Transforming finance from data entry to strategic analysis",
+        "body": "The implementation of Prophix has fundamentally shifted the finance function at InfrastructureX, enabling a 68 percent reduction in the quarterly close process. By automating manual tasks, the team now delivers board packs to PE sponsors in 11 days, compared to the previous four-week delay, significantly increasing investor trust and transparency.\n\nBeyond speed, the platform has improved the quality of financial data and collaboration. The finance team has moved away from manual reconciliation and data entry, allowing them to focus on high-value activities such as scenario modelling and project profitability analysis. Furthermore, the audit process has become seamless, with full traceability for every consolidation entry and elimination.\n\nSpecific efficiency gains are most evident in intercompany reconciliation, which dropped from six to eight days of manual work to under two hours. This automation has effectively freed up three full-time employees to pivot toward strategic FP&A initiatives that were previously impossible to resource."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "REDUCTION IN CLOSE TIME",
+        "ts": "03:34",
+        "quote": "The first full quarter close on Prophix — Q1 2025 — was a revelation. We closed in nine working days. Nine. We had been at 28. That's a 68 percent reduction in close time."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "INTERCOMPANY AUTOMATION",
+        "ts": "04:02",
+        "quote": "The intercompany reconciliation piece specifically — that had been taking us six to eight days manually. It now runs in under two hours because Prophix automates the matching and flags exceptions."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "STRATEGIC SHIFT",
+        "ts": "07:44",
+        "quote": "My people are doing real finance work now. Not data entry. Not reconciliation. Not chasing subsidiaries for their Excel files. That change in what the finance function actually does, day to day, has been transformative."
+      }
+    }
+  ]
+}
