@@ -1888,9 +1888,11 @@ function positionRichToolbar() {
 
   // Check selection is inside a rich-text-capable field
   var node = sel.anchorNode;
-  var el = node && node.nodeType === 3 ? node.parentElement : node;
+  // Walk up from text node to find the contentEditable container
+  var el = node;
+  while (el && el.nodeType !== 1) el = el.parentNode;
   var inRichField = el && RICH_TEXT_SELECTORS.some(function(s) {
-    return el.matches && (el.matches(s) || el.closest(s));
+    try { return el.matches(s) || !!el.closest(s); } catch(e) { return false; }
   });
   if (!inRichField) { bar.style.display = 'none'; return; }
 
@@ -1901,7 +1903,9 @@ function positionRichToolbar() {
   bar.style.display = 'flex';
   var barW = bar.offsetWidth || 110;
   var left = Math.max(8, Math.min(rect.left + rect.width / 2 - barW / 2, window.innerWidth - barW - 8));
-  var top  = Math.max(8, rect.top - 42 + window.scrollY);
+  var editBar = document.getElementById('edit-toolbar');
+  var editBarH = (editBar && editBar.classList.contains('visible')) ? (editBar.offsetHeight || 46) : 0;
+  var top  = Math.max(editBarH + 8, rect.top - 42);  // stay below edit toolbar
   bar.style.left = left + 'px';
   bar.style.top  = top  + 'px';
 
