@@ -1,10 +1,31 @@
-// Prophix Client Story — story.js v9.9
+// Prophix Client Story — story.js v9.10
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.10 2026-09-24  Export menu (showExportMenu) no longer nests inside the toolbar
+//                   button — now a fixed-position dropdown appended to <body>, so
+//                   it can't expand the edit toolbar. Prophix.com-style export
+//                   (exportHTMLProphix) fixes: (1) robust escH() fully decodes
+//                   legacy double/triple-encoded entities before re-encoding once,
+//                   fixing "P&amp;L" showing literally in KRS/results/body text;
+//                   (2) hero/KRS/page-body all share one .container definition and
+//                   page-body now uses CSS Grid (1fr / 340px) instead of flex, so
+//                   the Applications-deployed sidebar's right edge lines up with
+//                   the KRS row above; (3) hero background overlay changed from a
+//                   flat 75%-opacity wash to a light gradient so the photo reads
+//                   clearly; (4) hexagon made square (190x190, was 280x320) with
+//                   standard 0%/100% clip-path points and a lighter drop-shadow,
+//                   fixing the "rounded/oversized" look and centering the logo;
+//                   hero-text given flex-wrap so the title never sits over the
+//                   hexagon; (5) quote block restructured to a vertical stack
+//                   (icon on top-left, larger quote text below, speaker name/title
+//                   below that) instead of icon-beside-text, matching the
+//                   reference design; video (if present) now renders as its own
+//                   full-width block above the quote rather than squeezed beside
+//                   the icon.
 // v9.1  2026-09-21  KRS double-colon rendering fix (krsBodyText helper)
 // v9.2  2026-09-21  Media blocks (audio/video/image); logo edit label; lightbox; Sortable preventOnFilter fix
 // v9.3  2026-09-21  Results→Prophix Features; Delete Story in toolbar; directory tile cleanup (Open only, status capsules, logo left-aligned)
@@ -1894,9 +1915,13 @@ function showExportMenu(btn) {
     menu.appendChild(item2);
   });
 
-  // Position relative to button
-  btn.style.position = 'relative';
-  btn.appendChild(menu);
+  // Position as a fixed dropdown anchored under the button — never a child of it
+  var btnRect = btn.getBoundingClientRect();
+  menu.style.position = 'fixed';
+  menu.style.top = (btnRect.bottom + 6) + 'px';
+  menu.style.right = (window.innerWidth - btnRect.right) + 'px';
+  menu.style.zIndex = '9999';
+  document.body.appendChild(menu);
 
   // Close on outside click
   setTimeout(function() {
@@ -2086,9 +2111,16 @@ function exportHTMLProphix(lc) {
   var parts0   = storyData.participants || [];
   var logoSrc  = storyData.hasLogo ? (BASE + '/clients/' + slug + '/logo.png') : '';
 
+  // Robust HTML-escape: fully decodes any pre-existing entities first (handles
+  // legacy double/triple-encoded text such as "P&amp;amp;L"), then encodes once.
   function escH(s) {
-    var d = (s||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
-    return d.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    var d = String(s || '');
+    var prev;
+    do {
+      prev = d;
+      d = d.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    } while (d !== prev);
+    return d.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
   function bodyToHTML(text) {
     var html = ''; var inUl = false;
@@ -2141,24 +2173,23 @@ function exportHTMLProphix(lc) {
     '.px-nav-btn-solid{background:#EF363D;color:#fff}',
     '.px-nav-btn:hover{opacity:.85;text-decoration:none}',
 
-    // Container
-    '.container{max-width:1100px;margin:0 auto;padding:0 40px}',
+    // Shared container — used by hero, KRS row, and page-body so all three
+    // rows line up on identical left/right edges (fix for width-mismatch bug)
+    '.container{max-width:1100px;margin:0 auto;padding:0 40px;box-sizing:border-box}',
 
     // ── HERO ──────────────────────────────────────────────────────────────────
-    '.hero-image{position:relative;min-height:380px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
-    '.hero-image::before{content:"";position:absolute;inset:0;background:rgba(18,80,160,.75);z-index:0}',
-    '.hero-image .container{position:relative;z-index:1;padding-top:56px;padding-bottom:56px}',
-    '.hex-container{display:flex;align-items:center;gap:36px;justify-content:flex-start}',
-    '.hex-shape{flex-shrink:0;width:280px;height:320px;position:relative;filter:drop-shadow(0 4px 20px rgba(0,0,0,.15))}',
-    '.hex-mask{position:absolute;inset:0;clip-path:polygon(50% 0%,95% 25%,95% 75%,50% 100%,5% 75%,5% 25%);display:flex;align-items:center;justify-content:center;padding:40px}',
+    '.hero-image{position:relative;min-height:340px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
+    '.hero-image::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg, rgba(18,80,160,.55) 0%, rgba(18,80,160,.32) 45%, rgba(18,80,160,.14) 100%);z-index:0}',
+    '.hero-image .container{position:relative;z-index:1;padding-top:48px;padding-bottom:48px}',
+    '.hex-container{display:flex;align-items:center;gap:32px;justify-content:flex-start;flex-wrap:wrap}',
+    '.hex-shape{flex-shrink:0;width:190px;height:190px;position:relative;filter:drop-shadow(0 3px 8px rgba(0,0,0,.16))}',
+    '.hex-mask{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;padding:22px}',
     '.hex-mask.white{background:#fff}',
-    '.hex-mask img{max-width:160px;max-height:130px;object-fit:contain;display:block}',
-    '.hex-initials{font-size:52px;font-weight:900;color:#1250a0}',
-    '.hex-mask img{max-width:130px;max-height:110px;object-fit:contain}',
-    '.hex-initials{font-size:44px;font-weight:900;color:#1250a0}',
-    '.hero-text{flex:1;display:flex;flex-direction:column;justify-content:center}',
-    '.hero-text > img{max-height:56px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
-    '.hero-text h1{font-size:clamp(32px,4vw,52px);font-weight:900;color:#EF363D;line-height:1.15;text-align:left;margin:0}',
+    '.hex-mask img{max-width:68%;max-height:58%;object-fit:contain;display:block}',
+    '.hex-initials{font-size:36px;font-weight:900;color:#1250a0}',
+    '.hero-text{flex:1;min-width:240px;display:flex;flex-direction:column;justify-content:center}',
+    '.hero-text > img{max-height:40px;max-width:180px;object-fit:contain;margin-bottom:14px;display:block}',
+    '.hero-text h1{font-size:clamp(26px,3.4vw,44px);font-weight:900;color:#EF363D;line-height:1.2;text-align:left;margin:0}',
     '.hero-text h1 p{margin:0;color:#EF363D}',
 
     // ── KRS ───────────────────────────────────────────────────────────────────
@@ -2168,28 +2199,28 @@ function exportHTMLProphix(lc) {
     '.title-heading{font-size:clamp(22px,2.5vw,34px);font-weight:900;line-height:1.2}',
     '.Red-color{color:#EF363D}',
     '.snapshots{}',
-    '.snapshot-items{display:flex;flex-direction:row;flex-wrap:nowrap;gap:20px;align-items:stretch;overflow-x:auto}',
-    '@media(max-width:800px){.snapshot-items{flex-wrap:wrap}}',
-    '.snap-card{background:#fff;border-radius:10px;padding:28px 24px;flex:1;min-width:180px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.07)}',
+    '.snapshot-items{display:flex;flex-direction:row;flex-wrap:wrap;gap:20px;align-items:stretch}',
+    '.snap-card{background:#fff;border-radius:10px;padding:28px 24px;flex:1;min-width:220px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.07)}',
     '.snap-card img{width:52px;height:52px;flex-shrink:0}',
     '.snap-card p{font-size:15px;color:#222;line-height:1.55;margin:0}',
 
-    // ── TWO-COLUMN page body ──────────────────────────────────────────────────
-    '.page-body{max-width:1100px;margin:0 auto;padding:48px 40px;display:flex;gap:48px;align-items:flex-start}',
-    '@media(max-width:800px){.page-body{flex-direction:column}}',
+    // ── TWO-COLUMN page body — shares .container so it lines up with the KRS
+    // row and hero above it (fixed alignment bug via CSS Grid, not flex) ──────
+    '.page-body{display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:start;padding-top:48px;padding-bottom:48px}',
+    '@media(max-width:800px){.page-body{grid-template-columns:1fr}}',
 
     // ── MAIN CONTENT — .container .content-container .firstBlock ─────────────
-    '.main-col{flex:1;min-width:0}',
+    '.main-col{min-width:0}',
     '.firstBlock{}',
     '.main-col h2{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:#EF363D;margin:36px 0 14px;line-height:1.2}',
     '.main-col h2:first-child{margin-top:0}',
-    '.main-col p{font-size:16px;color:#333;line-height:1.7;margin-bottom:14px}',
+    '.main-col p{font-size:16px;color:#333;line-height:1.7;margin-bottom:14px;overflow-wrap:break-word;word-break:break-word}',
     '.main-col ul{padding-left:22px;margin-bottom:14px}',
-    '.main-col ul li{font-size:16px;color:#333;line-height:1.7;margin-bottom:8px}',
+    '.main-col ul li{font-size:16px;color:#333;line-height:1.7;margin-bottom:8px;overflow-wrap:break-word;word-break:break-word}',
 
     // ── TALL-CARD sidebar ─────────────────────────────────────────────────────
-    '.tall-card{background:#f2f2f5;border-radius:12px;padding:32px;width:380px;flex-shrink:0;position:sticky;top:20px}',
-    '.tall-card h3{font-size:22px;font-weight:900;line-height:1.2;white-space:nowrap}',
+    '.tall-card{background:#f2f2f5;border-radius:12px;padding:32px;min-width:0;position:sticky;top:20px}',
+    '.tall-card h3{font-size:22px;font-weight:900;line-height:1.2}',
     '.app-deployed-items{}',
     '.app-deployed-item{display:flex;align-items:center;gap:18px;margin-bottom:20px}',
     '.app-deployed-item img{max-width:5em;max-height:5em;flex-shrink:0}',
@@ -2199,28 +2230,22 @@ function exportHTMLProphix(lc) {
     '.c-btn span{color:#fff}',
     'hr{border:none;border-top:1px solid #ddd;margin:20px 0}',
 
-    // ── QUOTE BLOCK — .red-background .quote-block ────────────────────────────
+    // ── QUOTE BLOCK — icon on top, left-aligned, larger text ──────────────────
     '.red-background{background:#EF363D}',
-    '.padding-heavy{padding:56px 40px}',
-    '.quote-block{max-width:1100px;margin:0 auto;display:flex;gap:32px;align-items:flex-start}',
-    '.quote-block > img{width:72px;flex-shrink:0;margin-top:4px}',
-    '.quote .p,.quote p{font-size:clamp(18px,2vw,24px);font-weight:600;color:#fff !important;line-height:1.55;margin-bottom:16px}',
-    '.quotee{gap:16px}',
-    // Speaker hexagon in quote
-    '.quote-hex{width:50px;height:57px;position:relative;flex-shrink:0}',
-    '.quote-hex .hex-mask.white-background{background:rgba(255,255,255,.25)}',
-    '.quotee p{font-size:14px;color:#fff !important;margin:0;line-height:1.4}',
-    '.quotee p strong{color:#fff}',
-
-    // Video + quote two-col inside red section
-    '.quote-video-wrap{flex:1;min-width:0}',
-    '.quote-video-wrap iframe{width:100%;aspect-ratio:16/9;border-radius:8px;display:block}',
+    '.padding-heavy{padding:48px 40px}',
+    '.quote-block{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:16px}',
+    '.quote-block > img{width:40px;height:auto;display:block;flex-shrink:0}',
+    '.quote-video-wrap{width:100%}',
+    '.quote-video-wrap iframe{width:100%;aspect-ratio:16/9;border-radius:8px;display:block;border:0}',
+    '.quote{width:100%;text-align:left}',
+    '.quote p{font-size:clamp(20px,2.4vw,28px);font-weight:600;color:#fff !important;line-height:1.5;margin:0;text-align:left}',
+    '.quotee{margin-top:8px}',
+    '.quotee p{font-size:14px;color:#fff !important;margin:0;line-height:1.5;text-align:left}',
+    '.quotee p:first-child strong{color:#fff;font-size:15px}',
 
     // ── CONTAINER-OUTLINE — "enables to" results block ────────────────────────
-    // Their .container-outline wraps the heading + item-hex list
     '.container-outline{border:2px solid #EF363D;border-radius:12px;padding:32px 36px;margin:48px 0}',
     '.container-outline .heading h3{font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;margin-bottom:24px;line-height:1.3}',
-    // Each result row: .item-hex + text
     '.item-hex{width:32px;height:37px;position:relative;flex-shrink:0;margin-right:16px;margin-top:2px}',
     '.hex-mask.red-background{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:#EF363D}',
     '.container-outline .d-flex.flex-row{padding:10px 0;border-bottom:1px solid #f0f0f0;align-items:flex-start}',
@@ -2309,7 +2334,7 @@ function exportHTMLProphix(lc) {
 
   if (whoText) {
     mainHTML +=
-      '<div class="container content-container firstBlock">' +
+      '<div class="content-container firstBlock">' +
         '<h2 class="title-heading Red-color mb-4">Who is ' + escH(name) + '?</h2>' +
         '<p>' + escH(whoText) + '</p>' +
       '</div>';
@@ -2319,7 +2344,7 @@ function exportHTMLProphix(lc) {
     if (item.type === 'section' && item.data) {
       var s = item.data;
       mainHTML +=
-        '<div class="container content-container firstBlock">' +
+        '<div class="content-container firstBlock">' +
           '<h2 class="title-heading Red-color mb-4">' + escH(s.heading||'') + '</h2>' +
           bodyToHTML(s.body||'') +
         '</div>';
@@ -2330,54 +2355,35 @@ function exportHTMLProphix(lc) {
       if (!quote) return;
       var mt = c.mediaType || 'audio';
 
-      // Speaker hex + name/title — their .quotee structure
+      // Speaker name/title — no avatar image, matches reference layout
       var speakerHTML = firstSpeaker
-        ? '<div class="d-flex flex-row align-items-center justify-content-left mt-5 quotee">' +
-            '<div class="quote-hex"><div class="hex-mask white-background"></div></div>' +
-            '<div>' +
-              '<p><strong>' + escH(firstSpeaker.name) + '</strong></p>' +
-              '<p>' + escH(firstSpeaker.title||'') + '</p>' +
-            '</div>' +
+        ? '<div class="quotee">' +
+            '<p><strong>' + escH(firstSpeaker.name) + '</strong></p>' +
+            '<p>' + escH(firstSpeaker.title||'') + '</p>' +
           '</div>'
         : '';
 
+      var videoEl = '';
       if (mt === 'video' && c.media) {
         var embedUrl = '';
         var ytM = (c.media||'').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
         if (ytM) embedUrl = 'https://www.youtube.com/embed/' + ytM[1] + '?rel=0';
         var vmM = (c.media||'').match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/);
         if (vmM) embedUrl = 'https://player.vimeo.com/video/' + vmM[1];
-
-        var videoEl = embedUrl
-          ? '<div class="quote-video-wrap"><iframe src="' + escH(embedUrl) + '" frameborder="0" allowfullscreen></iframe></div>'
-          : '';
-
-        quoteBlocks.push(
-          '<div class="container padding-heavy red-background quote-block">' +
-            '<div class="quote-block d-flex flex-lg-row align-items-lg-start flex-column">' +
-              videoEl +
-              '<img src="' + CDN + '/images/uploads/icons/quotation-open-mark-white.svg">' +
-              '<div class="quote">' +
-                '<p>' + escH(quote) + '</p>' +
-                speakerHTML +
-              '</div>' +
-            '</div>' +
-          '</div>'
-        );
-      } else {
-        // Audio / quote-only — their exact structure
-        quoteBlocks.push(
-          '<div class="container padding-heavy red-background quote-block">' +
-            '<div class="quote-block d-flex flex-lg-row align-items-lg-start flex-column">' +
-              '<img src="' + CDN + '/images/uploads/icons/quotation-open-mark-white.svg">' +
-              '<div class="quote">' +
-                '<p>' + escH(quote) + '</p>' +
-                speakerHTML +
-              '</div>' +
-            '</div>' +
-          '</div>'
-        );
+        if (embedUrl) videoEl = '<div class="quote-video-wrap"><iframe src="' + escH(embedUrl) + '" frameborder="0" allowfullscreen></iframe></div>';
       }
+
+      // Icon on top, quote text below, speaker below that — all left-aligned
+      quoteBlocks.push(
+        '<div class="container padding-heavy red-background quote-block">' +
+          videoEl +
+          '<img src="' + CDN + '/images/uploads/icons/quotation-open-mark-white.svg" alt="">' +
+          '<div class="quote">' +
+            '<p>' + escH(quote) + '</p>' +
+            speakerHTML +
+          '</div>' +
+        '</div>'
+      );
     }
   });
 
@@ -2392,7 +2398,7 @@ function exportHTMLProphix(lc) {
         '</div>';
     }).join('');
     resultsHTML =
-      '<div style="max-width:1100px;margin:0 auto;padding:0 40px 48px">' +
+      '<div class="container" style="padding-bottom:48px">' +
         '<div class="container-outline">' +
           '<span class="heading"><h3>Prophix One<sup class="tm">\u2122</sup> enables ' + escH(name) + ' to:</h3></span>' +
           '<div class="d-flex flex-column">' + resultRows + '</div>' +
@@ -2450,7 +2456,7 @@ function exportHTMLProphix(lc) {
   pageParts.push(navHTML);
   pageParts.push(heroHTML);
   pageParts.push(krsHTML);
-  pageParts.push('<div class="page-body"><div class="main-col">' + mainHTML + '</div>' + (sidebarHTML ? sidebarHTML : '') + '</div>');
+  pageParts.push('<div class="container page-body"><div class="main-col">' + mainHTML + '</div>' + (sidebarHTML ? sidebarHTML : '') + '</div>');
   pageParts = pageParts.concat(quoteBlocks);
   pageParts.push(resultsHTML);
   pageParts.push(ctaHTML);
@@ -2624,7 +2630,7 @@ function wireEvents() {
 
 // ── PDF Brochure Generator v3.5 ────────────────────────────────────────────────
 // v9.5  2026-09-21  Initial PDF generator
-// v9.6  2026-09-22  Two-page layout; language-aware; shape-up.png page break;
+// v9.6  2026-09-22  Two-page layout; language-aware brochure; shape-up.png page break;
 //                   no content truncation; lang picker from directory tile
 
 var BROCHURE_THEME = {
