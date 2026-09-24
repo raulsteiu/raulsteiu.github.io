@@ -1,10 +1,31 @@
-// Prophix Client Story — story.js v9.21
+// Prophix Client Story — story.js v9.23
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.23 2026-09-24  PDF brochure generator: foreign-language brochures were
+//                   showing "Who is the client?" and "Applications deployed"
+//                   in English even when the story page itself had the
+//                   translated versions saved (e.g. "Qui est Eaglestone?",
+//                   "Applications Déployées"). Two bugs: (1) _getBrochureData()
+//                   never carried sidebarLabels through the per-language
+//                   merge at all, so the translated headings were dropped
+//                   before they ever reached the PDF builder; (2) the PDF
+//                   builder itself had those two headings hardcoded in English
+//                   rather than reading data.sidebarLabels. Fixed both — the
+//                   brochure now uses the same translated sidebar headings as
+//                   the live story page, for every language.
+// v9.22 2026-09-24  Prophix.com-style export: found the actual culprit for the
+//                   hero line-height (per devtools inspection) — the headline
+//                   markup wraps its text in a nested <p>, and the page's
+//                   global "p{line-height:1.7}" rule matches that <p> directly,
+//                   which wins over the line-height:1 set on the parent <h1>
+//                   (a rule that directly matches an element always overrides
+//                   an inherited value, regardless of specificity). Fixed by
+//                   setting line-height explicitly on .hero-text h1 p — set to
+//                   1.1 as requested.
 // v9.21 2026-09-24  Prophix.com-style export: added a real headline font
 //                   instead of the plain Arial/Helvetica fallback. prophix.com
 //                   uses Articulat CF (Connary Fagen), a commercially-licensed
@@ -2329,7 +2350,7 @@ function exportHTMLProphix(lc) {
     '@media(max-width:820px){.hero-text{margin-left:0;margin-top:20px}}',
     '.hero-text > img{max-height:44px;max-width:200px;object-fit:contain;margin-bottom:16px;display:block}',
     '.hero-text h1{font-family:"Public Sans",Arial,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:900;color:#EF363D;line-height:1;letter-spacing:-3px;text-align:left;margin:0}',
-    '.hero-text h1 p{margin:0;color:#EF363D}',
+    '.hero-text h1 p{margin:0;color:#EF363D;line-height:1.1}',
 
 
 
@@ -2914,7 +2935,8 @@ window._getBrochureData = function _getBrochureData(data, lc) {
     whoStats:     (tr.whoStats && tr.whoStats.length) ? tr.whoStats : data.whoStats,
     products:     data.products,
     results:      (tr.results && tr.results.length) ? tr.results : data.results,
-    participants: tr.participants || data.participants
+    participants: tr.participants || data.participants,
+    sidebarLabels: tr.sidebarLabels || data.sidebarLabels
   };
   merged._lang = lc || 'en';
   return merged;
@@ -3059,7 +3081,8 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
 
   // RIGHT SIDEBAR
   font('bold', 10); tc(T.red);
-  doc.text('Who is ' + (data.name || 'the client') + '?', sideX, sideY);
+  var whoHeading = (data.sidebarLabels && data.sidebarLabels.who) || ('Who is ' + (data.name || 'the client') + '?');
+  doc.text(whoHeading, sideX, sideY);
   sideY += 2.5;
   dc(T.red); lw(0.6);
   doc.line(sideX, sideY, sideX + sideW, sideY);
@@ -3092,7 +3115,8 @@ window._buildBrochurePDF = function(jsPDF, data, assets) {
     sideY += 7;
 
     font('bold', 10); tc(T.red);
-    doc.text('Applications deployed', sideX, sideY);
+    var appsHeading = (data.sidebarLabels && data.sidebarLabels.applications) || 'Applications deployed';
+    doc.text(appsHeading, sideX, sideY);
     sideY += 8;
 
     (data.products || []).forEach(function(pr) {
