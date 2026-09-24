@@ -426,6 +426,7 @@ function renderPage(data) {
     '</select>' +
     '<button onclick="showPreviewLinkModal()" style="background:transparent;border:1px solid rgba(255,200,0,.4);color:#F5C842;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer">⧉ Preview link</button>' +
     '<button class="tb-delete" onclick="confirmDeleteStory()">🗑 Delete story</button>' +
+    '<button onclick="showExportMenu(this)" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.8);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;margin-left:4px">↓ Export HTML</button>' +
     '</div>';
   body.appendChild(toolbar);
 
@@ -1832,6 +1833,163 @@ function closeModal() {
   document.getElementById('token-modal').classList.remove('visible');
   document.getElementById('token-input').value = '';
   document.getElementById('token-error').textContent = '';
+}
+
+// ── HTML Export ──────────────────────────────────────────────────────────────
+function showExportMenu(btn) {
+  // Remove existing menu
+  var ex = document.getElementById('export-lang-menu');
+  if (ex) { ex.remove(); return; }
+
+  var langs = storyData.langs || ['en'];
+
+  // If only one language, export directly
+  if (langs.length === 1) { exportHTML('en'); return; }
+
+  // Build language picker menu
+  var menu = document.createElement('div');
+  menu.id = 'export-lang-menu';
+  menu.style.cssText = 'position:absolute;top:100%;left:0;background:#fff;border:1px solid #E0DFF0;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:6px;z-index:600;min-width:180px;margin-top:4px';
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px 8px;border-bottom:1px solid #f0f0f0;margin-bottom:4px';
+  title.textContent = 'Export language:';
+  menu.appendChild(title);
+
+  langs.forEach(function(lc) {
+    var LANG_FULL = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish',pt:'Portuguese',pl:'Polish',sv:'Swedish',da:'Danish',fi:'Finnish',no:'Norwegian',ja:'Japanese',zh:'Chinese',ko:'Korean'};
+    var item = document.createElement('button');
+    item.textContent = (LANG_NAMES[lc] || lc.toUpperCase()) + (LANG_FULL[lc] ? ' — ' + LANG_FULL[lc] : '');
+    item.style.cssText = 'display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:Arial,sans-serif;border-radius:5px;color:#1A1A2E';
+    item.onmouseover = function(){ this.style.background='#f5f5f5'; };
+    item.onmouseout  = function(){ this.style.background='transparent'; };
+    item.onclick = function(){ menu.remove(); exportHTML(lc); };
+    menu.appendChild(item);
+  });
+
+  // Position relative to button
+  btn.style.position = 'relative';
+  btn.appendChild(menu);
+
+  // Close on outside click
+  setTimeout(function() {
+    document.addEventListener('click', function closeMenu(e) {
+      if (!menu.contains(e.target) && e.target !== btn) {
+        menu.remove();
+        document.removeEventListener('click', closeMenu);
+      }
+    });
+  }, 10);
+}
+
+function exportHTML(lc) {
+  lc = lc || currentLang || 'en';
+
+  // ── 1. Get the rendered block for this language ───────────────────────────
+  // Temporarily show the right block if not active
+  var block = document.getElementById('block-' + lc);
+  if (!block) { alert('No content found for language: ' + lc.toUpperCase()); return; }
+
+  // Clone the block so we don't modify the live page
+  var clone = block.cloneNode(true);
+
+  // ── 2. Strip all edit-only and interactive elements ───────────────────────
+  var stripSelectors = [
+    '.edit-fab', '#edit-toolbar', '.edit-toolbar',
+    '.edit-only', '.drag-handle', '.sec-delete-btn', '.clip-remove-btn',
+    '.upload-audio-btn', '.upload-media-btn', '.audio-del-x', '.media-del-x',
+    '.stat-tile-del', '.who-stat-del', '.krs-item-del', '.krs-add-btn',
+    '.stat-add-btn', '.who-stat-add-btn', '.part-add-btn', '.part-del-btn',
+    '.result-add-btn', '.result-del-btn', '.add-blocks-bar',
+    '#inline-products-panel', '.sec-body-edit', '.rich-toolbar',
+    '[id="rich-toolbar"]'
+  ];
+  stripSelectors.forEach(function(sel) {
+    clone.querySelectorAll(sel).forEach(function(el) { el.remove(); });
+  });
+
+  // ── 3. Remove contenteditable attributes ─────────────────────────────────
+  clone.querySelectorAll('[contenteditable]').forEach(function(el) {
+    el.removeAttribute('contenteditable');
+  });
+
+  // ── 4. Unwrap sec-body-edit into rendered HTML ────────────────────────────
+  // sec-body-edit divs were already stripped above, but sections may show
+  // raw text — re-render body text from the visible p/li elements
+  // (they're already in the clone from the original render, nothing to do)
+
+  // ── 5. Fix asset URLs — make all relative paths absolute ─────────────────
+  var BASE = 'https://raulsteiu.github.io';
+  clone.querySelectorAll('img[src]').forEach(function(img) {
+    var src = img.getAttribute('src');
+    if (src && src.startsWith('/')) img.setAttribute('src', BASE + src);
+  });
+  clone.querySelectorAll('audio source[src]').forEach(function(src) {
+    var s = src.getAttribute('src');
+    if (s && !s.startsWith('http') && !s.startsWith('//')) {
+      // Audio is stored relative to client folder
+      var slug = storyData.slug || '';
+      src.setAttribute('src', BASE + '/clients/' + slug + '/' + s.split('/').pop());
+    }
+  });
+  clone.querySelectorAll('.media-img-wrap img[src]').forEach(function(img) {
+    var src = img.getAttribute('src');
+    if (src && !src.startsWith('http')) {
+      var slug = storyData.slug || '';
+      img.setAttribute('src', BASE + '/clients/' + slug + '/' + src.split('/').pop());
+    }
+  });
+
+  // ── 6. Build the page nav for the export (no edit buttons, no lang toggle) ─
+  var exportNav = '<div style="background:linear-gradient(135deg,#1A1A2E 0%,#2C2C4A 60%,#3B1A1A 100%);padding:10px 40px;display:flex;align-items:center;gap:14px">' +
+    '<a href="https://www.prophix.com/customer-stories/" style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px">← prophix.com/customer-stories</a>' +
+    '</div>';
+
+  // ── 7. Get CSS — inline it fully ─────────────────────────────────────────
+  var css = getCSS();
+  // Remove edit-mode specific rules from exported CSS
+  css = css.replace(/\.edit-mode[^{]*\{[^}]*\}/g, '');
+
+  // ── 8. Assemble the full HTML document ───────────────────────────────────
+  var langLabel = (storyData.langLabels && storyData.langLabels[lc]) || (window.LANG_LABELS && LANG_LABELS[lc]) || 'Customer Story';
+  var storyTitle = (lc === 'en' ? (storyData.title || storyData.name) :
+    (storyData.translations && storyData.translations[lc] && storyData.translations[lc].title) ||
+    (storyData.title || storyData.name)) || 'Customer Story';
+  var docTitle = (storyData.name || 'Story') + ' — Prophix Customer Story';
+
+  var parts = [];
+  parts.push('<!DOCTYPE html>');
+  parts.push('<html lang="' + lc + '">');
+  parts.push('<head>');
+  parts.push('<meta charset="UTF-8">');
+  parts.push('<meta name="viewport" content="width=device-width,initial-scale=1.0">');
+  parts.push('<title>' + docTitle + '</title>');
+  parts.push('<style>');
+  parts.push(css);
+  parts.push('body{background:#F4F4F8}');
+  parts.push('.edit-fab,.edit-toolbar,.edit-only,.drag-handle{display:none!important}');
+  parts.push('.lang-block{display:block!important}');
+  parts.push('</style>');
+  parts.push('</head>');
+  parts.push('<body>');
+  parts.push(exportNav);
+  parts.push(clone.outerHTML);
+  parts.push('</body>');
+  parts.push('</html>');
+  var html = parts.join('\n');
+
+  // ── 9. Trigger download ───────────────────────────────────────────────────
+  var langSuffix = (LANG_NAMES[lc] || lc.toUpperCase());
+  var filename = (storyData.name || 'Story').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') +
+    '_Customer_Story_' + langSuffix + '.html';
+
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
 }
 
 // ── Floating rich text toolbar ───────────────────────────────────────────────
