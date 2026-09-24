@@ -1,7 +1,7 @@
 # Prophix Client Story App — Maintenance & Usage Guide
 
 **Repository:** `raulsteiu/raulsteiu.github.io`  
-**Last updated:** September 2026 — v3.0
+**Last updated:** September 2026 — v3.2
 
 ---
 
@@ -76,7 +76,10 @@ To change status: open the story → enter token → use the **status dropdown**
 
 ### What you can edit
 
-Hero label, heading, description, industry tag, section labels/headings/body, clip titles/quotes, stat values/labels, KRS heading + items, Who card text and stats, results, participants, products, logo.
+Hero label, heading, description, industry tag, section labels/headings/body, media block titles/quotes, stat values/labels, KRS heading + items, Who card text and stats, results/features, participants, products, logo.
+
+**Formatting popup:** select any text while in edit mode and a small **Bold / Italic** toolbar floats above your selection. This now appears on *every* editable field — headings, labels, stat numbers, everything, not just the main body copy.
+> One caveat: bold/italic only *saves* on fields that support rich text end-to-end — the main paragraph text, the "Who is..." description, the results/features list, and the hero description. On other fields (headings, labels, stat numbers) the formatting shows while editing but reverts to plain text on Save. Ask if you need it extended to a specific field.
 
 ### Section body editing
 
@@ -93,24 +96,59 @@ In edit mode the section body collapses to a single editable area:
 | **Cancel** | Discards changes |
 | **Status dropdown** | Change Draft / Approved / Published — saves instantly |
 | **⧉ Preview link** | Generate a client preview link (see below) |
+| **🗑 Delete story** | Deletes this story permanently — same as deleting from the directory (see "Delete a story" below), just one click closer while you're already in the page |
+| **↓ Export HTML** | Download a standalone HTML copy — see "Getting a story out" below |
+
+The nav bar (top of the page, always visible) also has **↓ Brochure**, which downloads the PDF version — see below.
 
 ### Edit mode controls
 
 | Control | How to use |
 |---|---|
 | Add / delete section | `+ Add section` at bottom · 🗑 on each section |
-| Add / delete clip | `+ Add clip` · 🗑 on each clip |
-| Reorder | Drag `⠿` handle on any section or clip |
-| Upload MP3 | `Upload MP3` inside clip player |
-| Delete MP3 | `✕` at right of clip title bar |
+| Add / delete media block | `+ Add media` → choose **Audio clip / Video / Image / Quote block** · 🗑 on each block |
+| Reorder | Drag `⠿` handle on any section or media block |
+| Upload MP3 | `Upload MP3` inside an audio block's player |
+| Add a video | Paste a **YouTube or Vimeo URL** directly into the field on a video block — it embeds automatically, no file upload |
+| Upload image | `Upload image` inside an image block · click any uploaded image to view it full-size |
+| Delete media file | `✕` at the right of the block's title bar |
 | Add / delete stat | `+` at end of stats row · `✕` on tile |
 | Add / delete KRS item | `+ Add result` in KRS card · `✕` on item |
 | Add / delete participant | `+ Add participant` · `✕` on entry |
-| Add / delete result | `+ Add result` · `✕` on item |
+| Add / delete result/feature | `+ Add feature` · `✕` on item |
 | Change products | Click Applications Deployed card |
 | Replace logo | Click client logo in hero |
 | Add language | Language dropdown in nav → select |
 | Remove language | `×` next to language tab |
+
+**Media block types, at a glance:**
+
+| Type | What it needs |
+|---|---|
+| 🎵 Audio clip | Title, quote, MP3 upload |
+| 🎬 Video | Title, quote, a pasted YouTube/Vimeo link |
+| 🖼 Image | Title, optional caption, uploaded image |
+| 💬 Quote block | Title, quote only — no player, just a pull quote |
+
+---
+
+## Getting a story out of the app
+
+Every story can leave the app three ways — pick whichever fits what you're sending.
+
+### 1. The live page itself
+Just share the URL. Always current, always editable by whoever has the token.
+
+### 2. PDF Brochure
+Click **↓ Brochure** in the page's top nav (works from either edit mode or the normal view). Downloads a polished two-page PDF — Prophix + client logos, stats, Key Results, full story sections, Applications Deployed — in whichever language tab is currently open. Good for emailing or dropping into a deck.
+
+### 3. HTML Export (two styles)
+From **edit mode**, click **↓ Export HTML** in the toolbar. A menu opens listing every published language, split into two sections:
+
+- **Internal style** — a plain static snapshot of the page exactly as it looks in this app. Good for a simple standalone copy or archiving.
+- **prophix.com style** — rebuilt from scratch to match the look of a real prophix.com public customer story (hero photo behind a hexagon logo, red pull-quote sections, a "Prophix One™ enables X to:" results box, a "See it in action" call-to-action). Use this when the story needs to feel like it belongs on prophix.com itself.
+
+Either one downloads a single self-contained `.html` file — open it in any browser, or attach it to an email. It doesn't need `story.js` or any live connection to work.
 
 ---
 
@@ -164,15 +202,24 @@ After the client responds by email:
 
 **EN cannot be removed.**
 
+Every field is independent per language — including the "Who is [Client]?" and "Applications deployed" sidebar headings. Translate a heading once on that language's tab and it sticks; it also carries through correctly into the PDF brochure and both HTML export styles for that language.
+
 ---
 
 ## Delete a story
 
+Two ways to do this — same result either way:
+
+**From the directory:**
 1. Go to `/clients/`
 2. Hover a card → 🗑 appears
 3. Click → enter token → confirm
 
-Permanently removes all files from the repository.
+**From inside the story, while editing:**
+1. Open the story → enter token → edit mode
+2. Click **🗑 Delete story** in the edit toolbar → confirm
+
+Both permanently remove all files from the repository. There's no undo — only do this if you're sure.
 
 ---
 
@@ -196,6 +243,8 @@ Never stored anywhere. Enter fresh each session.
 1. Upload new `story.js` to `clients/story.js` in GitHub
 2. Wait ~30 seconds for Pages to deploy
 3. Every story page uses the new version — no re-publishing needed
+
+**If a fix doesn't seem to show up** even after confirming the commit went through and you've hard-refreshed: wait a minute and try again before assuming something's broken. GitHub Pages serves through a CDN that can take a short window to fully roll a new file out everywhere — two page loads close together can genuinely hit different versions during that window.
 
 ---
 
@@ -228,10 +277,12 @@ Only when:
 | Token rejected (401) | Expired or wrong permissions — regenerate |
 | Preview link says "Invalid" | Link expired (3 days) — generate a new one |
 | Story status badge not showing | Open story in edit mode and save once to sync stories.json |
-| Page looks wrong after deploy | Hard refresh: Ctrl+Shift+R (Win) / Cmd+Shift+R (Mac) |
+| Page looks wrong after deploy | Hard refresh: Ctrl+Shift+R (Win) / Cmd+Shift+R (Mac); if still wrong, wait a minute and retry — see CDN note above |
 | Story page 404 | Wait up to 2 minutes after first publish |
 | "3 cancelled checks" on commit | Normal — multiple files, last build wins |
 | AI generation fails | Check Gemini API key is correct; try again if 503 (server busy) |
+| "Who is the client?" / generic filename in PDF or export, on an older story | That story's client-name field is blank (predates an early schema change). Open it in edit mode, retype the client name in the top field, Save once — fixes it everywhere (page, PDF, both exports) |
+| Bold/italic disappears after Save | Only some fields support saved formatting (main body text, "Who is..." description, results/features, hero description) — expected on other fields for now |
 
 ---
 
