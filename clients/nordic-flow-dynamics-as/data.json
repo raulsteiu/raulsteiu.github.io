@@ -120,5 +120,11 @@
         "quote": "The auditors tracked every line item from our consolidated Norwegian parent statement down to the underlying transactional journal entries across our Danish and Finnish subsidiaries without generating a single material adjustment notice."
       }
     }
-  ]
+  ],
+  "preview": {
+    "token": "52zrii44k6",
+    "password": "clear-leaf-63",
+    "expiresAt": "2026-09-27T23:06:45.835Z",
+    "createdAt": "2026-09-24T23:06:45.836Z"
+  }
 }
