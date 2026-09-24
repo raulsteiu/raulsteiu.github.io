@@ -1893,6 +1893,39 @@ function exportHTML(lc) {
   // Clone the block so we don't modify the live page
   var clone = block.cloneNode(true);
 
+  // ── 1b. Unwrap sec-body-edit into rendered paragraphs BEFORE stripping ──────
+  clone.querySelectorAll('.sec-body-edit').forEach(function(wrap) {
+    var sec = wrap.parentNode;
+    if (!sec) return;
+    // Read text content, convert <br> to newlines
+    var temp = wrap.cloneNode(true);
+    temp.querySelectorAll('br').forEach(function(br){ br.replaceWith('\n'); });
+    var text = temp.textContent || '';
+    var lines = text.split('\n');
+    var fragment = document.createDocumentFragment();
+    var currentUl = null;
+    lines.forEach(function(line) {
+      var t = line.trim();
+      if (!t) { currentUl = null; var bp = document.createElement('p'); bp.innerHTML = '&nbsp;'; fragment.appendChild(bp); return; }
+      if (/^[-–]\s/.test(t)) {
+        if (!currentUl) { currentUl = document.createElement('ul'); fragment.appendChild(currentUl); }
+        var li = document.createElement('li');
+        var cnt = t.replace(/^[-–]\s+/, '');
+        var ci = cnt.indexOf(':');
+        if (ci > 0 && ci < 60) {
+          var strong = document.createElement('strong'); strong.textContent = cnt.substring(0, ci) + ':';
+          li.appendChild(strong); li.appendChild(document.createTextNode(cnt.substring(ci + 1)));
+        } else { li.textContent = cnt; }
+        currentUl.appendChild(li);
+      } else {
+        currentUl = null;
+        var p = document.createElement('p'); p.textContent = t; fragment.appendChild(p);
+      }
+    });
+    wrap.parentNode.insertBefore(fragment, wrap);
+    wrap.remove();
+  });
+
   // ── 2. Strip all edit-only and interactive elements ───────────────────────
   var stripSelectors = [
     '.edit-fab', '#edit-toolbar', '.edit-toolbar',
@@ -1973,7 +2006,10 @@ function exportHTML(lc) {
   parts.push('</head>');
   parts.push('<body>');
   parts.push(exportNav);
-  parts.push(clone.outerHTML);
+  // Use a wrapper to get clean innerHTML (avoids outerHTML double-encoding &amp; etc.)
+  var _wrapper = document.createElement('div');
+  _wrapper.appendChild(clone);
+  parts.push(_wrapper.innerHTML);
   parts.push('</body>');
   parts.push('</html>');
   var html = parts.join('\n');
