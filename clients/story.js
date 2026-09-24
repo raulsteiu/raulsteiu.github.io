@@ -1484,8 +1484,12 @@ function showAddMediaMenu(btn) {
     item.onclick = function(){ menu.remove(); addMediaInline(btn, t[0]); };
     menu.appendChild(item);
   });
-  btn.parentNode.style.position = 'relative';
-  btn.parentNode.appendChild(menu);
+  var btnRect = btn.getBoundingClientRect();
+  menu.style.position = 'fixed';
+  menu.style.top = (btnRect.bottom + 4) + 'px';
+  menu.style.left = btnRect.left + 'px';
+  menu.style.zIndex = '9999';
+  document.body.appendChild(menu);
   setTimeout(function() {
     document.addEventListener('click', function closeMenu(e) {
       if (!menu.contains(e.target) && e.target !== btn) { menu.remove(); document.removeEventListener('click', closeMenu); }
@@ -1849,7 +1853,7 @@ function showExportMenu(btn) {
   // Build language picker menu
   var menu = document.createElement('div');
   menu.id = 'export-lang-menu';
-  menu.style.cssText = 'position:absolute;top:100%;left:0;background:#fff;border:1px solid #E0DFF0;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:6px;z-index:600;min-width:180px;margin-top:4px';
+  menu.style.cssText = 'background:#fff;border:1px solid #E0DFF0;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:6px;min-width:220px';
 
   var LANG_FULL_MAP = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish',pt:'Portuguese',pl:'Polish',sv:'Swedish',da:'Danish',fi:'Finnish',no:'Norwegian',ja:'Japanese',zh:'Chinese',ko:'Korean'};
 
@@ -1897,8 +1901,10 @@ function showExportMenu(btn) {
   // Close on outside click
   setTimeout(function() {
     document.addEventListener('click', function closeMenu(e) {
-      if (!menu.contains(e.target) && e.target !== btn) {
-        menu.remove();
+      var m = document.getElementById('export-lang-menu');
+      if (!m) { document.removeEventListener('click', closeMenu); return; }
+      if (!m.contains(e.target) && e.target !== btn) {
+        m.remove();
         document.removeEventListener('click', closeMenu);
       }
     });
