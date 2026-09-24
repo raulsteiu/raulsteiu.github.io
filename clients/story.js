@@ -1248,7 +1248,7 @@ function addEditControlsToExisting() {
     handle.style.right = '36px'; card.insertBefore(handle, rb);
     var player = card.querySelector('.media-player');
     var mt_up = card.getAttribute('data-media-type');
-    if (player && mt_up !== 'video') {
+    if (player && mt_up !== 'video' && mt_up !== 'quote') {
       var upBtn = document.createElement('button');
       upBtn.className = 'upload-media-btn edit-only'; upBtn.textContent = mt_up === 'image' ? 'Upload image' : 'Upload MP3';
       upBtn.addEventListener('click', function(){ uploadMedia(upBtn, card); }); player.appendChild(upBtn);
@@ -1447,6 +1447,10 @@ urlInput.setAttribute('data-url', url);
     urlInput.addEventListener('paste', function(){ setTimeout(applyVideoUrlInline, 50); });
     urlInput.addEventListener('blur', applyVideoUrlInline);
     pl.appendChild(qt); pl.appendChild(urlHint); pl.appendChild(urlInput);
+  } else if (mediaType === 'quote') {
+    // Quote-only: just an editable pull quote, no player, no upload
+    var qtq = document.createElement('div'); qtq.className = 'media-quote'; qtq.contentEditable = 'true'; qtq.textContent = '';
+    pl.appendChild(qtq);
   } else {
     var qt2 = document.createElement('div'); qt2.className = 'media-quote'; qt2.contentEditable = 'true'; qt2.textContent = '';
     var aud = document.createElement('audio'); aud.controls = true; aud.preload = 'metadata';
@@ -1757,7 +1761,7 @@ async function saveToGitHub() {
 
     var r = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_DATA_FILE, { method:'PUT', headers:{'Authorization':'Bearer '+sessionToken,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body:JSON.stringify(body) });
 
-    if (!r.ok) { var err = await r.json(); throw new Error(err.message || 'Save failed'); }
+    if (!r.ok) { var errBody = await r.json().catch(function(){return{};}); throw new Error(errBody.message || 'HTTP ' + r.status); }
 
     storyData = newData;
     _updateEditedTimestamp();
@@ -1773,7 +1777,11 @@ async function saveToGitHub() {
 
   } catch(err) {
     saveBtn.disabled = false;
-    statusEl.textContent = 'Error: ' + err.message;
+    var msg = err.message || String(err);
+    if (msg === 'Failed to fetch' || msg.indexOf('fetch') > -1) {
+      msg = 'Network error — check your internet connection and token, then try again';
+    }
+    statusEl.textContent = 'Error: ' + msg;
     document.body.classList.add('edit-mode');
     document.getElementById('edit-fab').classList.add('hidden');
     document.getElementById('edit-toolbar').classList.add('visible');
