@@ -2138,7 +2138,7 @@ function exportHTMLProphix(lc) {
     '.container{max-width:1100px;margin:0 auto;padding:0 40px}',
 
     // ── HERO ──────────────────────────────────────────────────────────────────
-    '.hero-image{position:relative;min-height:380px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://cdn.prophix.com/images/uploads/icons/customer-story-hero.jpg);background-size:cover;background-position:center;overflow:hidden}',
+    '.hero-image{position:relative;min-height:380px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://cdn.prophix.com/imager/261028/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
     '.hero-image::before{content:"";position:absolute;inset:0;background:rgba(18,80,160,.75);z-index:0}',
     '.hero-image .container{position:relative;z-index:1;padding-top:56px;padding-bottom:56px}',
     '.hex-container{display:flex;align-items:center;gap:36px;justify-content:flex-start}',
@@ -2236,15 +2236,17 @@ function exportHTMLProphix(lc) {
   ].join('\n');
 
   // ── HERO ───────────────────────────────────────────────────────────────────
-  var hexInner = logoSrc
+  // Hex is empty (prophix.com structure) — logo and title sit beside it in hero-text
+  var heroLogoTag = logoSrc
     ? '<img src="' + escH(logoSrc) + '" alt="' + escH(name) + ' logo">'
-    : '<span class="hex-initials">' + escH(name.charAt(0)) + '</span>';
+    : '';
   var heroHTML =
     '<div class="hero-image">' +
       '<div class="container">' +
         '<div class="hex-container">' +
-          '<div class="hex-shape"><div class="hex-mask white">' + hexInner + '</div></div>' +
+          '<div class="hex-shape"><div class="hex-mask white"></div></div>' +
           '<div class="hero-text">' +
+            heroLogoTag +
             '<h1><p>' + escH(title) + '</p></h1>' +
           '</div>' +
         '</div>' +
