@@ -2081,7 +2081,8 @@ function exportHTMLProphix(lc) {
   var logoSrc  = storyData.hasLogo ? (BASE + '/clients/' + slug + '/logo.png') : '';
 
   function escH(s) {
-    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    var d = (s||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
+    return d.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
   function bodyToHTML(text) {
     var html = ''; var inUl = false;
@@ -2104,7 +2105,7 @@ function exportHTMLProphix(lc) {
     'FP&A Plus':               CDN+'/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
     'FP&A':                    CDN+'/images/uploads/icons/Prophix-Icons/budgeting-and-planning.svg',
     'Intercompany Management': CDN+'/images/uploads/icons/Prophix-Icons/intercompany-management.svg',
-    'Lease Accounting':        CDN+'/images/uploads/icons/Prophix-Icons/lease-accounting.svg'
+    'Lease Accounting':        CDN+'/images/uploads/icons/Prophix-Icons/lease-compliance.svg'
   };
 
   // ── CSS using their exact class names ─────────────────────────────────────
@@ -2138,7 +2139,7 @@ function exportHTMLProphix(lc) {
     '.container{max-width:1100px;margin:0 auto;padding:0 40px}',
 
     // ── HERO ──────────────────────────────────────────────────────────────────
-    '.hero-image{position:relative;min-height:380px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://cdn.prophix.com/imager/261028/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
+    '.hero-image{position:relative;min-height:380px;display:flex;align-items:center;background-color:#1250a0;background-image:url(https://raulsteiu.github.io/assets/image-3_W991_Q100.png);background-size:cover;background-position:center;overflow:hidden}',
     '.hero-image::before{content:"";position:absolute;inset:0;background:rgba(18,80,160,.75);z-index:0}',
     '.hero-image .container{position:relative;z-index:1;padding-top:56px;padding-bottom:56px}',
     '.hex-container{display:flex;align-items:center;gap:36px;justify-content:flex-start}',
@@ -2162,7 +2163,7 @@ function exportHTMLProphix(lc) {
     '.snapshot-items{display:flex;flex-direction:row;flex-wrap:nowrap;gap:20px;align-items:stretch;overflow-x:auto}',
     '@media(max-width:800px){.snapshot-items{flex-wrap:wrap}}',
     '.snap-card{background:#fff;border-radius:10px;padding:28px 24px;flex:1;min-width:180px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.07)}',
-    '.snap-card img{width:44px;height:44px;flex-shrink:0}',
+    '.snap-card img{width:52px;height:52px;flex-shrink:0}',
     '.snap-card p{font-size:15px;color:#222;line-height:1.55;margin:0}',
 
     // ── TWO-COLUMN page body ──────────────────────────────────────────────────
@@ -2179,7 +2180,7 @@ function exportHTMLProphix(lc) {
     '.main-col ul li{font-size:16px;color:#333;line-height:1.7;margin-bottom:8px}',
 
     // ── TALL-CARD sidebar ─────────────────────────────────────────────────────
-    '.tall-card{background:#f2f2f5;border-radius:12px;padding:32px;width:340px;flex-shrink:0;position:sticky;top:20px}',
+    '.tall-card{background:#f2f2f5;border-radius:12px;padding:32px 28px;width:360px;flex-shrink:0;position:sticky;top:20px}',
     '.tall-card h3{font-size:clamp(20px,2vw,26px);font-weight:900;line-height:1.2}',
     '.app-deployed-items{}',
     '.app-deployed-item{display:flex;align-items:center;gap:18px;margin-bottom:20px}',
