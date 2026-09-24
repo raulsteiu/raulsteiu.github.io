@@ -1,192 +1,26 @@
-// Prophix Client Story — story.js v9.24
+// Prophix Client Story — story.js v9.25
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
-// v9.24 2026-09-24  PDF brochure generator — the actual bug behind FR still
-//                   showing "Who is the client?"/English labels, found via
-//                   code trace (v9.23's fix wasn't wrong, just incomplete):
-//                   (1) _getBrochureData()'s sidebarLabels merge fell back to
-//                   the WHOLE English object the instant tr.sidebarLabels
-//                   existed at all — so a story where only one of the three
-//                   headings had ever been translated (e.g. just "features")
-//                   silently lost the other two, even if they too had already
-//                   been translated and saved. Switched to a true per-key
-//                   merge (who/applications/features each fall back
-//                   independently). (2) the PDF builder's "Who is X?" and
-//                   title fallbacks read storyData.name directly with no
-//                   robustness at all — the same blank-name issue fixed in the
-//                   HTML export (v9.17) was never applied here, and for the
-//                   English case _getBrochureData's early return skips any
-//                   fallback chain entirely. Added one clientName variable
-//                   (name → STORY_META.name → title → "the client") used
-//                   everywhere in the PDF builder, for every language.
-// v9.23 2026-09-24  PDF brochure generator: foreign-language brochures were
-//                   showing "Who is the client?" and "Applications deployed"
-//                   in English even when the story page itself had the
-//                   translated versions saved (e.g. "Qui est Eaglestone?",
-//                   "Applications Déployées"). Two bugs: (1) _getBrochureData()
-//                   never carried sidebarLabels through the per-language
-//                   merge at all, so the translated headings were dropped
-//                   before they ever reached the PDF builder; (2) the PDF
-//                   builder itself had those two headings hardcoded in English
-//                   rather than reading data.sidebarLabels. Fixed both — the
-//                   brochure now uses the same translated sidebar headings as
-//                   the live story page, for every language.
-// v9.22 2026-09-24  Prophix.com-style export: found the actual culprit for the
-//                   hero line-height (per devtools inspection) — the headline
-//                   markup wraps its text in a nested <p>, and the page's
-//                   global "p{line-height:1.7}" rule matches that <p> directly,
-//                   which wins over the line-height:1 set on the parent <h1>
-//                   (a rule that directly matches an element always overrides
-//                   an inherited value, regardless of specificity). Fixed by
-//                   setting line-height explicitly on .hero-text h1 p — set to
-//                   1.1 as requested.
-// v9.21 2026-09-24  Prophix.com-style export: added a real headline font
-//                   instead of the plain Arial/Helvetica fallback. prophix.com
-//                   uses Articulat CF (Connary Fagen), a commercially-licensed
-//                   font we don't have rights to embed from a different
-//                   domain. Loaded Public Sans instead — a free, SIL-OFL
-//                   Google Font that font-pairing references (maxibestof.one)
-//                   explicitly list as an Articulat CF alternative (same
-//                   Swiss-inspired geometric character, open license, zero
-//                   risk to embed). Applied to all the big red display
-//                   headings: hero h1, KRS/section headings, the "enables X
-//                   to:" legend, the CTA heading. Body paragraph text is
-//                   unchanged (still Helvetica Neue/Arial) for readability.
-// v9.20 2026-09-24  Prophix.com-style export: hero headline line-height/tracking
-//                   fixed using the ACTUAL values read off prophix.com's own
-//                   .hero-text h1 rule via devtools (customerSuccess.css) —
-//                   line-height:1 and letter-spacing:-3px. Earlier rounds had
-//                   been guessing and pushing line-height below 1 (down to
-//                   0.78), which was the wrong lever entirely: the real site
-//                   uses line-height:1 (not less) and gets the dense look
-//                   mainly from -3px letter-spacing plus their own font
-//                   (articulat-cf, which we don't have — using the existing
-//                   bold Arial/Helvetica fallback).
-// v9.19 2026-09-24  Live editor: floating Bold/Italic toolbar now shows for
-//                   every editable field (reuses EDITABLE_SELECTORS) instead
-//                   of only body text, who-text, quotes, results, and the hero
-//                   description — now also section titles/headers, sec-label,
-//                   stat tiles, KRS items, participant name/title, etc. Note:
-//                   bold/italic still only PERSISTS on save for the fields
-//                   that already went through getRichHTML() in domToData()
-//                   (body text, who-text, results, hero desc) — everywhere
-//                   else reads back via plain textContent, so formatting shows
-//                   while editing but won't survive a save yet. Flag if you
-//                   want that extended to more fields too.
-// v9.18 2026-09-24  Prophix.com-style export, quote block redesign per
-//                   reference comparison: (1) red background is now full-bleed
-//                   edge-to-edge (was capped to the 1100px .container, leaving
-//                   white margins on a wide page) — content inside is centered
-//                   via a nested .container; (2) quote icon moved back to the
-//                   LEFT of the quote text (icon-left/text-right row), not
-//                   stacked above it, and made bigger; (3) speaker line is now
-//                   "Title, Name" on one line (was "Name" then "Title, Company"
-//                   on two separate lines), at a bigger font-size; (4) restored
-//                   the small white hexagon avatar next to the speaker line
-//                   (removed in an earlier pass — reference shows it).
-// v9.17 2026-09-24  Prophix.com-style export: (1) "Who is ?" showing blank and
-//                   the download filename falling back to generic "Story" for
-//                   some older stories (Eaglestone) but not others (Oasis) —
-//                   both read directly from storyData.name, which is blank on
-//                   that story's data.json (likely never re-saved after the
-//                   name/title split introduced in v9.8, so .client-name-label
-//                   saved empty). Not fixable from the export alone since the
-//                   underlying field really is empty — added a robust fallback
-//                   chain (storyData.name → STORY_META.name → storyData.title →
-//                   "this client") so it can never render blank again, but the
-//                   real fix is to open Eaglestone in edit mode, retype the
-//                   client name in the top field, and Save once. (2) headline
-//                   line-height pulled down much further to 0.78 (was 0.9) —
-//                   still visibly too loose per feedback before this.
-// v9.16 2026-09-24  Prophix.com-style export hero, four more fixes: (1) the
-//                   hexagon was centered inside the shared 1100px .container,
-//                   so on wide viewports it sat far right of where the
-//                   reference has it (close to the true left edge). Hero now
-//                   uses its own full-bleed, left-anchored container (max-width:
-//                   none, fixed 56px gutter) instead of the shared centered
-//                   one; (2) hexagon enlarged again (430x503, was 392x458);
-//                   (3) whole banner enlarged (min-height 560px, was 480px;
-//                   more padding); (4) headline line-height pulled down hard
-//                   to 0.9 (was 0.98) — still visibly looser than the reference
-//                   before this.
-// v9.15 2026-09-24  Prophix.com-style export: hero headline made bigger/bolder
-//                   and much tighter line-height (0.98, was 1.04) with slight
-//                   negative letter-spacing, matching the reference's large,
-//                   dense, near-touching lines — ours read smaller/looser.
-//                   Hexagon enlarged again (392x458, was 360x420) to match the
-//                   reference's proportions; overlap offsets re-tuned to match.
-// v9.14 2026-09-24  Prophix.com-style export: "Prophix One enables X to:"
-//                   legend heading is now horizontally centered on the box's
-//                   top border (was left-aligned at a fixed 32px offset).
-// v9.13 2026-09-24  Prophix.com-style export: (1) the results-list hex bullets
-//                   were STILL rendering as a giant red blob spanning multiple
-//                   rows even after the previous "fix" — root cause was that
-//                   they shared the .hex-mask class with the big hero hexagon,
-//                   which carries flex/padding/display rules that were leaking
-//                   through despite the more-specific override. Given a fully
-//                   independent .item-hex-fill class with every property set
-//                   explicitly (no shared base class to leak from) — bulletproof
-//                   this time; (2) "Prophix One" in the "See Prophix One in
-//                   action" CTA rendered at a different size than "See"/"in
-//                   action" because it was baked as text inside an external
-//                   logo *image* (cdn.prophix.com wordmark SVG), not real text —
-//                   no amount of CSS sizing could make an image's internal
-//                   graphic match surrounding font metrics. Replaced with a
-//                   small inline SVG cube icon (sized in em units, so it always
-//                   tracks the h2's own font-size at any breakpoint) plus real
-//                   "Prophix One™" text in the exact same font run as "See"/
-//                   "in action" — now genuinely one uniform size throughout.
-// v9.12 2026-09-24  Prophix.com-style export: (1) hero headline now overlaps
-//                   into the white hexagon (negative margin + z-index) instead
-//                   of sitting beside it, with tighter line-height, matching the
-//                   reference; logo stays pinned to the top of the hex so it's
-//                   always above the overlapping text; (2) fixed the results-list
-//                   hex bullets rendering hugely oversized — they'd been switched
-//                   to the shared big-hero rounded SVG clipPath by mistake, now
-//                   reverted to a small plain sharp-cornered polygon clip-path;
-//                   (3) the "Prophix One enables X to:" box is now a black
-//                   rounded-border fieldset-style box whose heading overlaps and
-//                   visually interrupts the top border line (was a plain red
-//                   border with no interruption); (4) "See Prophix One in
-//                   action" CTA proportions tightened to match the reference:
-//                   smaller/better-aligned inline icon, fully pill-shaped
-//                   "Watch demo" button (was a slightly-rounded rectangle), and
-//                   less vertical section padding.
-// v9.11 2026-09-24  Prophix.com-style export: (1) product icons that 404 on the
-//                   cdn.prophix.com guessed URL (e.g. Lease Accounting) now fall
-//                   back via onerror to the app's own known-good local PNG, so
-//                   the icon never shows broken; (2) hero hexagon enlarged
-//                   (360x420, was 190x190) with genuinely rounded corners via a
-//                   reusable SVG clipPath (objectBoundingBox units, so it scales
-//                   onto both the big hero hex and the small results-list hex
-//                   bullets), replacing the sharp-cornered CSS polygon clip-path;
-//                   (3) hero banner enlarged (min-height 460px, was 340px) with
-//                   more vertical padding to match the reference proportions.
-// v9.10 2026-09-24  Export menu (showExportMenu) no longer nests inside the toolbar
-//                   button — now a fixed-position dropdown appended to <body>, so
-//                   it can't expand the edit toolbar. Prophix.com-style export
-//                   (exportHTMLProphix) fixes: (1) robust escH() fully decodes
-//                   legacy double/triple-encoded entities before re-encoding once,
-//                   fixing "P&amp;L" showing literally in KRS/results/body text;
-//                   (2) hero/KRS/page-body all share one .container definition and
-//                   page-body now uses CSS Grid (1fr / 340px) instead of flex, so
-//                   the Applications-deployed sidebar's right edge lines up with
-//                   the KRS row above; (3) hero background overlay changed from a
-//                   flat 75%-opacity wash to a light gradient so the photo reads
-//                   clearly; (4) hexagon made square (190x190, was 280x320) with
-//                   standard 0%/100% clip-path points and a lighter drop-shadow,
-//                   fixing the "rounded/oversized" look and centering the logo;
-//                   hero-text given flex-wrap so the title never sits over the
-//                   hexagon; (5) quote block restructured to a vertical stack
-//                   (icon on top-left, larger quote text below, speaker name/title
-//                   below that) instead of icon-beside-text, matching the
-//                   reference design; video (if present) now renders as its own
-//                   full-width block above the quote rather than squeezed beside
-//                   the icon.
+// v9.25 2026-09-24  "+ Add media" menu was rendering off-screen on some pages — now flips upward/clamps to fit viewport; same fix applied to the Export HTML menu
+// v9.24 2026-09-24  PDF brochure: sidebarLabels merge now per-key (was whole-object); added clientName fallback chain used everywhere in the PDF builder
+// v9.23 2026-09-24  PDF brochure: FR/other-language brochures now use translated "Who is X?"/"Applications deployed" headings instead of hardcoded English
+// v9.22 2026-09-24  Prophix-style export: fixed hero line-height — global p{line-height:1.7} was overriding h1's line-height; set explicitly on .hero-text h1 p (1.1)
+// v9.21 2026-09-24  Prophix-style export: added Public Sans (Google Font) as a legal stand-in for Articulat CF on all big red display headings
+// v9.20 2026-09-24  Prophix-style export: hero line-height/letter-spacing fixed to match prophix.com's real CSS (line-height:1, letter-spacing:-3px) via devtools
+// v9.19 2026-09-24  Live editor: Bold/Italic toolbar now shows on every editable field, not just body/who-text/quotes/results/hero-desc (persistence unchanged)
+// v9.18 2026-09-24  Prophix-style export: quote block full-bleed red bg, icon back to left of text, "Title, Name" one-line speaker, restored hex avatar
+// v9.17 2026-09-24  Prophix-style export: added name fallback chain (name→STORY_META→title→"this client") for stories with a blank data.name
+// v9.16 2026-09-24  Prophix-style export: hero hexagon no longer centered in the 1100px container — full-bleed left-anchored; hexagon + banner enlarged
+// v9.15 2026-09-24  Prophix-style export: hero headline bigger/bolder, tighter line-height + letter-spacing; hexagon enlarged again
+// v9.14 2026-09-24  Prophix-style export: "Prophix One enables X to:" legend heading centered on box border (was left-aligned)
+// v9.13 2026-09-24  Prophix-style export: fixed oversized results-list hex bullets (own class now, no shared .hex-mask); fixed mismatched CTA icon/text sizing
+// v9.12 2026-09-24  Prophix-style export: hero text overlaps hexagon; results box is now a black fieldset-style border; CTA button/icon proportions fixed
+// v9.11 2026-09-24  Prophix-style export: product icon 404 fallback to local PNG; hexagon enlarged with rounded corners via SVG clipPath
+// v9.10 2026-09-24  Fixed export menu expanding the toolbar (now a proper fixed dropdown); added exportHTMLProphix() prophix.com-style HTML export
 // v9.1  2026-09-21  KRS double-colon rendering fix (krsBodyText helper)
 // v9.2  2026-09-21  Media blocks (audio/video/image); logo edit label; lightbox; Sortable preventOnFilter fix
 // v9.3  2026-09-21  Results→Prophix Features; Delete Story in toolbar; directory tile cleanup (Open only, status capsules, logo left-aligned)
@@ -1655,7 +1489,7 @@ function showAddMediaMenu(btn) {
   var existing = document.getElementById('add-media-menu');
   if (existing) { existing.remove(); return; }
   var menu = document.createElement('div'); menu.id = 'add-media-menu';
-  menu.style.cssText = 'position:absolute;background:#fff;border:1px solid var(--border,#E0DFF0);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px;z-index:300;min-width:160px;margin-top:4px';
+  menu.style.cssText = 'position:fixed;background:#fff;border:1px solid var(--border,#E0DFF0);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px;z-index:9999;min-width:160px;visibility:hidden';
   var types = [['audio','🎵  Audio clip (MP3)'],['video','🎬  Video (MP4)'],['image','🖼  Image (JPG/PNG)'],['quote','💬  Quote block']];
   types.forEach(function(t) {
     var item = document.createElement('button');
@@ -1666,12 +1500,30 @@ function showAddMediaMenu(btn) {
     item.onclick = function(){ menu.remove(); addMediaInline(btn, t[0]); };
     menu.appendChild(item);
   });
-  var btnRect = btn.getBoundingClientRect();
-  menu.style.position = 'fixed';
-  menu.style.top = (btnRect.bottom + 4) + 'px';
-  menu.style.left = btnRect.left + 'px';
-  menu.style.zIndex = '9999';
   document.body.appendChild(menu);
+
+  // Viewport-aware placement — a fixed-position menu is clipped by the
+  // viewport with no way to scroll to the hidden part, so if the button sits
+  // low on screen (varies per story depending on scroll position and content
+  // length above it), a menu that only ever opens downward can render its
+  // last item(s) off-screen and genuinely invisible. Measure the menu's real
+  // height first, then open upward instead if there isn't room below, and
+  // clamp as a last resort so it always fits within the viewport.
+  var btnRect = btn.getBoundingClientRect();
+  var menuH = menu.offsetHeight;
+  var spaceBelow = window.innerHeight - btnRect.bottom - 8;
+  var spaceAbove = btnRect.top - 8;
+  var top;
+  if (menuH <= spaceBelow || spaceBelow >= spaceAbove) {
+    top = btnRect.bottom + 4;
+  } else {
+    top = btnRect.top - menuH - 4;
+  }
+  top = Math.max(4, Math.min(top, window.innerHeight - menuH - 4));
+  menu.style.top = top + 'px';
+  menu.style.left = btnRect.left + 'px';
+  menu.style.visibility = 'visible';
+
   setTimeout(function() {
     document.addEventListener('click', function closeMenu(e) {
       if (!menu.contains(e.target) && e.target !== btn) { menu.remove(); document.removeEventListener('click', closeMenu); }
@@ -2035,7 +1887,7 @@ function showExportMenu(btn) {
   // Build language picker menu
   var menu = document.createElement('div');
   menu.id = 'export-lang-menu';
-  menu.style.cssText = 'background:#fff;border:1px solid #E0DFF0;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:6px;min-width:220px';
+  menu.style.cssText = 'background:#fff;border:1px solid #E0DFF0;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:6px;min-width:220px;max-height:calc(100vh - 16px);overflow-y:auto';
 
   var LANG_FULL_MAP = {en:'English',fr:'French',nl:'Dutch',de:'German',it:'Italian',es:'Spanish',pt:'Portuguese',pl:'Polish',sv:'Swedish',da:'Danish',fi:'Finnish',no:'Norwegian',ja:'Japanese',zh:'Chinese',ko:'Korean'};
 
@@ -2076,13 +1928,24 @@ function showExportMenu(btn) {
     menu.appendChild(item2);
   });
 
-  // Position as a fixed dropdown anchored under the button — never a child of it
-  var btnRect = btn.getBoundingClientRect();
+  // Position as a fixed dropdown anchored under the button — never a child of
+  // it. Viewport-aware: measure the real height first (this menu can get tall
+  // with many languages) and flip upward / clamp if it wouldn't fully fit
+  // below the button, same fix as showAddMediaMenu below.
   menu.style.position = 'fixed';
-  menu.style.top = (btnRect.bottom + 6) + 'px';
-  menu.style.right = (window.innerWidth - btnRect.right) + 'px';
+  menu.style.visibility = 'hidden';
   menu.style.zIndex = '9999';
   document.body.appendChild(menu);
+
+  var btnRect = btn.getBoundingClientRect();
+  var menuH = menu.offsetHeight;
+  var spaceBelow = window.innerHeight - btnRect.bottom - 8;
+  var spaceAbove = btnRect.top - 8;
+  var top = (menuH <= spaceBelow || spaceBelow >= spaceAbove) ? (btnRect.bottom + 6) : (btnRect.top - menuH - 6);
+  top = Math.max(4, Math.min(top, window.innerHeight - menuH - 4));
+  menu.style.top = top + 'px';
+  menu.style.right = (window.innerWidth - btnRect.right) + 'px';
+  menu.style.visibility = 'visible';
 
   // Close on outside click
   setTimeout(function() {
