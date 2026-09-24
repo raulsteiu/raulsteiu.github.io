@@ -240,6 +240,7 @@ function krsBodyText(bold, text) {
 
 // ── Media icon helper (v9.2) ──────────────────────────────────────────────────
 function getMediaIcon(mediaType) {
+  if (mediaType === 'quote') return '<svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>';
   if (mediaType === 'video') return '<svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>';
   if (mediaType === 'image') return '<svg width="13" height="13" viewBox="0 0 24 24" fill="#EF363D"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>';
   // audio (default)
@@ -281,7 +282,13 @@ function renderMediaCard(c) {
   card.appendChild(labelDiv);
 
   // Quote / caption
-  if (mt === 'image') {
+  if (mt === 'quote') {
+    // Quote-only block: pull quote, no player, no audio bar
+    if (c.quote && c.quote.trim()) {
+      var quotEl = document.createElement('div'); quotEl.className = 'media-quote'; quotEl.textContent = c.quote;
+      card.appendChild(quotEl);
+    }
+  } else if (mt === 'image') {
     // Image block: show image + optional caption, no quote
     var player = document.createElement('div'); player.className = 'media-player';
     if (c.media) {
@@ -771,7 +778,7 @@ function domToData() {
         } else if (el.classList.contains('media-card')) {
           var titleEl = el.querySelector('.media-title-text'); var titleClone = titleEl ? titleEl.cloneNode(true) : null;
           if (titleClone) titleClone.querySelectorAll('button').forEach(function(b){ b.remove(); });
-          var mt = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : 'audio'));
+          var mt = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : (el.querySelector('audio') ? 'audio' : 'quote')));
           var mediaSrc = '';
           if (mt === 'video') { var vurlEl = el.querySelector('[data-video-url]'); mediaSrc = (vurlEl ? (vurlEl.value.trim() || vurlEl.getAttribute('data-url') || '') : '') || el.getAttribute('data-media-url') || ''; }
           else if (mt === 'image') { var img = el.querySelector('.media-img-wrap img'); mediaSrc = img ? (img.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
@@ -890,7 +897,7 @@ function domToData() {
         } else if (el.classList.contains('media-card')) {
           var ctEl2 = el.querySelector('.media-title-text'); var ctClone2 = ctEl2 ? ctEl2.cloneNode(true) : null;
           if (ctClone2) ctClone2.querySelectorAll('button').forEach(function(b){ b.remove(); });
-          var mt2 = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : 'audio'));
+          var mt2 = el.getAttribute('data-media-type') || (el.querySelector('iframe') ? 'video' : (el.querySelector('.media-img-wrap img') ? 'image' : (el.querySelector('audio') ? 'audio' : 'quote')));
           var mSrc2 = '';
           if (mt2 === 'video') { var vurlEl2 = el.querySelector('[data-video-url]'); mSrc2 = (vurlEl2 ? (vurlEl2.value.trim() || vurlEl2.getAttribute('data-url') || '') : '') || el.getAttribute('data-media-url') || ''; }
           else if (mt2 === 'image') { var im2 = el.querySelector('.media-img-wrap img'); mSrc2 = im2 ? (im2.getAttribute('src')||'').split('?')[0].split('/').pop() : ''; }
@@ -1459,7 +1466,7 @@ function showAddMediaMenu(btn) {
   if (existing) { existing.remove(); return; }
   var menu = document.createElement('div'); menu.id = 'add-media-menu';
   menu.style.cssText = 'position:absolute;background:#fff;border:1px solid var(--border,#E0DFF0);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px;z-index:300;min-width:160px;margin-top:4px';
-  var types = [['audio','🎵  Audio clip (MP3)'],['video','🎬  Video (MP4)'],['image','🖼  Image (JPG/PNG)']];
+  var types = [['audio','🎵  Audio clip (MP3)'],['video','🎬  Video (MP4)'],['image','🖼  Image (JPG/PNG)'],['quote','💬  Quote block']];
   types.forEach(function(t) {
     var item = document.createElement('button');
     item.textContent = t[1];
