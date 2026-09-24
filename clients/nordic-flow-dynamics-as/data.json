@@ -1,0 +1,124 @@
+{
+  "slug": "nordic-flow-dynamics-as",
+  "name": "Nordic Flow Dynamics AS",
+  "desc": "Nordic Flow Dynamics AS is a specialized manufacturer of offshore seawater injection systems and industrial slurry pumps. The company manages complex cross-border operations across four Nordic nations, balancing long-lead capital projects with high-volume aftermarket services.",
+  "ind": "Manufacturing, Drammen",
+  "status": "published",
+  "langs": [
+    "en",
+    "no"
+  ],
+  "hasLogo": true,
+  "stats": [
+    {
+      "v": "17 days",
+      "l": "Saved per closing cycle"
+    },
+    {
+      "v": "9/10",
+      "l": "Net Promoter Score"
+    },
+    {
+      "v": "9",
+      "l": "Operating entities consolidated"
+    },
+    {
+      "v": "4",
+      "l": "Reporting currencies managed"
+    }
+  ],
+  "whoStats": [
+    {
+      "v": "9",
+      "l": "Operating entities"
+    },
+    {
+      "v": "4",
+      "l": "Nordic countries"
+    }
+  ],
+  "whoText": "Nordic Flow Dynamics AS is a Norwegian-based industrial manufacturer headquartered in Drammen. The company operates nine entities across Norway, Sweden, Denmark, and Finland, specializing in offshore seawater injection systems and industrial slurry pumps. It serves both capital equipment and aftermarket sectors with a focus on complex, multi-currency maritime contracts.",
+  "krs": [
+    {
+      "text": "reduced the monthly cycle from 24 working days to seven.",
+      "bold": "Faster financial close"
+    },
+    {
+      "text": "eliminated manual matching tasks that previously required four senior accountants.",
+      "bold": "Automated intercompany reconciliation"
+    },
+    {
+      "text": "enabled dynamic tracking of BOM-level manufacturing cost variances.",
+      "bold": "Real-time margin visibility"
+    },
+    {
+      "text": "provided full traceability from consolidated statements to underlying transactional journal entries.",
+      "bold": "Enhanced audit integrity"
+    }
+  ],
+  "results": [],
+  "participants": [
+    {
+      "name": "Torbjørn Lindqvist",
+      "title": "CFO, Nordic Flow Dynamics AS"
+    },
+    {
+      "name": "Astrid Møller",
+      "title": "VP of Finance & Operations, Nordic Flow Dynamics AS"
+    }
+  ],
+  "products": [
+    "Financial Consolidation",
+    "FP&A Plus"
+  ],
+  "content": [
+    {
+      "type": "section",
+      "data": {
+        "label": "BUSINESS CHALLENGES",
+        "heading": "Overcoming administrative complexity in a multi-entity environment",
+        "body": "Before adopting Prophix, Nordic Flow Dynamics operated through nine distinct entities across four countries, each utilizing separate legacy ERP instances. The finance team relied on fragile, manual Excel spreadsheets to handle intercompany parts movements, warranty provisions, and complex cross-border currency conversions, resulting in a monthly financial close that dragged on for 24 working days.\n\nThis status quo became unsustainable due to the company's expansion and the volatility of raw material costs. Manual models failed to reflect real-time bill-of-materials fluctuations, leading to mispriced tenders and significant margin erosion. Furthermore, the lack of automated, defensible data created a governance liability that hindered the company's ability to satisfy bank covenants and provide investors with timely, accurate operational insights."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "WHY PROPHIX",
+        "heading": "What made Prophix the right fit",
+        "body": "- Ability to integrate dynamic manufacturing cost variances directly into regional planning.\n- Capacity to maintain a unified multi-currency structure across NOK, SEK, DKK, and EUR.\n- Capability to provide permission-governed reporting access for board members and private equity partners."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "label": "KEY RESULTS",
+        "heading": "Transforming financial operations and strategic agility",
+        "body": "The implementation of Prophix has fundamentally reshaped the company's financial operations, resulting in a highly efficient, automated reporting environment. Executive leadership and private equity partners now access audited quarterly performance metrics on day eight of the following month, facilitating a shift from historical verification to proactive strategic decision-making.\n\nCollaboration across the organization has improved significantly as finance professionals moved away from manual data entry toward predictive capacity modeling and supply chain risk evaluation. The platform also provided a clean audit trail, allowing auditors to trace line items from the consolidated Norwegian parent statement down to individual transactional entries across subsidiaries without a single material adjustment notice.\n\nMost notably, the group reduced its monthly financial close cycle from 24 working days to seven, representing a 70% reduction in time. Additionally, the intercompany reconciliation process, which previously occupied four senior accountants for nearly a full week, is now completed in under three hours."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "CLOSE CYCLE REDUCTION",
+        "ts": "",
+        "quote": "We cut the group close cycle from 24 working days down to seven. Seven days. That represents a 70 percent reduction in cycle time."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "INTERCOMPANY EFFICIENCY",
+        "ts": "",
+        "quote": "Matching inter-entity part transfers and cross-border service billings between Drammen, Gothenburg, and Esbjerg used to tie up four senior plant accountants for nearly a full week. In Prophix, automated transaction matching flags variances above our 5,000 NOK threshold automatically. That task now wraps up in under three hours."
+      }
+    },
+    {
+      "type": "clip",
+      "data": {
+        "title": "GOVERNANCE AND AUDIT",
+        "ts": "",
+        "quote": "The auditors tracked every line item from our consolidated Norwegian parent statement down to the underlying transactional journal entries across our Danish and Finnish subsidiaries without generating a single material adjustment notice."
+      }
+    }
+  ]
+}
