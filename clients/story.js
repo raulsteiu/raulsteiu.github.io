@@ -1,10 +1,31 @@
-// Prophix Client Story — story.js v9.12
+// Prophix Client Story — story.js v9.14
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.14 2026-09-24  Prophix.com-style export: "Prophix One enables X to:"
+//                   legend heading is now horizontally centered on the box's
+//                   top border (was left-aligned at a fixed 32px offset).
+// v9.13 2026-09-24  Prophix.com-style export: (1) the results-list hex bullets
+//                   were STILL rendering as a giant red blob spanning multiple
+//                   rows even after the previous "fix" — root cause was that
+//                   they shared the .hex-mask class with the big hero hexagon,
+//                   which carries flex/padding/display rules that were leaking
+//                   through despite the more-specific override. Given a fully
+//                   independent .item-hex-fill class with every property set
+//                   explicitly (no shared base class to leak from) — bulletproof
+//                   this time; (2) "Prophix One" in the "See Prophix One in
+//                   action" CTA rendered at a different size than "See"/"in
+//                   action" because it was baked as text inside an external
+//                   logo *image* (cdn.prophix.com wordmark SVG), not real text —
+//                   no amount of CSS sizing could make an image's internal
+//                   graphic match surrounding font metrics. Replaced with a
+//                   small inline SVG cube icon (sized in em units, so it always
+//                   tracks the h2's own font-size at any breakpoint) plus real
+//                   "Prophix One™" text in the exact same font run as "See"/
+//                   "in action" — now genuinely one uniform size throughout.
 // v9.12 2026-09-24  Prophix.com-style export: (1) hero headline now overlaps
 //                   into the white hexagon (negative margin + z-index) instead
 //                   of sitting beside it, with tighter line-height, matching the
@@ -2280,12 +2301,15 @@ function exportHTMLProphix(lc) {
     // Black rounded border with a "fieldset/legend" heading that overlaps and
     // visually interrupts the top border line, matching the reference design
     '.container-outline{position:relative;border:1.5px solid #1a1a1a;border-radius:16px;padding:40px 36px 26px;margin:64px 0 48px}',
-    '.container-outline .outline-legend{position:absolute;top:-15px;left:32px;background:#fff;padding:0 14px;font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;line-height:1.3;white-space:nowrap;max-width:calc(100% - 64px);overflow:hidden;text-overflow:ellipsis}',
+    '.container-outline .outline-legend{position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:#fff;padding:0 18px;font-size:clamp(18px,2vw,22px);font-weight:900;color:#1a1a1a;line-height:1.3;white-space:nowrap;max-width:calc(100% - 48px);overflow:hidden;text-overflow:ellipsis;text-align:center}',
     // Small hex bullet — kept as a plain, small, sharp-cornered polygon clip-path.
     // (Rounding is imperceptible at 32x37px and reusing the big hero's rounded
     // SVG clipPath here previously caused the bullets to render hugely oversized.)
-    '.item-hex{width:14px;height:16px;position:relative;flex-shrink:0;margin-right:16px;margin-top:4px}',
-    '.hex-mask.red-background{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:#EF363D}',
+    '.item-hex{width:14px;height:16px;position:relative;flex-shrink:0;margin-right:16px;margin-top:4px;overflow:hidden}',
+    // Deliberately its OWN class (not .hex-mask) — .hex-mask carries the big
+    // hero hexagon's flex/padding rules, and sharing it here was leaking those
+    // properties in and blowing the bullet up to full paragraph height.
+    '.item-hex-fill{position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:0;display:block;background:#EF363D;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}',
     '.container-outline .d-flex.flex-row{padding:10px 0;border-bottom:1px solid #f0f0f0;align-items:flex-start}',
     '.container-outline .d-flex.flex-row:last-child{border-bottom:none}',
     '.container-outline .d-flex.flex-row p{font-size:15px;color:#333;margin:0;line-height:1.55}',
@@ -2297,7 +2321,7 @@ function exportHTMLProphix(lc) {
     '.see-action-section .row{display:flex;flex-direction:column;align-items:center;gap:22px}',
     '.see-action-section h2{font-size:clamp(24px,3vw,36px);font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}',
     '.Almost-White-color{color:#fff}',
-    '.title-icon{height:28px;width:auto;vertical-align:-3px;margin:0 1px}',
+    '.title-icon{width:0.85em;height:0.85em;vertical-align:-0.08em;flex-shrink:0}',
     '.only-btn-block{}',
     '.btn.Almost-White-bg{background:#fff;color:#EF363D;font-weight:700;font-size:15px;padding:13px 34px;border-radius:30px;text-decoration:none;display:inline-block;border:none}',
     '.btn.Almost-White-bg:hover{background:#f5f5f5;text-decoration:none}',
@@ -2448,7 +2472,7 @@ function exportHTMLProphix(lc) {
     var resultRows = results.map(function(r) {
       var text = (r||'').replace(/^[✕✗×→\s•]+/,'').trim();
       return '<div class="d-flex flex-row align-items-center">' +
-        '<div class="item-hex"><div class="hex-mask red-background"></div></div>' +
+        '<div class="item-hex"><div class="item-hex-fill"></div></div>' +
         '<div style="flex:1"><p>' + escH(text) + '</p></div>' +
         '</div>';
     }).join('');
@@ -2472,6 +2496,15 @@ function exportHTMLProphix(lc) {
     '</nav>';
 
   // ── SEE IN ACTION — their exact .common-section.Red-bg.see-action-section ──
+  // The old CDN "Prophix-Logo.svg" is a full wordmark image with "Prophix One"
+  // baked into its graphic, so it rendered at a different size/weight than the
+  // surrounding "See"/"in action" text no matter how the <img> was sized. Using
+  // a small inline cube icon (sized in em, so it always tracks the h2's own
+  // font-size) plus real "Prophix One™" text in the same font run fixes that —
+  // everything is now one uniform text size, the icon just sits inline with it.
+  var prophixCubeIcon = '<svg class="title-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+    '<path d="M12 2 3 6.6v10.8L12 22l9-4.6V6.6L12 2zm0 2.3 6.1 3.1L12 10.8 5.9 7.4 12 4.3zM5 9.3l6 3.1v7.2l-6-3.1V9.3zm14 0v7.2l-6 3.1v-7.2l6-3.1z"/>' +
+    '</svg>';
   var ctaHTML =
     '<section class="common-section Red-bg see-action-section pt-70 pb-70">' +
       '<div class="container">' +
@@ -2479,8 +2512,8 @@ function exportHTMLProphix(lc) {
           '<div class="col-lg-12">' +
             '<div class="section-title">' +
               '<h2 class="title Almost-White-color">See ' +
-                '<img class="title-icon" src="' + CDN + '/images/uploads/icons/Prophix-Logo.svg" alt="prophix logo">' +
-                'in action</h2>' +
+                prophixCubeIcon +
+                'Prophix One<sup class="tm">\u2122</sup> in action</h2>' +
             '</div>' +
           '</div>' +
           '<div class="col-lg-12 only-btn-block">' +
