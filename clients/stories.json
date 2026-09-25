@@ -19,11 +19,13 @@
     "langs": [
       "en",
       "de",
-      "pl"
+      "pl",
+      "da"
     ],
-    "status": "published",
+    "status": "draft",
     "created": "2026-09-24T10:03:24.414Z",
-    "logo": true
+    "logo": true,
+    "edited": "2026-09-25T14:10:38.754Z"
   },
   {
     "slug": "eaglestone-ai",
