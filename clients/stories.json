@@ -1,5 +1,17 @@
 [
   {
+    "slug": "infrasecurity-ag",
+    "name": "InfraSecurity AG",
+    "ind": "Infrastructure, Vienna",
+    "langs": [
+      "en",
+      "fr"
+    ],
+    "status": "published",
+    "created": "2026-09-25T14:19:04.062Z",
+    "logo": false
+  },
+  {
     "slug": "nordic-flow-dynamics-as",
     "name": "Nordic Flow Dynamics AS",
     "ind": "Manufacturing, Drammen",
