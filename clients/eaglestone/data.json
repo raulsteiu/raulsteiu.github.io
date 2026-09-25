@@ -101,9 +101,9 @@
         "title": "More transparency, faster information",
         "ts": "",
         "quote": "The information is much more transparent, especially since France is now directly integrated into the system. I'm much faster at getting the information out.",
-        "mediaType": "audio",
-        "media": "clip1_transparency.mp3",
-        "audio": "clip1_transparency.mp3"
+        "mediaType": "quote",
+        "media": "",
+        "audio": ""
       }
     },
     {
@@ -120,7 +120,7 @@
         "title": "Meeting investors deadlines",
         "ts": "",
         "quote": "Our investors to whom we report in IFRS had a lot of questions. We were always late. Now, we can respect our strict deadlines.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -131,7 +131,7 @@
         "title": "Learning by doing with the CSP",
         "ts": "",
         "quote": "The work we do with these consultants: we train ourselves by working. They guide and supervise us, and we hold the keys. It is the best way to understand the tool.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -150,7 +150,7 @@
         "title": "Faster Liasse Navigation following the June 2026 Update",
         "ts": "",
         "quote": "..especially with the updates that Prophix offers there. I saw that there was an update in June, especially in the console liasses, where it facilitates navigation between the different schemas... So that's also ultra positive. And finally, it's really something that I told myself: it's true that navigating from one pattern to another, you always have to go back a little, but now it's a little more direct. We can navigate from one to the other without having to go back a step.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -169,7 +169,7 @@
         "title": "A next-generation consolidation tool",
         "ts": "",
         "quote": "Prophix is much more user-friendly. It is really a next-generation consolidation tool. I can configure it much more easily than in SAP BFC.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -180,7 +180,7 @@
         "title": "Time freed for strategic analysis",
         "ts": "",
         "quote": "We spend less time on consolidation because we know it works. It is much more transparent. We direct our efforts on reconciliations with treasury and management data.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -191,7 +191,7 @@
         "title": "Team support during France integration",
         "ts": "",
         "quote": "I am extremely grateful for the reactivity and availability of the teams at Prophix. I was accompanied exactly as it needed to be for it to be a success.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -210,7 +210,7 @@
         "title": "Estimating the time saved",
         "ts": "",
         "quote": "I think we could win a few days. I don't know, it's about a week. Maybe we can win a week to release the group consolidation. I think I could shorten my closing process by a week in the end.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
@@ -229,7 +229,7 @@
         "title": "9/10, already referring peers",
         "ts": "",
         "quote": "I would put 9, not 10, because we can always go further, and yes, I would clearly recommend this system to my peers. I have already recommended Prophix to my former colleagues.",
-        "mediaType": "audio",
+        "mediaType": "quote",
         "media": "",
         "audio": ""
       }
