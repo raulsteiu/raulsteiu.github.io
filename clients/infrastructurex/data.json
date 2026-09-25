@@ -3,11 +3,12 @@
   "name": "InfrastructureX",
   "desc": "InfrastructureX is an international infrastructure firm managing complex project-specific entities across eight European countries. The company leverages Prophix to streamline financial consolidation, multi-currency reporting, and project-driven planning.",
   "ind": "Infrastructure, Vienna, Austria",
-  "status": "published",
+  "status": "draft",
   "langs": [
     "en",
     "de",
-    "pl"
+    "pl",
+    "da"
   ],
   "hasLogo": true,
   "stats": [
@@ -121,5 +122,6 @@
         "quote": "My people are doing real finance work now. Not data entry. Not reconciliation. Not chasing subsidiaries for their Excel files. That change in what the finance function actually does, day to day, has been transformative."
       }
     }
-  ]
+  ],
+  "_lang": "en"
 }
