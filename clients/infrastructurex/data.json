@@ -123,5 +123,11 @@
       }
     }
   ],
-  "_lang": "en"
+  "_lang": "en",
+  "preview": {
+    "token": "oj9v1fz979",
+    "password": "calm-dawn-52",
+    "expiresAt": "2026-09-28T14:10:43.260Z",
+    "createdAt": "2026-09-25T14:10:43.263Z"
+  }
 }
