@@ -1,10 +1,11 @@
-// Prophix Client Story — story.js v9.25
+// Prophix Client Story — story.js v9.26
 // Data-driven architecture: renders from data.json, saves back to data.json.
 // Required globals in index.html shell:
 //   GH_REPO, GH_FILE, GH_DATA_FILE, GH_CLIENT_FOLDER, STORY_META
 //   STORY_META = { slug, name, hasLogo, langs }
 //
 // Version history:
+// v9.26 2026-09-24  KRS bold/body now saves through getRichHTML (was plain textContent, silently stripping any bold/italic applied via the toolbar); also fixed a pre-existing double-escape bug in KRS rendering
 // v9.25 2026-09-24  "+ Add media" menu was rendering off-screen on some pages — now flips upward/clamps to fit viewport; same fix applied to the Export HTML menu
 // v9.24 2026-09-24  PDF brochure: sidebarLabels merge now per-key (was whole-object); added clientName fallback chain used everywhere in the PDF builder
 // v9.23 2026-09-24  PDF brochure: FR/other-language brochures now use translated "Who is X?"/"Applications deployed" headings instead of hardcoded English
@@ -248,10 +249,10 @@ function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 
 // ── Strip bold prefix from KRS text (fixes double-colon bug) ─────────────────
 function krsBodyText(bold, text) {
-  if (!bold) return esc(text||'');
+  if (!bold) return escRich(text||'');
   // Strip "Bold:" or "Bold: " from the start of text, case-insensitive
   var escaped = bold.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  return esc((text||'').replace(new RegExp('^'+escaped+':\\s*','i'),'').trim());
+  return escRich((text||'').replace(new RegExp('^'+escaped+':\\s*','i'),'').trim());
 }
 
 // ── Media icon helper (v9.2) ──────────────────────────────────────────────────
@@ -594,9 +595,9 @@ function renderLangBlock(data, lc, isActive, meta) {
     blockData.krs.forEach(function(k) {
       var li = document.createElement('li'); li.className = 'krs-item';
       // v9.1 fix: use krsBodyText() to strip bold prefix from text before rendering
-      var krsBody = krsBodyText(k.bold, k.text);
-      var boldHtml = k.bold ? '<span class="krs-bold">' + esc(k.bold) + ': </span>' : '';
-      li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + boldHtml + '<span class="krs-body">' + esc(krsBody) + '</span></span>';
+      var krsBody = krsBodyText(k.bold, k.text); // already escRich-escaped — don't re-escape below
+      var boldHtml = k.bold ? '<span class="krs-bold">' + escRich(k.bold) + ': </span>' : '';
+      li.innerHTML = '<span class="krs-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#EF363D"/><polyline points="7 12 10.5 15.5 17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="krs-item-text">' + boldHtml + '<span class="krs-body">' + krsBody + '</span></span>';
       krsList.appendChild(li);
     });
     krsCard.appendChild(krsList);
@@ -777,8 +778,8 @@ function domToData() {
           clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
           return { bold: '', text: clone.textContent.trim() };
         }
-        var bold = boldEl ? boldEl.textContent.replace(/:\s*$/, '').trim() : '';
-        var body = bodyEl ? bodyEl.textContent.trim() : '';
+        var bold = boldEl ? getRichHTML(boldEl).replace(/:\s*$/, '').trim() : '';
+        var body = bodyEl ? getRichHTML(bodyEl).trim() : '';
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
@@ -866,8 +867,8 @@ function domToData() {
           clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
           return { bold: '', text: clone.textContent.trim() };
         }
-        var bold = boldEl ? boldEl.textContent.replace(/:\s*$/, '').trim() : '';
-        var body = bodyEl ? bodyEl.textContent.trim() : '';
+        var bold = boldEl ? getRichHTML(boldEl).replace(/:\s*$/, '').trim() : '';
+        var body = bodyEl ? getRichHTML(bodyEl).trim() : '';
         return { bold: bold, text: bold ? bold + ': ' + body : body };
       }).filter(Boolean);
 
