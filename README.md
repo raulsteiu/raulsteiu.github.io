@@ -1,4 +1,4 @@
-# Prophix Client Story Platform
+# Client Story Platform
 
 **Live URL:** https://raulsteiu.github.io
 **Repository:** `raulsteiu/raulsteiu.github.io`
