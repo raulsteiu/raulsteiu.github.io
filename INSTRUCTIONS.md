@@ -1,4 +1,4 @@
-# Prophix Client Story App — Maintenance & Usage Guide
+# Client Story App — Maintenance & Usage Guide
 
 **Repository:** `raulsteiu/raulsteiu.github.io`  
 **Last updated:** September 2026 — v3.2
